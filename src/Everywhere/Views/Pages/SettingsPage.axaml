@@ -9,7 +9,6 @@
     x:DataType="vm:SettingsPageViewModel">
     <ScrollViewer
         HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-
         <ScrollViewer.Styles>
             <Style Selector="Expander.SettingsItemContainer">
                 <Setter Property="Template">
@@ -17,47 +16,47 @@
                         <ControlTemplate TargetType="Expander">
                             <shadui:Card>
                                 <StackPanel>
-                                <LayoutTransformControl Name="PART_ToggleTransform">
-                                    <Panel>
-                                        <Panel.Styles>
-                                            <Style Selector="ToggleButton#PART_ToggleButton:checked /template/ Border#RootBorder">
-                                                <Setter Property="Background" Value="Transparent"></Setter>
-                                            </Style>
-                                        </Panel.Styles>
-                                        <ToggleButton
-                                            x:Name="PART_ToggleButton" Classes="Basic"
-                                            DockPanel.Dock="Right" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                            BorderThickness="0" CornerRadius="8"
-                                            IsEnabled="True"
-                                            IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}">
-                                        </ToggleButton>
-                                        <Grid ColumnDefinitions="*, Auto">
-                                            <ContentPresenter
-                                                Grid.Column="0" HorizontalAlignment="Left"
-                                                VerticalAlignment="Center"
-                                                Content="{TemplateBinding Header}"/>
-                                            <PathIcon
-                                                IsHitTestVisible="False"
-                                                x:Name="PART_Icon" Grid.Column="1"
-                                                Width="20" Height="20"
-                                                Margin="20, 0"
-                                                HorizontalAlignment="Left"
-                                                Data="{x:Static contents:Icons.ChevronDown}"/>
-                                        </Grid>
-                                    </Panel>
-                                </LayoutTransformControl>
+                                    <LayoutTransformControl Name="PART_ToggleTransform">
+                                        <Panel>
+                                            <Panel.Styles>
+                                                <Style Selector="ToggleButton#PART_ToggleButton:checked /template/ Border#RootBorder">
+                                                    <Setter Property="Background" Value="Transparent"></Setter>
+                                                </Style>
+                                            </Panel.Styles>
+                                            <ToggleButton
+                                                x:Name="PART_ToggleButton" Classes="Basic"
+                                                DockPanel.Dock="Right" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                BorderThickness="0" CornerRadius="8"
+                                                IsEnabled="True"
+                                                IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}">
+                                            </ToggleButton>
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <ContentPresenter
+                                                    Grid.Column="0" HorizontalAlignment="Left"
+                                                    VerticalAlignment="Center"
+                                                    Content="{TemplateBinding Header}"/>
+                                                <PathIcon
+                                                    IsHitTestVisible="False"
+                                                    x:Name="PART_Icon" Grid.Column="1"
+                                                    Width="20" Height="20"
+                                                    Margin="20, 0"
+                                                    HorizontalAlignment="Left"
+                                                    Data="{x:Static contents:Icons.ChevronDown}"/>
+                                            </Grid>
+                                        </Panel>
+                                    </LayoutTransformControl>
 
-                                <ContentControl
-                                    IsVisible="{Binding ElementName=PART_ToggleButton, Path=IsChecked}"
-                                    x:Name="ContentExpandControlContainer" Padding="0, 8, 0, 0">
-                                    <shadui:ContentExpandControl
-                                        x:Name="PART_ContentExpand"
-                                        HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        Content="{TemplateBinding Content}"
-                                        ContentTemplate="{TemplateBinding ContentTemplate}"/>
-                                </ContentControl>
-                            </StackPanel>
+                                    <ContentControl
+                                        IsVisible="{Binding ElementName=PART_ToggleButton, Path=IsChecked}"
+                                        x:Name="ContentExpandControlContainer" Padding="0, 8, 0, 0">
+                                        <shadui:ContentExpandControl
+                                            x:Name="PART_ContentExpand"
+                                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                                    </ContentControl>
+                                </StackPanel>
                             </shadui:Card>
                         </ControlTemplate>
                     </Setter.Value>
@@ -77,7 +76,6 @@
                 <Style Selector="^ ToggleButton#PART_ToggleButton">
                     <Setter Property="IsHitTestVisible" Value="False"/>
                 </Style>
-
                 <Style Selector="^ ContentControl#ContentExpandControlContainer">
                     <Setter Property="IsVisible" Value="False"/>
                 </Style>
@@ -130,9 +128,11 @@
                                                         Width="320"
                                                         Maximum="{Binding MaxValue}"
                                                         Minimum="{Binding MinValue}"
+                                                        IsSnapToTickEnabled="True"
                                                         Value="{Binding ValueProxy.Value, Mode=TwoWay}"/>
                                                     <TextBox
                                                         MinHeight="32"
+                                                        VerticalAlignment="Center"
                                                         Text="{Binding ValueProxy.Value, Mode=TwoWay}"/>
                                                 </StackPanel>
                                             </DataTemplate>
@@ -150,6 +150,7 @@
                                                         Value="{Binding ValueProxy.Value, Mode=TwoWay}"/>
                                                     <TextBox
                                                         MinHeight="32"
+                                                        VerticalAlignment="Center"
                                                         Text="{Binding ValueProxy.Value, Mode=TwoWay, StringFormat={}{0:F1}}"/>
                                                 </StackPanel>
                                             </DataTemplate>
