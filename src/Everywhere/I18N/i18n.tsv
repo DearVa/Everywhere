@@ -1,47 +1,45 @@
 ﻿Key	zh-CN	en-US
 SettingsPage_Title	设置	Settings
-SettingsGroup_Common_Header	基础设置	Common Settings
+SettingsGroup_Common_Header	基础	Common
 Settings_Common_Language_Header	语言	Language
-Settings_Common_Language_Description	更改软件的显示语言。	Change the display language of the software.
+Settings_Common_Language_Description	选择软件界面语言。	Select the display language for the software.
 SettingsSelectionItem_Common_Language_zh-CN	中文（简体）	中文（简体）
 SettingsSelectionItem_Common_Language_en-US	English (United States)	English (United States)
-SettingsGroup_Behavior_Header	行为设置	Behavior Settings
-Settings_Behavior_IsInputAssistantEnabled_Header	开启输入助手	Enable input assistant
-Settings_Behavior_IsInputAssistantEnabled_Description	当你在任何软件中输入时，输入助手可以根据上下文为你提供帮助。	When you’re typing in any application, the input assistant can offer context-based suggestions.
-Settings_Behavior_ShowInputAssistantFloatingWindow_Header	显示输入助手悬浮框	Show input assistant flyout
-Settings_Behavior_ShowInputAssistantFloatingWindow_Description	如果开启，当你在任何软件中输入时，会在旁边显示悬浮框用于快速访问。如果关闭，你仍可以使用快捷键呼出。	If enabled, a flyout appears beside your cursor for quick access when typing; if disabled, you can still invoke it via hotkey.
-Settings_Behavior_InputAssistantHotkey_Header	输入助手快捷键	Input assistant hotkey
-Settings_Behavior_InputAssistantHotkey_Description	当你在任何软件中输入时，按下快捷键呼出输入助手。	The hotkey to invoke the input assistant while typing in any application.
-SettingsGroup_Model_Header	模型设置	Model Settings
+SettingsGroup_Behavior_Header	行为	Behavior
+Settings_Behavior_IsInputAssistantEnabled_Header	启用输入助手	Enable Input Assistant
+Settings_Behavior_IsInputAssistantEnabled_Description	当你在任何软件中输入时，输入助手可以根据上下文为你提供帮助。	When you’re typing in any application, the input assistant can offer suggestions from context.
+Settings_Behavior_ShowInputAssistantFloatingWindow_Header	显示输入助手悬浮框	Show Input Assistant Flyout
+Settings_Behavior_ShowInputAssistantFloatingWindow_Description	开启后，在任意软件中输入时，输入助手会在旁边弹出悬浮面板以便快速访问；关闭后，可通过快捷键手动唤出。	When enabled, the input assistant pops up a floating panel next to any focused input field for quick access; when disabled, you can still invoke it via a keyboard shortcut.
+Settings_Behavior_InputAssistantHotkey_Header	输入助手快捷键	Input Assistant Hotkey
+Settings_Behavior_InputAssistantHotkey_Description	当你在任何软件中输入时，按下快捷键即可唤出输入助手。	Press the keyboard shortcut to invoke the input assistant while typing in any software.
+SettingsGroup_Model_Header	模型	Model
 Settings_Model_ModelName_Header	模型名称	Model Name
-Settings_Model_ModelName_Description	要使用的模型名称。	The name of the model to use.
+Settings_Model_ModelName_Description	指定助手调用的模型名称。	Specify the name of the model the assistant will use.
 Settings_Model_Endpoint_Header	模型API接口地址	Model API Endpoint
-Settings_Model_Endpoint_Description	"正确输入例子：https://openai.com/api/v1
-错误输入例子：https://openai.com/api/v1/chat/completions"	"Correct input example: https://openai.com/api/v1
-Incorrect input example: https://openai.com/api/v1/chat/completions"
-Settings_Model_ApiKey_Header	模型API Key	Model API Key
-Settings_Model_ApiKey_Description	模型API访问秘钥，你可以在对应模型提供方的API网站获取。如果是ollama或者LM Studio这类本地模型不需要验证的，请留空。	Model API access key. You can get it from model provider's API website. Leave blank for local models (e.g., Ollama or LM Studio) that don’t require authentication.
+Settings_Model_Endpoint_Description	指定助手使用的 API 端点 URL，仅填写根路径，不要包含具体接口路径（例如：https://openai.com/api/v1）	Specify the base API endpoint URL for the assistant; supply only the root path without including specific endpoint routes (e.g., https://openai.com/api/v1).
+Settings_Model_ApiKey_Header	模型 API Key	Model API Key
+Settings_Model_ApiKey_Description	指定用于访问模型 API 的密钥，可在模型提供方的 API 网站获取；对于无需验证的本地模型（如 Ollama 或 LM Studio），请留空。	Specify the API access key for the model, obtainable from the provider’s API site; leave blank for local models (e.g., Ollama or LM Studio) that do not require authentication.
 Settings_Model_Temperature_Header	创意活跃度（Temperature）	Creativity (Temperature)
-Settings_Model_Temperature_Description	数值越大，回答越有创意和想象力；数值越小，回答越严谨。注意，对于某些模型，数值超过1.0可能会导致输出乱码。	The higher the value, the more creative and imaginative the responses; the lower the value, the more precise. Note: values above 1.0 can cause output issues in some models.
-Settings_Model_TopP_Header	思维开放度（Top p）	Thought openness (Top p)
-Settings_Model_TopP_Description	考虑多少种可能性，值越大，接受更多可能的回答；值越小，倾向选择最可能的回答。不推荐和创意活跃度一起更改。	Determines how many possibilities to consider: higher accepts more varied responses; lower favors the most likely. Not recommended to change alongside Temperature.
-Settings_Model_IsImageEnabled_Header	开启图像多模态	Enable multimodal image support
-Settings_Model_IsImageEnabled_Description	如果大模型（如gpt-4o等）支持图像上传（视觉输入），开启后此功能后，AI助手会在合适的时机将图像一并输入，有利于大模型更好地理解上下文。如果模型不支持，开启后可能会导致调用失败。	If your model (e.g., GPT-4o) supports image input, enabling this lets the assistant include images at appropriate times for richer context; if unsupported, calls may fail.
-Settings_Model_IsToolCallEnabled_Header	开启工具调用	Enable tool calling
-Settings_Model_IsToolCallEnabled_Description	如果大模型（如DeepSeek-V3、gpt-4o等）支持工具调用，开启后此功能后，AI助手会在合适的时机调用工具，从而开启更强大的能力。如果模型不支持，开启后可能会导致调用失败。	If your model (e.g., DeepSeek-V3, GPT-4o) supports tool calls, enabling this lets the assistant invoke tools when appropriate for enhanced capabilities; if unsupported, calls may fail.
-Settings_Model_IsWebSearchEnabled_Header	开启网络搜索	Enable Web search
-Settings_Model_IsWebSearchEnabled_Description	在开启工具调用的情况下，开启此功能可允许模型搜索网络结果之后再回答。	When tool usage is enabled, turning on this feature allows the model to search the web for results before responding.
-Settings_Model_WebSearchProvider_Header	网络搜索服务提供方	Web search service provider
+Settings_Model_Temperature_Description	数值越高，回答越具创造力和想象力；数值越低，则越趋严谨；部分模型数值超过 1.0 可能导致输出乱码。	Higher values yield more imaginative, creative responses; lower values produce more precise, conservative outputs; note that temperatures above 1.0 may cause garbled output in some models.
+Settings_Model_TopP_Header	思维开放度（Top p）	Thought Openness (Top p)
+Settings_Model_TopP_Description	数值越高，模型会接受更多潜在回答；数值越低，则更倾向于最可能的回答；不建议与创意活跃度同时调整。	Higher values allow a wider range of possible responses; lower values favor the most probable answers; it’s not recommended to modify this alongside the temperature.
+Settings_Model_IsImageEnabled_Header	开启图像多模态	Enable Multimodal Image Support
+Settings_Model_IsImageEnabled_Description	启用此功能后，在支持图像输入的大模型（如 GPT-4o）调用时，助手会在适当时机传递视觉信息以增强上下文理解；若模型不支持图像上传，开启后可能导致调用失败。	When enabled, for vision-capable models (e.g., GPT-4o), the assistant will include images at the right times to enhance contextual understanding; if the model doesn’t support image inputs, enabling this may cause call failures.
+Settings_Model_IsToolCallEnabled_Header	开启工具调用	Enable Tool Calling
+Settings_Model_IsToolCallEnabled_Description	启用后，在支持工具调用的大模型（如 DeepSeek-V3、GPT-4o）中，助手会在合适时机调用外部工具以扩展能力；若模型不支持此功能，则可能导致调用失败。	When enabled, for tool-capable large models (e.g., DeepSeek-V3, GPT-4o), the assistant will invoke external tools at appropriate times to extend its capabilities; if the model doesn’t support tool calls, enabling this may cause failures.
+Settings_Model_IsWebSearchEnabled_Header	开启网络搜索	Enable Web Search
+Settings_Model_IsWebSearchEnabled_Description	在开启工具调用后，启用此功能可让模型先进行网络搜索并整合结果后再生成回复。	When tool calls are enabled, turning on this option allows the model to perform web searches and incorporate the results before responding.
+Settings_Model_WebSearchProvider_Header	网络搜索服务提供方	Web Search Service Provider
 Settings_Model_WebSearchProvider_Description
 SettingsSelectionItem_Model_WebSearchProvider_bing	必应	Bing
 SettingsSelectionItem_Model_WebSearchProvider_google	谷歌	Google
 SettingsSelectionItem_Model_WebSearchProvider_brave	brave	brave
 SettingsSelectionItem_Model_WebSearchProvider_bocha	博查	Bocha
-Settings_Model_WebSearchApiKey_Header	网络搜索服务API Key	Web search service API Key
-Settings_Model_WebSearchApiKey_Description	网络搜索服务API访问秘钥，你可以在对应网络搜索服务提供方的API网站获取。	Web search service API access key, which you can obtain from the API website of the corresponding web search service provider.
-Settings_Model_WebSearchEndpoint_Header	网络搜索服务API接口地址	Web search service API endpoint address.
-Settings_Model_WebSearchEndpoint_Description	（选填）如果使用官方的API接口，请留空使用默认值。	(Optional) Leave blank to use the default value if using the official API endpoint.
-AssistantInputBox_Watermark	询问Everywhere助手	Ask the Everywhere assistant
+Settings_Model_WebSearchApiKey_Header	网络搜索服务 API Key	Web Search Service API Key
+Settings_Model_WebSearchApiKey_Description	指定网络搜索服务的 API 访问密钥，可在对应服务提供商的 API 控制台获取。	Specify the API access key for the web search service, obtainable from the provider’s API portal.
+Settings_Model_WebSearchEndpoint_Header	网络搜索服务API接口地址	Web Search Service API Endpoint
+Settings_Model_WebSearchEndpoint_Description	（可选）如使用官方 API 接口，请留空以使用默认值。	(Optional) Leave blank to use the default value when using the official API endpoint.
+AssistantInputBox_Watermark	询问 Everywhere 助手	Ask Everywhere
 AssistantInputBox_AddAttachmentButton_ToolTip	添加附加内容到对话	Add extra content to the conversation
 AssistantInputBox_ImageButton_ToolTip	允许访问屏幕上的图像	Allow access to aware your screen
 AssistantInputBox_ImageButton_Text	图像	Image
@@ -59,8 +57,8 @@ AssistantFloatingWindow_ChatMessage_Assistant_Copy	复制回答	Copy
 Application_TrayIcon_Menu_OpenMainWindow	打开主窗口	Open Window
 Application_TrayIcon_Menu_Exit	退出	Exit
 Application_TrayIcon_Menu_OpenDebugWindow	打开调试窗口	Open Debug Window
-AssistantFloatingWindowViewModel_AddAttachmentCommands_Screen	屏幕
-AssistantFloatingWindowViewModel_TextEditActions_Translate	翻译
-AssistantFloatingWindowViewModel_TextEditActions_ContinueWriting	续写
-AssistantFloatingWindowViewModel_TextEditActions_Summarize	总结
-AssistantFloatingWindow_Title_NoonGreeting	中午好，有什么可以帮忙的？
+AssistantFloatingWindowViewModel_AddAttachmentCommands_Screen	屏幕	Screen
+AssistantFloatingWindowViewModel_TextEditActions_Translate	翻译	Translate
+AssistantFloatingWindowViewModel_TextEditActions_ContinueWriting	续写	Continue
+AssistantFloatingWindowViewModel_TextEditActions_Summarize	总结	Summary
+AssistantFloatingWindow_Title_NoonGreeting	中午好，有什么可以帮忙的？	Good afternoon! How can I assist you?
