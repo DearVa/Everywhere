@@ -97,25 +97,39 @@ public class App : Application
         ShowWindow<VisualTreeDebugger>(ref debugWindow);
     }
 
+    /// <summary>
+    /// Flag to prevent multiple calls to ShowWindow method from event loop.
+    /// </summary>
+    private static bool isShowWindowBusy;
+
     private static void ShowWindow<TContent>(ref Window? window) where TContent : Control
     {
-        if (window is { IsVisible: true })
+        if (isShowWindowBusy) return;
+        try
         {
-            var topmost = window.Topmost;
-            window.Topmost = true;
-            window.Activate();
-            window.Topmost = topmost;
-        }
-        else
-        {
-            window?.Close();
-            var content = ServiceLocator.Resolve<TContent>();
-            content.To<ISetLogicalParent>().SetParent(null);
-            window = new MainWindow
+            isShowWindowBusy = true;
+            if (window is { IsVisible: true })
             {
-                Content = content
-            };
-            window.Show();
+                var topmost = window.Topmost;
+                window.Topmost = true;
+                window.Activate();
+                window.Topmost = topmost;
+            }
+            else
+            {
+                window?.Close();
+                var content = ServiceLocator.Resolve<TContent>();
+                content.To<ISetLogicalParent>().SetParent(null);
+                window = new MainWindow
+                {
+                    Content = content
+                };
+                window.Show();
+            }
+        }
+        finally
+        {
+            isShowWindowBusy = false;
         }
     }
 
