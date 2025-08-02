@@ -43,6 +43,9 @@ public partial class ChatFloatingWindowViewModel : BusyViewModelBase
     [ObservableProperty]
     public partial IReadOnlyList<DynamicNamedCommand>? QuickActions { get; private set; }
 
+    [ObservableProperty]
+    public partial bool IsPined { get; set; }
+
     public IChatContextManager ChatContextManager { get; }
 
     public IChatService ChatService { get; }
@@ -155,6 +158,12 @@ public partial class ChatFloatingWindowViewModel : BusyViewModelBase
             logger.ToExceptionHandler(),
             ExecutionFlags.EnqueueIfBusy,
             cancellationToken);
+    }
+
+    [RelayCommand]
+    private void TogglePin()
+    {
+        IsPined ^= true;
     }
 
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
@@ -368,6 +377,11 @@ public partial class ChatFloatingWindowViewModel : BusyViewModelBase
             chatAttachments.Clear();
 
             await ChatService.SendMessageAsync(userMessage, cancellationToken);
+
+            if (Settings.Behavior.AutoPin == Enums.AutoPinBehavior.AfterAssistantResponded)
+            {
+                IsPined = true;
+            }
         },
         logger.ToExceptionHandler(),
         cancellationToken: cancellationTokenSource.Token);

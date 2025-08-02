@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Attributes;
+using Everywhere.Enums;
 using Everywhere.Utils;
 
 namespace Everywhere.Models;
@@ -87,6 +88,9 @@ public partial class BehaviorSettings() : SettingsBase("Behavior")
 {
     [ObservableProperty]
     public partial KeyboardHotkey AssistantHotkey { get; set; } = new(Key.E, KeyModifiers.Control | KeyModifiers.Shift);
+
+    [ObservableProperty]
+    public partial AutoPinBehavior AutoPin { get; set; } = AutoPinBehavior.Never;
 }
 
 public partial class ModelSettings() : SettingsBase("Model")

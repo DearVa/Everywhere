@@ -1,510 +1,530 @@
-﻿<root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="SettingsGroup_Common_Header" xml:space="preserve">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SettingsGroup_Common_Header" xml:space="preserve">
         <value>基础</value>
     </data>
-    <data name="SettingsPage_Saved_Toast_Title" xml:space="preserve">
+  <data name="SettingsPage_Saved_Toast_Title" xml:space="preserve">
         <value>设置已保存</value>
     </data>
-    <data name="SettingsPage_Title" xml:space="preserve">
+  <data name="SettingsPage_Title" xml:space="preserve">
         <value>设置</value>
     </data>
-    <data name="Settings_Common_Language_Header" xml:space="preserve">
+  <data name="Settings_Common_Language_Header" xml:space="preserve">
         <value>语言</value>
     </data>
-    <data name="Settings_Common_Language_Description" xml:space="preserve">
+  <data name="Settings_Common_Language_Description" xml:space="preserve">
         <value>选择软件界面语言。</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hans" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hans" xml:space="preserve">
         <value>中文 (简体)</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_default" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_default" xml:space="preserve">
         <value>English (United States)</value>
     </data>
-    <data name="Settings_Common_Theme_Description" xml:space="preserve">
+  <data name="Settings_Common_Theme_Description" xml:space="preserve">
         <value>选择软件界面主题。</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_System" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_System" xml:space="preserve">
         <value>跟随系统</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_Dark" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_Dark" xml:space="preserve">
         <value>深色</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_Light" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_Light" xml:space="preserve">
         <value>浅色</value>
     </data>
-    <data name="SettingsGroup_Behavior_Header" xml:space="preserve">
+  <data name="SettingsGroup_Behavior_Header" xml:space="preserve">
         <value>行为</value>
     </data>
-    <data name="Settings_Behavior_AssistantHotkey_Header" xml:space="preserve">
+  <data name="Settings_Behavior_AssistantHotkey_Header" xml:space="preserve">
         <value>助手快捷键</value>
     </data>
-    <data name="Settings_Behavior_AssistantHotkey_Description" xml:space="preserve">
+  <data name="Settings_Behavior_AssistantHotkey_Description" xml:space="preserve">
         <value>设置一个快捷键，在任何时候按下即可唤出助手。</value>
     </data>
-    <data name="SettingsGroup_Model_Header" xml:space="preserve">
+  <data name="SettingsGroup_Model_Header" xml:space="preserve">
         <value>模型</value>
     </data>
-    <data name="Settings_Model_ModelName_Header" xml:space="preserve">
+  <data name="Settings_Model_ModelName_Header" xml:space="preserve">
         <value>模型名称</value>
     </data>
-    <data name="Settings_Model_ModelName_Description" xml:space="preserve">
+  <data name="Settings_Model_ModelName_Description" xml:space="preserve">
         <value>指定助手调用的模型名称。</value>
     </data>
-    <data name="Settings_Model_Endpoint_Header" xml:space="preserve">
+  <data name="Settings_Model_Endpoint_Header" xml:space="preserve">
         <value>模型API接口地址</value>
     </data>
-    <data name="Settings_Model_Endpoint_Description" xml:space="preserve">
+  <data name="Settings_Model_Endpoint_Description" xml:space="preserve">
         <value>指定助手使用的 API 端点 URL，仅填写根路径，不要包含具体接口路径（例如：https://openai.com/api/v1）</value>
     </data>
-    <data name="Settings_Model_ApiKey_Header" xml:space="preserve">
+  <data name="Settings_Model_ApiKey_Header" xml:space="preserve">
         <value>模型 API Key</value>
     </data>
-    <data name="Settings_Model_ApiKey_Description" xml:space="preserve">
+  <data name="Settings_Model_ApiKey_Description" xml:space="preserve">
         <value>指定用于访问模型 API 的密钥，可在模型提供方的 API 网站获取；对于无需验证的本地模型（如 Ollama 或 LM Studio），请留空。</value>
     </data>
-    <data name="Settings_Model_Temperature_Header" xml:space="preserve">
+  <data name="Settings_Model_Temperature_Header" xml:space="preserve">
         <value>创意活跃度（Temperature）</value>
     </data>
-    <data name="Settings_Model_Temperature_Description" xml:space="preserve">
+  <data name="Settings_Model_Temperature_Description" xml:space="preserve">
         <value>数值越高，回答越具创造力和想象力；数值越低，则越趋严谨；部分模型数值超过 1.0 可能导致输出乱码。</value>
     </data>
-    <data name="Settings_Model_TopP_Header" xml:space="preserve">
+  <data name="Settings_Model_TopP_Header" xml:space="preserve">
         <value>思维开放度（Top p）</value>
     </data>
-    <data name="Settings_Model_TopP_Description" xml:space="preserve">
+  <data name="Settings_Model_TopP_Description" xml:space="preserve">
         <value>数值越高，模型会接受更多潜在回答；数值越低，则更倾向于最可能的回答；不建议与创意活跃度同时调整。</value>
     </data>
-    <data name="Settings_Model_IsImageSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsImageSupported_Header" xml:space="preserve">
         <value>开启图像多模态</value>
     </data>
-    <data name="Settings_Model_IsImageSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsImageSupported_Description" xml:space="preserve">
         <value>启用此功能后，在支持图像输入的大模型（如 GPT-4o）调用时，助手会在适当时机传递视觉信息以增强上下文理解；若模型不支持图像上传，开启后可能导致调用失败。</value>
     </data>
-    <data name="Settings_Model_IsToolCallSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsToolCallSupported_Header" xml:space="preserve">
         <value>开启工具调用</value>
     </data>
-    <data name="Settings_Model_IsToolCallSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsToolCallSupported_Description" xml:space="preserve">
         <value>启用后，在支持工具调用的大模型（如 DeepSeek-V3、GPT-4o）中，助手会在合适时机调用外部工具以扩展能力；若模型不支持此功能，则可能导致调用失败。</value>
     </data>
-    <data name="Settings_Model_IsWebSearchSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsWebSearchSupported_Header" xml:space="preserve">
         <value>开启网络搜索</value>
     </data>
-    <data name="Settings_Model_IsWebSearchSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsWebSearchSupported_Description" xml:space="preserve">
         <value>启用后，在支持工具调用的大模型（如 DeepSeek-V3、GPT-4o）中，助手会先进行网络搜索并整合结果后再生成回复；若模型不支持此功能，则可能导致调用失败。</value>
     </data>
-    <data name="Settings_Model_WebSearchProvider_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchProvider_Header" xml:space="preserve">
         <value>网络搜索服务提供方</value>
     </data>
-    <data name="Settings_Model_WebSearchProvider_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchProvider_Description" xml:space="preserve">
         <value>选择用于网络搜索的服务提供商。</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
         <value>必应</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
         <value>Google</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
         <value>brave</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
         <value>博查</value>
     </data>
-    <data name="Settings_Model_WebSearchApiKey_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchApiKey_Header" xml:space="preserve">
         <value>网络搜索服务 API Key</value>
     </data>
-    <data name="Settings_Model_WebSearchApiKey_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchApiKey_Description" xml:space="preserve">
         <value>指定网络搜索服务的 API 访问密钥，可在对应服务提供商的 API 控制台获取。</value>
     </data>
-    <data name="Settings_Model_WebSearchEndpoint_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchEndpoint_Header" xml:space="preserve">
         <value>网络搜索服务 API 接口地址</value>
     </data>
-    <data name="Settings_Model_WebSearchEndpoint_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchEndpoint_Description" xml:space="preserve">
         <value>（可选）如使用官方 API 接口，请留空以使用默认值。</value>
     </data>
-    <data name="ChatInputBox_Watermark" xml:space="preserve">
+  <data name="ChatInputBox_Watermark" xml:space="preserve">
         <value>向 Everywhere 提问，或是随便聊聊</value>
     </data>
-    <data name="ChatInputBox_AddAttachmentButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_AddAttachmentButton_ToolTip" xml:space="preserve">
         <value>添加附件到对话</value>
     </data>
-    <data name="ChatInputBox_AddAttachmentMenuItem_Header" xml:space="preserve">
+  <data name="ChatInputBox_AddAttachmentMenuItem_Header" xml:space="preserve">
         <value>添加附件</value>
     </data>
-    <data name="ChatInputBox_ImageButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_ImageButton_ToolTip" xml:space="preserve">
         <value>允许访问屏幕上的图像</value>
     </data>
-    <data name="ChatInputBox_ImageButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_ImageButton_Text" xml:space="preserve">
         <value>图像</value>
     </data>
-    <data name="ChatInputBox_WebSearchButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_WebSearchButton_ToolTip" xml:space="preserve">
         <value>在网络上搜索</value>
     </data>
-    <data name="ChatInputBox_WebSearchButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_WebSearchButton_Text" xml:space="preserve">
         <value>搜索</value>
     </data>
-    <data name="ChatInputBox_ToolCallButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_ToolCallButton_ToolTip" xml:space="preserve">
         <value>使用工具强化助手能力</value>
     </data>
-    <data name="ChatInputBox_ToolCallButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_ToolCallButton_Text" xml:space="preserve">
         <value>工具</value>
     </data>
-    <data name="ChatInputBox_SendButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_SendButton_ToolTip" xml:space="preserve">
         <value>发送</value>
     </data>
-    <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
         <value>取消</value>
     </data>
-    <data name="AssistantCommand_Translate_Description" xml:space="preserve">
+  <data name="AssistantCommand_Translate_Description" xml:space="preserve">
         <value>翻译为目标语言</value>
     </data>
-    <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
+  <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
         <value>按要求重写</value>
     </data>
-    <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
+  <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>分析上下文</value>
     </data>
-    <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
+  <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>搜索网络</value>
     </data>
-    <data name="ChatFloatingWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>重新回答</value>
     </data>
-    <data name="ChatFloatingWindow_ChatMessage_Assistant_Copy" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatMessage_Assistant_Copy" xml:space="preserve">
         <value>复制回答</value>
     </data>
-    <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>打开主窗口</value>
     </data>
-    <data name="Application_TrayIcon_Menu_Exit" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_Exit" xml:space="preserve">
         <value>退出</value>
     </data>
-    <data name="Application_TrayIcon_Menu_OpenDebugWindow" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_OpenDebugWindow" xml:space="preserve">
         <value>打开调试窗口</value>
     </data>
-    <data name="ChatFloatingWindow_History_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_History_ToolTip" xml:space="preserve">
         <value>对话历史</value>
     </data>
-    <data name="ChatFloatingWindow_CreateNew_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>创建新会话</value>
     </data>
-    <data name="ChatFloatingWindow_Close_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_Close_ToolTip" xml:space="preserve">
         <value>关闭</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddScreen" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddScreen" xml:space="preserve">
         <value>添加屏幕</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddWindow" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddWindow" xml:space="preserve">
         <value>添加窗口</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddElement" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddElement" xml:space="preserve">
         <value>添加元素</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddClipboard" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddClipboard" xml:space="preserve">
         <value>添加剪切板</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddFile" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddFile" xml:space="preserve">
         <value>添加文件</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_Translate" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_Translate" xml:space="preserve">
         <value>翻译</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_ContinueWriting" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_ContinueWriting" xml:space="preserve">
         <value>续写</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_Summarize" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_Summarize" xml:space="preserve">
         <value>总结</value>
     </data>
-    <data name="ChatFloatingWindow_Title" xml:space="preserve">
+  <data name="ChatFloatingWindow_Title" xml:space="preserve">
         <value>有什么可以帮忙的？</value>
     </data>
-    <data name="KeyboardHotkeyInputBox_Watermark" xml:space="preserve">
+  <data name="KeyboardHotkeyInputBox_Watermark" xml:space="preserve">
         <value>点击设置快捷键</value>
     </data>
-    <data name="ChatContext_Metadata_Title_Default" xml:space="preserve">
+  <data name="ChatContext_Metadata_Title_Default" xml:space="preserve">
         <value>未命名会话</value>
     </data>
-    <data name="ChatAttachment_RemoveButton_ToolTip" xml:space="preserve">
+  <data name="ChatAttachment_RemoveButton_ToolTip" xml:space="preserve">
         <value>移除</value>
     </data>
-    <data name="VisualElementType_Unknown" xml:space="preserve">
+  <data name="VisualElementType_Unknown" xml:space="preserve">
         <value>未知</value>
     </data>
-    <data name="VisualElementType_Label" xml:space="preserve">
+  <data name="VisualElementType_Label" xml:space="preserve">
         <value>标签</value>
     </data>
-    <data name="VisualElementType_TextEdit" xml:space="preserve">
+  <data name="VisualElementType_TextEdit" xml:space="preserve">
         <value>文本框</value>
     </data>
-    <data name="VisualElementType_Document" xml:space="preserve">
+  <data name="VisualElementType_Document" xml:space="preserve">
         <value>文档</value>
     </data>
-    <data name="VisualElementType_Button" xml:space="preserve">
+  <data name="VisualElementType_Button" xml:space="preserve">
         <value>按钮</value>
     </data>
-    <data name="VisualElementType_Hyperlink" xml:space="preserve">
+  <data name="VisualElementType_Hyperlink" xml:space="preserve">
         <value>超链接</value>
     </data>
-    <data name="VisualElementType_Image" xml:space="preserve">
+  <data name="VisualElementType_Image" xml:space="preserve">
         <value>图片</value>
     </data>
-    <data name="VisualElementType_CheckBox" xml:space="preserve">
+  <data name="VisualElementType_CheckBox" xml:space="preserve">
         <value>复选框</value>
     </data>
-    <data name="VisualElementType_RadioButton" xml:space="preserve">
+  <data name="VisualElementType_RadioButton" xml:space="preserve">
         <value>单选按钮</value>
     </data>
-    <data name="VisualElementType_ComboBox" xml:space="preserve">
+  <data name="VisualElementType_ComboBox" xml:space="preserve">
         <value>组合框</value>
     </data>
-    <data name="VisualElementType_ListView" xml:space="preserve">
+  <data name="VisualElementType_ListView" xml:space="preserve">
         <value>列表视图</value>
     </data>
-    <data name="VisualElementType_ListViewItem" xml:space="preserve">
+  <data name="VisualElementType_ListViewItem" xml:space="preserve">
         <value>列表项</value>
     </data>
-    <data name="VisualElementType_TreeView" xml:space="preserve">
+  <data name="VisualElementType_TreeView" xml:space="preserve">
         <value>树视图</value>
     </data>
-    <data name="VisualElementType_TreeViewItem" xml:space="preserve">
+  <data name="VisualElementType_TreeViewItem" xml:space="preserve">
         <value>树项</value>
     </data>
-    <data name="VisualElementType_DataGrid" xml:space="preserve">
+  <data name="VisualElementType_DataGrid" xml:space="preserve">
         <value>数据表</value>
     </data>
-    <data name="VisualElementType_DataGridItem" xml:space="preserve">
+  <data name="VisualElementType_DataGridItem" xml:space="preserve">
         <value>数据项</value>
     </data>
-    <data name="VisualElementType_TabControl" xml:space="preserve">
+  <data name="VisualElementType_TabControl" xml:space="preserve">
         <value>标签页</value>
     </data>
-    <data name="VisualElementType_TabItem" xml:space="preserve">
+  <data name="VisualElementType_TabItem" xml:space="preserve">
         <value>标签页</value>
     </data>
-    <data name="VisualElementType_Table" xml:space="preserve">
+  <data name="VisualElementType_Table" xml:space="preserve">
         <value>表格</value>
     </data>
-    <data name="VisualElementType_TableRow" xml:space="preserve">
+  <data name="VisualElementType_TableRow" xml:space="preserve">
         <value>表格</value>
     </data>
-    <data name="VisualElementType_Menu" xml:space="preserve">
+  <data name="VisualElementType_Menu" xml:space="preserve">
         <value>菜单</value>
     </data>
-    <data name="VisualElementType_MenuItem" xml:space="preserve">
+  <data name="VisualElementType_MenuItem" xml:space="preserve">
         <value>菜单项</value>
     </data>
-    <data name="VisualElementType_Slider" xml:space="preserve">
+  <data name="VisualElementType_Slider" xml:space="preserve">
         <value>滑块</value>
     </data>
-    <data name="VisualElementType_ScrollBar" xml:space="preserve">
+  <data name="VisualElementType_ScrollBar" xml:space="preserve">
         <value>滚动条</value>
     </data>
-    <data name="VisualElementType_ProgressBar" xml:space="preserve">
+  <data name="VisualElementType_ProgressBar" xml:space="preserve">
         <value>进度条</value>
     </data>
-    <data name="VisualElementType_Panel" xml:space="preserve">
+  <data name="VisualElementType_Panel" xml:space="preserve">
         <value>面板</value>
     </data>
-    <data name="VisualElementType_TopLevel" xml:space="preserve">
+  <data name="VisualElementType_TopLevel" xml:space="preserve">
         <value>窗口</value>
     </data>
-    <data name="VisualElementType_Screen" xml:space="preserve">
+  <data name="VisualElementType_Screen" xml:space="preserve">
         <value>屏幕</value>
     </data>
-    <data name="HumanizedDate_Today" xml:space="preserve">
+  <data name="HumanizedDate_Today" xml:space="preserve">
         <value>今天</value>
     </data>
-    <data name="HumanizedDate_Yesterday" xml:space="preserve">
+  <data name="HumanizedDate_Yesterday" xml:space="preserve">
         <value>昨天</value>
     </data>
-    <data name="HumanizedDate_LastWeek" xml:space="preserve">
+  <data name="HumanizedDate_LastWeek" xml:space="preserve">
         <value>一周内</value>
     </data>
-    <data name="HumanizedDate_LastMonth" xml:space="preserve">
+  <data name="HumanizedDate_LastMonth" xml:space="preserve">
         <value>一月内</value>
     </data>
-    <data name="HumanizedDate_LastYear" xml:space="preserve">
+  <data name="HumanizedDate_LastYear" xml:space="preserve">
         <value>一年内</value>
     </data>
-    <data name="HumanizedDate_Earlier" xml:space="preserve">
+  <data name="HumanizedDate_Earlier" xml:space="preserve">
         <value>更早</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest" xml:space="preserve">
         <value>HTTP 请求错误 ({0}): {1}</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_BadRequest" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_BadRequest" xml:space="preserve">
         <value>错误的请求</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_Unauthorized" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_Unauthorized" xml:space="preserve">
         <value>请求未授权</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_Forbidden" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_Forbidden" xml:space="preserve">
         <value>请求被阻止</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_NotFound" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_NotFound" xml:space="preserve">
         <value>未找到结果</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_InternalServerError" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_InternalServerError" xml:space="preserve">
         <value>服务器遇到错误，请稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_ServiceUnavailable" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_ServiceUnavailable" xml:space="preserve">
         <value>服务器不可用，请稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_GatewayTimeout" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_GatewayTimeout" xml:space="preserve">
         <value>网关连接超时，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_RequestTimeout" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_RequestTimeout" xml:space="preserve">
         <value>请求连接超时，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_BadGateway" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_BadGateway" xml:space="preserve">
         <value>网关连接错误，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_0" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_0" xml:space="preserve">
         <value>未知错误，请稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket" xml:space="preserve">
         <value>套接字错误 ({0}): {1}</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_HostNotFound" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_HostNotFound" xml:space="preserve">
         <value>无法解析域名，请检查DNS设置或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionRefused" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionRefused" xml:space="preserve">
         <value>连接被拒绝，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionReset" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionReset" xml:space="preserve">
         <value>连接被重置，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionAborted" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionAborted" xml:space="preserve">
         <value>连接被中止，请检查网络或稍后再试</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_0" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_0" xml:space="preserve">
         <value>未知错误，请稍后再试</value>
-    </data><data name="FriendlyExceptionMessage_Aggregate" xml:space="preserve">
+    </data>
+  <data name="FriendlyExceptionMessage_Aggregate" xml:space="preserve">
         <value>发生一个或多个错误
 {0}</value>
     </data>
-    <data name="FriendlyExceptionMessage_TaskCanceled" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_TaskCanceled" xml:space="preserve">
         <value>任务已取消</value>
     </data>
-    <data name="FriendlyExceptionMessage_OperationCanceled" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_OperationCanceled" xml:space="preserve">
         <value>操作已取消</value>
     </data>
-    <data name="FriendlyExceptionMessage_TimeoutException" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_TimeoutException" xml:space="preserve">
         <value>已超过最长等待时间</value>
     </data>
-    <data name="FriendlyExceptionMessage_Json" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Json" xml:space="preserve">
         <value>无法解析 Json 数据</value>
     </data>
-    <data name="FriendlyExceptionMessage_Format" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Format" xml:space="preserve">
         <value>格式错误</value>
     </data>
-    <data name="FriendlyExceptionMessage_Argument" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Argument" xml:space="preserve">
         <value>参数错误</value>
     </data>
-    <data name="Settings_Common_Theme_Header" xml:space="preserve">
+  <data name="Settings_Common_Theme_Header" xml:space="preserve">
         <value>主题</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_de" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_de" xml:space="preserve">
         <value>Deutsch</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_es" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_es" xml:space="preserve">
         <value>Español</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_fr" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_fr" xml:space="preserve">
         <value>Français</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_it" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_it" xml:space="preserve">
         <value>Italiano</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ja" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ja" xml:space="preserve">
         <value>日本語</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ko" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ko" xml:space="preserve">
         <value>한국어</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ru" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ru" xml:space="preserve">
         <value>Русский</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hant" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hant" xml:space="preserve">
         <value>中文 (繁體)</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hant-hk" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hant-hk" xml:space="preserve">
         <value>中文 (繁體 香港特別行政區)</value>
     </data>
-    <data name="AboutPage_Title" xml:space="preserve">
+  <data name="AboutPage_Title" xml:space="preserve">
         <value>关于</value>
     </data>
-    <data name="AboutPage_Description" xml:space="preserve">
+  <data name="AboutPage_Description" xml:space="preserve">
         <value>Everywhere 是一款基于 .NET 和 Avalonia 构建的具有上下文感知能力的交互式 AI 助手。与传统的聊天界面不同，Everywhere 直接集成到您的桌面环境中，感知您的屏幕内容，理解应用程序上下文，并代表您采取行动。</value>
     </data>
-    <data name="AboutPage_Version" xml:space="preserve">
+  <data name="AboutPage_Version" xml:space="preserve">
         <value>版本：</value>
     </data>
-    <data name="AboutPage_ProjectLink" xml:space="preserve">
+  <data name="AboutPage_ProjectLink" xml:space="preserve">
         <value>项目地址</value>
     </data>
-    <data name="AboutPage_OpenSourceNotice" xml:space="preserve">
+  <data name="AboutPage_OpenSourceNotice" xml:space="preserve">
         <value>开放源代码通知</value>
     </data>
-    <data name="App_EverywhereIsAlreadyRunning" xml:space="preserve">
+  <data name="App_EverywhereIsAlreadyRunning" xml:space="preserve">
         <value>Everywhere 已在运行，请检查托盘图标。</value>
     </data>
-    <data name="Common_Info" xml:space="preserve">
+  <data name="Common_Info" xml:space="preserve">
         <value>提示</value>
     </data>
-    <data name="MainView_EverywhereHasMinimizedToTray" xml:space="preserve">
+  <data name="MainView_EverywhereHasMinimizedToTray" xml:space="preserve">
         <value>Everywhere 已最小化到托盘</value>
     </data>
-    <data name="ChatFloatingWindow_HistoryAction_Rename" xml:space="preserve">
+  <data name="ChatFloatingWindow_HistoryAction_Rename" xml:space="preserve">
         <value>重命名</value>
     </data>
-    <data name="ChatFloatingWindow_HistoryAction_Delete" xml:space="preserve">
+  <data name="ChatFloatingWindow_HistoryAction_Delete" xml:space="preserve">
         <value>删除</value>
     </data>
-    <data name="AboutPage_WelcomePage" xml:space="preserve">
+  <data name="AboutPage_WelcomePage" xml:space="preserve">
         <value>欢迎页面</value>
     </data>
-    <data name="WelcomeView_QQGroup" xml:space="preserve">
+  <data name="WelcomeView_QQGroup" xml:space="preserve">
         <value>QQ 群</value>
     </data>
-    <data name="WelcomeView_OfficialDocs" xml:space="preserve">
+  <data name="WelcomeView_OfficialDocs" xml:space="preserve">
         <value>官方文档</value>
     </data>
-    <data name="WelcomeView_Header" xml:space="preserve">
+  <data name="WelcomeView_Header" xml:space="preserve">
         <value>欢迎来到 Everywhere 👋</value>
     </data>
-    <data name="WelcomeView_Content" xml:space="preserve">
+  <data name="WelcomeView_Content" xml:space="preserve">
         <value>很高兴认识你！就让我做你的助手，陪伴你解决问题吧！
 如果你是第一次使用，请点击下方官方文档查看使用说明！
 目前我还刚诞生不久，如果遇到问题，欢迎点击下方链接反馈，我会不断进化的！
 也欢迎点击下方链接进入群组讨论，更多的社交媒体正在建设中，敬请期待。
 提示：你可点击“关于-欢迎页面”重新打开此消息。</value>
     </data>
-    <data name="WelcomeView_ReportBug" xml:space="preserve">
+  <data name="WelcomeView_ReportBug" xml:space="preserve">
         <value>反馈 Bug</value>
     </data>
-    <data name="WelcomeView_FeatureRequest" xml:space="preserve">
+  <data name="WelcomeView_FeatureRequest" xml:space="preserve">
         <value>功能请求</value>
     </data>
-    <data name="WelcomeView_ReportBugUri" xml:space="preserve">
+  <data name="WelcomeView_ReportBugUri" xml:space="preserve">
         <value>https://github.com/DearVa/Everywhere/issues/new?template=bug-report-zh.yml</value>
     </data>
-    <data name="WelcomeView_FeatureRequestUri" xml:space="preserve">
+  <data name="WelcomeView_FeatureRequestUri" xml:space="preserve">
         <value>https://github.com/DearVa/Everywhere/issues/new?template=feature-request-zh.yml</value>
     </data>
-    <data name="WelcomeView_Discord" xml:space="preserve">
+  <data name="WelcomeView_Discord" xml:space="preserve">
         <value>Discord</value>
     </data>
+  <data name="Settings_Behavior_AutoPin_Header" xml:space="preserve">
+    <value>自动固定</value>
+  </data>
+  <data name="Settings_Behavior_AutoPin_Description" xml:space="preserve">
+    <value>控制何时自动固定助手窗口</value>
+  </data>
+  <data name="AutoPinBehavior_Never" xml:space="preserve">
+    <value>从不</value>
+  </data>
+  <data name="AutoPinBehavior_AfterInput" xml:space="preserve">
+    <value>在输入后</value>
+  </data>
+  <data name="AutoPinBehavior_AfterAssistantResponded" xml:space="preserve">
+    <value>在助手响应后固定</value>
+  </data>
+  <data name="AutoPinBehavior_Always" xml:space="preserve">
+    <value>总是</value>
+  </data>
 </root>

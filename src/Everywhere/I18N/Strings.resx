@@ -1,529 +1,539 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0,
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true"></xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0,
             Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0,
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0,
             Culture=neutral,
             PublicKeyToken=b77a5c561934e089
         </value>
-    </resheader>
-    <data name="SettingsPage_Title" xml:space="preserve">
+  </resheader>
+  <data name="SettingsPage_Title" xml:space="preserve">
         <value>Settings</value>
     </data>
-    <data name="SettingsPage_Saved_Toast_Title" xml:space="preserve">
+  <data name="SettingsPage_Saved_Toast_Title" xml:space="preserve">
         <value>Settings Saved</value>
     </data>
-    <data name="Settings_Common_Language_Header" xml:space="preserve">
+  <data name="Settings_Common_Language_Header" xml:space="preserve">
         <value>Language</value>
     </data>
-    <data name="SettingsGroup_Common_Header" xml:space="preserve">
+  <data name="SettingsGroup_Common_Header" xml:space="preserve">
         <value>Common</value>
     </data>
-    <data name="Settings_Common_Language_Description" xml:space="preserve">
+  <data name="Settings_Common_Language_Description" xml:space="preserve">
         <value>Select the display language for the software.</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hans" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hans" xml:space="preserve">
         <value>中文 (简体)</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_default" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_default" xml:space="preserve">
         <value>English (United States)</value>
     </data>
-    <data name="Settings_Common_Theme_Description" xml:space="preserve">
+  <data name="Settings_Common_Theme_Description" xml:space="preserve">
         <value>Select the display theme for the software.</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_System" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_System" xml:space="preserve">
         <value>Follow System</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_Dark" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_Dark" xml:space="preserve">
         <value>Dark</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Theme_Light" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Theme_Light" xml:space="preserve">
         <value>Light</value>
     </data>
-    <data name="SettingsGroup_Behavior_Header" xml:space="preserve">
+  <data name="SettingsGroup_Behavior_Header" xml:space="preserve">
         <value>Behavior</value>
     </data>
-    <data name="Settings_Behavior_AssistantHotkey_Header" xml:space="preserve">
+  <data name="Settings_Behavior_AssistantHotkey_Header" xml:space="preserve">
         <value>Assistant Hotkey</value>
     </data>
-    <data name="Settings_Behavior_AssistantHotkey_Description" xml:space="preserve">
+  <data name="Settings_Behavior_AssistantHotkey_Description" xml:space="preserve">
         <value>Set a hotkey to invoke the assistant at any time.</value>
     </data>
-    <data name="SettingsGroup_Model_Header" xml:space="preserve">
+  <data name="SettingsGroup_Model_Header" xml:space="preserve">
         <value>Model</value>
     </data>
-    <data name="Settings_Model_ModelName_Header" xml:space="preserve">
+  <data name="Settings_Model_ModelName_Header" xml:space="preserve">
         <value>Model Name</value>
     </data>
-    <data name="Settings_Model_ModelName_Description" xml:space="preserve">
+  <data name="Settings_Model_ModelName_Description" xml:space="preserve">
         <value>Specify the name of the model the assistant will use.</value>
     </data>
-    <data name="Settings_Model_Endpoint_Header" xml:space="preserve">
+  <data name="Settings_Model_Endpoint_Header" xml:space="preserve">
         <value>Model API Endpoint</value>
     </data>
-    <data name="Settings_Model_Endpoint_Description" xml:space="preserve">
+  <data name="Settings_Model_Endpoint_Description" xml:space="preserve">
         <value>Specify the base API endpoint URL for the assistant; supply only the root path without including specific endpoint routes (e.g., https://openai.com/api/v1).</value>
     </data>
-    <data name="Settings_Model_ApiKey_Header" xml:space="preserve">
+  <data name="Settings_Model_ApiKey_Header" xml:space="preserve">
         <value>Model API Key</value>
     </data>
-    <data name="Settings_Model_ApiKey_Description" xml:space="preserve">
+  <data name="Settings_Model_ApiKey_Description" xml:space="preserve">
         <value>Specify the API access key for the model, obtainable from the provider’s API site; leave blank for local models (e.g., Ollama or LM Studio) that do not require authentication.</value>
     </data>
-    <data name="Settings_Model_Temperature_Header" xml:space="preserve">
+  <data name="Settings_Model_Temperature_Header" xml:space="preserve">
         <value>Creativity (Temperature)</value>
     </data>
-    <data name="Settings_Model_Temperature_Description" xml:space="preserve">
+  <data name="Settings_Model_Temperature_Description" xml:space="preserve">
         <value>Higher values yield more imaginative, creative responses; lower values produce more precise, conservative outputs; note that temperatures above 1.0 may cause garbled output in some models.</value>
     </data>
-    <data name="Settings_Model_TopP_Header" xml:space="preserve">
+  <data name="Settings_Model_TopP_Header" xml:space="preserve">
         <value>Thought Openness (Top p)</value>
     </data>
-    <data name="Settings_Model_TopP_Description" xml:space="preserve">
+  <data name="Settings_Model_TopP_Description" xml:space="preserve">
         <value>Higher values allow a wider range of possible responses; lower values favor the most probable answers; it’s not recommended to modify this alongside the temperature.</value>
     </data>
-    <data name="Settings_Model_IsImageSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsImageSupported_Header" xml:space="preserve">
         <value>Enable Multimodal Image Support</value>
     </data>
-    <data name="Settings_Model_IsImageSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsImageSupported_Description" xml:space="preserve">
         <value>When enabled, for vision-capable models (e.g., GPT-4o), the assistant will include images at the right times to enhance contextual understanding; if the model doesn’t support image inputs, enabling this may cause failures.</value>
     </data>
-    <data name="Settings_Model_IsToolCallSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsToolCallSupported_Header" xml:space="preserve">
         <value>Enable Tool Calling</value>
     </data>
-    <data name="Settings_Model_IsToolCallSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsToolCallSupported_Description" xml:space="preserve">
         <value>When enabled, for tool-capable large models (e.g., DeepSeek-V3, GPT-4o), the assistant will invoke external tools at appropriate times to extend its capabilities; if the model doesn’t support tool calls, enabling this may cause failures.</value>
     </data>
-    <data name="Settings_Model_IsWebSearchSupported_Header" xml:space="preserve">
+  <data name="Settings_Model_IsWebSearchSupported_Header" xml:space="preserve">
         <value>Enable Web Search</value>
     </data>
-    <data name="Settings_Model_IsWebSearchSupported_Description" xml:space="preserve">
+  <data name="Settings_Model_IsWebSearchSupported_Description" xml:space="preserve">
         <value>When enabled, for tool-capable large models (e.g., DeepSeek-V3, GPT-4o), the assistant will perform web searches and integrate results before generating responses; if the model doesn’t support tool calls, enabling this may cause failures.</value>
     </data>
-    <data name="Settings_Model_WebSearchProvider_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchProvider_Header" xml:space="preserve">
         <value>Web Search Service Provider</value>
     </data>
-    <data name="Settings_Model_WebSearchProvider_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchProvider_Description" xml:space="preserve">
         <value>Select the service provider for web searches.</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
         <value>Bing</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
         <value>Google</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
         <value>brave</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
+  <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
         <value>Bocha</value>
     </data>
-    <data name="Settings_Model_WebSearchApiKey_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchApiKey_Header" xml:space="preserve">
         <value>Web Search Service API Key</value>
     </data>
-    <data name="Settings_Model_WebSearchApiKey_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchApiKey_Description" xml:space="preserve">
         <value>Specify the API access key for the web search service, obtainable from the provider’s API portal.</value>
     </data>
-    <data name="Settings_Model_WebSearchEndpoint_Header" xml:space="preserve">
+  <data name="Settings_Model_WebSearchEndpoint_Header" xml:space="preserve">
         <value>Web Search Service API Endpoint</value>
     </data>
-    <data name="Settings_Model_WebSearchEndpoint_Description" xml:space="preserve">
+  <data name="Settings_Model_WebSearchEndpoint_Description" xml:space="preserve">
         <value>(Optional) Leave blank to use the default value when using the official API endpoint.</value>
     </data>
-    <data name="ChatInputBox_Watermark" xml:space="preserve">
+  <data name="ChatInputBox_Watermark" xml:space="preserve">
         <value>Ask Everywhere, or just chat</value>
     </data>
-    <data name="ChatInputBox_AddAttachmentButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_AddAttachmentButton_ToolTip" xml:space="preserve">
         <value>Add attachments to the conversation</value>
     </data>
-    <data name="ChatInputBox_AddAttachmentMenuItem_Header" xml:space="preserve">
+  <data name="ChatInputBox_AddAttachmentMenuItem_Header" xml:space="preserve">
         <value>Add Attachment</value>
     </data>
-    <data name="ChatInputBox_ImageButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_ImageButton_ToolTip" xml:space="preserve">
         <value>Allow access to aware your screen</value>
     </data>
-    <data name="ChatInputBox_ImageButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_ImageButton_Text" xml:space="preserve">
         <value>Image</value>
     </data>
-    <data name="ChatInputBox_WebSearchButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_WebSearchButton_ToolTip" xml:space="preserve">
         <value>Search the web</value>
     </data>
-    <data name="ChatInputBox_WebSearchButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_WebSearchButton_Text" xml:space="preserve">
         <value>Search</value>
     </data>
-    <data name="ChatInputBox_ToolCallButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_ToolCallButton_ToolTip" xml:space="preserve">
         <value>Use tools to enhance assistant capabilities</value>
     </data>
-    <data name="ChatInputBox_ToolCallButton_Text" xml:space="preserve">
+  <data name="ChatInputBox_ToolCallButton_Text" xml:space="preserve">
         <value>Tools</value>
     </data>
-    <data name="ChatInputBox_SendButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_SendButton_ToolTip" xml:space="preserve">
         <value>Send</value>
     </data>
-    <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
+  <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
         <value>Cancel</value>
     </data>
-    <data name="AssistantCommand_Translate_Description" xml:space="preserve">
+  <data name="AssistantCommand_Translate_Description" xml:space="preserve">
         <value>Translate into the target language</value>
     </data>
-    <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
+  <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
         <value>Rewrite as required</value>
     </data>
-    <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
+  <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>Analyze context</value>
     </data>
-    <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
+  <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>Web Search</value>
     </data>
-    <data name="ChatFloatingWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>Regenerate</value>
     </data>
-    <data name="ChatFloatingWindow_ChatMessage_Assistant_Copy" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatMessage_Assistant_Copy" xml:space="preserve">
         <value>Copy</value>
     </data>
-    <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>Open Window</value>
     </data>
-    <data name="Application_TrayIcon_Menu_Exit" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_Exit" xml:space="preserve">
         <value>Exit</value>
     </data>
-    <data name="Application_TrayIcon_Menu_OpenDebugWindow" xml:space="preserve">
+  <data name="Application_TrayIcon_Menu_OpenDebugWindow" xml:space="preserve">
         <value>Open Debug Window</value>
     </data>
-    <data name="ChatFloatingWindow_History_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_History_ToolTip" xml:space="preserve">
         <value>Conversation History</value>
     </data>
-    <data name="ChatFloatingWindow_CreateNew_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Create New Session</value>
     </data>
-    <data name="ChatFloatingWindow_Close_ToolTip" xml:space="preserve">
+  <data name="ChatFloatingWindow_Close_ToolTip" xml:space="preserve">
         <value>Close</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddScreen"
-        xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddScreen" xml:space="preserve">
         <value>Add Screen</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddWindow"
-        xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddWindow" xml:space="preserve">
         <value>Add Window</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddElement"
-        xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddElement" xml:space="preserve">
         <value>Add Element</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddClipboard"
-        xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddClipboard" xml:space="preserve">
         <value>Add Clipboard</value>
     </data>
-    <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddFile" xml:space="preserve">
+  <data name="ChatFloatingWindow_ChatInputBox_AddAttachmentMenuItems_AddFile" xml:space="preserve">
         <value>Add File</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_Translate" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_Translate" xml:space="preserve">
         <value>Translate</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_ContinueWriting" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_ContinueWriting" xml:space="preserve">
         <value>Continue</value>
     </data>
-    <data name="ChatFloatingWindowViewModel_TextEditActions_Summarize" xml:space="preserve">
+  <data name="ChatFloatingWindowViewModel_TextEditActions_Summarize" xml:space="preserve">
         <value>Summary</value>
     </data>
-    <data name="ChatFloatingWindow_Title" xml:space="preserve">
+  <data name="ChatFloatingWindow_Title" xml:space="preserve">
         <value>How can I assist you?</value>
     </data>
-    <data name="KeyboardHotkeyInputBox_Watermark" xml:space="preserve">
+  <data name="KeyboardHotkeyInputBox_Watermark" xml:space="preserve">
         <value>Click to set a hotkey</value>
     </data>
-    <data name="ChatContext_Metadata_Title_Default" xml:space="preserve">
+  <data name="ChatContext_Metadata_Title_Default" xml:space="preserve">
         <value>Unnamed session</value>
     </data>
-    <data name="ChatAttachment_RemoveButton_ToolTip" xml:space="preserve">
+  <data name="ChatAttachment_RemoveButton_ToolTip" xml:space="preserve">
         <value>Remove</value>
     </data>
-    <data name="VisualElementType_Unknown" xml:space="preserve">
+  <data name="VisualElementType_Unknown" xml:space="preserve">
         <value>Unknown</value>
     </data>
-    <data name="VisualElementType_Label" xml:space="preserve">
+  <data name="VisualElementType_Label" xml:space="preserve">
         <value>Label</value>
     </data>
-    <data name="VisualElementType_TextEdit" xml:space="preserve">
+  <data name="VisualElementType_TextEdit" xml:space="preserve">
         <value>Text box</value>
     </data>
-    <data name="VisualElementType_Document" xml:space="preserve">
+  <data name="VisualElementType_Document" xml:space="preserve">
         <value>Document</value>
     </data>
-    <data name="VisualElementType_Button" xml:space="preserve">
+  <data name="VisualElementType_Button" xml:space="preserve">
         <value>Button</value>
     </data>
-    <data name="VisualElementType_Hyperlink" xml:space="preserve">
+  <data name="VisualElementType_Hyperlink" xml:space="preserve">
         <value>Hyperlink</value>
     </data>
-    <data name="VisualElementType_Image" xml:space="preserve">
+  <data name="VisualElementType_Image" xml:space="preserve">
         <value>Image</value>
     </data>
-    <data name="VisualElementType_CheckBox" xml:space="preserve">
+  <data name="VisualElementType_CheckBox" xml:space="preserve">
         <value>Check box</value>
     </data>
-    <data name="VisualElementType_RadioButton" xml:space="preserve">
+  <data name="VisualElementType_RadioButton" xml:space="preserve">
         <value>Radio button</value>
     </data>
-    <data name="VisualElementType_ComboBox" xml:space="preserve">
+  <data name="VisualElementType_ComboBox" xml:space="preserve">
         <value>Combo box</value>
     </data>
-    <data name="VisualElementType_ListView" xml:space="preserve">
+  <data name="VisualElementType_ListView" xml:space="preserve">
         <value>List</value>
     </data>
-    <data name="VisualElementType_ListViewItem" xml:space="preserve">
+  <data name="VisualElementType_ListViewItem" xml:space="preserve">
         <value>List item</value>
     </data>
-    <data name="VisualElementType_TreeView" xml:space="preserve">
+  <data name="VisualElementType_TreeView" xml:space="preserve">
         <value>Tree</value>
     </data>
-    <data name="VisualElementType_TreeViewItem" xml:space="preserve">
+  <data name="VisualElementType_TreeViewItem" xml:space="preserve">
         <value>Tree item</value>
     </data>
-    <data name="VisualElementType_DataGrid" xml:space="preserve">
+  <data name="VisualElementType_DataGrid" xml:space="preserve">
         <value>Table</value>
     </data>
-    <data name="VisualElementType_DataGridItem" xml:space="preserve">
+  <data name="VisualElementType_DataGridItem" xml:space="preserve">
         <value>Table item</value>
     </data>
-    <data name="VisualElementType_TabControl" xml:space="preserve">
+  <data name="VisualElementType_TabControl" xml:space="preserve">
         <value>Tab</value>
     </data>
-    <data name="VisualElementType_TabItem" xml:space="preserve">
+  <data name="VisualElementType_TabItem" xml:space="preserve">
         <value>Tab</value>
     </data>
-    <data name="VisualElementType_Table" xml:space="preserve">
+  <data name="VisualElementType_Table" xml:space="preserve">
         <value>Table</value>
     </data>
-    <data name="VisualElementType_TableRow" xml:space="preserve">
+  <data name="VisualElementType_TableRow" xml:space="preserve">
         <value>Table</value>
     </data>
-    <data name="VisualElementType_Menu" xml:space="preserve">
+  <data name="VisualElementType_Menu" xml:space="preserve">
         <value>Menu</value>
     </data>
-    <data name="VisualElementType_MenuItem" xml:space="preserve">
+  <data name="VisualElementType_MenuItem" xml:space="preserve">
         <value>MenuItem</value>
     </data>
-    <data name="VisualElementType_Slider" xml:space="preserve">
+  <data name="VisualElementType_Slider" xml:space="preserve">
         <value>Slider</value>
     </data>
-    <data name="VisualElementType_ScrollBar" xml:space="preserve">
+  <data name="VisualElementType_ScrollBar" xml:space="preserve">
         <value>ScrollBar</value>
     </data>
-    <data name="VisualElementType_ProgressBar" xml:space="preserve">
+  <data name="VisualElementType_ProgressBar" xml:space="preserve">
         <value>ProgressBar</value>
     </data>
-    <data name="VisualElementType_Panel" xml:space="preserve">
+  <data name="VisualElementType_Panel" xml:space="preserve">
         <value>Panel</value>
     </data>
-    <data name="VisualElementType_TopLevel" xml:space="preserve">
+  <data name="VisualElementType_TopLevel" xml:space="preserve">
         <value>Window</value>
     </data>
-    <data name="VisualElementType_Screen" xml:space="preserve">
+  <data name="VisualElementType_Screen" xml:space="preserve">
         <value>Screen</value>
     </data>
-    <data name="HumanizedDate_Today" xml:space="preserve">
+  <data name="HumanizedDate_Today" xml:space="preserve">
         <value>Today</value>
     </data>
-    <data name="HumanizedDate_Yesterday" xml:space="preserve">
+  <data name="HumanizedDate_Yesterday" xml:space="preserve">
         <value>Yesterday</value>
     </data>
-    <data name="HumanizedDate_LastWeek" xml:space="preserve">
+  <data name="HumanizedDate_LastWeek" xml:space="preserve">
         <value>Last week</value>
     </data>
-    <data name="HumanizedDate_LastMonth" xml:space="preserve">
+  <data name="HumanizedDate_LastMonth" xml:space="preserve">
         <value>Last month</value>
     </data>
-    <data name="HumanizedDate_LastYear" xml:space="preserve">
+  <data name="HumanizedDate_LastYear" xml:space="preserve">
         <value>Last year</value>
     </data>
-    <data name="HumanizedDate_Earlier" xml:space="preserve">
+  <data name="HumanizedDate_Earlier" xml:space="preserve">
         <value>Earlier</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest" xml:space="preserve">
         <value>HTTP request error ({0}): {1}</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_BadRequest" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_BadRequest" xml:space="preserve">
         <value>Bad request</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_Unauthorized" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_Unauthorized" xml:space="preserve">
         <value>Unauthorized request</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_Forbidden" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_Forbidden" xml:space="preserve">
         <value>Request forbidden</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_NotFound" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_NotFound" xml:space="preserve">
         <value>Result not found</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_InternalServerError" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_InternalServerError" xml:space="preserve">
         <value>Server encountered an error, please try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_ServiceUnavailable" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_ServiceUnavailable" xml:space="preserve">
         <value>Server unavailable, please try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_GatewayTimeout" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_GatewayTimeout" xml:space="preserve">
         <value>Gateway connection timed out, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_RequestTimeout" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_RequestTimeout" xml:space="preserve">
         <value>Request connection timed out, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_BadGateway" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_BadGateway" xml:space="preserve">
         <value>Gateway connection error, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_HttpRequest_0" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_HttpRequest_0" xml:space="preserve">
         <value>Unknown error, please try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket" xml:space="preserve">
         <value>Socket error ({0}): {1}</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_HostNotFound" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_HostNotFound" xml:space="preserve">
         <value>Hostname could not be resolved, please check your DNS settings or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionRefused" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionRefused" xml:space="preserve">
         <value>Connection refused, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionReset" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionReset" xml:space="preserve">
         <value>Connection reset, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_ConnectionAborted" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_ConnectionAborted" xml:space="preserve">
         <value>Connection aborted, please check your network or try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Socket_0" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Socket_0" xml:space="preserve">
         <value>Unknown error, please try again later</value>
     </data>
-    <data name="FriendlyExceptionMessage_Aggregate" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Aggregate" xml:space="preserve">
         <value>One or more errors occurred
 {0}</value>
     </data>
-    <data name="FriendlyExceptionMessage_TaskCanceled" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_TaskCanceled" xml:space="preserve">
         <value>Task canceled</value>
     </data>
-    <data name="FriendlyExceptionMessage_OperationCanceled" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_OperationCanceled" xml:space="preserve">
         <value>Operation canceled</value>
     </data>
-    <data name="FriendlyExceptionMessage_TimeoutException" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_TimeoutException" xml:space="preserve">
         <value>Maximum wait time exceeded</value>
     </data>
-    <data name="FriendlyExceptionMessage_Json" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Json" xml:space="preserve">
         <value>Could not parse JSON data</value>
     </data>
-    <data name="FriendlyExceptionMessage_Format" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Format" xml:space="preserve">
         <value>Format error</value>
     </data>
-    <data name="FriendlyExceptionMessage_Argument" xml:space="preserve">
+  <data name="FriendlyExceptionMessage_Argument" xml:space="preserve">
         <value>Argument error</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_de" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_de" xml:space="preserve">
         <value>Deutsch</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_es" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_es" xml:space="preserve">
         <value>Español</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_fr" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_fr" xml:space="preserve">
         <value>Français</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_it" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_it" xml:space="preserve">
         <value>Italiano</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ja" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ja" xml:space="preserve">
         <value>日本語</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ko" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ko" xml:space="preserve">
         <value>한국어</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_ru" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_ru" xml:space="preserve">
         <value>Русский</value>
     </data>
-    <data name="Settings_Common_Theme_Header" xml:space="preserve">
+  <data name="Settings_Common_Theme_Header" xml:space="preserve">
         <value>Theme</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hant" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hant" xml:space="preserve">
         <value>中文 (繁體)</value>
     </data>
-    <data name="SettingsSelectionItem_Common_Language_zh-hant-hk" xml:space="preserve">
+  <data name="SettingsSelectionItem_Common_Language_zh-hant-hk" xml:space="preserve">
         <value>中文 (繁體 香港特別行政區)</value>
     </data>
-    <data name="AboutPage_Title" xml:space="preserve">
+  <data name="AboutPage_Title" xml:space="preserve">
         <value>About</value>
     </data>
-    <data name="AboutPage_Description" xml:space="preserve">
+  <data name="AboutPage_Description" xml:space="preserve">
         <value>Everywhere is a context-aware, interactive AI assistant built with .NET and Avalonia. Unlike traditional chat interfaces, Everywhere integrates directly with your desktop environment, perceiving your screen, understanding application context, and taking actions on your behalf.</value>
     </data>
-    <data name="AboutPage_Version" xml:space="preserve">
+  <data name="AboutPage_Version" xml:space="preserve">
         <value>Version: </value>
     </data>
-    <data name="AboutPage_ProjectLink" xml:space="preserve">
+  <data name="AboutPage_ProjectLink" xml:space="preserve">
         <value>Project Link</value>
     </data>
-    <data name="AboutPage_OpenSourceNotice" xml:space="preserve">
+  <data name="AboutPage_OpenSourceNotice" xml:space="preserve">
         <value>Open Source Notice</value>
     </data>
-    <data name="App_EverywhereIsAlreadyRunning" xml:space="preserve">
+  <data name="App_EverywhereIsAlreadyRunning" xml:space="preserve">
         <value>Everywhere is already running, please check Tray Icon.</value>
     </data>
-    <data name="Common_Info" xml:space="preserve">
+  <data name="Common_Info" xml:space="preserve">
         <value>Info</value>
     </data>
-    <data name="MainView_EverywhereHasMinimizedToTray" xml:space="preserve">
+  <data name="MainView_EverywhereHasMinimizedToTray" xml:space="preserve">
         <value>Everywhere has minimized to tray</value>
     </data>
-    <data name="ChatFloatingWindow_HistoryAction_Rename" xml:space="preserve">
+  <data name="ChatFloatingWindow_HistoryAction_Rename" xml:space="preserve">
         <value>Rename</value>
     </data>
-    <data name="ChatFloatingWindow_HistoryAction_Delete" xml:space="preserve">
+  <data name="ChatFloatingWindow_HistoryAction_Delete" xml:space="preserve">
         <value>Delete</value>
     </data>
-    <data name="AboutPage_WelcomePage" xml:space="preserve">
+  <data name="AboutPage_WelcomePage" xml:space="preserve">
         <value>Welcome Page</value>
     </data>
-    <data name="WelcomeView_QQGroup" xml:space="preserve">
+  <data name="WelcomeView_QQGroup" xml:space="preserve">
         <value>QQ Group</value>
     </data>
-    <data name="WelcomeView_OfficialDocs" xml:space="preserve">
+  <data name="WelcomeView_OfficialDocs" xml:space="preserve">
         <value>Official Docs</value>
     </data>
-    <data name="WelcomeView_Header" xml:space="preserve">
+  <data name="WelcomeView_Header" xml:space="preserve">
         <value>Welcome to Everywhere 👋</value>
     </data>
-    <data name="WelcomeView_Content" xml:space="preserve">
+  <data name="WelcomeView_Content" xml:space="preserve">
         <value>It's a pleasure to meet you! Let me be your assistant and accompany you in solving your problems!
 If this is your first time using it, please click on the official documentation below for instructions!
 I'm still very young, so if you have any problems, feel free to click the link below for feedback, I'll keep on evolving!
 You're also welcome to click the link below to enter the group discussion, more social media is under construction, so stay tuned.
 Tip: You can reopen this message by clicking “About - Welcome Page”.</value>
     </data>
-    <data name="WelcomeView_ReportBug" xml:space="preserve">
+  <data name="WelcomeView_ReportBug" xml:space="preserve">
         <value>Report a Bug</value>
     </data>
-    <data name="WelcomeView_FeatureRequest" xml:space="preserve">
+  <data name="WelcomeView_FeatureRequest" xml:space="preserve">
         <value>Feature Request</value>
     </data>
-    <data name="WelcomeView_ReportBugUri" xml:space="preserve">
+  <data name="WelcomeView_ReportBugUri" xml:space="preserve">
         <value>https://github.com/DearVa/Everywhere/issues/new?template=bug-report.yml</value>
     </data>
-    <data name="WelcomeView_FeatureRequestUri" xml:space="preserve">
+  <data name="WelcomeView_FeatureRequestUri" xml:space="preserve">
         <value>https://github.com/DearVa/Everywhere/issues/new?template=feature-request.yml</value>
     </data>
-    <data name="WelcomeView_Discord" xml:space="preserve">
+  <data name="WelcomeView_Discord" xml:space="preserve">
         <value>Discord</value>
     </data>
+  <data name="Settings_Behavior_AutoPin_Header" xml:space="preserve">
+    <value>Auto pin</value>
+  </data>
+  <data name="Settings_Behavior_AutoPin_Description" xml:space="preserve">
+    <value>Control when the assistant window is automatically pinned</value>
+  </data>
+  <data name="AutoPinBehavior_Never" xml:space="preserve">
+    <value>Never</value>
+  </data>
+  <data name="AutoPinBehavior_AfterInput" xml:space="preserve">
+    <value>Pin after input</value>
+  </data>
+  <data name="AutoPinBehavior_AfterAssistantResponded" xml:space="preserve">
+    <value>Pin after assistant responsed</value>
+  </data>
+  <data name="AutoPinBehavior_Always" xml:space="preserve">
+    <value>Always</value>
+  </data>
 </root>
