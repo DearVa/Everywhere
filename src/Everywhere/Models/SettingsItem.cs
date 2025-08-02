@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Reflection;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Everywhere.Models;
 
@@ -95,6 +96,31 @@ public class SettingsSelectionItem(
     {
         get => ItemsSource.First(i => Equals(i.Value, ValueProxy.Value));
         set => ValueProxy.Value = value.Value;
+    }
+
+    public static SettingsSelectionItem FromEnum(Type enumType, string name, IValueProxy<object?> valueProxy)
+    {
+        if (!enumType.IsEnum)
+        {
+            throw new ArgumentException("Type is not an enum", nameof(enumType));
+        }
+
+        return new SettingsSelectionItem(
+            name,
+            valueProxy,
+            () =>
+            {
+                return Enum.GetValues(enumType).Cast<object>().Select(x =>
+                {
+                    if (Enum.GetName(enumType, x) is { } enumName &&
+                        enumType.GetField(enumName)?.GetCustomAttribute<DynamicResourceKeyAttribute>() is { } ppAttribute)
+                    {
+                        return new DynamicResourceKeyWrapper<object?>(ppAttribute.Key, x);
+                    }
+
+                    return new DynamicResourceKeyWrapper<object?>($"{enumType}_{x}", x);
+                });
+            });
     }
 }
 

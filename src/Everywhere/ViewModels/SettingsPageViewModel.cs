@@ -156,9 +156,14 @@ public class SettingsPageViewModel : ReactiveViewModelBase
                                         attribute?.Step ?? 0.1d);
                                 }
 
+                                // enums
                                 if (pp.PropertyType == typeof(KeyboardHotkey))
                                 {
                                     result = new SettingsKeyboardHotkeyItem(name, new SettingsValueProxy<KeyboardHotkey>(group, pp));
+                                }
+                                else if (pp.PropertyType.IsEnum)
+                                {
+                                    result = SettingsSelectionItem.FromEnum(pp.PropertyType, name, new SettingsValueProxy<object?>(group, pp));
                                 }
                             }
 
