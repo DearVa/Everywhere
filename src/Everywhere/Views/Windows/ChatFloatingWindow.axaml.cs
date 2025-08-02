@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using Everywhere.Chat;
 using LiveMarkdown.Avalonia;
 
 namespace Everywhere.Views;
@@ -62,6 +63,28 @@ public partial class ChatFloatingWindow : ReactiveWindow<ChatFloatingWindowViewM
             ChatInputBox.Focus();
         }
         else
+        {
+            Hide();
+        }
+    }
+
+    public override void Show()
+    {
+        ViewModel.IsPined = false;
+        if (ViewModel.Settings.Behavior.AutoPin == Enums.AutoPinBehavior.Always)
+        {
+            ViewModel.IsPined = true;
+        }
+
+        base.Show();
+    }
+
+    protected override void OnLostFocus(RoutedEventArgs e)
+    {
+        base.OnLostFocus(e);
+
+        if (!IsActive &&
+            !ViewModel.IsPined)
         {
             Hide();
         }
@@ -183,6 +206,14 @@ public partial class ChatFloatingWindow : ReactiveWindow<ChatFloatingWindowViewM
     private void HandleTitleBarPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         BeginMoveDrag(e);
+    }
+
+    private void HandleInputBoxTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (ViewModel.Settings.Behavior.AutoPin == Enums.AutoPinBehavior.AfterInput)
+        {
+            ViewModel.IsPined = true;
+        }
     }
 
     /// <summary>

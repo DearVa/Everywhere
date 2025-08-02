@@ -118,7 +118,7 @@ public class SettingsSelectionItem(
                         return new DynamicResourceKeyWrapper<object?>(ppAttribute.Key, x);
                     }
 
-                    return new DynamicResourceKeyWrapper<object?>($"{enumType}_{x}", x);
+                    return new DynamicResourceKeyWrapper<object?>($"{enumType.Name}_{x}", x);
                 });
             });
     }

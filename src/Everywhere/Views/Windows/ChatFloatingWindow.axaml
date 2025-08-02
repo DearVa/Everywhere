@@ -5,6 +5,7 @@
   xmlns:markdown="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
   xmlns:themes="clr-namespace:ShadUI.Themes;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
   xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
+
   x:DataType="vm:ChatFloatingWindowViewModel" x:TypeArguments="vm:ChatFloatingWindowViewModel"
   Background="Transparent" CanResize="False"
   ExtendClientAreaChromeHints="NoChrome" ExtendClientAreaToDecorationsHint="True"
@@ -80,6 +81,16 @@
             </Style>
           </Style>
         </StackPanel.Styles>
+
+        <Button
+          x:Name="PinToggleButton" Classes="Ghost TitleBar"
+          Command="{Binding TogglePinCommand}">
+
+          <v:ConditionalControl Condition="{Binding IsPined}">
+            <LucideIcon Kind="PinOff"/>
+            <LucideIcon Kind="Pin"/>
+          </v:ConditionalControl>
+        </Button>
 
         <Button
           x:Name="HistoryToggleButton" Classes="Ghost TitleBar"
@@ -665,7 +676,8 @@
             IsWebSearchEnabled="{Binding Settings.Internal.IsWebSearchEnabled, Mode=TwoWay}"
             IsWebSearchSupported="{Binding Settings.Model.IsWebSearchSupported}"
             MaxChatAttachmentCount="{Binding Settings.Internal.MaxChatAttachmentCount}"
-            TextWrapping="Wrap">
+            TextWrapping="Wrap"
+            TextChanged="HandleInputBoxTextChanged">
             <v:ChatInputBox.AddChatAttachmentMenuItems>
               <MenuItem
                 Command="{Binding AddElementCommand}"

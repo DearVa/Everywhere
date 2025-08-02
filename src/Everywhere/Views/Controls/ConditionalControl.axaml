@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:v="using:Everywhere.Views">
+
+  <!--
+  Additional resources
+  Using Control Themes:
+  https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+  Using Theme Variants:
+  https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+  -->
+
+  <Design.PreviewWith>
+    <StackPanel Width="400" Spacing="10">
+      <StackPanel Background="{DynamicResource SystemRegionBrush}">
+        <v:ConditionalControl />
+      </StackPanel>
+    </StackPanel>
+  </Design.PreviewWith>
+
+  <ControlTheme x:Key="{x:Type v:ConditionalControl}"
+                TargetType="v:ConditionalControl">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ContentPresenter Content="{TemplateBinding ActualContent}"/>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>
