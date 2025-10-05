@@ -63,7 +63,7 @@ public static partial class NativeMessageBox
 #elif MACCATALYST
         return ShowMacCatalystMessageBox(title, message, buttons, icon);
 #elif LINUX
-        return ShowLinuxMessageBox(title, message, buttons, icon);
+        return ShowLinuxMessageBox(title, message, buttons);
 #else
         #error Platform not supported
         throw new PlatformNotSupportedException();
