@@ -16,7 +16,7 @@ Every moment, Every place. Your AI - `Everywhere`
   </h1>
 
   <p align="center">
-    <a href="https://everywhere.sylinko.com"><strong>Explore the docs »</strong></a>
+    <a href="https://everywhere.sylinko.com/en-US/"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://github.com/DearVa/Everywhere">View Demo</a>
@@ -193,7 +193,7 @@ Every moment, Every place. Your AI - `Everywhere`
 
 ### Documents
 
-Visit here: [Official Docs](https://everywhere.sylinko.com)
+Visit here: [Official Docs](https://everywhere.sylinko.com/en-US/)
 
 Document is in development. Contributions are welcomed.
 
