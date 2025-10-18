@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -16,6 +17,8 @@ using Everywhere.Interop;
 using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
+using FlaUI.Core.Input;
+using FlaUI.Core.WindowsAPI;
 using FlaUI.Core.Patterns.Infrastructure;
 using FlaUI.UIA3;
 using Microsoft.Extensions.Logging;
@@ -44,9 +47,8 @@ public partial class Win32VisualElementContext : IVisualElementContext
 
     public Win32VisualElementContext(INativeHelper nativeHelper, ILogger<Win32VisualElementContext> logger)
     {
-        _nativeHelper = nativeHelper;
-        _logger = logger;
-
+        this._nativeHelper = nativeHelper;
+        this._logger = logger;        
         // Automation.RegisterFocusChangedEvent(element =>
         // {
         //     if (KeyboardFocusedElementChanged is not { } handler) return;
@@ -123,6 +125,9 @@ public partial class Win32VisualElementContext : IVisualElementContext
 
         return null;
     }
+
+    private static bool IsAutomationException(Exception ex) =>
+        ex.GetType().Namespace?.StartsWith("FlaUI.", StringComparison.Ordinal) == true;
 
     private static Bitmap CaptureScreen(PixelRect rect)
     {
@@ -387,6 +392,170 @@ public partial class Win32VisualElementContext : IVisualElementContext
             }
         }
 
+        private void EnsureFocusable()
+        {
+            try
+            {
+                element.Focus();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to focus element before sending shortcut.", ex);
+            }
+        }
+
+        private static IEnumerable<VirtualKeyShort> MapModifiers(VirtualKey modifiers)
+        {
+            if (modifiers.HasFlag(VirtualKey.Control)) yield return VirtualKeyShort.CONTROL;
+            if (modifiers.HasFlag(VirtualKey.Shift)) yield return VirtualKeyShort.SHIFT;
+            if (modifiers.HasFlag(VirtualKey.Alt)) yield return VirtualKeyShort.LMENU;
+            if (modifiers.HasFlag(VirtualKey.Windows)) yield return VirtualKeyShort.LWIN;
+        }
+
+        private static VirtualKeyShort MapVirtualKey(VirtualKey key) => key switch
+        {
+            VirtualKey.Enter => VirtualKeyShort.RETURN,
+            VirtualKey.Backspace => VirtualKeyShort.BACK,
+            VirtualKey.Tab => VirtualKeyShort.TAB,
+            VirtualKey.Escape => VirtualKeyShort.ESC,
+            VirtualKey.Space => VirtualKeyShort.SPACE,
+            VirtualKey.Left => VirtualKeyShort.LEFT,
+            VirtualKey.Up => VirtualKeyShort.UP,
+            VirtualKey.Right => VirtualKeyShort.RIGHT,
+            VirtualKey.Down => VirtualKeyShort.DOWN,
+            VirtualKey.Delete => VirtualKeyShort.DELETE,
+            VirtualKey.A => VirtualKeyShort.KEY_A,
+            VirtualKey.B => VirtualKeyShort.KEY_B,
+            VirtualKey.C => VirtualKeyShort.KEY_C,
+            VirtualKey.V => VirtualKeyShort.KEY_V,
+            VirtualKey.X => VirtualKeyShort.KEY_X,
+            VirtualKey.Y => VirtualKeyShort.KEY_Y,
+            VirtualKey.Z => VirtualKeyShort.KEY_Z,
+            _ => (VirtualKeyShort)((int)key & 0x00FF)
+        };
+
+        public Task InvokeAsync(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            try
+            {
+                if (element.Patterns.Invoke.TryGetPattern() is { } invokePattern)
+                {
+                    invokePattern.Invoke();
+                    return Task.CompletedTask;
+                }
+
+                if (element.Patterns.Toggle.TryGetPattern() is { } togglePattern)
+                {
+                    togglePattern.Toggle();
+                    return Task.CompletedTask;
+                }
+
+                if (element.Patterns.SelectionItem.TryGetPattern() is { } selectionItemPattern)
+                {
+                    selectionItemPattern.Select();
+                    return Task.CompletedTask;
+                }
+
+                if (element.Patterns.ExpandCollapse.TryGetPattern() is { } expandCollapsePattern)
+                {
+                    var state = expandCollapsePattern.ExpandCollapseState.ValueOrDefault;
+                    if (state is ExpandCollapseState.Collapsed or ExpandCollapseState.PartiallyExpanded)
+                    {
+                        expandCollapsePattern.Expand();
+                    }
+                    else
+                    {
+                        expandCollapsePattern.Collapse();
+                    }
+
+                    return Task.CompletedTask;
+                }
+
+                if (element.Patterns.LegacyIAccessible.TryGetPattern() is { } legacyPattern)
+                {
+                    legacyPattern.DoDefaultAction();
+                    return Task.CompletedTask;
+                }
+            }
+            catch (COMException ex)
+            {
+                throw new InvalidOperationException("Failed to invoke the element through UI Automation.", ex);
+            }
+            catch (Exception ex) when (IsAutomationException(ex))
+            {
+                throw new InvalidOperationException("Failed to invoke the element through UI Automation.", ex);
+            }
+
+            throw new NotSupportedException("The target element does not expose an invoke-capable automation pattern.");
+        }
+
+        public Task SetTextAsync(string text, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            text ??= string.Empty;
+
+            try
+            {
+                if (element.Patterns.Value.TryGetPattern() is { } valuePattern)
+                {
+                    if (valuePattern.IsReadOnly.ValueOrDefault)
+                    {
+                        throw new InvalidOperationException("The target element is read-only and cannot accept text.");
+                    }
+
+                    element.Focus();
+                    valuePattern.SetValue(text);
+                    return Task.CompletedTask;
+                }
+            }
+            catch (COMException ex)
+            {
+                throw new InvalidOperationException("Failed to set text on the element through UI Automation.", ex);
+            }
+            catch (Exception ex) when (IsAutomationException(ex))
+            {
+                throw new InvalidOperationException("Failed to set text on the element through UI Automation.", ex);
+            }
+
+            throw new NotSupportedException("The target element does not support programmatic text input.");
+        }
+
+        public Task SendShortcutAsync(VisualElementShortcut shortcut, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (shortcut.Key == VirtualKey.None)
+            {
+                throw new ArgumentException("Shortcut key cannot be None.", nameof(shortcut));
+            }
+
+            EnsureFocusable();
+
+            try
+            {
+                var modifiers = MapModifiers(shortcut.Modifiers).ToList();
+                foreach (var modifier in modifiers)
+                {
+                    Keyboard.Press(modifier);
+                }
+
+                Keyboard.Type(MapVirtualKey(shortcut.Key));
+
+                foreach (var modifier in Enumerable.Reverse(modifiers))
+                {
+                    Keyboard.Release(modifier);
+                }
+            }
+            catch (Exception ex) when (IsAutomationException(ex))
+            {
+                throw new InvalidOperationException("Failed to send shortcut through UI Automation.", ex);
+            }
+
+            return Task.CompletedTask;
+        }
+
         // BUG: For a minimized window, the captured image is buggy (but child elements are fine).
         public Task<Bitmap> CaptureAsync()
         {
@@ -580,6 +749,15 @@ public partial class Win32VisualElementContext : IVisualElementContext
         public nint NativeWindowHandle => 0;
 
         public string? GetText(int maxLength = -1) => null;
+
+        public Task InvokeAsync(CancellationToken cancellationToken = default) =>
+            Task.FromException(new NotSupportedException("Screen elements do not support invocation."));
+
+        public Task SetTextAsync(string text, CancellationToken cancellationToken = default) =>
+            Task.FromException(new NotSupportedException("Screen elements do not support text input."));
+
+        public Task SendShortcutAsync(VisualElementShortcut shortcut, CancellationToken cancellationToken = default) =>
+            Task.FromException(new NotSupportedException("Screen elements do not support shortcut input."));
 
         public Task<Bitmap> CaptureAsync()
         {
