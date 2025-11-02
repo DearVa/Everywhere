@@ -18,7 +18,7 @@ public partial class NetworkSettings : SettingsCategory
     [ObservableProperty]
     [SettingsItem(IsVisibleBindingPath = nameof(IsProxyEnabled))]
     [SettingsStringItem(Watermark = "http://127.0.0.1:7890")]
-    public partial string ProxyAddress { get; set; } = string.Empty;
+    public partial Customizable<string> ProxyAddress { get; set; } = "http://127.0.0.1:7890";
 
     [ObservableProperty]
     [SettingsItem(IsVisibleBindingPath = nameof(IsProxyEnabled))]
@@ -26,7 +26,7 @@ public partial class NetworkSettings : SettingsCategory
 
     [ObservableProperty]
     [SettingsItem(IsVisibleBindingPath = nameof(IsProxyEnabled))]
-    [SettingsStringItem(IsMultiline = true, Height = 96)]
+    [SettingsStringItem(Watermark = "www.example.com", IsMultiline = true, Height = 96)]
     public partial string ProxyBypassList { get; set; } = string.Empty;
 
     [ObservableProperty]

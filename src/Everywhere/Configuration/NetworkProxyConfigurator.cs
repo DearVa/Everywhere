@@ -41,13 +41,14 @@ internal static class NetworkProxyConfigurator
                 return true;
             }
 
-            if (string.IsNullOrWhiteSpace(settings.ProxyAddress))
+            var addressToUse = settings.ProxyAddress.ActualValue?.Trim();
+            if (string.IsNullOrWhiteSpace(addressToUse))
             {
                 errorMessage = "Proxy server address is required.";
                 return false;
             }
 
-            if (!TryCreateProxy(settings, out var proxy, out errorMessage)) return false;
+            if (!TryCreateProxy(settings, addressToUse, out var proxy, out errorMessage)) return false;
 
             HttpClient.DefaultProxy = proxy;
             WebRequest.DefaultWebProxy = proxy;
@@ -66,9 +67,9 @@ internal static class NetworkProxyConfigurator
         nameof(NetworkSettings.ProxyUsername) or
         nameof(NetworkSettings.ProxyPassword);
 
-    private static bool TryCreateProxy(NetworkSettings settings, out WebProxy proxy, out string? errorMessage)
+    private static bool TryCreateProxy(NetworkSettings settings, string address, out WebProxy proxy, out string? errorMessage)
     {
-        var normalizedAddress = NormalizeAddress(settings.ProxyAddress);
+        var normalizedAddress = NormalizeAddress(address);
         if (!Uri.TryCreate(normalizedAddress, UriKind.Absolute, out var proxyUri))
         {
             proxy = default!;
