@@ -1,8 +1,11 @@
-﻿using Anthropic.SDK;
+﻿using System;
+using System.Net.Http;
+using Anthropic.SDK;
 using Anthropic.SDK.Messaging;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Everywhere.Configuration;
 
 namespace Everywhere.AI;
 
@@ -20,16 +23,20 @@ public sealed class AnthropicKernelMixin : KernelMixinBase
     };
 
     private readonly OptimizedChatClient _client;
+    private readonly HttpClient _anthropicHttpClient;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AnthropicKernelMixin"/> class.
     /// </summary>
     public AnthropicKernelMixin(CustomAssistant customAssistant) : base(customAssistant)
     {
-        var messagesEndpoint = new AnthropicClient(new APIAuthentication(ApiKey))
+        _anthropicHttpClient = ProxyHttpClientFactory.CreateHttpClient();
+        _anthropicHttpClient.BaseAddress = new Uri(Endpoint, UriKind.Absolute);
+        var anthropicClient = new AnthropicClient(new APIAuthentication(ApiKey), _anthropicHttpClient)
         {
             ApiUrlFormat = Endpoint + "/{0}/{1}"
-        }.Messages;
+        };
+        var messagesEndpoint = anthropicClient.Messages;
         _client = new OptimizedChatClient(customAssistant, messagesEndpoint);
         ChatCompletionService = _client.AsChatCompletionService();
     }
@@ -37,6 +44,7 @@ public sealed class AnthropicKernelMixin : KernelMixinBase
     public override void Dispose()
     {
         _client.Dispose();
+        _anthropicHttpClient.Dispose();
     }
 
     private sealed class OptimizedChatClient(CustomAssistant customAssistant, MessagesEndpoint anthropicClient) : IChatClient

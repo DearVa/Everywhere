@@ -92,6 +92,8 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
             },
             TimeSpan.FromMinutes(5)); // Dispose browser after 5 minutes of inactivity
 
+        NetworkProxyConfigurator.ProxyConfigurationChanged += HandleProxyConfigurationChanged;
+
         _functions.Add(
             new NativeChatFunction(
                 WebSearchAsync,
@@ -104,6 +106,12 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
         SettingsItems = Configuration.SettingsItems.CreateForObject(_webSearchEngineSettings, "Plugin_WebSearchEngine");
 
         new ObjectObserver(HandleSettingsChanged).Observe(_webSearchEngineSettings);
+    }
+
+    private void HandleProxyConfigurationChanged(object? sender, ProxyConfigurationChangedEventArgs e)
+    {
+        _connector = null;
+        _maxSearchCount = 0;
     }
 
     private void HandleSettingsChanged(in ObjectObserverChangedEventArgs e)

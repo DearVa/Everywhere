@@ -39,5 +39,7 @@ public static class SettingsExtensions
         })
         .AddTransient<SoftwareUpdateControl>()
         .AddTransient<RestartAsAdministratorControl>()
+        .AddSingleton<NetworkProxyInitializer>()
+        .AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<NetworkProxyInitializer>())
         .AddTransient<IAsyncInitializer, SettingsInitializer>();
 }

@@ -1,4 +1,5 @@
 ﻿using Everywhere.Common;
+using Everywhere.Configuration;
 
 namespace Everywhere.AI;
 
@@ -8,6 +9,11 @@ namespace Everywhere.AI;
 public class KernelMixinFactory : IKernelMixinFactory
 {
     private KernelMixinBase? _cachedKernelMixin;
+
+    public KernelMixinFactory()
+    {
+        NetworkProxyConfigurator.ProxyConfigurationChanged += HandleProxyConfigurationChanged;
+    }
 
     /// <summary>
     /// Gets an existing <see cref="IKernelMixin"/> instance from the cache or creates a new one.
@@ -53,5 +59,11 @@ public class KernelMixinFactory : IKernelMixinFactory
                 HandledChatExceptionType.InvalidConfiguration,
                 new DynamicResourceKey(LocaleKey.KernelMixinFactory_UnsupportedModelProviderSchema))
         };
+    }
+
+    private void HandleProxyConfigurationChanged(object? sender, ProxyConfigurationChangedEventArgs e)
+    {
+        _cachedKernelMixin?.Dispose();
+        _cachedKernelMixin = null;
     }
 }
