@@ -210,6 +210,9 @@
     <data name="ChatWindowViewModel_QuickActions_Translate" xml:space="preserve">
         <value>Çevir</value>
     </data>
+    <data name="ChatWindowViewModel_QuickActions_Verify" xml:space="preserve">
+        <value>Kimlik Doğrulama</value>
+    </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>Özetle</value>
     </data>
@@ -1340,5 +1343,118 @@
     </data>
     <data name="Settings_Common_Proxy_Description" xml:space="preserve">
         <value>Ağ vekil sunucusunu ayarlama.</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
+        <value>Açıklama: {0}
+İçerik:
+{1}</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>PowerShell betiği yürütme hatası: {0}</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFiles_Description" xml:space="preserve">
+        <value>Belirtilen yolda verilen desenle eşleşen dosya veya dizinleri arayın.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_GetFileInformation_Description" xml:space="preserve">
+        <value>Belirtilen yoldaki bir dosya veya dizin hakkında bilgi alın.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFileContent_Description" xml:space="preserve">
+        <value>Dosya(lar) içinde belirli bir metni arayın ve eşleşen satırları döndürün.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_Description" xml:space="preserve">
+        <value>Belirtilen yoldaki bir dosyanın içeriğini okuyun.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
+        <value>Bir dosya veya dizini taşıyın veya yeniden adlandırın.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
+        <value>Belirtilen yoldaki dosya veya dizinleri silin.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
+        <value>Belirtilen yolda yeni bir dizin oluşturun.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
+        <value>Belirtilen yoldaki bir metin dosyasına içerik yazın.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
+        <value>Bir metin dosyasındaki içeriği değiştirin.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>Dosya boyutu 10 MB'ı aşıyor; okuma işlemi desteklenmiyor.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
+        <value>Dizini oluşturma başarısız oldu.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>Kök dizin silinemiyor.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+        <value>Sistem dosyaları veya dizinleri silinemiyor.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
+        <value>İkili dosyaya yazılamıyor.</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>Aracı çağırırken geçersiz parametreler sağlandı.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>Dosya boyutu 10 MB'dan büyük, değiştirme işlemi desteklenmiyor.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
+        <value>İkili dosyadaki içeriği değiştiremiyorsunuz.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
+        <value>Belirtilen yol bir dosyadır, dizin değildir.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Belirtilen yol geçerli bir dosya veya dizin değildir.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathIsDirectory_ErrorMessage" xml:space="preserve">
+        <value>Belirtilen yol bir dizindir, dosya değildir.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Belirtilen dosya veya dizin bulunamadı.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileSystemInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Belirtilen yol mevcut değildir.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureVisualElementById_Description" xml:space="preserve">
+        <value>Bir görsel öğenin ekran görüntüsünü alın.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_Description" xml:space="preserve">
+        <value>Tüm ekranın ekran görüntüsünü alın.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_ExecuteVisualActionQueue_Description" xml:space="preserve">
+        <value>Tıklama, yazma veya kısayollar gönderme gibi bir dizi UI otomasyon eylemini gerçekleştirin.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
+        <value>Alınacak bir ekran mevcut değil.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
+        <value>Bir web araması yapın.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Description" xml:space="preserve">
+        <value>Bir web sayfasının içeriğinin ve temel bilgilerinin anlık görüntüsünü alın.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_NoWebSearchEngineProviderSelected_ErrorMessage" xml:space="preserve">
+        <value>Web arama motoru sağlayıcısı seçilmemiştir. Lütfen bunu eklenti ayarlarında yapılandırın.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_InvalidWebSearchEngineEndpoint_ErrorMessage" xml:space="preserve">
+        <value>Verilen uç nokta geçersiz; lütfen geçerli bir mutlak URI olduğundan emin olun.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_GoogleSearchEngineIdNotSet_ErrorMessage" xml:space="preserve">
+        <value>Google Arama Motoru ID'si ayarlanmamıştır. Lütfen bunu eklenti ayarlarında yapılandırın.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_UnsupportedWebSearchEngineProvider_ErrorMessage" xml:space="preserve">
+        <value>Web arama motoru sağlayıcısı desteklenmiyor. Lütfen bunu eklenti ayarlarında değiştirin.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearchEngineApiKeyNotSet_ErrorMessage" xml:space="preserve">
+        <value>API anahtarı ayarlanmamıştır. Lütfen bunu eklenti ayarlarında yapılandırın.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteer tarayıcı indirme URL'sine bağlanılamadı.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserLaunchError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteer tarayıcısını indirme veya başlatma başarısız oldu.</value>
     </data>
 </root>

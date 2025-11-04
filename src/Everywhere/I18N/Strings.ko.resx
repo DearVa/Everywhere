@@ -211,6 +211,9 @@
     <data name="ChatWindowViewModel_QuickActions_Translate" xml:space="preserve">
         <value>번역</value>
     </data>
+    <data name="ChatWindowViewModel_QuickActions_Verify" xml:space="preserve">
+        <value>진위 확인</value>
+    </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>요약</value>
     </data>
@@ -1346,5 +1349,118 @@
     </data>
     <data name="Settings_Common_Proxy_Description" xml:space="preserve">
         <value>네트워크 프록시 설정.</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
+        <value>설명: {0}
+내용:
+{1}</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>PowerShell 스크립트 실행 실패: {0}</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFiles_Description" xml:space="preserve">
+        <value>지정된 경로에서 주어진 패턴과 일치하는 파일 또는 디렉터리를 검색합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_GetFileInformation_Description" xml:space="preserve">
+        <value>지정된 경로에 있는 파일 또는 디렉터리에 대한 정보를 가져옵니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFileContent_Description" xml:space="preserve">
+        <value>파일 내에서 특정 텍스트를 검색하고 일치하는 줄을 반환합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_Description" xml:space="preserve">
+        <value>지정된 경로에 있는 파일의 내용을 읽습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
+        <value>파일 또는 디렉터리를 이동하거나 이름을 변경합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
+        <value>지정된 경로에서 파일 또는 디렉터리를 삭제합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
+        <value>지정된 경로에 새 디렉터리를 생성합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
+        <value>지정된 경로에 있는 텍스트 파일에 내용을 씁니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
+        <value>텍스트 파일의 내용을 교체합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>파일 크기가 10MB를 초과하여 읽기 작업이 지원되지 않습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
+        <value>디렉터리 생성에 실패했습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>루트 디렉터리를 삭제할 수 없습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+        <value>시스템 파일 또는 디렉터리를 삭제할 수 없습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
+        <value>이진 파일에 쓸 수 없습니다.</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>도구 호출 시 잘못된 매개변수가 제공되었습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>파일 크기가 10MB를 초과하여 교체 작업이 지원되지 않습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
+        <value>이진 파일의 내용을 교체할 수 없습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
+        <value>지정된 경로는 파일이며, 디렉토리가 아닙니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>지정된 경로는 유효한 파일이나 디렉토리가 아닙니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathIsDirectory_ErrorMessage" xml:space="preserve">
+        <value>지정된 경로는 디렉토리이며, 파일이 아닙니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>지정된 파일이나 디렉토리를 찾을 수 없습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileSystemInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>지정된 경로가 존재하지 않습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureVisualElementById_Description" xml:space="preserve">
+        <value>시각적 요소의 스크린샷을 캡처합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_Description" xml:space="preserve">
+        <value>전체 화면의 스크린샷을 캡처합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_ExecuteVisualActionQueue_Description" xml:space="preserve">
+        <value>클릭, 입력 또는 단축키 전송과 같은 UI 자동화 작업 세트를 실행합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
+        <value>캡처할 수 있는 화면이 없습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
+        <value>웹 검색을 수행합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Description" xml:space="preserve">
+        <value>웹 페이지의 콘텐츠와 기본 정보를 스냅샷으로 캡처합니다.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_NoWebSearchEngineProviderSelected_ErrorMessage" xml:space="preserve">
+        <value>웹 검색 엔진 제공자가 선택되지 않았습니다. 플러그인 설정의 웹 브라우저에서 구성해 주세요.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_InvalidWebSearchEngineEndpoint_ErrorMessage" xml:space="preserve">
+        <value>제공된 엔드포인트가 유효하지 않습니다; 유효한 절대 URI인지 확인해 주세요.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_GoogleSearchEngineIdNotSet_ErrorMessage" xml:space="preserve">
+        <value>Google 검색 엔진 ID가 설정되지 않았습니다. 플러그인 설정에서 구성해 주세요.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_UnsupportedWebSearchEngineProvider_ErrorMessage" xml:space="preserve">
+        <value>웹 검색 엔진 제공자가 지원되지 않습니다. 플러그인 설정에서 변경해 주세요.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearchEngineApiKeyNotSet_ErrorMessage" xml:space="preserve">
+        <value>API 키가 설정되지 않았습니다. 플러그인 설정에서 구성해 주세요.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteer 브라우저 다운로드 URL에 연결하지 못했습니다.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserLaunchError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteer 브라우저를 다운로드하거나 실행하는 데 실패했습니다.</value>
     </data>
 </root>

@@ -211,6 +211,9 @@
     <data name="ChatWindowViewModel_QuickActions_Translate" xml:space="preserve">
         <value>翻訳</value>
     </data>
+    <data name="ChatWindowViewModel_QuickActions_Verify" xml:space="preserve">
+        <value>真偽を確認</value>
+    </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>要約</value>
     </data>
@@ -1346,5 +1349,118 @@
     </data>
     <data name="Settings_Common_Proxy_Description" xml:space="preserve">
         <value>ネットワークプロキシの設定。</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
+        <value>説明: {0}
+内容:
+{1}</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>PowerShellスクリプトの実行に失敗しました: {0}</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFiles_Description" xml:space="preserve">
+        <value>指定されたパスで、与えられたパターンに一致するファイルまたはディレクトリを検索します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_GetFileInformation_Description" xml:space="preserve">
+        <value>指定されたパスにあるファイルまたはディレクトリの情報を取得します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFileContent_Description" xml:space="preserve">
+        <value>ファイル内の特定のテキストを検索し、一致する行を返します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_Description" xml:space="preserve">
+        <value>指定されたパスにあるファイルの内容を読み取ります。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
+        <value>ファイルまたはディレクトリを移動または名前変更します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
+        <value>指定されたパスにあるファイルまたはディレクトリを削除します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
+        <value>指定されたパスに新しいディレクトリを作成します。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
+        <value>指定されたパスにあるテキストファイルに内容を書き込みます。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
+        <value>テキストファイルの内容を置き換えます。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>ファイルサイズが10 MBを超えているため、読み取り操作はサポートされていません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
+        <value>ディレクトリの作成に失敗しました。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>ルートディレクトリを削除することはできません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+        <value>システムファイルまたはディレクトリを削除することはできません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
+        <value>バイナリファイルに書き込むことはできません。</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>ツールを呼び出す際に無効なパラメータが提供されました。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>ファイルサイズが10 MBを超えているため、置き換え操作はサポートされていません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
+        <value>バイナリファイルの内容を置き換えることはできません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
+        <value>指定されたパスはファイルであり、ディレクトリではありません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>指定されたパスは有効なファイルまたはディレクトリではありません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathIsDirectory_ErrorMessage" xml:space="preserve">
+        <value>指定されたパスはディレクトリであり、ファイルではありません。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>指定されたファイルまたはディレクトリが見つかりませんでした。</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileSystemInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>指定されたパスは存在しません。</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureVisualElementById_Description" xml:space="preserve">
+        <value>ビジュアル要素のスクリーンショットをキャプチャします。</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_Description" xml:space="preserve">
+        <value>画面全体のスクリーンショットをキャプチャします。</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_ExecuteVisualActionQueue_Description" xml:space="preserve">
+        <value>クリック、入力、ショートカット送信などのUI自動化アクションのセットを実行します。</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
+        <value>キャプチャするための画面が利用できません。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
+        <value>ウェブ検索を実行します。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Description" xml:space="preserve">
+        <value>ウェブページのコンテンツと基本情報のスナップショットをキャプチャします。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_NoWebSearchEngineProviderSelected_ErrorMessage" xml:space="preserve">
+        <value>ウェブ検索エンジンプロバイダーが選択されていません。プラグイン設定のウェブブラウザで構成してください。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_InvalidWebSearchEngineEndpoint_ErrorMessage" xml:space="preserve">
+        <value>提供されたエンドポイントが無効です。有効な絶対URIであることを確認してください。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_GoogleSearchEngineIdNotSet_ErrorMessage" xml:space="preserve">
+        <value>Google検索エンジンIDが設定されていません。プラグイン設定で構成してください。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_UnsupportedWebSearchEngineProvider_ErrorMessage" xml:space="preserve">
+        <value>ウェブ検索エンジンプロバイダーはサポートされていません。プラグイン設定で切り替えてください。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearchEngineApiKeyNotSet_ErrorMessage" xml:space="preserve">
+        <value>APIキーが設定されていません。プラグイン設定で構成してください。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage" xml:space="preserve">
+        <value>PuppeteerブラウザのダウンロードURLに接続できませんでした。</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserLaunchError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteerブラウザのダウンロードまたは起動に失敗しました。</value>
     </data>
 </root>

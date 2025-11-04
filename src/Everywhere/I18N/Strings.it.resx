@@ -211,6 +211,9 @@
     <data name="ChatWindowViewModel_QuickActions_Translate" xml:space="preserve">
         <value>Traduci</value>
     </data>
+    <data name="ChatWindowViewModel_QuickActions_Verify" xml:space="preserve">
+        <value>Verifica autenticità</value>
+    </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>Sommario</value>
     </data>
@@ -1346,5 +1349,118 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     </data>
     <data name="Settings_Common_Proxy_Description" xml:space="preserve">
         <value>Impostazione del proxy di rete.</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
+        <value>Descrizione: {0}
+Contenuto:
+{1}</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Esecuzione dello script PowerShell non riuscita: {0}</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFiles_Description" xml:space="preserve">
+        <value>Cerca file o directory in un percorso specificato che corrispondono al modello fornito.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_GetFileInformation_Description" xml:space="preserve">
+        <value>Ottieni informazioni su un file o una directory nel percorso specificato.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_SearchFileContent_Description" xml:space="preserve">
+        <value>Cerca un testo specifico all'interno di file e restituisci le righe corrispondenti.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_Description" xml:space="preserve">
+        <value>Leggi il contenuto di un file nel percorso specificato.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
+        <value>Sposta o rinomina un file o una directory.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
+        <value>Elimina file o directory nel percorso specificato.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
+        <value>Crea una nuova directory nel percorso specificato.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
+        <value>Scrivi contenuto in un file di testo nel percorso specificato.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
+        <value>Sostituisci il contenuto in un file di testo.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>La dimensione del file supera i 10 MB; l'operazione di lettura non è supportata.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
+        <value>Impossibile creare la directory.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>Impossibile eliminare la directory radice.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+        <value>Impossibile eliminare file o directory di sistema.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
+        <value>Impossibile scrivere in un file binario.</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>Sono stati forniti parametri non validi durante la chiamata allo strumento.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
+        <value>La dimensione del file è superiore a 10 MB, l'operazione di sostituzione non è supportata.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
+        <value>Impossibile sostituire il contenuto in un file binario.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
+        <value>Il percorso specificato è un file, non una directory.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureDirectoryInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Il percorso specificato non è un file o una directory valida.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathIsDirectory_ErrorMessage" xml:space="preserve">
+        <value>Il percorso specificato è una directory, non un file.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Il file o la directory specificati non sono stati trovati.</value>
+    </data>
+    <data name="NativeChatPlugin_FileSystem_EnsureFileSystemInfo_PathNotExist_ErrorMessage" xml:space="preserve">
+        <value>Il percorso specificato non esiste.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureVisualElementById_Description" xml:space="preserve">
+        <value>Cattura uno screenshot di un elemento visivo.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_Description" xml:space="preserve">
+        <value>Cattura uno screenshot dell'intero schermo.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_ExecuteVisualActionQueue_Description" xml:space="preserve">
+        <value>Esegui un insieme di azioni di automazione UI come cliccare, digitare o inviare scorciatoie.</value>
+    </data>
+    <data name="NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
+        <value>Nessuno schermo disponibile da catturare.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
+        <value>Esegui una ricerca sul web.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Description" xml:space="preserve">
+        <value>Cattura un'istantanea del contenuto e delle informazioni di base di una pagina web.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_NoWebSearchEngineProviderSelected_ErrorMessage" xml:space="preserve">
+        <value>Il fornitore del motore di ricerca web non è selezionato. Si prega di configurarlo nelle impostazioni del browser web del plugin.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_InvalidWebSearchEngineEndpoint_ErrorMessage" xml:space="preserve">
+        <value>L'endpoint fornito non è valido; assicurati che sia un URI assoluto valido.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_GoogleSearchEngineIdNotSet_ErrorMessage" xml:space="preserve">
+        <value>L'ID del motore di ricerca Google non è impostato. Si prega di configurarlo nelle impostazioni del plugin.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_UnsupportedWebSearchEngineProvider_ErrorMessage" xml:space="preserve">
+        <value>Il fornitore del motore di ricerca web non è supportato. Si prega di cambiarlo nelle impostazioni del plugin.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_WebSearchEngineApiKeyNotSet_ErrorMessage" xml:space="preserve">
+        <value>La chiave API non è impostata. Si prega di configurarla nelle impostazioni del plugin.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage" xml:space="preserve">
+        <value>Impossibile connettersi all'URL di download del browser Puppeteer.</value>
+    </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserLaunchError_ErrorMessage" xml:space="preserve">
+        <value>Impossibile scaricare o avviare il browser Puppeteer.</value>
     </data>
 </root>
