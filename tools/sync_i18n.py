@@ -3,7 +3,8 @@ import argparse
 import json
 import os
 import re
-import xml.etree.ElementTree as ET
+# Use the defusedxml library to prevent XML vulnerabilities
+import defusedxml.ElementTree as ET
 from typing import Dict, List, Optional, Tuple
 
 # You need to install this dependency: pip install openai
