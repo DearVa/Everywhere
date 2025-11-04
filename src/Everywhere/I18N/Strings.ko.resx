@@ -163,12 +163,6 @@
     <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
         <value>취소</value>
     </data>
-    <data name="AssistantCommand_Translate_Description" xml:space="preserve">
-        <value>대상 언어로 번역</value>
-    </data>
-    <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
-        <value>필요에 따라 다시 작성</value>
-    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>문맥 분석</value>
     </data>
@@ -219,9 +213,6 @@
     </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>요약</value>
-    </data>
-    <data name="ChatWindow_Title" xml:space="preserve">
-        <value>어떻게 도와드릴까요?</value>
     </data>
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>단축키 설정을 클릭하세요</value>

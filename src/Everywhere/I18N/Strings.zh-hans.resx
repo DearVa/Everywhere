@@ -217,9 +217,6 @@
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>总结</value>
     </data>
-    <data name="ChatWindow_Title" xml:space="preserve">
-        <value>有什么可以帮忙的？</value>
-    </data>
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>点击设置快捷键</value>
     </data>

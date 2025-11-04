@@ -163,12 +163,6 @@
     <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
         <value>取消</value>
     </data>
-    <data name="AssistantCommand_Translate_Description" xml:space="preserve">
-        <value>翻譯成目標語言</value>
-    </data>
-    <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
-        <value>按要求重寫</value>
-    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>分析上下文</value>
     </data>
@@ -219,9 +213,6 @@
     </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>摘要</value>
-    </data>
-    <data name="ChatWindow_Title" xml:space="preserve">
-        <value>我可以怎麼幫助你？</value>
     </data>
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>點擊以設定快捷鍵</value>

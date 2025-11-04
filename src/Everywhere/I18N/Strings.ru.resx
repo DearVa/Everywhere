@@ -163,12 +163,6 @@
     <data name="ChatInputBox_CancelButton_ToolTip" xml:space="preserve">
         <value>Отмена</value>
     </data>
-    <data name="AssistantCommand_Translate_Description" xml:space="preserve">
-        <value>Перевести на целевой язык</value>
-    </data>
-    <data name="AssistantCommand_Rewrite_Description" xml:space="preserve">
-        <value>Переписать по необходимости</value>
-    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>Анализ контекста</value>
     </data>
@@ -219,9 +213,6 @@
     </data>
     <data name="ChatWindowViewModel_QuickActions_Summarize" xml:space="preserve">
         <value>Резюме</value>
-    </data>
-    <data name="ChatWindow_Title" xml:space="preserve">
-        <value>Как я могу помочь вам?</value>
     </data>
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>Нажмите, чтобы установить сочетание клавиш</value>
