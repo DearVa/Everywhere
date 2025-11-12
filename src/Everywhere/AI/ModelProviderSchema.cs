@@ -9,6 +9,8 @@ public enum ModelProviderSchema
     OpenAI,
     [DynamicResourceKey(LocaleKey.ModelProviderSchema_Anthropic)]
     Anthropic,
+    [DynamicResourceKey(LocaleKey.ModelProviderSchema_Google)]
+    Google,
     [DynamicResourceKey(LocaleKey.ModelProviderSchema_Ollama)]
     Ollama
 }

@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.SemanticKernel"/>
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google"/>
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama"/>
     <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI"/>
     <PackageReference Include="Microsoft.SemanticKernel.Plugins.Web"/>

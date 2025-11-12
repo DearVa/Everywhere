@@ -1496,6 +1496,9 @@ Scroll wheel or number keys to switch pick modes</value>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>

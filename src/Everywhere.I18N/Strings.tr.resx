@@ -1479,4 +1479,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
         <value>OpenAI</value>
     </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
 </root>

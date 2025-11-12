@@ -3,7 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <MicrosoftPackageVersion>9.0.9</MicrosoftPackageVersion>
     <EntityFrameworkVersion>9.0.7</EntityFrameworkVersion>
-    <SemanticKernelVersion>1.66.0</SemanticKernelVersion>
+    <SemanticKernelVersion>1.67.0</SemanticKernelVersion>
     <OpenTelemetryVersion>1.13.1</OpenTelemetryVersion>
     <SentryVersion>5.16.1</SentryVersion>
     <AvaloniaVersion>11.3.8</AvaloniaVersion>
@@ -50,6 +50,7 @@
     <PackageVersion Include="Microsoft.SemanticKernel" Version="$(SemanticKernelVersion)" />
     <PackageVersion Include="Microsoft.SemanticKernel.Abstractions" Version="$(SemanticKernelVersion)" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="$(SemanticKernelVersion)-alpha" />
+    <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Google" Version="$(SemanticKernelVersion)-alpha" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="$(SemanticKernelVersion)" />
     <PackageVersion Include="Microsoft.SemanticKernel.Plugins.Web" Version="$(SemanticKernelVersion)-alpha" />
     <PackageVersion Include="ModelContextProtocol" Version="0.3.0-preview.3" />

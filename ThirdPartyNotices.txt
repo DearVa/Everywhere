@@ -245,7 +245,7 @@ License:   MIT
 Semantic Kernel
 
 Id:        Microsoft.SemanticKernel
-Version:   1.66.0
+Version:   1.67.0
 Project:   https://aka.ms/semantic-kernel
 Copyright: © Microsoft Corporation. All rights reserved.
 License:   MIT
@@ -255,7 +255,7 @@ License:   MIT
 Semantic Kernel - Abstractions
 
 Id:        Microsoft.SemanticKernel.Abstractions
-Version:   1.66.0
+Version:   1.67.0
 Project:   https://aka.ms/semantic-kernel
 Copyright: © Microsoft Corporation. All rights reserved.
 License:   MIT
@@ -265,7 +265,7 @@ License:   MIT
 Semantic Kernel - Ollama AI connectors
 
 Id:        Microsoft.SemanticKernel.Connectors.Ollama
-Version:   1.66.0-alpha
+Version:   1.67.0-alpha
 Project:   https://aka.ms/semantic-kernel
 Copyright: © Microsoft Corporation. All rights reserved.
 License:   MIT
@@ -275,7 +275,7 @@ License:   MIT
 Semantic Kernel - OpenAI connector
 
 Id:        Microsoft.SemanticKernel.Connectors.OpenAI
-Version:   1.66.0
+Version:   1.67.0
 Project:   https://aka.ms/semantic-kernel
 Copyright: © Microsoft Corporation. All rights reserved.
 License:   MIT
@@ -285,7 +285,7 @@ License:   MIT
 Semantic Kernel - Web Plugins
 
 Id:        Microsoft.SemanticKernel.Plugins.Web
-Version:   1.66.0-alpha
+Version:   1.67.0-alpha
 Project:   https://aka.ms/semantic-kernel
 Copyright: © Microsoft Corporation. All rights reserved.
 License:   MIT

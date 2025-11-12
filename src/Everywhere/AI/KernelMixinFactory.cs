@@ -56,6 +56,7 @@ public class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFac
         {
             ModelProviderSchema.OpenAI => new OpenAIKernelMixin(customAssistant, httpClient, loggerFactory),
             ModelProviderSchema.Anthropic => new AnthropicKernelMixin(customAssistant, httpClient),
+            ModelProviderSchema.Google => new GoogleKernelMixin(customAssistant, httpClient, loggerFactory),
             ModelProviderSchema.Ollama => new OllamaKernelMixin(customAssistant, httpClient),
             _ => throw new HandledChatException(
                 new NotSupportedException($"Model provider schema '{customAssistant.Schema}' is not supported."),
