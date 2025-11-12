@@ -583,6 +583,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>Neu starten</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>Debug-Funktionen</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>Zugriff auf und Verwaltung der Anwendungsdatei und Protokolle.</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>Einstellungsdatei bearbeiten</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>Protokollordner öffnen</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>Fehler</value>
     </data>
@@ -867,6 +879,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>Das ausgewählte Modell unterstützt die angeforderte Funktion nicht.</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>Das ausgewählte Modell unterstützt keine Bildeingabe.</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Anforderung an den Dienst ist abgelaufen. Bitte versuchen Sie es erneut.</value>
@@ -1457,13 +1472,19 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="Common_None" xml:space="preserve">
         <value>Keines</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>Legen Sie die Wartezeit fest, bis das Modell Ergebnisse zurückgibt, gemessen in Sekunden. Für langsamere Modelle (wie Denkmodelle und lokale Modelle) sollten Sie diese Zeit entsprechend verlängern.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>Anforderungszeitüberschreitung</value>
     </data>
 </root>

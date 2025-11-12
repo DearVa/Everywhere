@@ -114,21 +114,6 @@
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>Web arama motorları için servis sağlayıcısını seçin.</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
-        <value>Bing</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
-        <value>Google</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
-        <value>Brave</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
-        <value>Bocha</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_jina" xml:space="preserve">
-        <value>Jina</value>
-    </data>
     <data name="WebSearchEngineProvider_EndPoint_Header" xml:space="preserve">
         <value>API Adresi</value>
     </data>
@@ -597,6 +582,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>Yeniden Başlat</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>Hata Ayıklama Özellikleri</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>Uygulama ayarları dosyasına ve günlüklerine erişin ve yönetin.</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>Ayarlar Dosyasını Düzenle</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>Günlükler Klasörünü Aç</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>Hata</value>
     </data>
@@ -881,6 +878,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>Seçilen model istenen özelliği desteklemiyor.</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>Seçilen model görüntü girişi desteklemiyor.</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Servise yapılan istek zaman aşımına uğradı. Lütfen tekrar deneyin.</value>
@@ -1470,13 +1470,19 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="Common_None" xml:space="preserve">
         <value>Yok</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>Modelin sonuç döndürmesi için bekleme süresini ayarlayın, saniye cinsinden ölçülür. Daha yavaş modeller (düşünme modelleri ve yerel modeller gibi) için bu süreyi uygun şekilde uzatmayı düşünün.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>İstek zaman aşımı süresi</value>
     </data>
 </root>

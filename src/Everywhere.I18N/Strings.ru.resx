@@ -115,21 +115,6 @@
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>Выберите поставщика услуг для поисковых систем.</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
-        <value>Bing</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
-        <value>Google</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
-        <value>Brave</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
-        <value>Bocha</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_jina" xml:space="preserve">
-        <value>Jina</value>
-    </data>
     <data name="WebSearchEngineProvider_EndPoint_Header" xml:space="preserve">
         <value>API Url</value>
     </data>
@@ -599,6 +584,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>Перезапустить</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>Отладочные функции</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>Доступ к файлу настроек приложения и журналам.</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>Редактировать файл настроек</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>Открыть папку журналов</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>Ошибка</value>
     </data>
@@ -886,6 +883,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>Выбранная модель не поддерживает запрашиваемую функцию.</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>Выбранная модель не поддерживает ввод изображений.</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Запрос к сервису превысил время ожидания. Пожалуйста, попробуйте снова.</value>
@@ -1476,13 +1476,19 @@
     <data name="Common_None" xml:space="preserve">
         <value>Нет</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>Установите время ожидания для получения результатов от модели, измеряемое в секундах. Для более медленных моделей (таких как модели размышлений и локальные модели) рассмотрите возможность соответствующего увеличения этого времени.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>Длительность таймаута запроса</value>
     </data>
 </root>

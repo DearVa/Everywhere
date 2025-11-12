@@ -115,21 +115,6 @@
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>选择用于网络搜索引擎的服务提供商。</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
-        <value>必应</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
-        <value>Google</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
-        <value>Brave</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
-        <value>博查</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_jina" xml:space="preserve">
-        <value>Jina</value>
-    </data>
     <data name="WebSearchEngineProvider_EndPoint_Header" xml:space="preserve">
         <value>API 调用地址</value>
     </data>
@@ -1492,19 +1477,19 @@
     <data name="Common_None" xml:space="preserve">
         <value>无</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>设置请求模型返回内容的等待时间，单位为秒。对于速度较慢的模型（如思考模型和本地模型），可考虑适当延长时间。</value>
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>请求超时时长</value>
-    </data>
-    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
-        <value>设置请求模型返回内容的等待时间，单位为秒。对于速度较慢的模型（如思考模型和本地模型），可考虑适当延长时间。</value>
     </data>
 </root>

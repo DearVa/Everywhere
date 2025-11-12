@@ -584,6 +584,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>再起動</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>デバッグ機能</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>アプリケーション設定ファイルとログにアクセスして管理します。</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>設定ファイルを編集</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>ログフォルダーを開く</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>エラー</value>
     </data>
@@ -871,6 +883,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>選択したモデルは要求された機能をサポートしていません。</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>選択したモデルは画像入力をサポートしていません。</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>サービスへのリクエストがタイムアウトしました。もう一度お試しください。</value>
@@ -1461,13 +1476,19 @@
     <data name="Common_None" xml:space="preserve">
         <value>なし</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>モデルが結果を返すまでの待機時間を秒単位で設定します。遅いモデル（思考モデルやローカルモデルなど）の場合は、この時間を適切に延長することを検討してください。</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>リクエストタイムアウト期間</value>
     </data>
 </root>
