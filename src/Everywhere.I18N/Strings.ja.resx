@@ -1491,4 +1491,16 @@
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>リクエストタイムアウト期間</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>ユーザーがPowerShellスクリプトの実行に対する同意を拒否しました。</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>プロキシサーバーのアドレスが必要です。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>プロキシサーバーのアドレスが無効です。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>プロキシサーバーのスキーム '{0}' はサポートされていません。</value>
+    </data>
 </root>

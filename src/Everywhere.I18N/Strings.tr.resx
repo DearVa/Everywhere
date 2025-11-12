@@ -1485,4 +1485,16 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>İstek zaman aşımı süresi</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Kullanıcı PowerShell betiği çalıştırma iznini reddetti.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>Proxy sunucu adresi gereklidir.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>Proxy sunucu adresi geçersiz.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>Proxy sunucu şeması '{0}' desteklenmiyor.</value>
+    </data>
 </root>

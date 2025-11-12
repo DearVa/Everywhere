@@ -1491,4 +1491,16 @@
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>Длительность таймаута запроса</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Пользователь отказал в согласии на выполнение скрипта PowerShell.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>Необходим адрес прокси-сервера.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>Адрес прокси-сервера недействителен.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>Схема прокси-сервера '{0}' не поддерживается.</value>
+    </data>
 </root>

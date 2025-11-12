@@ -1491,4 +1491,16 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>Durata del timeout della richiesta</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>L'utente ha negato il consenso per l'esecuzione dello script PowerShell.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>L'indirizzo del server proxy è obbligatorio.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>L'indirizzo del server proxy non è valido.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>Il protocollo del server proxy '{0}' non è supportato.</value>
+    </data>
 </root>

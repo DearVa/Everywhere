@@ -1491,4 +1491,16 @@
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>請求超時持續時間</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>用戶拒絕授權執行 PowerShell 腳本。</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>需要代理伺服器地址。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>代理伺服器地址無效。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>不支援代理伺服器方案 '{0}'。</value>
+    </data>
 </root>

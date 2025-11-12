@@ -1491,4 +1491,16 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>Durée du délai d'attente de la demande</value>
     </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>L'utilisateur a refusé le consentement pour l'exécution du script PowerShell.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>L'adresse du serveur proxy est requise.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>L'adresse du serveur proxy est invalide.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>Le schéma du serveur proxy '{0}' n'est pas pris en charge.</value>
+    </data>
 </root>
