@@ -1482,6 +1482,9 @@
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
@@ -1502,8 +1505,5 @@
     </data>
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>プロキシサーバーのスキーム '{0}' はサポートされていません。</value>
-    </data>
-    <data name="ModelProviderSchema_Google" xml:space="preserve">
-        <value>Google</value>
     </data>
 </root>

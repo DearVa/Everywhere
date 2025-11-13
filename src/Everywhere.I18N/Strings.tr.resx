@@ -1476,6 +1476,9 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
     </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
+    </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
@@ -1496,8 +1499,5 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>Proxy sunucu şeması '{0}' desteklenmiyor.</value>
-    </data>
-    <data name="ModelProviderSchema_Google" xml:space="preserve">
-        <value>Google</value>
     </data>
 </root>
