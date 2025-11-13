@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using Everywhere.Common;
 using Microsoft.Extensions.Logging;
 using ShadUI;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace Everywhere.Views.Configuration;
 
@@ -19,15 +21,11 @@ public partial class DebugFeaturesControl(ToastManager toastManager, ILogger<Deb
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "Everywhere",
                 "settings.json");
-            if (!Uri.TryCreate(settingsPath, UriKind.Absolute, out var settingsUri))
-            {
-                throw new InvalidOperationException($"Invalid settings path: {settingsPath}");
-            }
 
-            var launched = await ServiceLocator.Resolve<ILauncher>().LaunchUriAsync(settingsUri);
+            var launched = await ServiceLocator.Resolve<ILauncher>().LaunchFileInfoAsync(new FileInfo(settingsPath));
             if (!launched)
             {
-                throw new InvalidOperationException($"Unable to launch: {settingsUri}");
+                throw new InvalidOperationException($"Unable to launch: {settingsPath}");
             }
         }
         catch (Exception ex)
@@ -57,15 +55,11 @@ public partial class DebugFeaturesControl(ToastManager toastManager, ILogger<Deb
                 Directory.CreateDirectory(logsPath);
             }
 
-            if (!Uri.TryCreate(logsPath, UriKind.Absolute, out var logsUri))
-            {
-                throw new InvalidOperationException($"Invalid logs path: {logsPath}");
-            }
 
-            var launched = await ServiceLocator.Resolve<ILauncher>().LaunchUriAsync(logsUri);
+            var launched = await ServiceLocator.Resolve<ILauncher>().LaunchDirectoryInfoAsync(new DirectoryInfo(logsPath));
             if (!launched)
             {
-                throw new InvalidOperationException($"Unable to launch: {logsUri}");
+                throw new InvalidOperationException($"Unable to launch: {logsPath}");
             }
         }
         catch (Exception ex)
