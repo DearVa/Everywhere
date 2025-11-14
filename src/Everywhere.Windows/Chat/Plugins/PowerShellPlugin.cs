@@ -96,7 +96,13 @@ public class PowerShellPlugin : BuiltInChatPlugin
             new DynamicResourceKey(LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header),
             detailBlock,
             cancellationToken);
-        if (!consent) return "User denied execution of the script.";
+        if (!consent)
+        {
+            throw new HandledException(
+                new UnauthorizedAccessException("User denied consent for PowerShell script execution."),
+                new DynamicResourceKey(LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage),
+                showDetails: false);
+        }
 
         userInterface.DisplaySink.AppendBlocks(detailBlock.Children);
 
@@ -132,7 +138,8 @@ public class PowerShellPlugin : BuiltInChatPlugin
                 new SystemException($"PowerShell script execution failed: {errorMessage}"),
                 new FormattedDynamicResourceKey(
                     LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage,
-                    new DirectResourceKey(errorMessage)));
+                    new DirectResourceKey(errorMessage)),
+                showDetails: false);
         }
 
         var result = results.FirstOrDefault()?.ToString() ?? string.Empty;

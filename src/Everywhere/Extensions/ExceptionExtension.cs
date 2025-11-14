@@ -36,14 +36,18 @@ public static class ExceptionExtension
                     LocaleKey.FriendlyExceptionMessage_Aggregate,
                     new AggregateDynamicResourceKey(ae.InnerExceptions.Select(DynamicResourceKeyBase (i) => i.GetFriendlyMessage()).ToList(), "\n"));
             }
-            case HandledException ee:
+            case HandledException { ShowDetails: true } he:
             {
                 return new AggregateDynamicResourceKey(
                     [
-                        ee.FriendlyMessageKey,
-                        new DirectResourceKey(ee.Message.Trim())
+                        he.FriendlyMessageKey,
+                        new DirectResourceKey(he.Message.Trim())
                     ],
                     "\n");
+            }
+            case HandledException he:
+            {
+                return he.FriendlyMessageKey;
             }
             default:
             {

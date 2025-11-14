@@ -284,7 +284,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
 
                 sb.AppendLine($"var {itemName} = new global::Everywhere.Configuration.SettingsCustomizableItem({innerItemName});");
                 sb.Append($"{itemName}[!global::Everywhere.Configuration.SettingsCustomizableItem.ResetCommandProperty] = ");
-                EmitBinding(sb, $"{bindingPath}.BindableValue", BindingMode.OneWay).AppendLine(";");
+                EmitBinding(sb, $"{bindingPath}.ResetCommand", BindingMode.OneWay).AppendLine(";");
 
                 // Special case from reflection code: set watermark for string properties
                 if (innerMetadata.Kind == ItemKind.String)

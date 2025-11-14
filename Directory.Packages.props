@@ -7,6 +7,7 @@
     <OpenTelemetryVersion>1.13.1</OpenTelemetryVersion>
     <SentryVersion>5.16.1</SentryVersion>
     <AvaloniaVersion>11.3.8</AvaloniaVersion>
+    <LiveMarkdownVersion>1.4.0</LiveMarkdownVersion>
     <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
     <XamlBehaviorsVersion>11.3.6.6</XamlBehaviorsVersion>
   </PropertyGroup>
@@ -19,6 +20,8 @@
     <PackageVersion Include="Grpc.Tools" Version="2.71.0" />
     <PackageVersion Include="IconPacks.Avalonia.Material" Version="1.0.0" />
     <PackageVersion Include="JetBrains.Profiler.Api" Version="1.4.10" />
+    <PackageVersion Include="LiveMarkdown.Avalonia" Version="$(LiveMarkdownVersion)" />
+    <PackageVersion Include="LiveMarkdown.Avalonia.Math" Version="$(LiveMarkdownVersion)" />
     <PackageVersion Include="MessageBox.Avalonia" Version="3.2.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkVersion)" />

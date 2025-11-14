@@ -290,7 +290,7 @@ def main():
     parser.add_argument('--model-id', default=env_model_id, help="The model ID to use for translation.")
     parser.add_argument('--batch-size', type=int, default=20, help="Number of resources to translate per batch.")
     parser.add_argument('--max-retries', type=int, default=3, help="Maximum retries for failed API calls.")
-    parser.add_argument('--i18n-path', default=os.path.join(os.path.dirname(__file__), '..', 'src', 'Everywhere', 'I18N'), help="Path to the I18N directory.")
+    parser.add_argument('--i18n-path', default=os.path.join(os.path.dirname(__file__), '..', 'src', 'Everywhere.I18N'), help="Path to the I18N directory.")
 
     args = parser.parse_args()
 

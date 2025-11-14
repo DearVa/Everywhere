@@ -10,10 +10,8 @@
     x:Key="{x:Type v:ConsentDecisionCard}"
     TargetType="v:ConsentDecisionCard">
     <Setter Property="Padding" Value="8"/>
-    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
-    <Setter Property="CornerRadius" Value="{DynamicResource XlCornerRadius}"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
     <Setter Property="Template">
       <Setter.Value>

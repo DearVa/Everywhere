@@ -27,6 +27,8 @@ public class HandledException : Exception
     /// </summary>
     public virtual bool IsExpected { get; }
 
+    public virtual bool ShowDetails { get; }
+
     public override string Message
     {
         get
@@ -47,11 +49,13 @@ public class HandledException : Exception
     public HandledException(
         Exception originalException,
         DynamicResourceKey friendlyMessageKey,
-        bool isExpected = true
+        bool isExpected = true,
+        bool showDetails = true
     ) : base(null, originalException)
     {
         FriendlyMessageKey = friendlyMessageKey;
         IsExpected = isExpected;
+        ShowDetails = showDetails;
     }
 
     protected HandledException(Exception originalException) : base(originalException.Message, originalException) { }
@@ -241,11 +245,10 @@ public class HandledSystemException : HandledException
     /// </summary>
     public static Exception Handle(Exception exception, bool? isExpectedOverride = null)
     {
-        if (exception is HandledSystemException systemEx) return systemEx;
         switch (exception)
         {
-            case HandledSystemException handledSystemException:
-                return handledSystemException;
+            case HandledException handledException:
+                return handledException;
             case AggregateException aggregateException:
                 return new AggregateException(aggregateException.Segregate().Select(e => Handle(e, isExpectedOverride)));
         }

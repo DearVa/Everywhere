@@ -11,6 +11,7 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
     public string Endpoint { get; } = customAssistant.Endpoint.ActualValue.Trim().Trim('/');
     public string? ApiKey { get; } = customAssistant.ApiKey;
     public string ModelId { get; } = customAssistant.ModelId;
+    public int RequestTimeoutSeconds { get; } = customAssistant.RequestTimeoutSeconds;
 
     public int ContextWindow => _customAssistant.MaxTokens;
     public bool IsImageInputSupported => _customAssistant.IsImageInputSupported;

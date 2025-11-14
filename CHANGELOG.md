@@ -1,3 +1,27 @@
+## [v0.4.5](https://github.com/DearVa/Everywhere/releases/tag/v0.4.5) - 2025-11-13
+
+### ✨ Features
+- Added a setting for model request timeout.
+- Added shortcuts in settings to "Edit configuration file" and "Open log folder" (Thanks @TheNotoBarth).
+- Added rendering support for LaTeX formulas.
+
+### 🚀 Improvements
+- Network proxy settings now take effect immediately without requiring an application restart.
+- Improved error messages for large language models (Thanks @TheNotoBarth).
+- Optimized the loading performance of the settings page.
+- Removed the unsupported `x-ai/grok-4-fast:free` model from OpenRouter.
+- Improved the display of some error messages.
+
+### 🐛 Bug Fixes
+- Refactored the underlying data model to fix a bug where messages could be displayed repeatedly.
+- Fixed a potential memory leak.
+- Optimized the display logic for dialog boxes to prevent them from going beyond the window boundaries and becoming inoperable.
+- Fixed an issue where model requests could not handle redirects automatically.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.4.4...v0.4.5
+
+
+
 ## [v0.4.4](https://github.com/DearVa/Everywhere/releases/tag/v0.4.4) - 2025-11-5
 
 - 📢 The macOS version is on the way and is expected to be released in v0.5.0. Good things take time, so please be patient!

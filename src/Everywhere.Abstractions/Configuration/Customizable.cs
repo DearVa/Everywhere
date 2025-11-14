@@ -115,11 +115,10 @@ public partial class Customizable<T> : ObservableObject where T : notnull
         CustomValue = customValue;
     }
 
-    [IgnoreDataMember]
-    [field: AllowNull, MaybeNull]
-    public IRelayCommand ResetCommand => field ??= new RelayCommand(Reset);
-
-    public void Reset()
+    [RelayCommand]
+    [property: JsonIgnore]
+    [property: IgnoreDataMember]
+    private void Reset()
     {
         CustomValue = null;
     }

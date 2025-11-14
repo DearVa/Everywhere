@@ -39,10 +39,11 @@ public class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFac
 
         var apiKey = apiKeyOverride ?? customAssistant.ApiKey;
         if (_cachedKernelMixin is not null &&
-            _cachedKernelMixin.Schema == customAssistant.Schema &&
-            _cachedKernelMixin.ModelId == customAssistant.ModelId &&
+            _cachedKernelMixin.Schema == customAssistant.Schema.ActualValue &&
+            _cachedKernelMixin.ModelId == customAssistant.ModelId.ActualValue &&
             _cachedKernelMixin.Endpoint == customAssistant.Endpoint.ActualValue.Trim().Trim('/') &&
-            _cachedKernelMixin.ApiKey == apiKey)
+            _cachedKernelMixin.ApiKey == apiKey &&
+            _cachedKernelMixin.RequestTimeoutSeconds == customAssistant.RequestTimeoutSeconds.ActualValue)
         {
             return _cachedKernelMixin;
         }
@@ -52,6 +53,7 @@ public class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFac
         // Create an HttpClient instance using the factory.
         // It will have the configured settings (timeout and proxy).
         var httpClient = httpClientFactory.CreateClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(customAssistant.RequestTimeoutSeconds.ActualValue);
         return _cachedKernelMixin = customAssistant.Schema.ActualValue switch
         {
             ModelProviderSchema.OpenAI => new OpenAIKernelMixin(customAssistant, httpClient, loggerFactory),

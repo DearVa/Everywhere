@@ -3,7 +3,6 @@
     "path": "Everywhere.sln",
     "projects": [
       "3rd\\EverythingNetCore\\EverythingNet\\EverythingNet.csproj",
-      "3rd\\LiveMarkdown.Avalonia\\src\\LiveMarkdown.Avalonia\\LiveMarkdown.Avalonia.csproj",
       "3rd\\MessagePack-CSharp\\src\\MessagePack.Analyzers.CodeFixes\\MessagePack.Analyzers.CodeFixes.csproj",
       "3rd\\MessagePack-CSharp\\src\\MessagePack.Analyzers\\MessagePack.Analyzers.csproj",
       "3rd\\MessagePack-CSharp\\src\\MessagePack.Annotations\\MessagePack.Annotations.csproj",

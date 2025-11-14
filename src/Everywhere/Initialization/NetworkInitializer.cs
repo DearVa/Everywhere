@@ -103,7 +103,8 @@ public static class NetworkExtension
             {
                 // Resolve the singleton instance of DynamicWebProxy.
                 Proxy = serviceProvider.GetRequiredService<IWebProxy>(),
-                UseProxy = true
+                UseProxy = true,
+                AllowAutoRedirect = true
             })
         .Services
         .AddTransient<IAsyncInitializer, NetworkInitializer>();

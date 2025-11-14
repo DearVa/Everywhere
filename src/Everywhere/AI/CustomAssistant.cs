@@ -42,11 +42,9 @@ public partial class CustomAssistant : ObservableObject
     [SettingsStringItem(IsMultiline = true, MaxLength = 40960)]
     public partial Customizable<string> SystemPrompt { get; set; } = Prompts.DefaultSystemPrompt;
 
-#pragma warning disable CA1822
     [JsonIgnore]
     [HiddenSettingsItem]
-    private ModelProviderTemplate[] ModelProviderTemplates => ModelProviderTemplate.SupportedTemplates;
-#pragma warning restore CA1822
+    private static ModelProviderTemplate[] ModelProviderTemplates => ModelProviderTemplate.SupportedTemplates;
 
     /// <summary>
     /// The ID of the model provider to use for this custom assistant.
@@ -69,6 +67,7 @@ public partial class CustomAssistant : ObservableObject
             {
                 Endpoint.DefaultValue = template.Endpoint;
                 Schema.DefaultValue = template.Schema;
+                RequestTimeoutSeconds.DefaultValue = template.RequestTimeoutSeconds;
                 // Note: We do not set ApiKey here, as it may be different for each custom assistant.
 
                 ModelDefinitionTemplateId = template.ModelDefinitions.FirstOrDefault(m => m.IsDefault)?.Id;
@@ -77,6 +76,7 @@ public partial class CustomAssistant : ObservableObject
             {
                 Endpoint.DefaultValue = string.Empty;
                 Schema.DefaultValue = ModelProviderSchema.OpenAI;
+                RequestTimeoutSeconds.DefaultValue = 20;
                 ModelDefinitionTemplateId = null;
             }
 
@@ -211,6 +211,13 @@ public partial class CustomAssistant : ObservableObject
 
     [ObservableProperty]
     [DynamicResourceKey(
+        LocaleKey.CustomAssistant_RequestTimeoutSeconds_Header,
+        LocaleKey.CustomAssistant_RequestTimeoutSeconds_Description)]
+    [SettingsIntegerItem(IsSliderVisible = false)]
+    public partial Customizable<int> RequestTimeoutSeconds { get; set; } = 20;
+
+    [ObservableProperty]
+    [DynamicResourceKey(
         LocaleKey.CustomAssistant_Temperature_Header,
         LocaleKey.CustomAssistant_Temperature_Description)]
     [SettingsDoubleItem(Min = 0.0, Max = 2.0, Step = 0.1)]
@@ -236,84 +243,4 @@ public partial class CustomAssistant : ObservableObject
         LocaleKey.CustomAssistant_FrequencyPenalty_Description)]
     [SettingsDoubleItem(Min = -2.0, Max = 2.0, Step = 0.1)]
     public partial Customizable<double> FrequencyPenalty { get; set; } = 0.0;
-
-    // [JsonIgnore]
-    // [HiddenSettingsItem]
-    // public SettingsItems SettingsItems
-    // {
-    //     get
-    //     {
-    //         var results = SettingsItems.CreateForObject(this, nameof(CustomAssistant));
-    //
-    //         // add template selector
-    //         // TODO: performance optimization
-    //         var i = results.FindIndexOf(r => Equals(r.HeaderKey.Key, $"Settings_{nameof(CustomAssistant)}_{nameof(ModelProviderTemplateId)}_Header"));
-    //         if (i >= 0)
-    //         {
-    //             object? modelProviderTemplateDataTemplate = null;
-    //             Application.Current?.Resources.TryGetResource(typeof(ModelProviderTemplate), null, out modelProviderTemplateDataTemplate);
-    //             results[i] = new SettingsCustomizableItem(
-    //                 $"{nameof(CustomAssistant)}_{nameof(ModelProviderTemplate)}",
-    //                 new SettingsSelectionItem($"{nameof(CustomAssistant)}_{nameof(ModelProviderTemplate)}")
-    //                 {
-    //                     ItemsSource = ModelProviderTemplate.SupportedTemplates.Select(t =>
-    //                         new SettingsSelectionItem.Item(
-    //                             new DirectResourceKey(t),
-    //                             t,
-    //                             modelProviderTemplateDataTemplate as IDataTemplate)).ToList(),
-    //                     [!SettingsItem.ValueProperty] = new Binding
-    //                     {
-    //                         Path = nameof(ModelProviderTemplate),
-    //                         Source = this,
-    //                         Mode = BindingMode.TwoWay
-    //                     }
-    //                 })
-    //             {
-    //                 ResetCommand = new RelayCommand(() => ModelProviderTemplateId = null)
-    //             };
-    //         }
-    //
-    //         i = results.FindIndexOf(r => Equals(r.HeaderKey.Key, $"Settings_{nameof(CustomAssistant)}_{nameof(ModelDefinitionTemplateId)}_Header"));
-    //         if (i >= 0)
-    //         {
-    //             object? modelDefinitionTemplateDataTemplate = null;
-    //             Application.Current?.Resources.TryGetResource(typeof(ModelDefinitionTemplate), null, out modelDefinitionTemplateDataTemplate);
-    //             results[i] = new SettingsCustomizableItem(
-    //                 $"{nameof(CustomAssistant)}_{nameof(ModelDefinitionTemplate)}",
-    //                 new SettingsSelectionItem($"{nameof(CustomAssistant)}_{nameof(ModelDefinitionTemplate)}")
-    //                 {
-    //                     [!SettingsSelectionItem.ItemsSourceProperty] = new Binding
-    //                     {
-    //                         Path = nameof(ModelProviderTemplateId),
-    //                         Source = this,
-    //                         Converter = new FuncValueConverter<string?, IEnumerable<SettingsSelectionItem.Item>>(modelProviderTemplateId =>
-    //                         {
-    //                             if (modelProviderTemplateId is not null &&
-    //                                 ModelProviderTemplate.SupportedTemplates.FirstOrDefault(t => t.Id == modelProviderTemplateId) is { } template)
-    //                             {
-    //                                 return template.ModelDefinitions.Select(m =>
-    //                                     new SettingsSelectionItem.Item(
-    //                                         new DirectResourceKey(m),
-    //                                         m,
-    //                                         modelDefinitionTemplateDataTemplate as IDataTemplate)).ToList();
-    //                             }
-    //
-    //                             return [];
-    //                         })
-    //                     },
-    //                     [!SettingsItem.ValueProperty] = new Binding
-    //                     {
-    //                         Path = nameof(ModelDefinitionTemplate),
-    //                         Source = this,
-    //                         Mode = BindingMode.TwoWay
-    //                     }
-    //                 })
-    //             {
-    //                 ResetCommand = new RelayCommand(() => ModelDefinitionTemplateId = null)
-    //             };
-    //         }
-    //
-    //         return results;
-    //     }
-    // }
 }

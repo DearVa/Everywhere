@@ -671,8 +671,6 @@ public class ChatService(
                     // This will record the function result in the database.
                     functionCallChatMessage.Results.Add(resultContent);
 
-                    // TODO: Also add a display block for the function result content?
-
                     // Add the function result content to the chat history.
                     // This will allow the LLM to see the function result in the chat history.
                     chatHistory.Add(new ChatMessageContent(AuthorRole.Tool, [resultContent]));

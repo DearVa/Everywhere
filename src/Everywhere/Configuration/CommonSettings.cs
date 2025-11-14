@@ -172,8 +172,8 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
 
     [JsonIgnore]
     [DynamicResourceKey(
-        LocaleKey.Settings_Common_DebugFeatures_Header,
-        LocaleKey.Settings_Common_DebugFeatures_Description)]
+        LocaleKey.CommonSettings_DebugFeatures_Header,
+        LocaleKey.CommonSettings_DebugFeatures_Description)]
     public SettingsControl<DebugFeaturesControl> DebugFeatures { get; } = new();
 
     private static void ShowErrorToast(Exception ex) => ServiceLocator.Resolve<ToastManager>()

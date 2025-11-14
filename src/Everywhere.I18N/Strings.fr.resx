@@ -584,6 +584,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>Redémarrer</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>Fonctionnalités de débogage</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>Accédez et gérez le fichier de paramètres de l'application et les journaux.</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>Modifier le fichier de paramètres</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>Ouvrir le dossier des journaux</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>Erreur</value>
     </data>
@@ -871,6 +883,9 @@ Mon intelligence provient de puissants modèles de langage de grande taille (LLM
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>Le modèle sélectionné ne prend pas en charge la fonctionnalité demandée.</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>Le modèle sélectionné ne prend pas en charge l'entrée d'image.</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>La requête au service a expiré. Veuillez réessayer.</value>
@@ -1461,14 +1476,35 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="Common_None" xml:space="preserve">
         <value>Aucun</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
+    </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>Définissez le temps d'attente pour que le modèle renvoie des résultats, mesuré en secondes. Pour les modèles plus lents (comme les modèles de réflexion et les modèles locaux), envisagez d'étendre ce temps en conséquence.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>Durée du délai d'attente de la demande</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>L'utilisateur a refusé le consentement pour l'exécution du script PowerShell.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>L'adresse du serveur proxy est requise.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>L'adresse du serveur proxy est invalide.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>Le schéma du serveur proxy '{0}' n'est pas pris en charge.</value>
     </data>
     <data name="ModelProviderSchema_Google" xml:space="preserve">
         <value>Google</value>

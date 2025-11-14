@@ -18,6 +18,8 @@
     </PackageReference>
     <PackageReference Include="HotAvalonia" PrivateAssets="All"/>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api"/>
+    <PackageReference Include="LiveMarkdown.Avalonia" />
+    <PackageReference Include="LiveMarkdown.Avalonia.Math" />
     <PackageReference Include="MessageBox.Avalonia"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
@@ -51,7 +53,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\3rd\LiveMarkdown.Avalonia\src\LiveMarkdown.Avalonia\LiveMarkdown.Avalonia.csproj"/>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\..\3rd\shad-ui\src\ShadUI\ShadUI.csproj"/>
     <ProjectReference Include="..\..\3rd\WritableJsonConfiguration\src\WritableJsonConfiguration\WritableJsonConfiguration.csproj"/>

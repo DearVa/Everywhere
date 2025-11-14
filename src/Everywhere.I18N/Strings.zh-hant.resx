@@ -115,21 +115,6 @@
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>選擇網頁搜尋引擎的服務提供者。</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
-        <value>Bing</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
-        <value>Google</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
-        <value>Brave</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
-        <value>Bocha</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_jina" xml:space="preserve">
-        <value>Jina</value>
-    </data>
     <data name="WebSearchEngineProvider_EndPoint_Header" xml:space="preserve">
         <value>API Url</value>
     </data>
@@ -599,6 +584,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>重新啟動</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>除錯功能</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>訪問和管理應用程式設定檔和日誌。</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>編輯設定檔</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>打開日誌資料夾</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>錯誤</value>
     </data>
@@ -886,6 +883,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>選擇的模型不支持請求的功能。</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>選擇的模型不支持圖像輸入。</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>請求服務超時。請再試一次。</value>
@@ -1476,14 +1476,35 @@
     <data name="Common_None" xml:space="preserve">
         <value>無</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
+    </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>設置模型返回結果的等待時間，以秒為單位。對於較慢的模型（如思考模型和本地模型），請考慮適當延長此時間。</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>請求超時持續時間</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>使用者拒絕了執行 PowerShell 腳本的同意。</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>需要代理伺服器地址。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>代理伺服器地址無效。</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>代理伺服器方案 '{0}' 不受支援。</value>
     </data>
     <data name="ModelProviderSchema_Google" xml:space="preserve">
         <value>Google</value>

@@ -18,6 +18,12 @@
   TargetBoundingRect="{Binding TargetBoundingRect}"
   TransparencyLevelHint="AcrylicBlur" WindowStartupLocation="Manual">
 
+  <v:ReactiveShadWindow.Resources>
+    <!--  This is used for LaTeX rendering  -->
+    <!--  ReSharper disable once Xaml.RedundantResource  -->
+    <Color x:Key="SystemBaseHighColor">#FFFFFF</Color>
+  </v:ReactiveShadWindow.Resources>
+
   <v:ReactiveShadWindow.Hosts>
     <shadui:DialogHost
       x:Name="PART_DialogHost" Margin="0,36,0,0"

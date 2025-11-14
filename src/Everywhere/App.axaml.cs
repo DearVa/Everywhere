@@ -8,6 +8,7 @@ using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Views;
+using LiveMarkdown.Avalonia;
 using MsBox.Avalonia.Enums;
 using Serilog;
 using Window = Avalonia.Controls.Window;
@@ -22,8 +23,6 @@ public class App : Application
 
     public override void Initialize()
     {
-        AvaloniaXamlLoader.Load(this);
-
         Dispatcher.UIThread.UnhandledException += (_, e) =>
         {
             Log.Logger.Error(e.Exception, "UI Thread Unhandled Exception");
@@ -36,6 +35,11 @@ public class App : Application
 
             e.Handled = true;
         };
+
+        AvaloniaXamlLoader.Load(this);
+
+        MarkdownNode.Register<MathInlineNode>();
+        MarkdownNode.Register<MathBlockNode>();
 
         try
         {

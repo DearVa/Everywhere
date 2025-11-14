@@ -14,13 +14,13 @@
             shadui:ButtonAssist.Icon="{LucideIconContent FileJson2}"
             shadui:ButtonAssist.IconSize="18"
             Command="{Binding EditSettingsFileCommand, RelativeSource={RelativeSource TemplatedParent}}"
-            Content="{I18N {x:Static LocaleKey.Settings_Common_EditSettingsFile_Button_Content}}"/>
+            Content="{I18N {x:Static LocaleKey.CommonSettings_EditSettingsFile_Button_Content}}"/>
           <Button
             Classes="Outline" HorizontalAlignment="Left"
             shadui:ButtonAssist.Icon="{LucideIconContent FolderOpen}"
             shadui:ButtonAssist.IconSize="18"
             Command="{Binding OpenLogsFolderCommand, RelativeSource={RelativeSource TemplatedParent}}"
-            Content="{I18N {x:Static LocaleKey.Settings_Common_OpenLogsFolder_Button_Content}}"/>
+            Content="{I18N {x:Static LocaleKey.CommonSettings_OpenLogsFolder_Button_Content}}"/>
         </StackPanel>
       </ControlTemplate>
     </Setter>

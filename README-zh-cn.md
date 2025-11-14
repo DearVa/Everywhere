@@ -125,17 +125,19 @@
     <tr>
       <td><b>⚙️ 工具集成</b></td>
       <td>
-        • 网页搜索
+        • 网络浏览器<br>
+        • 文件系统<br>
+        • 终端<br>
+        • Everything *(Windows)*
       </td>
-      <td>
-        • 系统 API<br>
+      <td><br>
         • MCP 工具
       </td>
     </tr>
     <tr>
-      <td><b>🫧 界面</b></td>
+      <td><b>🫧 交互</b></td>
       <td>
-        • 现代化磨砂玻璃界面<br>
+        • 现代磨砂玻璃界面<br>
         • 上下文感知<br>
         • 键盘快捷键<br>
         • Markdown 渲染

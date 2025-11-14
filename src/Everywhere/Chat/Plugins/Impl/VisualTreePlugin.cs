@@ -77,7 +77,8 @@ public class VisualTreePlugin : BuiltInChatPlugin
         {
             throw new HandledException(
                 new InvalidOperationException("No screen is available to capture."),
-                new DynamicResourceKey(LocaleKey.NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage));
+                new DynamicResourceKey(LocaleKey.NativeChatPlugin_VisualTree_CaptureFullScreen_NoScreenAvailable_ErrorMessage),
+                showDetails: false);
         }
 
         return CaptureVisualElementAsync(visualElement);

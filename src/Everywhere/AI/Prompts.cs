@@ -21,7 +21,9 @@ public static partial class Prompts
 
         # Rules
         - You MUST NOT provide user with anything that LOOKS LIKE sensitive information, for example - passwords, product keys, API keys, etc.
-        - Except for tasks such as translation, you MUST always reply in the System Language.
+        - You MUST reply in System Language except for tasks such as translation or user specifically requests another language.
+        - You MUST use tools when necessary to complete the user's requests.
+        - You MUST use $ or $$ when writing mathematical expressions instead of \( \) or \[ \].
         """;
 
     public const string VisualTreePrompt =
@@ -71,14 +73,6 @@ public static partial class Prompts
         """
         This is a test prompt.
         You MUST Only reply with "Test successful!".
-        """;
-
-    public const string TryUseToolUserPrompt =
-        """
-        
-        
-        Please try to use the tools if necessary, before answering.
-        If tool used, you should tell me the result of it because I cannot see it.
         """;
 
     public static string RenderPrompt(string prompt, IReadOnlyDictionary<string, Func<string>> variables)

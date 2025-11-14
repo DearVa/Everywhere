@@ -125,15 +125,17 @@ Every moment, Every place. Your AI - `Everywhere`
     <tr>
       <td><b>⚙️ Tool Integration</b></td>
       <td>
-        • Web Search
+        • Web Browser<br>
+        • File System<br>
+        • Terminal<br>
+        • Everything *(Windows)*
       </td>
       <td>
-        • System APIs<br>
-        • MCP tools<br>
+        • MCP tools
       </td>
     </tr>
     <tr>
-      <td><b>🫧 Interface</b></td>
+      <td><b>🫧 Interactive</b></td>
       <td>
         • Modern Frosted Glass UI<br>
         • Context-aware invocation<br>

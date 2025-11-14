@@ -60,7 +60,8 @@ public sealed class DynamicWebProxy : IWebProxy
             {
                 throw new HandledException(
                     new InvalidOperationException("Proxy server address is required."),
-                    new DirectResourceKey("Proxy server address is required.")); // TODO: I18N
+                    new DynamicResourceKey(LocaleKey.DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage),
+                    showDetails: false);
             }
 
             newProxy = CreateProxy(settings, addressToUse);
@@ -76,21 +77,26 @@ public sealed class DynamicWebProxy : IWebProxy
         {
             throw new HandledException(
                 new InvalidOperationException("Proxy server address is invalid."),
-                new DirectResourceKey("Proxy server address is invalid.")); // TODO: I18N
+                new DynamicResourceKey(LocaleKey.DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage),
+                showDetails: false);
         }
 
         if (string.IsNullOrWhiteSpace(proxyUri.Host))
         {
             throw new HandledException(
-                new InvalidOperationException("Proxy host is required."),
-                new DirectResourceKey("Proxy host is required.")); // TODO: I18N
+                new InvalidOperationException("Proxy server host is required."),
+                new DynamicResourceKey(LocaleKey.DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage),
+                showDetails: false);
         }
 
         if (proxyUri.Scheme is not "http" and not "https" and not "socks5")
         {
             throw new HandledException(
-                new NotSupportedException($"Proxy scheme '{proxyUri.Scheme}' is not supported."),
-                new DirectResourceKey($"Proxy scheme '{proxyUri.Scheme}' is not supported.")); // TODO: I18N
+                new NotSupportedException($"Proxy server scheme '{proxyUri.Scheme}' is not supported."),
+                new FormattedDynamicResourceKey(
+                    LocaleKey.DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage,
+                    new DirectResourceKey(proxyUri.Scheme)),
+                showDetails: false);
         }
 
         var proxy = new WebProxy(proxyUri)

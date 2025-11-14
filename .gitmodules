@@ -3,13 +3,10 @@
 	url = https://github.com/DearVa/WritableJsonConfiguration
 [submodule "3rd/shad-ui"]
 	path = 3rd/shad-ui
-	url = https://github.com/DearVa/shad-ui
+	url = https://github.com/Sylinko/shad-ui
 [submodule "3rd/MessagePack-CSharp"]
 	path = 3rd/MessagePack-CSharp
-	url = https://github.com/NodisAI/MessagePack-CSharp
-[submodule "3rd/LiveMarkdown.Avalonia"]
-	path = 3rd/LiveMarkdown.Avalonia
-	url = https://github.com/DearVa/LiveMarkdown.Avalonia
+	url = https://github.com/Sylinko/MessagePack-CSharp
 [submodule "3rd/EverythingNetCore"]
 	path = 3rd/EverythingNetCore
 	url = https://github.com/Sylinko/EverythingNetCore

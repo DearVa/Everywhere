@@ -115,21 +115,6 @@
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>웹 검색 엔진의 서비스 제공자를 선택하세요.</value>
     </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bing" xml:space="preserve">
-        <value>Bing</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_google" xml:space="preserve">
-        <value>Google</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_brave" xml:space="preserve">
-        <value>Brave</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_bocha" xml:space="preserve">
-        <value>Bocha</value>
-    </data>
-    <data name="SettingsSelectionItem_Model_WebSearchProvider_jina" xml:space="preserve">
-        <value>Jina</value>
-    </data>
     <data name="WebSearchEngineProvider_EndPoint_Header" xml:space="preserve">
         <value>API Url</value>
     </data>
@@ -599,6 +584,18 @@
     <data name="CommonSettings_RestartAsAdministrator_Button_Content" xml:space="preserve">
         <value>다시 시작</value>
     </data>
+    <data name="CommonSettings_DebugFeatures_Header" xml:space="preserve">
+        <value>디버그 기능</value>
+    </data>
+    <data name="CommonSettings_DebugFeatures_Description" xml:space="preserve">
+        <value>애플리케이션 설정 파일 및 로그에 접근하고 관리합니다.</value>
+    </data>
+    <data name="CommonSettings_EditSettingsFile_Button_Content" xml:space="preserve">
+        <value>설정 파일 편집</value>
+    </data>
+    <data name="CommonSettings_OpenLogsFolder_Button_Content" xml:space="preserve">
+        <value>로그 폴더 열기</value>
+    </data>
     <data name="Common_Error" xml:space="preserve">
         <value>오류</value>
     </data>
@@ -886,6 +883,9 @@
     </data>
     <data name="HandledChatException_FeatureNotSupport" xml:space="preserve">
         <value>선택한 모델이 요청한 기능을 지원하지 않습니다.</value>
+    </data>
+    <data name="HandledChatException_ImageNotSupport" xml:space="preserve">
+        <value>선택한 모델은 이미지 입력을 지원하지 않습니다.</value>
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>서비스 요청이 시간 초과되었습니다. 다시 시도해 주세요.</value>
@@ -1476,14 +1476,35 @@
     <data name="Common_None" xml:space="preserve">
         <value>없음</value>
     </data>
+    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
+        <value>OpenAI</value>
+    </data>
     <data name="ModelProviderSchema_Anthropic" xml:space="preserve">
         <value>Anthropic</value>
+    </data>
+    <data name="ModelProviderSchema_Google" xml:space="preserve">
+        <value>Google</value>
     </data>
     <data name="ModelProviderSchema_Ollama" xml:space="preserve">
         <value>Ollama</value>
     </data>
-    <data name="ModelProviderSchema_OpenAI" xml:space="preserve">
-        <value>OpenAI</value>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
+        <value>모델이 결과를 반환하는 대기 시간을 초 단위로 설정합니다. 느린 모델(생각 모델 및 로컬 모델 등)의 경우 이 시간을 적절히 연장하는 것을 고려하세요.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>요청 시간 초과 기간</value>
+    </data>
+    <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>사용자가 PowerShell 스크립트 실행에 대한 동의를 거부했습니다.</value>
+    </data>
+    <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
+        <value>프록시 서버 주소가 필요합니다.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointInvalid_ErrorMessage" xml:space="preserve">
+        <value>프록시 서버 주소가 유효하지 않습니다.</value>
+    </data>
+    <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
+        <value>프록시 서버 스킴 '{0}'은(는) 지원되지 않습니다.</value>
     </data>
     <data name="ModelProviderSchema_Google" xml:space="preserve">
         <value>Google</value>
