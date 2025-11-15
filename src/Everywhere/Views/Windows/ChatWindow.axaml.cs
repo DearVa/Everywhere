@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using Avalonia.Automation.Peers;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,7 +11,9 @@ using CommunityToolkit.Mvvm.Input;
 using Everywhere.Chat;
 using Everywhere.Common;
 using Everywhere.Configuration;
+using Everywhere.I18N;
 using Everywhere.Interop;
+using Everywhere.Storage;
 using LiveMarkdown.Avalonia;
 using Microsoft.Extensions.Logging;
 using ShadUI;
@@ -440,30 +443,99 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
 
     private void HandleDragEnter(object? sender, DragEventArgs e)
     {
-        if (!e.DataTransfer.Contains(DataFormat.File))
-        {
-            e.DragEffects = DragDropEffects.None;
-            e.Handled = true;
-            return;
-        }
-
-        e.DragEffects = DragDropEffects.Copy;
-        UpdateDragDropOverlay(e, true);
+        UpdateDragVisuals(e);
         e.Handled = true;
     }
 
     private void HandleDragOver(object? sender, DragEventArgs e)
     {
-        if (!e.DataTransfer.Contains(DataFormat.File) || ViewModel.IsBusy)
+        UpdateDragVisuals(e);
+        e.Handled = true;
+    }
+
+    private void UpdateDragVisuals(DragEventArgs e)
+    {
+        if (ViewModel.IsBusy)
         {
             e.DragEffects = DragDropEffects.None;
+            DragDropOverlay.IsVisible = false;
+            return;
         }
-        else
+
+        var hasFiles = e.DataTransfer.Contains(DataFormat.File);
+        var hasText = e.DataTransfer.Contains(DataFormat.Text);
+
+        if (!hasFiles && !hasText)
+        {
+            e.DragEffects = DragDropEffects.None;
+            DragDropOverlay.IsVisible = false;
+            return;
+        }
+
+        // Check file support
+        if (hasFiles)
+        {
+            var files = e.DataTransfer.TryGetFiles();
+            if (files != null)
+            {
+                var hasSupportedFile = false;
+                var hasUnsupportedFile = false;
+                string? firstMimeType = null;
+
+                foreach (var item in files)
+                {
+                    if (IsSupportedFile(item, out _, out var mimeType))
+                    {
+                        hasSupportedFile = true;
+                        firstMimeType ??= mimeType;
+                    }
+                    else
+                    {
+                        hasUnsupportedFile = true;
+                    }
+                }
+
+                if (hasUnsupportedFile)
+                {
+                    e.DragEffects = DragDropEffects.None;
+                    DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.FileX;
+                    DragDropText.Text = LocaleKey.ChatWindow_DragDrop_Overlay_Unsupported.I18N();
+                    DragDropOverlay.IsVisible = true;
+                    return;
+                }
+
+                if (hasSupportedFile)
+                {
+                    if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount)
+                    {
+                        e.DragEffects = DragDropEffects.None;
+                        DragDropOverlay.IsVisible = false;
+                        return;
+                    }
+
+                    e.DragEffects = DragDropEffects.Copy;
+                    DragDropIcon.Kind = firstMimeType != null && MimeTypeUtilities.IsImage(firstMimeType)
+                        ? Lucide.Avalonia.LucideIconKind.Image
+                        : Lucide.Avalonia.LucideIconKind.FileUp;
+                    DragDropText.Text = LocaleKey.ChatWindow_DragDrop_Overlay_DropFilesHere.I18N();
+                    DragDropOverlay.IsVisible = true;
+                    return;
+                }
+            }
+        }
+
+        // Text only
+        if (hasText)
         {
             e.DragEffects = DragDropEffects.Copy;
+            DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.TextCursorInput;
+            DragDropText.Text = LocaleKey.ChatWindow_DragDrop_Overlay_DropTextHere.I18N();
+            DragDropOverlay.IsVisible = true;
+            return;
         }
-        
-        e.Handled = true;
+
+        e.DragEffects = DragDropEffects.None;
+        DragDropOverlay.IsVisible = false;
     }
 
     private void HandleDragLeave(object? sender, DragEventArgs e)
@@ -475,88 +547,71 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
     private async void HandleDrop(object? sender, DragEventArgs e)
     {
         DragDropOverlay.IsVisible = false;
+        e.Handled = true;
 
         if (ViewModel.IsBusy)
-        {
-            e.Handled = true;
             return;
-        }
 
-        if (!e.DataTransfer.Contains(DataFormat.File))
+        // Handle file drops
+        if (e.DataTransfer.Contains(DataFormat.File))
         {
-            e.Handled = true;
-            return;
-        }
-
-        var files = e.DataTransfer.TryGetFiles();
-        if (files == null)
-        {
-            e.Handled = true;
-            return;
-        }
-
-        var fileList = files.ToList();
-        foreach (var storageItem in fileList)
-        {
-            var uri = storageItem.Path;
-            if (!uri.IsFile) continue;
-
-            if (storageItem.TryGetLocalPath() is not { } localPath) continue;
-            
-            try
+            var files = e.DataTransfer.TryGetFiles();
+            if (files != null)
             {
-                await ViewModel.AddFileFromDragDropAsync(localPath);
-            }
-            catch (Exception ex)
-            {
-                ServiceLocator.Resolve<ILogger<ChatWindow>>()
-                    .LogError(ex, "Failed to add dropped file: {FilePath}", localPath);
-            }
-
-            if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount)
-            {
-                break;
-            }
-        }
-
-        e.Handled = true;
-    }
-
-    private void UpdateDragDropOverlay(DragEventArgs e, bool show)
-    {
-        if (!show)
-        {
-            DragDropOverlay.IsVisible = false;
-            return;
-        }
-
-        var files = e.DataTransfer.TryGetFiles();
-        if (files != null)
-        {
-            var fileList = files.ToList();
-            var firstFile = fileList.FirstOrDefault();
-            
-            if (firstFile?.Path.AbsolutePath is { } path)
-            {
-                var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
-                
-                if (IsImageExtension(extension))
+                foreach (var item in files)
                 {
-                    DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.Image;
-                }
-                else
-                {
-                    DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.FileUp;
+                    if (!IsSupportedFile(item, out var localPath, out _))
+                        continue;
+
+                    try
+                    {
+                        await ViewModel.AddFileFromDragDropAsync(localPath!);
+                    }
+                    catch (Exception ex)
+                    {
+                        ServiceLocator.Resolve<ILogger<ChatWindow>>()
+                            .LogError(ex, "Failed to add dropped file: {FilePath}", localPath);
+                    }
+
+                    if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount)
+                        break;
                 }
             }
+
+            return;
         }
 
-        DragDropOverlay.IsVisible = true;
+        // Handle text drops
+        if (e.DataTransfer.Contains(DataFormat.Text))
+        {
+            var text = e.DataTransfer.TryGetText();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                var currentText = _settings.Internal.ChatInputBoxText ?? string.Empty;
+                var caretIndex = ChatInputBox.CaretIndex;
+                _settings.Internal.ChatInputBoxText = currentText.Insert(caretIndex, text!);
+                ChatInputBox.CaretIndex = caretIndex + text!.Length;
+            }
+        }
     }
 
-    private static bool IsImageExtension(string extension)
+    private static bool IsSupportedFile(IStorageItem storageItem, out string? localPath, out string? mimeType)
     {
-        return extension is ".png" or ".jpg" or ".jpeg" or ".gif" or ".bmp" or ".webp" or ".svg";
+        localPath = null;
+        mimeType = null;
+
+        if (!storageItem.Path.IsFile || storageItem.TryGetLocalPath() is not { } path)
+            return false;
+
+        localPath = path;
+        var extension = Path.GetExtension(path).ToLowerInvariant();
+        if (MimeTypeUtilities.SupportedMimeTypes.TryGetValue(extension, out var mime) && mime is not null)
+        {
+            mimeType = mime;
+            return true;
+        }
+
+        return false;
     }
 
 }

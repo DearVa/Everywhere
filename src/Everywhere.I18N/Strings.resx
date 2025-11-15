@@ -193,6 +193,12 @@
     <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
         <value>Drop files here</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropTextHere" xml:space="preserve">
+        <value>Drop text here to insert</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
+        <value>This item type isn't supported</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement"
         xml:space="preserve">
         <value>Pick Visual Element</value>
