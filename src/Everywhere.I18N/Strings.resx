@@ -190,6 +190,9 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>Close (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>Drop files here</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement"
         xml:space="preserve">
         <value>Pick Visual Element</value>

@@ -178,6 +178,9 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>关闭 (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>在此处拖放文件</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>选择视觉元素</value>
     </data>

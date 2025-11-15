@@ -413,6 +413,17 @@ public sealed partial class ChatWindowViewModel :
         }
     }
 
+    /// <summary>
+    /// Add a file to the chat attachments from drag and drop.
+    /// Checks the attachment count limit.
+    /// </summary>
+    /// <param name="filePath">The file path to add.</param>
+    public async Task AddFileFromDragDropAsync(string filePath)
+    {
+        if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) return;
+        await AddFileUncheckAsync(filePath);
+    }
+
     private static ChatVisualElementAttachment CreateFromVisualElement(IVisualElement element)
     {
         DynamicResourceKey headerKey;

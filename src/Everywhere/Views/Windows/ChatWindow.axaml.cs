@@ -80,6 +80,17 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
         ChatInputBox.TextChanged += HandleChatInputBoxTextChanged;
         ChatInputBox.PastingFromClipboard += HandleChatInputBoxPastingFromClipboard;
+        
+        SetupDragDropHandlers();
+    }
+    
+    private void SetupDragDropHandlers()
+    {
+        DragDrop.SetAllowDrop(this, true);
+        AddHandler(DragDrop.DragEnterEvent, HandleDragEnter);
+        AddHandler(DragDrop.DragOverEvent, HandleDragOver);
+        AddHandler(DragDrop.DragLeaveEvent, HandleDragLeave);
+        AddHandler(DragDrop.DropEvent, HandleDrop);
     }
 
     /// <summary>
@@ -426,4 +437,126 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         // currently we only support http(s) links for safety reasons
         return e.HRef is not { Scheme: "http" or "https" } uri ? Task.CompletedTask : _launcher.LaunchUriAsync(uri);
     }
+
+    private void HandleDragEnter(object? sender, DragEventArgs e)
+    {
+        if (!e.DataTransfer.Contains(DataFormat.File))
+        {
+            e.DragEffects = DragDropEffects.None;
+            e.Handled = true;
+            return;
+        }
+
+        e.DragEffects = DragDropEffects.Copy;
+        UpdateDragDropOverlay(e, true);
+        e.Handled = true;
+    }
+
+    private void HandleDragOver(object? sender, DragEventArgs e)
+    {
+        if (!e.DataTransfer.Contains(DataFormat.File) || ViewModel.IsBusy)
+        {
+            e.DragEffects = DragDropEffects.None;
+        }
+        else
+        {
+            e.DragEffects = DragDropEffects.Copy;
+        }
+        
+        e.Handled = true;
+    }
+
+    private void HandleDragLeave(object? sender, DragEventArgs e)
+    {
+        DragDropOverlay.IsVisible = false;
+        e.Handled = true;
+    }
+
+    private async void HandleDrop(object? sender, DragEventArgs e)
+    {
+        DragDropOverlay.IsVisible = false;
+
+        if (ViewModel.IsBusy)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        if (!e.DataTransfer.Contains(DataFormat.File))
+        {
+            e.Handled = true;
+            return;
+        }
+
+        var files = e.DataTransfer.TryGetFiles();
+        if (files == null)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        var fileList = files.ToList();
+        foreach (var storageItem in fileList)
+        {
+            var uri = storageItem.Path;
+            if (!uri.IsFile) continue;
+
+            if (storageItem.TryGetLocalPath() is not { } localPath) continue;
+            
+            try
+            {
+                await ViewModel.AddFileFromDragDropAsync(localPath);
+            }
+            catch (Exception ex)
+            {
+                ServiceLocator.Resolve<ILogger<ChatWindow>>()
+                    .LogError(ex, "Failed to add dropped file: {FilePath}", localPath);
+            }
+
+            if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount)
+            {
+                break;
+            }
+        }
+
+        e.Handled = true;
+    }
+
+    private void UpdateDragDropOverlay(DragEventArgs e, bool show)
+    {
+        if (!show)
+        {
+            DragDropOverlay.IsVisible = false;
+            return;
+        }
+
+        var files = e.DataTransfer.TryGetFiles();
+        if (files != null)
+        {
+            var fileList = files.ToList();
+            var firstFile = fileList.FirstOrDefault();
+            
+            if (firstFile?.Path.AbsolutePath is { } path)
+            {
+                var extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
+                
+                if (IsImageExtension(extension))
+                {
+                    DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.Image;
+                }
+                else
+                {
+                    DragDropIcon.Kind = Lucide.Avalonia.LucideIconKind.FileUp;
+                }
+            }
+        }
+
+        DragDropOverlay.IsVisible = true;
+    }
+
+    private static bool IsImageExtension(string extension)
+    {
+        return extension is ".png" or ".jpg" or ".jpeg" or ".gif" or ".bmp" or ".webp" or ".svg";
+    }
+
 }
