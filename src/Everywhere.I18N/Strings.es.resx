@@ -1515,4 +1515,7 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>El esquema del servidor proxy '{0}' no es compatible.</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>El tamaño del archivo ({0}) excede el tamaño máximo permitido ({1}).</value>
+    </data>
 </root>

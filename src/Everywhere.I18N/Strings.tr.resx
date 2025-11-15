@@ -1509,4 +1509,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>Proxy sunucu şeması '{0}' desteklenmiyor.</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>Dosya boyutu ({0}), izin verilen maksimum boyutu ({1}) aşıyor.</value>
+    </data>
 </root>

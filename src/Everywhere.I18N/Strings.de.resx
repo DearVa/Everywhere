@@ -1511,4 +1511,7 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>Proxy-Server-Schema '{0}' wird nicht unterstützt.</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>Die Dateigröße ({0}) überschreitet die maximal erlaubte Größe ({1}).</value>
+    </data>
 </root>

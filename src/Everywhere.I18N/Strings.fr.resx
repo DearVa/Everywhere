@@ -1515,4 +1515,7 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>Le schéma du serveur proxy '{0}' n'est pas pris en charge.</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>La taille du fichier ({0}) dépasse la taille maximale autorisée ({1}).</value>
+    </data>
 </root>

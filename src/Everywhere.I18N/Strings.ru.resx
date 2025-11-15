@@ -1515,4 +1515,7 @@
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>Схема прокси-сервера '{0}' не поддерживается.</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>Размер файла ({0}) превышает максимально допустимый размер ({1}).</value>
+    </data>
 </root>

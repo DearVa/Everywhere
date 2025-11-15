@@ -1515,4 +1515,7 @@
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>プロキシサーバーのスキーム '{0}' はサポートされていません。</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>ファイルサイズ ({0}) が許可されている最大サイズ ({1}) を超えています。</value>
+    </data>
 </root>

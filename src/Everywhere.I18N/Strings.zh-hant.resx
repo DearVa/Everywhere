@@ -1515,4 +1515,7 @@
     <data name="DynamicWebProxy_CreateProxy_EndpointSchemeUnsupported_ErrorMessage" xml:space="preserve">
         <value>代理伺服器方案 '{0}' 不受支援。</value>
     </data>
+    <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
+        <value>檔案大小 ({0}) 超過允許的最大大小 ({1})。</value>
+    </data>
 </root>
