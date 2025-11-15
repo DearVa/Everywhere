@@ -178,6 +178,15 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>닫기 (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>여기에 파일을 드롭하세요</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropTextHere" xml:space="preserve">
+        <value>여기에 텍스트를 드롭하여 삽입하세요</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
+        <value>이 항목 유형은 지원되지 않습니다</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>시각 요소 선택</value>
     </data>

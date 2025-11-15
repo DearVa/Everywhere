@@ -178,6 +178,15 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>閉じる (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>ここにファイルをドロップ</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropTextHere" xml:space="preserve">
+        <value>挿入するためにここにテキストをドロップ</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
+        <value>このアイテムタイプはサポートされていません</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>ビジュアル要素を選択</value>
     </data>

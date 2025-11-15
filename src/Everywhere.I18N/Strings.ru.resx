@@ -178,6 +178,15 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>Закрыть (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>Перетащите файлы сюда</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropTextHere" xml:space="preserve">
+        <value>Перетащите текст сюда для вставки</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
+        <value>Этот тип элемента не поддерживается</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>Выбрать визуальный элемент</value>
     </data>

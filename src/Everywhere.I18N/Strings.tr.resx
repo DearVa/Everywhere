@@ -177,6 +177,15 @@
     <data name="ChatWindow_Close_ToolTip" xml:space="preserve">
         <value>Kapat (Esc)</value>
     </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropFilesHere" xml:space="preserve">
+        <value>Dosyaları buraya bırakın</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_DropTextHere" xml:space="preserve">
+        <value>Ekleme için metni buraya bırakın</value>
+    </data>
+    <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
+        <value>Bu öğe türü desteklenmiyor</value>
+    </data>
     <data name="ChatWindow_ChatInputBox_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>Görsel Elemanı Seç</value>
     </data>
