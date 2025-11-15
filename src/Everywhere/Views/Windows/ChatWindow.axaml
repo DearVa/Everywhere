@@ -1075,5 +1075,25 @@
         </ScrollViewer>
       </Grid>
     </Panel>
+
+    <Border
+      x:Name="DragDropOverlay" Grid.Row="0"
+      Grid.RowSpan="2" Background="#CC000000"
+      IsVisible="False">
+      <StackPanel
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        Spacing="16">
+        <LucideIcon
+          x:Name="DragDropIcon" HorizontalAlignment="Center"
+          Foreground="{DynamicResource ForegroundColor}"
+          Kind="FileUp"
+          Size="64"/>
+        <TextBlock
+          x:Name="DragDropText" HorizontalAlignment="Center"
+          FontSize="18" FontWeight="SemiBold"
+          Foreground="{DynamicResource ForegroundColor}"
+          Text="{I18N {x:Static LocaleKey.ChatWindow_DragDrop_Overlay_DropFilesHere}}"/>
+      </StackPanel>
+    </Border>
   </Grid>
 </v:ReactiveShadWindow>
