@@ -870,6 +870,9 @@
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>API anahtarı eksik veya geçersiz.</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>API kullanım kotalarını aşıyor, bu genellikle mevcut model için yetersiz bakiye veya erişim izinlerinin eksik olduğunu gösterir.</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>İstek çok sık, hesap bakiyesi yetersiz veya ağ/bölge desteklenmiyor.</value>
     </data>
@@ -890,6 +893,9 @@
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Servise yapılan istek zaman aşımına uğradı. Lütfen tekrar deneyin.</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>Bir ağ hatası oluştu. Lütfen ağ veya proxy ayarlarınızı kontrol edin veya hizmet sağlayıcınız bölgenizi desteklemiyor olabilir.</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>Hizmet şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</value>
@@ -968,6 +974,9 @@
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>Kabuk Betiğini Çalıştır</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>Bağlam uzunluğu sınırı aşıldı. Yeni bir sohbet oluşturmayı veya daha uzun bir bağlamı olan bir modele geçmeyi deneyin.</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>İşlem Erişimi</value>

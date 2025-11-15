@@ -875,6 +875,9 @@
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>APIキーが欠落しているか無効です。</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>API使用量の制限を超えています。これは通常、残高不足または現在のモデルへのアクセス権がないことを示しています。</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>リクエストが頻繁すぎる、アカウント残高が不足している、またはネットワーク/地域がサポートされていない。</value>
     </data>
@@ -895,6 +898,9 @@
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>サービスへのリクエストがタイムアウトしました。もう一度お試しください。</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>ネットワークエラーが発生しました。ネットワークまたはプロキシ設定を確認するか、サービスプロバイダーがあなたの地域をサポートしていない可能性があります。</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>サービスは現在利用できません。後でもう一度お試しください。</value>
@@ -973,6 +979,9 @@
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>シェルスクリプトを実行</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>コンテキストの長さが制限を超えています。新しいチャットを作成するか、より長いコンテキストを持つモデルに切り替えてください。</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>プロセスにアクセス</value>

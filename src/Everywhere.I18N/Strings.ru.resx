@@ -875,6 +875,9 @@
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>Отсутствует или недействительный API ключ.</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>Превышены квоты использования API, что обычно указывает на недостаточный баланс или отсутствие прав доступа для текущей модели.</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>Запрос слишком частый, недостаточный баланс счета или сеть/регион не поддерживается.</value>
     </data>
@@ -895,6 +898,9 @@
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Запрос к сервису превысил время ожидания. Пожалуйста, попробуйте снова.</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>Произошла ошибка сети. Пожалуйста, проверьте свои сетевые или прокси-настройки, или ваш провайдер услуг может не поддерживать ваш регион.</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>Сервис временно недоступен. Пожалуйста, попробуйте позже.</value>
@@ -973,6 +979,9 @@
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>Выполнение shell-скрипта</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>Длина контекста превышает лимит. Попробуйте создать новый чат или переключиться на модель с более длинным контекстом.</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>Доступ к процессу</value>

@@ -875,6 +875,9 @@ Mi inteligencia proviene de poderosos modelos de lenguaje grande (LLMs), que son
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>La clave API falta o es inválida.</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>Se han superado las cuotas de uso de la API, lo que indica típicamente un saldo insuficiente o falta de permisos de acceso para el modelo actual.</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>Solicitud demasiado frecuente, saldo insuficiente o red/región no admitida.</value>
     </data>
@@ -895,6 +898,9 @@ Mi inteligencia proviene de poderosos modelos de lenguaje grande (LLMs), que son
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>La solicitud al servicio ha expirado. Por favor, inténtalo de nuevo.</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>Ha ocurrido un error de red. Por favor, verifica tu red o la configuración del proxy, o tu proveedor de servicios puede no soportar tu región.</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>El servicio no está disponible en este momento. Por favor, inténtalo más tarde.</value>
@@ -973,6 +979,9 @@ Mi inteligencia proviene de poderosos modelos de lenguaje grande (LLMs), que son
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>Ejecutar script de shell</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>La longitud del contexto excede el límite. Intenta crear un nuevo chat o cambiar a un modelo con un contexto más largo.</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>Acceder al proceso</value>

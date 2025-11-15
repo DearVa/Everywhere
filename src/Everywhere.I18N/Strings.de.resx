@@ -871,6 +871,9 @@
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>API-Schlüssel fehlt oder ist ungültig.</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>Die API-Nutzungsquoten wurden überschritten, was typischerweise auf ein unzureichendes Guthaben oder fehlende Zugriffsberechtigungen für das aktuelle Modell hinweist.</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>Anfrage zu häufig, Kontostand unzureichend oder Netzwerk/Region nicht unterstützt.</value>
     </data>
@@ -891,6 +894,9 @@
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>Anforderung an den Dienst ist abgelaufen. Bitte versuchen Sie es erneut.</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>Ein Netzwerkfehler ist aufgetreten. Bitte überprüfen Sie Ihre Netzwerk- oder Proxy-Einstellungen, oder Ihr Dienstanbieter unterstützt möglicherweise Ihre Region nicht.</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>Dienst ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.</value>
@@ -969,6 +975,9 @@
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>Shell-Skript ausführen</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>Die Kontextlänge überschreitet das Limit. Versuchen Sie, einen neuen Chat zu erstellen oder zu einem Modell mit längerer Kontextlänge zu wechseln.</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>Prozesszugriff</value>

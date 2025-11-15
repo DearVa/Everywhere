@@ -875,6 +875,9 @@
     <data name="HandledChatException_InvalidApiKey" xml:space="preserve">
         <value>API密鑰缺失或無效。</value>
     </data>
+    <data name="HandledChatException_QuotaExceeded" xml:space="preserve">
+        <value>超出 API 使用配額，這通常表示餘額不足或當前模型的訪問權限不足。</value>
+    </data>
     <data name="HandledChatException_RateLimit" xml:space="preserve">
         <value>請求過於頻繁、帳戶金額不足或者網路或地區不受支援。</value>
     </data>
@@ -895,6 +898,9 @@
     </data>
     <data name="HandledChatException_Timeout" xml:space="preserve">
         <value>向服務發出的請求已超時。請再試一次。</value>
+    </data>
+    <data name="HandledChatException_NetworkError" xml:space="preserve">
+        <value>發生網絡錯誤。請檢查您的網絡或代理設置，或者您的服務提供商可能不支持您的地區。</value>
     </data>
     <data name="HandledChatException_ServiceUnavailable" xml:space="preserve">
         <value>服務目前不可用。請稍後再試。</value>
@@ -973,6 +979,9 @@
     </data>
     <data name="ChatFunctionPermissions_ShellExecute" xml:space="preserve">
         <value>執行 Shell 指令</value>
+    </data>
+    <data name="HandledChatException_ContextLengthExceeded" xml:space="preserve">
+        <value>上下文長度超過限制。請嘗試創建新的聊天或切換到具有更長上下文的模型。</value>
     </data>
     <data name="ChatFunctionPermissions_ProcessAccess" xml:space="preserve">
         <value>存取程序</value>
