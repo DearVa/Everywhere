@@ -46,6 +46,9 @@
     <data name="SettingsSelectionItem_CommonSettings_Theme_Light" xml:space="preserve">
         <value>ライト</value>
     </data>
+    <data name="ProxySettings_IsEnabled_Header" xml:space="preserve">
+        <value>カスタムプロキシを使用</value>
+    </data>
     <data name="ProxySettings_IsEnabled_Description" xml:space="preserve">
         <value>システムプロキシをアプリケーション専用のプロキシで上書きします。</value>
     </data>
@@ -55,11 +58,20 @@
     <data name="ProxySettings_Endpoint_Description" xml:space="preserve">
         <value>プロキシURIを入力します。例: http://127.0.0.1:7890。</value>
     </data>
+    <data name="ProxySettings_BypassOnLocal_Header" xml:space="preserve">
+        <value>ローカルアドレスをバイパス</value>
+    </data>
     <data name="ProxySettings_BypassOnLocal_Description" xml:space="preserve">
         <value>イントラネットおよびループバックアドレスへのリクエストを直接送信します。</value>
     </data>
+    <data name="ProxySettings_BypassList_Header" xml:space="preserve">
+        <value>バイパスリスト</value>
+    </data>
     <data name="ProxySettings_BypassList_Description" xml:space="preserve">
         <value>任意。1行につき1パターン; 一致するホストはプロキシをバイパスします。</value>
+    </data>
+    <data name="ProxySettings_UseAuthentication_Header" xml:space="preserve">
+        <value>プロキシ認証</value>
     </data>
     <data name="ProxySettings_UseAuthentication_Description" xml:space="preserve">
         <value>プロキシが認証を要求する場合に資格情報を有効にします。</value>
@@ -527,14 +539,23 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>オンラインモデルの場合、対応する公式から取得する必要があります。詳細はガイドを参照してください。</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
+        <value>画像入力サポート</value>
+    </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
         <value>チャットコンテキストで画像をアップロードできます。何をしているかわからない場合はデフォルト値のままにしてください。モデルが画像入力をサポートしていない場合、これを有効にすると失敗する可能性があります。</value>
+    </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+        <value>ツール使用サポート</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
         <value>モデルはチャットコンテキストで設定したツールを使用できます。何をしているかわからない場合はデフォルト値のままにしてください。モデルが関数呼び出しをサポートしていない場合、これを有効にすると失敗する可能性があります。</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
         <value>モデルは返信前に考えることができます。何をしているかわからない場合はデフォルト値のままにしてください。モデルが深い思考をサポートしていない場合、これを有効にすると失敗する可能性があります。</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+        <value>深い思考サポート</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
         <value>単一チャットの最大コンテキスト長です。何をしているかわからない場合はデフォルト値のままにしてください。デフォルト値より大きく設定すると失敗する可能性があります。</value>
@@ -823,6 +844,9 @@
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>テレメトリを有効にする</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>診断</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
         <value>改善のために、「テレメトリ」を有効にして匿名データを収集する必要があります。このデータは分析のみに使用され、あなたの個人を特定できる情報を含んだり推測したりすることはありません。必要なデータのみを送信することも選択できます。このオプションは基本機能に影響を与えません。</value>
@@ -1475,6 +1499,9 @@
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
         <value>モデルが結果を返すまでの待機時間を秒単位で設定します。遅いモデル（思考モデルやローカルモデルなど）の場合は、この時間を適切に延長することを検討してください。</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>リクエストタイムアウト</value>
     </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
         <value>ユーザーがPowerShellスクリプトの実行に対する同意を拒否しました。</value>

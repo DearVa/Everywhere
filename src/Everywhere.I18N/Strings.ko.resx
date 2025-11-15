@@ -46,6 +46,9 @@
     <data name="SettingsSelectionItem_CommonSettings_Theme_Light" xml:space="preserve">
         <value>라이트</value>
     </data>
+    <data name="ProxySettings_IsEnabled_Header" xml:space="preserve">
+        <value>사용자 지정 프록시 사용</value>
+    </data>
     <data name="ProxySettings_IsEnabled_Description" xml:space="preserve">
         <value>시스템 프록시를 애플리케이션 전용 프록시로 대체합니다.</value>
     </data>
@@ -55,11 +58,20 @@
     <data name="ProxySettings_Endpoint_Description" xml:space="preserve">
         <value>프록시 URI를 입력하세요. 예: http://127.0.0.1:7890.</value>
     </data>
+    <data name="ProxySettings_BypassOnLocal_Header" xml:space="preserve">
+        <value>로컬 주소 우회</value>
+    </data>
     <data name="ProxySettings_BypassOnLocal_Description" xml:space="preserve">
         <value>인트라넷 및 루프백 주소로의 요청을 직접 전송합니다.</value>
     </data>
+    <data name="ProxySettings_BypassList_Header" xml:space="preserve">
+        <value>우회 목록</value>
+    </data>
     <data name="ProxySettings_BypassList_Description" xml:space="preserve">
         <value>선택 사항입니다. 한 줄에 하나의 패턴; 일치하는 호스트는 프록시를 우회합니다.</value>
+    </data>
+    <data name="ProxySettings_UseAuthentication_Header" xml:space="preserve">
+        <value>프록시 인증</value>
     </data>
     <data name="ProxySettings_UseAuthentication_Description" xml:space="preserve">
         <value>프록시가 인증을 요구할 때 자격 증명을 활성화합니다.</value>
@@ -527,14 +539,23 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>온라인 모델의 경우 해당 공식 사이트에서 받아야 합니다. 자세한 내용은 가이드를 참조하세요.</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
+        <value>이미지 입력 지원</value>
+    </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
         <value>채팅 컨텍스트에서 이미지를 업로드할 수 있습니다. 무엇을 해야 할지 모를 경우 기본값으로 두세요. 모델이 이미지 입력을 지원하지 않으면 이 기능을 활성화하면 실패할 수 있습니다.</value>
+    </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+        <value>도구 사용 지원</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
         <value>모델이 채팅 컨텍스트에서 구성한 도구를 사용할 수 있습니다. 무엇을 해야 할지 모를 경우 기본값으로 두세요. 모델이 함수 호출을 지원하지 않으면 이 기능을 활성화하면 실패할 수 있습니다.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
         <value>모델이 응답 전에 깊이 생각할 수 있습니다. 무엇을 해야 할지 모를 경우 기본값으로 두세요. 모델이 깊은 사고를 지원하지 않으면 이 기능을 활성화하면 실패할 수 있습니다.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+        <value>심층 사고 지원</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
         <value>단일 채팅의 최대 컨텍스트 길이입니다. 무엇을 해야 할지 모를 경우 기본값으로 두세요. 기본값보다 크게 설정하면 실패할 수 있습니다.</value>
@@ -823,6 +844,9 @@
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>텔레메트리 활성화</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>진단</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
         <value>개선을 위해 '텔레메트리'를 활성화하여 익명 데이터를 수집해야 합니다. 이 데이터는 분석 목적으로만 사용되며, 개인 식별 정보를 포함하거나 추론할 수 없습니다. 필수 데이터만 전송할 수 있으며, 이 옵션은 핵심 기능에 영향을 미치지 않습니다.</value>
@@ -1475,6 +1499,9 @@
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
         <value>모델이 결과를 반환하는 대기 시간을 초 단위로 설정합니다. 느린 모델(생각 모델 및 로컬 모델 등)의 경우 이 시간을 적절히 연장하는 것을 고려하세요.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>요청 시간 초과</value>
     </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
         <value>사용자가 PowerShell 스크립트 실행에 대한 동의를 거부했습니다.</value>

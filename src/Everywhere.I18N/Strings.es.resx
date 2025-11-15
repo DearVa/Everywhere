@@ -46,6 +46,9 @@
     <data name="SettingsSelectionItem_CommonSettings_Theme_Light" xml:space="preserve">
         <value>Claro</value>
     </data>
+    <data name="ProxySettings_IsEnabled_Header" xml:space="preserve">
+        <value>Usar Proxy Personalizado</value>
+    </data>
     <data name="ProxySettings_IsEnabled_Description" xml:space="preserve">
         <value>Sobrescribir el proxy del sistema con un proxy específico de la aplicación.</value>
     </data>
@@ -55,11 +58,20 @@
     <data name="ProxySettings_Endpoint_Description" xml:space="preserve">
         <value>Introduce la URI del proxy, por ejemplo http://127.0.0.1:7890.</value>
     </data>
+    <data name="ProxySettings_BypassOnLocal_Header" xml:space="preserve">
+        <value>Omitir Direcciones Locales</value>
+    </data>
     <data name="ProxySettings_BypassOnLocal_Description" xml:space="preserve">
         <value>Enviar solicitudes a direcciones de intranet y loopback directamente.</value>
     </data>
+    <data name="ProxySettings_BypassList_Header" xml:space="preserve">
+        <value>Lista de Omitidos</value>
+    </data>
     <data name="ProxySettings_BypassList_Description" xml:space="preserve">
         <value>Opcional. Un patrón por línea; los hosts coincidentes omiten el proxy.</value>
+    </data>
+    <data name="ProxySettings_UseAuthentication_Header" xml:space="preserve">
+        <value>Autenticación de Proxy</value>
     </data>
     <data name="ProxySettings_UseAuthentication_Description" xml:space="preserve">
         <value>Habilitar credenciales cuando el proxy requiera autenticación.</value>
@@ -527,14 +539,23 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Para modelos en línea, necesitas obtenerla del sitio oficial correspondiente, por favor consulta la guía para más detalles.</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
+        <value>Soporte de Entrada de Imagen</value>
+    </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
         <value>Puedes subir imágenes en el contexto del chat. Si no estás seguro de lo que haces, mantén el valor predeterminado. Si el modelo no soporta entradas de imágenes, habilitar esto puede causar fallos.</value>
+    </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+        <value>Soporte de Uso de Herramientas</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
         <value>El modelo puede usar las herramientas que configuraste en el contexto del chat. Si no estás seguro de lo que haces, mantén el valor predeterminado. Si el modelo no soporta llamadas a funciones, habilitar esto puede causar fallos.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
         <value>El modelo puede pensar antes de responder. Si no estás seguro de lo que haces, mantén el valor predeterminado. Si el modelo no soporta pensamiento profundo, habilitar esto puede causar fallos.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+        <value>Soporte de Pensamiento Profundo</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
         <value>La longitud máxima del contexto de un solo chat. Si no estás seguro de lo que haces, mantén el valor predeterminado. Configurar esto más grande que el valor predeterminado puede causar fallos.</value>
@@ -823,6 +844,9 @@ Mi inteligencia proviene de poderosos modelos de lenguaje grande (LLMs), que son
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>Habilitar telemetría</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Diagnósticos</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
         <value>Para ayudarnos a mejorar, necesitamos la “telemetría” para recopilar datos anónimos. Estos datos se utilizan únicamente para análisis y no contienen ni permiten inferir ninguna información personal identificable sobre ti. Puedes elegir enviar solo los datos necesarios; esta opción no afectará la funcionalidad principal.</value>
@@ -1475,6 +1499,9 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
         <value>Establece el tiempo de espera para que el modelo devuelva resultados, medido en segundos. Para modelos más lentos (como modelos de pensamiento y modelos locales), considera extender este tiempo adecuadamente.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>Tiempo de Espera de Solicitud</value>
     </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
         <value>El usuario denegó el consentimiento para la ejecución del script de PowerShell.</value>

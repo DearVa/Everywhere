@@ -46,6 +46,9 @@
     <data name="SettingsSelectionItem_CommonSettings_Theme_Light" xml:space="preserve">
         <value>Светлая</value>
     </data>
+    <data name="ProxySettings_IsEnabled_Header" xml:space="preserve">
+        <value>Использовать пользовательский прокси</value>
+    </data>
     <data name="ProxySettings_IsEnabled_Description" xml:space="preserve">
         <value>Переопределите системный прокси с помощью прокси, специфичного для приложения.</value>
     </data>
@@ -55,11 +58,20 @@
     <data name="ProxySettings_Endpoint_Description" xml:space="preserve">
         <value>Введите URI прокси, например http://127.0.0.1:7890.</value>
     </data>
+    <data name="ProxySettings_BypassOnLocal_Header" xml:space="preserve">
+        <value>Игнорировать локальные адреса</value>
+    </data>
     <data name="ProxySettings_BypassOnLocal_Description" xml:space="preserve">
         <value>Отправлять запросы на адреса интрасети и обратной связи напрямую.</value>
     </data>
+    <data name="ProxySettings_BypassList_Header" xml:space="preserve">
+        <value>Список исключений</value>
+    </data>
     <data name="ProxySettings_BypassList_Description" xml:space="preserve">
         <value>Необязательно. Один шаблон на строку; хосты, соответствующие шаблону, обходят прокси.</value>
+    </data>
+    <data name="ProxySettings_UseAuthentication_Header" xml:space="preserve">
+        <value>Аутентификация прокси</value>
     </data>
     <data name="ProxySettings_UseAuthentication_Description" xml:space="preserve">
         <value>Включите учетные данные, если прокси требует аутентификации.</value>
@@ -527,14 +539,23 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Для онлайн-моделей необходимо получить у соответствующего официального представителя, пожалуйста, обратитесь к руководству для получения подробной информации.</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
+        <value>Поддержка ввода изображений</value>
+    </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
         <value>Вы можете загружать изображения в контексте чата. Если вы не уверены, что делаете, оставьте значение по умолчанию. Если модель не поддерживает ввод изображений, включение этой функции может привести к сбоям.</value>
+    </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+        <value>Поддержка использования инструментов</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
         <value>Модель может использовать инструменты, которые вы настроили в контексте чата. Если вы не уверены, что делаете, оставьте значение по умолчанию. Если модель не поддерживает вызов функций, включение этой функции может привести к сбоям.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
         <value>Модель может обдумывать перед ответами. Если вы не уверены, что делаете, оставьте значение по умолчанию. Если модель не поддерживает глубокое мышление, включение этой функции может привести к сбоям.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+        <value>Поддержка глубокого мышления</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
         <value>Максимальная длина контекста одного чата. Если вы не уверены, что делаете, оставьте значение по умолчанию. Установка этого значения больше, чем значение по умолчанию, может привести к сбоям.</value>
@@ -823,6 +844,9 @@
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>Включить телеметрию</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Диагностика</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
         <value>Чтобы помочь нам улучшиться, нам нужна «телеметрия» для сбора анонимных данных. Эти данные используются исключительно для анализа и не содержат и не позволяют делать выводы о какой-либо личной информации о вас. Вы можете выбрать отправку только необходимых данных; эта опция не повлияет на основную функциональность.</value>
@@ -1475,6 +1499,9 @@
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
         <value>Установите время ожидания для получения результатов от модели, измеряемое в секундах. Для более медленных моделей (таких как модели размышлений и локальные модели) рассмотрите возможность соответствующего увеличения этого времени.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>Тайм-аут запроса</value>
     </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
         <value>Пользователь отказал в согласии на выполнение скрипта PowerShell.</value>

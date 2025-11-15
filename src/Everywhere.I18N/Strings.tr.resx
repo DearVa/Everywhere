@@ -45,6 +45,9 @@
     <data name="SettingsSelectionItem_CommonSettings_Theme_Light" xml:space="preserve">
         <value>Aydınlık</value>
     </data>
+    <data name="ProxySettings_IsEnabled_Header" xml:space="preserve">
+        <value>Özel Proxy Kullan</value>
+    </data>
     <data name="ProxySettings_IsEnabled_Description" xml:space="preserve">
         <value>Sistem proxy'sini uygulamaya özgü bir proxy ile değiştirin.</value>
     </data>
@@ -54,11 +57,20 @@
     <data name="ProxySettings_Endpoint_Description" xml:space="preserve">
         <value>Proxy URI'sini girin, örneğin http://127.0.0.1:7890.</value>
     </data>
+    <data name="ProxySettings_BypassOnLocal_Header" xml:space="preserve">
+        <value>Yerel Adresleri Atla</value>
+    </data>
     <data name="ProxySettings_BypassOnLocal_Description" xml:space="preserve">
         <value>İntranet ve loopback adreslerine istekleri doğrudan gönderin.</value>
     </data>
+    <data name="ProxySettings_BypassList_Header" xml:space="preserve">
+        <value>Atlama Listesi</value>
+    </data>
     <data name="ProxySettings_BypassList_Description" xml:space="preserve">
         <value>Opsiyonel. Her satıra bir desen; eşleşen hostlar proxy'i atlar.</value>
+    </data>
+    <data name="ProxySettings_UseAuthentication_Header" xml:space="preserve">
+        <value>Proxy Kimlik Doğrulaması</value>
     </data>
     <data name="ProxySettings_UseAuthentication_Description" xml:space="preserve">
         <value>Proxy kimlik doğrulama gerektirdiğinde kimlik bilgilerini etkinleştirin.</value>
@@ -525,14 +537,23 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Çevrimiçi modeller için ilgili resmi kaynaktan almanız gerekir, ayrıntılar için lütfen kılavuzu inceleyin.</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
+        <value>Görüntü Girişi Desteği</value>
+    </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
         <value>Sohbet bağlamında resim yükleyebilirsiniz. Ne yaptığınızı bilmiyorsanız varsayılan değeri koruyun. Model görüntü girişini desteklemiyorsa bu özelliği etkinleştirmek hatalara yol açabilir.</value>
+    </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+        <value>Araç Kullanım Desteği</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
         <value>Model, sohbet bağlamında yapılandırdığınız araçları kullanabilir. Ne yaptığınızı bilmiyorsanız varsayılan değeri koruyun. Model fonksiyon çağrısını desteklemiyorsa bu özelliği etkinleştirmek hatalara yol açabilir.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
         <value>Model yanıtlar öncesinde düşünebilir. Ne yaptığınızı bilmiyorsanız varsayılan değeri koruyun. Model derin düşünmeyi desteklemiyorsa bu özelliği etkinleştirmek hatalara yol açabilir.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+        <value>Derin Düşünme Desteği</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
         <value>Tek bir sohbetin maksimum bağlam uzunluğu. Ne yaptığınızı bilmiyorsanız varsayılan değeri koruyun. Bu değeri varsayılanın üzerinde ayarlamak hatalara yol açabilir.</value>
@@ -818,6 +839,9 @@
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>Telemetriyi etkinleştir</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Tanı Verileri</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
         <value>Bizim gelişmemizi desteklemek için anonim veri toplamak üzere “telemetri”ye ihtiyacımız var. Bu veriler yalnızca analiz amaçlıdır ve sizinle ilgili kişisel tanımlanabilir bilgi içermez veya çıkarılmasına izin vermez. Yalnızca gerekli veriyi göndermeyi seçebilirsiniz; bu seçenek temel işlevselliği etkilemeyecektir.</value>
@@ -1469,6 +1493,9 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="CustomAssistant_RequestTimeoutSeconds_Description" xml:space="preserve">
         <value>Modelin sonuç döndürmesi için bekleme süresini ayarlayın, saniye cinsinden ölçülür. Daha yavaş modeller (düşünme modelleri ve yerel modeller gibi) için bu süreyi uygun şekilde uzatmayı düşünün.</value>
+    </data>
+    <data name="CustomAssistant_RequestTimeoutSeconds_Header" xml:space="preserve">
+        <value>İstek Zaman Aşımı</value>
     </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage" xml:space="preserve">
         <value>Kullanıcı PowerShell betiği çalıştırma iznini reddetti.</value>
