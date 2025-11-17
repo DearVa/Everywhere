@@ -1518,4 +1518,10 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
         <value>La dimensione del file ({0}) supera la dimensione massima consentita ({1}).</value>
     </data>
+    <data name="CommonSettings_FontSize_Header" xml:space="preserve">
+        <value>Dimensione del carattere</value>
+    </data>
+    <data name="CommonSettings_FontSize_Description" xml:space="preserve">
+        <value>Regola la dimensione globale del carattere.</value>
+    </data>
 </root>

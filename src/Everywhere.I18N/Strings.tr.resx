@@ -1512,4 +1512,10 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
         <value>Dosya boyutu ({0}), izin verilen maksimum boyutu ({1}) aşıyor.</value>
     </data>
+    <data name="CommonSettings_FontSize_Header" xml:space="preserve">
+        <value>Yazı Tipi Boyutu</value>
+    </data>
+    <data name="CommonSettings_FontSize_Description" xml:space="preserve">
+        <value>Küresel yazı tipi görüntü boyutunu ayarlayın.</value>
+    </data>
 </root>

@@ -1518,4 +1518,10 @@
     <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
         <value>파일 크기 ({0})가 허용된 최대 크기 ({1})를 초과했습니다.</value>
     </data>
+    <data name="CommonSettings_FontSize_Header" xml:space="preserve">
+        <value>글꼴 크기</value>
+    </data>
+    <data name="CommonSettings_FontSize_Description" xml:space="preserve">
+        <value>전역 글꼴 표시 크기를 조정합니다.</value>
+    </data>
 </root>

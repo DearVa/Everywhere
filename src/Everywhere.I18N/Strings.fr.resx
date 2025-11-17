@@ -1518,4 +1518,10 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="ChatFileAttachment_Create_FileTooLarge" xml:space="preserve">
         <value>La taille du fichier ({0}) dépasse la taille maximale autorisée ({1}).</value>
     </data>
+    <data name="CommonSettings_FontSize_Header" xml:space="preserve">
+        <value>Taille de police</value>
+    </data>
+    <data name="CommonSettings_FontSize_Description" xml:space="preserve">
+        <value>Ajustez la taille d'affichage de la police globale.</value>
+    </data>
 </root>
