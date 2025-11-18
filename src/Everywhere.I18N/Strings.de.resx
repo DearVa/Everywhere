@@ -1520,4 +1520,13 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>Passen Sie die globale Schriftanzeigengröße an.</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>Duplizieren</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Den ausgewählten Assistenten duplizieren.</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>Kopieren</value>
+    </data>
 </root>

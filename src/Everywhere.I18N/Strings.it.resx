@@ -1524,4 +1524,13 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>Regola la dimensione globale del carattere.</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>Duplica</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Duplica l'assistente selezionato.</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>Copia</value>
+    </data>
 </root>

@@ -1524,4 +1524,13 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>Ajusta el tamaño de visualización de la fuente global.</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>Duplicar</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Duplicar el asistente seleccionado.</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>Copiar</value>
+    </data>
 </root>

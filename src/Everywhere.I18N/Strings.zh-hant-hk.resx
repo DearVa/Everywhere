@@ -1524,4 +1524,13 @@
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>調整全局字體顯示大小。</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>複製</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>複製所選的助手。</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>複製</value>
+    </data>
 </root>

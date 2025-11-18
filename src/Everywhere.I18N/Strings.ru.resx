@@ -1524,4 +1524,13 @@
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>Настройте общий размер отображения шрифта.</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>Дублировать</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Дублировать выбранного помощника.</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>Копировать</value>
+    </data>
 </root>

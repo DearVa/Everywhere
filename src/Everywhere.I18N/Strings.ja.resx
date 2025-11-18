@@ -1524,4 +1524,13 @@
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>グローバルフォント表示サイズを調整します。</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>複製</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>選択したアシスタントを複製します。</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>コピー</value>
+    </data>
 </root>

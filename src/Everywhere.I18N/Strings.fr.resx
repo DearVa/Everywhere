@@ -1524,4 +1524,13 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="CommonSettings_FontSize_Description" xml:space="preserve">
         <value>Ajustez la taille d'affichage de la police globale.</value>
     </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_Content" xml:space="preserve">
+        <value>Dupliquer</value>
+    </data>
+    <data name="CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Dupliquer l'assistant sélectionné.</value>
+    </data>
+    <data name="Common_Copy" xml:space="preserve">
+        <value>Copier</value>
+    </data>
 </root>
