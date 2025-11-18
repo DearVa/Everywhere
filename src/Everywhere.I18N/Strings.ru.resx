@@ -1533,4 +1533,13 @@
     <data name="Common_Copy" xml:space="preserve">
         <value>Копировать</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>Редактировать</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>Редактирование сообщения...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>Отменить редактирование (Esc)</value>
+    </data>
 </root>

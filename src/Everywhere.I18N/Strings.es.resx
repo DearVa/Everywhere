@@ -1533,4 +1533,13 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="Common_Copy" xml:space="preserve">
         <value>Copiar</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>Editar</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>Editando mensaje...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>Cancelar edición (Esc)</value>
+    </data>
 </root>

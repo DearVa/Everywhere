@@ -1533,4 +1533,13 @@
     <data name="Common_Copy" xml:space="preserve">
         <value>コピー</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>編集</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>メッセージを編集中...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>編集をキャンセル (Esc)</value>
+    </data>
 </root>

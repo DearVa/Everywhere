@@ -1533,4 +1533,13 @@
     <data name="Common_Copy" xml:space="preserve">
         <value>複製</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>編輯</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>編輯訊息中...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>取消編輯 (Esc)</value>
+    </data>
 </root>

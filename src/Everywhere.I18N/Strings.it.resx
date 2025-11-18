@@ -1533,4 +1533,13 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="Common_Copy" xml:space="preserve">
         <value>Copia</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>Modifica</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>Modifica messaggio...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>Annulla modifica (Esc)</value>
+    </data>
 </root>

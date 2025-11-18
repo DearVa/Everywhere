@@ -1527,4 +1527,13 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="Common_Copy" xml:space="preserve">
         <value>Kopyala</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>Düzenle</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>Mesaj düzenleniyor...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>Düzenlemeyi İptal Et (Esc)</value>
+    </data>
 </root>

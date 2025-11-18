@@ -1533,4 +1533,13 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="Common_Copy" xml:space="preserve">
         <value>Copier</value>
     </data>
+    <data name="ChatWindow_ChatMessage_User_Edit" xml:space="preserve">
+        <value>Modifier</value>
+    </data>
+    <data name="ChatWindow_EditingTextBlock_Text" xml:space="preserve">
+        <value>Modification du message...</value>
+    </data>
+    <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
+        <value>Annuler la modification (Échap)</value>
+    </data>
 </root>
