@@ -103,7 +103,7 @@ public partial class WelcomeViewModel : BusyViewModelBase
 
         ModelProviders = ModelProviderTemplate.SupportedTemplates
             .AsValueEnumerable()
-            .Where(m => m.Id is not "ollama")
+            .Where(m => m.Id is not ModelProviderIds.Ollama)
             .Select(m => new ModelProviderWrapper(m))
             .ToList();
     }
