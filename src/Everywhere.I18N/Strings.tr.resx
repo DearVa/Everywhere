@@ -1536,4 +1536,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
         <value>Düzenlemeyi İptal Et (Esc)</value>
     </data>
+    <data name="ChatWindow_Title" xml:space="preserve">
+        <value>Sohbet</value>
+    </data>
 </root>

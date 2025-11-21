@@ -1542,4 +1542,7 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
         <value>Cancelar edición (Esc)</value>
     </data>
+    <data name="ChatWindow_Title" xml:space="preserve">
+        <value>Chat</value>
+    </data>
 </root>

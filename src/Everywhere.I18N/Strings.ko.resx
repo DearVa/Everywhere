@@ -1542,4 +1542,7 @@
     <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
         <value>수정 취소 (Esc)</value>
     </data>
+    <data name="ChatWindow_Title" xml:space="preserve">
+        <value>채팅</value>
+    </data>
 </root>

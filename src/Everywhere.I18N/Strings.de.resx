@@ -1538,4 +1538,7 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
         <value>Bearbeitung abbrechen (Esc)</value>
     </data>
+    <data name="ChatWindow_Title" xml:space="preserve">
+        <value>Chat</value>
+    </data>
 </root>

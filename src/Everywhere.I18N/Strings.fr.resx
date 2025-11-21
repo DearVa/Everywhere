@@ -1542,4 +1542,7 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="ChatWindow_CancelEditingButton_ToolTip" xml:space="preserve">
         <value>Annuler la modification (Échap)</value>
     </data>
+    <data name="ChatWindow_Title" xml:space="preserve">
+        <value>Discussion</value>
+    </data>
 </root>
