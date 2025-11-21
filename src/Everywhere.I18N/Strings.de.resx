@@ -1277,6 +1277,9 @@ Platzhalter können im Prompt verwendet werden, eingeschlossen in {}, und werden
     <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Visiting" xml:space="preserve">
         <value>🧐 {0}</value>
     </data>
+    <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
+        <value>{0} Links</value>
+    </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>Das folgende Terminalskript wird ausgeführt</value>
     </data>
@@ -1531,5 +1534,8 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     </data>
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>Chat</value>
+    </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} Elemente gefunden</value>
     </data>
 </root>

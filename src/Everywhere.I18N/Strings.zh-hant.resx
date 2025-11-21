@@ -1539,4 +1539,7 @@
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>聊天</value>
     </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>找到 {0} 項目</value>
+    </data>
 </root>

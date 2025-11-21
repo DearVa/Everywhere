@@ -1281,6 +1281,9 @@
     <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Visiting" xml:space="preserve">
         <value>🧐 {0}</value>
     </data>
+    <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
+        <value>{0} リンク</value>
+    </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>次のターミナルスクリプトが実行されます</value>
     </data>
@@ -1535,5 +1538,8 @@
     </data>
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>チャット</value>
+    </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} 件のアイテムが見つかりました</value>
     </data>
 </root>

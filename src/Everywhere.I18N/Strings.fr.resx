@@ -1281,6 +1281,9 @@ Des espaces réservés peuvent être utilisés dans l'invite, entourés de {}, e
     <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Visiting" xml:space="preserve">
         <value>🧐 {0}</value>
     </data>
+    <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
+        <value>{0} Liens</value>
+    </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>Le script terminal suivant sera exécuté</value>
     </data>
@@ -1535,5 +1538,8 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>Discussion</value>
+    </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} Éléments trouvés</value>
     </data>
 </root>
