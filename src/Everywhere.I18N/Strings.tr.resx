@@ -1656,4 +1656,10 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatPluginPage_PluginStatus_Running_ToolTip" xml:space="preserve">
         <value>Çalışıyor</value>
     </data>
+    <data name="ChatContext_BusyMessage_StartingMcp" xml:space="preserve">
+        <value>MCP Başlatılıyor</value>
+    </data>
+    <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
+        <value>Araç çağrısı oluşturuluyor</value>
+    </data>
 </root>

@@ -1662,4 +1662,10 @@
     <data name="ChatPluginPage_PluginStatus_Running_ToolTip" xml:space="preserve">
         <value>Запущено</value>
     </data>
+    <data name="ChatContext_BusyMessage_StartingMcp" xml:space="preserve">
+        <value>Запуск MCP</value>
+    </data>
+    <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
+        <value>Вызов инструмента генерируется</value>
+    </data>
 </root>

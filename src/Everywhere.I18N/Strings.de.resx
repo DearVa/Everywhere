@@ -1658,4 +1658,10 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="ChatPluginPage_PluginStatus_Running_ToolTip" xml:space="preserve">
         <value>Läuft</value>
     </data>
+    <data name="ChatContext_BusyMessage_StartingMcp" xml:space="preserve">
+        <value>MCP wird gestartet</value>
+    </data>
+    <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
+        <value>Werkzeugaufruf wird generiert</value>
+    </data>
 </root>
