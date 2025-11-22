@@ -1281,6 +1281,9 @@
     <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Visiting" xml:space="preserve">
         <value>🧐 {0}</value>
     </data>
+    <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
+        <value>{0} Ссылки</value>
+    </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>Будет выполнен следующий скрипт в терминале</value>
     </data>
@@ -1393,6 +1396,9 @@
     </data>
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>Невозможно записать в бинарный файл.</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>Ассистент передал некорректные параметры при вызове инструмента, что обычно вызвано галлюцинацией модели.</value>
     </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>Размер файла больше 10 МБ, операция замены не поддерживается.</value>
@@ -1533,10 +1539,127 @@
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>Чат</value>
     </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} Найдено элементов</value>
+    </data>
+    <data name="ChatPluginPage_TabItem_MCP_Header" xml:space="preserve">
+        <value>Сервер MCP</value>
+    </data>
+    <data name="McpTransportConfiguration_Name_ValidationErrorMessage_Regex" xml:space="preserve">
+        <value>Разрешены только цифры, буквы и символы «-», «_».</value>
+    </data>
+    <data name="ValidationErrorMessage_Required" xml:space="preserve">
+        <value>Это поле обязательно для заполнения.</value>
+    </data>
+    <data name="ValidationErrorMessage_MaxLength" xml:space="preserve">
+        <value>Длина не должна превышать {0} символов.</value>
+    </data>
+    <data name="ValidationErrorMessage_Url" xml:space="preserve">
+        <value>Должен быть действительный URL.</value>
+    </data>
+    <data name="McpTransportConfiguration_Name_ValidationErrorMessage_Exists" xml:space="preserve">
+        <value>Нельзя дублировать существующие записи.</value>
+    </data>
+    <data name="ChatPluginConsentRequest_MCP_Header" xml:space="preserve">
+        <value>«{0}» является инструментом MCP. Everywhere не может проверить его необходимые разрешения. Пожалуйста, убедитесь, что он поступает из надежного источника, и Everywhere не несет ответственности за его последствия.</value>
+    </data>
+    <data name="ValidationErrorMessage_DuplicateKey" xml:space="preserve">
+        <value>Дублирование записей не допускается.</value>
+    </data>
+    <data name="ValidationErrorMessage_NullKey" xml:space="preserve">
+        <value>Ключ элемента не может быть пустым.</value>
+    </data>
+    <data name="ValidationErrorMessage_NullValue" xml:space="preserve">
+        <value>Значение элемента не может быть пустым.</value>
+    </data>
+    <data name="HttpTransportMode_AutoDetect" xml:space="preserve">
+        <value>Автоопределение</value>
+    </data>
     <data name="HttpTransportMode_StreamableHttp" xml:space="preserve">
         <value>Streamable HTTP</value>
     </data>
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
+    </data>
+    <data name="ChatPlugin_Common_FunctionNotFound" xml:space="preserve">
+        <value>Инструмент, вызванный ассистентом, не существует, что обычно вызвано галлюцинацией модели.</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
+        <value>* Имя</value>
+    </data>
+    <data name="McpTransportConfigurationForm_DescriptionTextBox_Label" xml:space="preserve">
+        <value>Описание (только для отображения и различения)</value>
+    </data>
+    <data name="McpTransportConfigurationForm_SchemeTabControl_Label" xml:space="preserve">
+        <value>* Схема</value>
+    </data>
+    <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
+        <value>* Команда</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Аргументы командной строки</value>
+    </data>
+    <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
+        <value>Рабочая директория</value>
+    </data>
+    <data name="McpTransportConfigurationForm_EnvironmentVariablesDataGrid_Label" xml:space="preserve">
+        <value>Переменные окружения</value>
+    </data>
+    <data name="McpTransportConfigurationForm_EndpointTextBox_Label" xml:space="preserve">
+        <value>* Конечная точка</value>
+    </data>
+    <data name="McpTransportConfigurationForm_TransportModeComboBox_Label" xml:space="preserve">
+        <value>Режим передачи</value>
+    </data>
+    <data name="McpTransportConfigurationForm_HeadersDataGrid_Label" xml:space="preserve">
+        <value>Заголовки запроса</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>Имя (Ключ)</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>* Пожалуйста, введите имя</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Header" xml:space="preserve">
+        <value>Значение</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>* Пожалуйста, введите значение</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>Пожалуйста, введите значение (необязательно)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
+        <value>Редактировать MCP плагин (поля, отмеченные *, обязательны)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_AddMcpPlugin_DialogTitle" xml:space="preserve">
+        <value>Добавить MCP плагин (поля, отмеченные *, обязательны)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_RemoveMcpPlugin_ConfirmationMessage" xml:space="preserve">
+        <value>Вы уверены, что хотите удалить “{0}”?</value>
+    </data>
+    <data name="ChatPluginPage_AddMCPPluginButton_Content" xml:space="preserve">
+        <value>Добавить</value>
+    </data>
+    <data name="ChatPluginPage_CopyLogsButton_ToolTip" xml:space="preserve">
+        <value>Скопировать все логи в буфер обмена</value>
+    </data>
+    <data name="ChatPluginPage_ShowTimestampTextBlock_Text" xml:space="preserve">
+        <value>Показать временную метку</value>
+    </data>
+    <data name="ChatPluginManager_Common_InvalidMcpTransportConfiguration" xml:space="preserve">
+        <value>Недействительная конфигурация MCP.</value>
+    </data>
+    <data name="ChatPluginManager_Common_FailedToStartMcpPlugin" xml:space="preserve">
+        <value>Не удалось запустить MCP плагин &quot;{0}&quot;</value>
+    </data>
+    <data name="ChatPluginPage_TabItem_Logs_Header" xml:space="preserve">
+        <value>Логи</value>
+    </data>
+    <data name="ChatPluginPage_PluginStatus_NotRunning_ToolTip" xml:space="preserve">
+        <value>Не запущен</value>
+    </data>
+    <data name="ChatPluginPage_PluginStatus_Running_ToolTip" xml:space="preserve">
+        <value>Запущено</value>
     </data>
 </root>

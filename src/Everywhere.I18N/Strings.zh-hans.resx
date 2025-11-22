@@ -1594,17 +1594,23 @@
     <data name="McpTransportConfigurationForm_SchemeTabControl_Label" xml:space="preserve">
         <value>协议</value>
     </data>
+    <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
+        <value>* 命令</value>
+    </data>
     <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
         <value>命令行参数</value>
     </data>
-    <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
-        <value>* 命令</value>
+    <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
+        <value>工作目录</value>
+    </data>
+    <data name="McpTransportConfigurationForm_EnvironmentVariablesDataGrid_Label" xml:space="preserve">
+        <value>环境变量</value>
     </data>
     <data name="McpTransportConfigurationForm_EndpointTextBox_Label" xml:space="preserve">
         <value>* 终结点</value>
     </data>
-    <data name="McpTransportConfigurationForm_EnvironmentVariablesDataGrid_Label" xml:space="preserve">
-        <value>环境变量</value>
+    <data name="McpTransportConfigurationForm_TransportModeComboBox_Label" xml:space="preserve">
+        <value>传输模式</value>
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataGrid_Label" xml:space="preserve">
         <value>请求头</value>
@@ -1615,20 +1621,14 @@
     <data name="McpTransportConfigurationForm_NameDataGridTextColumn_Watermark" xml:space="preserve">
         <value>* 请输入名称</value>
     </data>
-    <data name="McpTransportConfigurationForm_OptionalValueDataGridTextColumn_Watermark" xml:space="preserve">
-        <value>请输入值 (可选)</value>
-    </data>
-    <data name="McpTransportConfigurationForm_TransportModeComboBox_Label" xml:space="preserve">
-        <value>传输模式</value>
-    </data>
     <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Header" xml:space="preserve">
         <value>值</value>
     </data>
     <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Watermark" xml:space="preserve">
         <value>* 请输入值</value>
     </data>
-    <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
-        <value>工作目录</value>
+    <data name="McpTransportConfigurationForm_OptionalValueDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>请输入值 (可选)</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>编辑 MCP 插件 (带 * 的为必填项)</value>
@@ -1637,7 +1637,7 @@
         <value>添加 MCP 插件 (带 * 的为必填项)</value>
     </data>
     <data name="ChatPluginPageViewModel_RemoveMcpPlugin_ConfirmationMessage" xml:space="preserve">
-        <value>你确定要移除 "{0}" 吗？</value>
+        <value>你确定要移除 &quot;{0}&quot; 吗？</value>
     </data>
     <data name="ChatPluginPage_AddMCPPluginButton_Content" xml:space="preserve">
         <value>添加</value>
@@ -1652,7 +1652,7 @@
         <value>MCP 配置不正确。</value>
     </data>
     <data name="ChatPluginManager_Common_FailedToStartMcpPlugin" xml:space="preserve">
-        <value>无法启动 MCP 插件 "{0}"</value>
+        <value>无法启动 MCP 插件 &quot;{0}&quot;</value>
     </data>
     <data name="ChatPluginPage_TabItem_Logs_Header" xml:space="preserve">
         <value>日志</value>

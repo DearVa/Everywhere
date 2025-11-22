@@ -1275,6 +1275,9 @@
     <data name="NativeChatPlugin_WebBrowser_WebSnapshot_Visiting" xml:space="preserve">
         <value>🧐 {0}</value>
     </data>
+    <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
+        <value>{0} Bağlantı</value>
+    </data>
     <data name="NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>Aşağıdaki terminal betiği çalıştırılacak</value>
     </data>
@@ -1387,6 +1390,9 @@
     </data>
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>İkili dosyaya yazılamıyor.</value>
+    </data>
+    <data name="ChatPlugin_Common_ArgumentError" xml:space="preserve">
+        <value>Asistan, aracı çağırırken yanlış parametreler geçti, bu genellikle model halüsinasyonu nedeniyle olur.</value>
     </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>Dosya boyutu 10 MB'dan büyük, değiştirme işlemi desteklenmiyor.</value>
@@ -1527,10 +1533,127 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatWindow_Title" xml:space="preserve">
         <value>Sohbet</value>
     </data>
+    <data name="NativeChatPlugin_Everything_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} Öğe Bulundu</value>
+    </data>
+    <data name="ChatPluginPage_TabItem_MCP_Header" xml:space="preserve">
+        <value>MCP Sunucusu</value>
+    </data>
+    <data name="McpTransportConfiguration_Name_ValidationErrorMessage_Regex" xml:space="preserve">
+        <value>Sadece rakamlar, harfler ve “-”, “_” karakterleri izin verilmektedir.</value>
+    </data>
+    <data name="ValidationErrorMessage_Required" xml:space="preserve">
+        <value>Bu alan gereklidir.</value>
+    </data>
+    <data name="ValidationErrorMessage_MaxLength" xml:space="preserve">
+        <value>Uzunluk {0} karakteri aşmamalıdır.</value>
+    </data>
+    <data name="ValidationErrorMessage_Url" xml:space="preserve">
+        <value>Geçerli bir URL olmalıdır.</value>
+    </data>
+    <data name="McpTransportConfiguration_Name_ValidationErrorMessage_Exists" xml:space="preserve">
+        <value>Mevcut girişlerin kopyası olamaz.</value>
+    </data>
+    <data name="ChatPluginConsentRequest_MCP_Header" xml:space="preserve">
+        <value>“{0}” bir MCP aracıdır. Everywhere gerekli izinlerini doğrulayamaz. Lütfen güvenilir bir kaynaktan geldiğinden emin olun ve Everywhere sonuçlarından sorumluluk almaz.</value>
+    </data>
+    <data name="ValidationErrorMessage_DuplicateKey" xml:space="preserve">
+        <value>Kopya girişlere izin verilmez.</value>
+    </data>
+    <data name="ValidationErrorMessage_NullKey" xml:space="preserve">
+        <value>Öğe anahtarı boş olamaz.</value>
+    </data>
+    <data name="ValidationErrorMessage_NullValue" xml:space="preserve">
+        <value>Öğe değeri boş olamaz.</value>
+    </data>
+    <data name="HttpTransportMode_AutoDetect" xml:space="preserve">
+        <value>Otomatik Algıla</value>
+    </data>
     <data name="HttpTransportMode_StreamableHttp" xml:space="preserve">
         <value>Streamable HTTP</value>
     </data>
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
+    </data>
+    <data name="ChatPlugin_Common_FunctionNotFound" xml:space="preserve">
+        <value>Asistan tarafından çağrılan araç mevcut değildir, bu genellikle model halüsinasyonu nedeniyle olur.</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
+        <value>* İsim</value>
+    </data>
+    <data name="McpTransportConfigurationForm_DescriptionTextBox_Label" xml:space="preserve">
+        <value>Açıklama (Sadece görüntüleme ve ayırt etme amaçlı)</value>
+    </data>
+    <data name="McpTransportConfigurationForm_SchemeTabControl_Label" xml:space="preserve">
+        <value>* Şema</value>
+    </data>
+    <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
+        <value>* Komut</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Komut Satırı Argümanları</value>
+    </data>
+    <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
+        <value>Çalışma Dizini</value>
+    </data>
+    <data name="McpTransportConfigurationForm_EnvironmentVariablesDataGrid_Label" xml:space="preserve">
+        <value>Ortam Değişkenleri</value>
+    </data>
+    <data name="McpTransportConfigurationForm_EndpointTextBox_Label" xml:space="preserve">
+        <value>* Uç Nokta</value>
+    </data>
+    <data name="McpTransportConfigurationForm_TransportModeComboBox_Label" xml:space="preserve">
+        <value>Taşıma Modu</value>
+    </data>
+    <data name="McpTransportConfigurationForm_HeadersDataGrid_Label" xml:space="preserve">
+        <value>İstek Başlıkları</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>Ad (Anahtar)</value>
+    </data>
+    <data name="McpTransportConfigurationForm_NameDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>* Lütfen ad girin</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Header" xml:space="preserve">
+        <value>Değer</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>* Lütfen değer girin</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueDataGridTextColumn_Watermark" xml:space="preserve">
+        <value>Lütfen değer girin (isteğe bağlı)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
+        <value>MCP Eklentisini Düzenle ( * ile işaretli alanlar zorunludur)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_AddMcpPlugin_DialogTitle" xml:space="preserve">
+        <value>MCP Eklentisi Ekle ( * ile işaretli alanlar zorunludur)</value>
+    </data>
+    <data name="ChatPluginPageViewModel_RemoveMcpPlugin_ConfirmationMessage" xml:space="preserve">
+        <value>“{0}” kaldırmak istediğinizden emin misiniz?</value>
+    </data>
+    <data name="ChatPluginPage_AddMCPPluginButton_Content" xml:space="preserve">
+        <value>Ekle</value>
+    </data>
+    <data name="ChatPluginPage_CopyLogsButton_ToolTip" xml:space="preserve">
+        <value>Tüm günlükleri panoya kopyala</value>
+    </data>
+    <data name="ChatPluginPage_ShowTimestampTextBlock_Text" xml:space="preserve">
+        <value>Zaman Damgasını Göster</value>
+    </data>
+    <data name="ChatPluginManager_Common_InvalidMcpTransportConfiguration" xml:space="preserve">
+        <value>Geçersiz MCP yapılandırması.</value>
+    </data>
+    <data name="ChatPluginManager_Common_FailedToStartMcpPlugin" xml:space="preserve">
+        <value>MCP eklentisi &quot;{0}&quot; başlatılamadı</value>
+    </data>
+    <data name="ChatPluginPage_TabItem_Logs_Header" xml:space="preserve">
+        <value>Günlükler</value>
+    </data>
+    <data name="ChatPluginPage_PluginStatus_NotRunning_ToolTip" xml:space="preserve">
+        <value>Çalışmıyor</value>
+    </data>
+    <data name="ChatPluginPage_PluginStatus_Running_ToolTip" xml:space="preserve">
+        <value>Çalışıyor</value>
     </data>
 </root>
