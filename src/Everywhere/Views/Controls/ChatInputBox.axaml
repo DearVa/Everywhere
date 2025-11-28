@@ -443,6 +443,7 @@
             <Button
               Classes="Outline Rounded"
               Content="{LucideIconContent Settings, Size=16}"
+              Focusable="False"
               ToolTip.Tip="{I18N {x:Static LocaleKey.ChatInputBox_SettingsButton_ToolTip}}">
               <Button.Flyout>
                 <Flyout
