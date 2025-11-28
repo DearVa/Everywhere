@@ -87,6 +87,7 @@ public partial class CustomAssistant : ObservableObject
     }
 
     [JsonIgnore]
+    [System.ComponentModel.DefaultValue(null)]
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_ModelProviderTemplate_Header,
         LocaleKey.CustomAssistant_ModelProviderTemplate_Description)]
@@ -154,6 +155,7 @@ public partial class CustomAssistant : ObservableObject
     }
 
     [JsonIgnore]
+    [System.ComponentModel.DefaultValue(null)]
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_ModelDefinitionTemplate_Header,
         LocaleKey.CustomAssistant_ModelDefinitionTemplate_Description)]
