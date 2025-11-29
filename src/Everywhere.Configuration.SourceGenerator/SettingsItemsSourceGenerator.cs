@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -127,52 +127,8 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
         PropertyMetadata metadata,
         string itemName,
         string bindingPath,
-        string? parentCollection,
-        bool allowWrapper = true)
+        string? parentCollection)
     {
-        // Check if the item has [DefaultValue] attribute. If so, wrap it in a SettingsCustomizableItem to enable the Reset button.
-        if (allowWrapper && metadata.Kind != ItemKind.Customizable)
-        {
-            var defaultValueAttr = metadata.AttributeOwner.GetAttributes()
-                .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == "System.ComponentModel.DefaultValueAttribute");
-
-            if (defaultValueAttr is not null && defaultValueAttr.ConstructorArguments.Length > 0)
-            {
-                var defaultValueLiteral = ToLiteral(defaultValueAttr.ConstructorArguments[0].Value);
-                var innerItemName = $"{itemName}_inner";
-
-                // Recursively generate the inner item (e.g. SettingsSelectionItem), but disallow further wrapping to prevent infinite loops.
-                EmitItemRecursive(ctx, sb, metadata, innerItemName, bindingPath, null, allowWrapper: false);
-
-                sb.AppendLine($"var {itemName} = new global::Everywhere.Configuration.SettingsCustomizableItem({innerItemName});");
-                sb.AppendLine($"{itemName}.ResetCommand = new global::CommunityToolkit.Mvvm.Input.RelayCommand(() =>");
-                sb.AppendLine("{");
-                using (sb.Indent())
-                {
-                    sb.AppendLine($"this.{bindingPath} = {defaultValueLiteral};");
-                }
-                sb.AppendLine("});");
-
-                // Apply common metadata (Header, Description) to the Wrapper so it displays correctly
-                ApplyCommonMetadata(sb, itemName, metadata);
-
-                // Apply IsEnabled/IsVisible bindings to the Wrapper
-                ApplySettingsItemAttributes(sb, itemName, metadata);
-
-                // Bind the Value property of the wrapper
-                sb.Append($"{itemName}[!global::Everywhere.Configuration.SettingsItem.ValueProperty] = ");
-                EmitBinding(sb, bindingPath, BindingMode.TwoWay).AppendLine(";");
-
-                // Add the wrapper to the parent collection
-                if (!string.IsNullOrEmpty(parentCollection))
-                {
-                    sb.AppendLine($"{parentCollection}.Add({itemName});").AppendLine();
-                }
-
-                return;
-            }
-        }
-
         switch (metadata.Kind)
         {
             case ItemKind.Selection:
@@ -405,6 +361,26 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
 
         sb.Append($"{itemName}[!global::Everywhere.Configuration.SettingsItem.ValueProperty] = ");
         EmitBinding(sb, bindingPath, BindingMode.TwoWay).AppendLine(";");
+
+        // Check if the item has [DefaultValue] attribute. If so, wrap it in a SettingsCustomizableItem to enable the Reset button.
+        if (metadata.Kind != ItemKind.Customizable &&
+            metadata.AttributeOwner.GetAttribute("System.ComponentModel.DefaultValueAttribute") is { ConstructorArguments: [var defaultValue, ..] })
+        {
+            var defaultValueLiteral = ToLiteral(defaultValue.Value);
+            var wrapperItemName = $"{itemName}_wrapper";
+
+            sb.AppendLine($"var {wrapperItemName} = new global::Everywhere.Configuration.SettingsCustomizableItem({itemName});");
+            sb.AppendLine($"{wrapperItemName}.ResetCommand = new global::CommunityToolkit.Mvvm.Input.RelayCommand(() =>");
+            sb.AppendLine("{");
+            using (sb.Indent())
+            {
+                sb.AppendLine($"this.{bindingPath} = {defaultValueLiteral};");
+            }
+            sb.AppendLine("});");
+
+            // Replace itemName with the wrapper
+            itemName = wrapperItemName;
+        }
 
         // Add the generated item to its parent collection
         if (!string.IsNullOrEmpty(parentCollection))
