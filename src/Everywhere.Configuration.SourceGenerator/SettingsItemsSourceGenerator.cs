@@ -501,6 +501,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                     foreach (var member in enumMembers)
                     {
                         var memberAccess = $"{enumTypeStr}.{member.Name}";
+                        // Check for [DynamicResourceKey] on the enum member
                         string? headerKey = null;
                         if (member.GetAttribute(KnownAttributes.DynamicResourceKey) is { } attr)
                         {
