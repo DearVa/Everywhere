@@ -1029,6 +1029,12 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
         <value>Modello di Definizione</value>
     </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Seleziona un modello per popolare automaticamente opzioni come “ID modello, Supporto input immagine, Supporto utilizzo strumenti.” Puoi modificare queste impostazioni secondo necessità.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Seleziona un modello per popolare automaticamente opzioni come “Indirizzo API e Schema API.” Puoi modificare queste impostazioni secondo necessità.</value>
+    </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>Si è verificato un errore generale di I/O. Questo potrebbe essere dovuto a un problema con la lettura o la scrittura di un file.</value>
     </data>

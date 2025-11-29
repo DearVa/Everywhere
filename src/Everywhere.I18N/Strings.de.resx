@@ -1025,6 +1025,12 @@ Platzhalter können im Prompt verwendet werden, eingeschlossen in {}, und werden
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
         <value>Modelldefinitionsvorlage</value>
     </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Wählen Sie eine Vorlage aus, um Optionen wie „Modell-ID, Unterstützung für Bildeingaben, Unterstützung für Toolnutzung“ automatisch auszufüllen. Sie können diese Einstellungen nach Bedarf ändern.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Wählen Sie eine Vorlage aus, um Optionen wie „API-Adresse und API-Schema“ automatisch auszufüllen. Sie können diese Einstellungen nach Bedarf ändern.</value>
+    </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>Ein allgemeiner E/A-Fehler ist aufgetreten. Dies könnte an einem Problem beim Lesen oder Schreiben einer Datei liegen.</value>
     </data>

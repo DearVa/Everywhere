@@ -1029,6 +1029,12 @@ Des espaces réservés peuvent être utilisés dans l'invite, entourés de {}, e
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
         <value>Modèle de Définition</value>
     </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Sélectionnez un modèle pour remplir automatiquement des options telles que « ID de modèle, Support d'entrée d'image, Support d'utilisation d'outils. » Vous pouvez modifier ces paramètres si nécessaire.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Sélectionnez un modèle pour remplir automatiquement des options telles que « Adresse API et Schéma API. » Vous pouvez modifier ces paramètres si nécessaire.</value>
+    </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>Une erreur d'E/S générale s'est produite. Cela peut être dû à un problème de lecture ou d'écriture d'un fichier.</value>
     </data>

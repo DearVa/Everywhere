@@ -566,6 +566,9 @@
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>重置</value>
     </data>
+    <data name="CustomAssistant_Schema_Header" xml:space="preserve">
+        <value>API 架構</value>
+    </data>
     <data name="CustomAssistant_Schema_Description" xml:space="preserve">
         <value>選擇 API 協議。如果不確定該如何設置，請保持默認。</value>
     </data>
@@ -1025,6 +1028,12 @@
     </data>
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
         <value>模型定義範本</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>選擇一個模板以自動填充選項，例如「模型 ID、支援圖像輸入、支援工具使用」。您可以根據需要修改這些設置。</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>選擇一個模板以自動填充選項，例如「API 地址和 API 架構」。您可以根據需要修改這些設置。</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>發生了一般的 I/O 錯誤。這可能是由於讀寫文件時出現問題。</value>
