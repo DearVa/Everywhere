@@ -115,6 +115,12 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
     /// <summary>
     /// A settings item may be nested, e.g. Customizable`, so we use recursion here.
     /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="sb"></param>
+    /// <param name="metadata"></param>
+    /// <param name="itemName"></param>
+    /// <param name="bindingPath"></param>
+    /// <param name="parentCollection"></param>
     private static void EmitItemRecursive(
         in SourceProductionContext ctx,
         IndentedStringBuilder sb,
@@ -124,8 +130,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
         string? parentCollection,
         bool allowWrapper = true)
     {
-        // Check for DefaultValueAttribute to automatically wrap items in SettingsCustomizableItem.
-        // This allows regular properties to have a Reset button without changing the property type to Customizable<T>.
+        // Check if the item has [DefaultValue] attribute. If so, wrap it in a SettingsCustomizableItem to enable the Reset button.
         if (allowWrapper && metadata.Kind != ItemKind.Customizable)
         {
             var defaultValueAttr = metadata.AttributeOwner.GetAttributes()
@@ -136,30 +141,25 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 var defaultValueLiteral = ToLiteral(defaultValueAttr.ConstructorArguments[0].Value);
                 var innerItemName = $"{itemName}_inner";
 
-                // Generate the inner item recursively (e.g. SettingsSelectionItem), preventing double wrapping.
-                // The inner item handles its own TypeSpecificMetadata (like ItemsSource, MaxLength, etc.).
+                // Recursively generate the inner item (e.g. SettingsSelectionItem), but disallow further wrapping to prevent infinite loops.
                 EmitItemRecursive(ctx, sb, metadata, innerItemName, bindingPath, null, allowWrapper: false);
 
-                // Generate the wrapper item
                 sb.AppendLine($"var {itemName} = new global::Everywhere.Configuration.SettingsCustomizableItem({innerItemName});");
-
-                // Generate the Reset Command logic
                 sb.AppendLine($"{itemName}.ResetCommand = new global::CommunityToolkit.Mvvm.Input.RelayCommand(() =>");
                 sb.AppendLine("{");
                 using (sb.Indent())
                 {
-                    // Directly set the property to the default value provided in the attribute
                     sb.AppendLine($"this.{bindingPath} = {defaultValueLiteral};");
                 }
                 sb.AppendLine("});");
 
-                // Apply common metadata (Header, Description) to the Wrapper, so they appear in the UI
+                // Apply common metadata (Header, Description) to the Wrapper so it displays correctly
                 ApplyCommonMetadata(sb, itemName, metadata);
 
-                // Apply IsVisible/IsEnabled bindings to the Wrapper
+                // Apply IsEnabled/IsVisible bindings to the Wrapper
                 ApplySettingsItemAttributes(sb, itemName, metadata);
 
-                // Bind the Value property of the wrapper (useful for bidirectional binding state)
+                // Bind the Value property of the wrapper
                 sb.Append($"{itemName}[!global::Everywhere.Configuration.SettingsItem.ValueProperty] = ");
                 EmitBinding(sb, bindingPath, BindingMode.TwoWay).AppendLine(";");
 
@@ -179,6 +179,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
             {
                 if (metadata.AttributeOwner.GetAttribute(KnownAttributes.SettingsSelectionItem) is not { } attribute)
                 {
+                    // This case should ideally not be hit if Classify is correct
                     return;
                 }
 
@@ -192,6 +193,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
 
                 if (string.IsNullOrEmpty(itemsSourceBindingPath))
                 {
+                    // Report diagnostic for missing ItemsSourceBindingPath
                     ctx.ReportDiagnostic(
                         Diagnostic.Create(
                             Diagnostics.MissingItemsSourceBindingPath,
@@ -200,11 +202,13 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                     break;
                 }
 
+                // We need to figure out the symbol of `itemsSourceBindingPath`
                 var itemsSourceSymbol = metadata.Symbol;
                 var parts = itemsSourceBindingPath.Split('.');
                 foreach (var part in parts)
                 {
                     if (itemsSourceSymbol is null) break;
+
                     var trimmedPart = part.Trim();
                     itemsSourceSymbol = itemsSourceSymbol.ContainingType?.GetMembers().FirstOrDefault(m => m.Name == trimmedPart);
                 }
@@ -272,6 +276,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                         $"DynamicResourceKey($\"SettingsSelectionItem_{metadata.Symbol.ContainingType.Name}_{metadata.Name}_{{k}}\")" :
                         "DirectResourceKey(k)";
 
+                    // If the type is INotifyPropertyChanged and IEnumerable<T>, use ToObservableChangeSet
                     if (itemSourceType.AllInterfaces.Any(i => i.OriginalDefinition.ToDisplayString() == "System.Collections.Generic.IEnumerable<T>" &&
                             itemSourceType.AllInterfaces.Any(ii => ii.ToDisplayString() == "System.ComponentModel.INotifyPropertyChanged")))
                     {
@@ -323,8 +328,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                     innerMetadata,
                     innerItemName,
                     $"{bindingPath}.BindableValue",
-                    null,
-                    allowWrapper: false);
+                    null);
 
                 sb.AppendLine($"var {itemName} = new global::Everywhere.Configuration.SettingsCustomizableItem({innerItemName});");
                 sb.Append($"{itemName}[!global::Everywhere.Configuration.SettingsCustomizableItem.ResetCommandProperty] = ");
@@ -340,6 +344,12 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
             }
             case ItemKind.SettingsControl:
             {
+                // In this case, we need to call the property itself to get the ISettingsControl instance
+                // Then cast it to ISettingsControl and call CreateControl()
+                // Next, set the DataContext of the created control to 'this'
+                // Finally, assign it to a new SettingsControlItem
+
+                // If the property is nullable, Report diagnostic
                 if (metadata.Type.NullableAnnotation == NullableAnnotation.Annotated)
                 {
                     ctx.ReportDiagnostic(
@@ -364,6 +374,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
             }
             default:
             {
+                // Generate the 'new' expression for the specific SettingsItem type
                 var newExpr = metadata.Kind switch
                 {
                     ItemKind.Bool => "new global::Everywhere.Configuration.SettingsBooleanItem { IsNullable = false }",
@@ -415,6 +426,16 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
         }
     }
 
+    /// <summary>
+    /// Matches DynamicResourceKey("headerKey", "descriptionKey"), supports multi-line and spaces, e.g.
+    /// DynamicResourceKey(
+    ///     LocaleKey.CustomAssistant_Icon_Header,
+    ///     LocaleKey.CustomAssistant_Icon_Description)
+    /// </summary>
+    /// <remarks>
+    /// We need to parse the syntax ourselves because sometimes the attribute arguments are also SourceGenerated,
+    /// and thus we cannot rely on ConstantValue of the attribute data.
+    /// </remarks>
     private static readonly Regex DynamicResourceKeyRegex = new(
         @"DynamicResourceKey\s*\(\s*(?<headerKey>[^,)\r\n]+)(\s*,\s*(?<descriptionKey>[^)\r\n]+))?\s*\)",
         RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture | RegexOptions.Singleline);
@@ -562,17 +583,35 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
         foreach (var nestedMeta in nestedProperties)
         {
             var nestedItemName = $"{itemName}_{nestedMeta.Name.Replace(".", "_")}";
+            // The new path is the current full path + the nested property name.
             var nestedPath = $"{fullBindingPath}.{nestedMeta.Name}";
             EmitItemRecursive(ctx, sb, nestedMeta, nestedItemName, nestedPath, $"{itemName}.Items");
         }
     }
 
+    /// <summary>
+    /// Emit the whole IBinding that represents the binding logic.
+    /// for simple paths, this is just a Binding; for complex logical expressions, this may involve MultiBindings.
+    /// The source of the binding is always `this`.
+    /// So it can observe the whole path from the root object.
+    /// e.g.
+    /// new CompiledBinding
+    /// {
+    ///     Path = "SelectedWebSearchEngineProvider.EndPoint.ActualValue",
+    ///     Source = this,
+    ///     Mode = global::Avalonia.Data.BindingMode.TwoWay,
+    ///     Converter = ...
+    /// }
+    /// </summary>
     private static IndentedStringBuilder EmitBinding(IndentedStringBuilder sb, string path, BindingMode mode, string? converter = null)
     {
+        // This method translates a binding path string (which can be a logical expression)
+        // into C# code that creates the appropriate Avalonia Binding or MultiBinding.
         void EmitExpression(string expression)
         {
             expression = expression.Trim();
 
+            // Recursively parse logical OR expressions
             if (TryParseLogicalOperator(expression, "||", out var leftOr, out var rightOr))
             {
                 sb.AppendLine("new global::Avalonia.Data.MultiBinding");
@@ -596,6 +635,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 return;
             }
 
+            // Recursively parse logical AND expressions
             if (TryParseLogicalOperator(expression, "&&", out var leftAnd, out var rightAnd))
             {
                 sb.AppendLine("new global::Avalonia.Data.MultiBinding");
@@ -619,6 +659,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 return;
             }
 
+            // Handle logical NOT
             if (expression.StartsWith("!"))
             {
                 sb.AppendLine("new global::Avalonia.Data.MultiBinding");
@@ -639,12 +680,14 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 return;
             }
 
+            // Base case: a simple property path
             sb.Append($"new global::Avalonia.Data.Binding(\"{expression}\") {{ Source = this }}");
         }
 
         path = path.Trim();
         if (!path.Contains("||") && !path.Contains("&&") && !path.StartsWith("!"))
         {
+            // Simple path, generate a direct binding
             sb.AppendLine($"new global::Avalonia.Data.Binding(\"{path}\")").AppendLine("{");
             using (sb.Indent())
             {
@@ -656,6 +699,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
         }
         else
         {
+            // Complex logical path, start recursive parsing
             EmitExpression(path);
         }
 
