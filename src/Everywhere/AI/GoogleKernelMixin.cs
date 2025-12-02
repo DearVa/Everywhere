@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -21,39 +19,14 @@ public sealed class GoogleKernelMixin : KernelMixinBase
         ILoggerFactory loggerFactory
     ) : base(customAssistant)
     {
-        httpClient.BaseAddress = new Uri(Endpoint, UriKind.Absolute);
-
         var service = new GoogleAIGeminiChatCompletionService(
             ModelId,
             ApiKey ?? string.Empty,
             httpClient: httpClient,
-            loggerFactory: loggerFactory);
-
-        ApplyCustomEndpoint(service);
+            loggerFactory: loggerFactory,
+            customEndpoint: new Uri(Endpoint, UriKind.Absolute));
 
         ChatCompletionService = new OptimizedGeminiChatCompletionService(service);
-    }
-
-    private void ApplyCustomEndpoint(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.NonPublicFields)]
-        GoogleAIGeminiChatCompletionService service)
-    {
-        // We need to modify the endpoint by reflection because the GoogleAIGeminiChatCompletionService does not expose it.
-
-        var client = typeof(GoogleAIGeminiChatCompletionService)
-            .GetField("_chatCompletionClient", BindingFlags.NonPublic | BindingFlags.Instance)?
-            .GetValue(service);
-        if (client is null) return;
-
-        // this._chatGenerationEndpoint = new Uri($"https://generativelanguage.googleapis.com/{apiVersionSubLink}/models/{this._modelId}:generateContent");
-        // this._chatStreamingEndpoint = new Uri($"https://generativelanguage.googleapis.com/{apiVersionSubLink}/models/{this._modelId}:streamGenerateContent?alt=sse");
-        client.GetType()
-            .GetField("_chatGenerationEndpoint", BindingFlags.NonPublic | BindingFlags.Instance)?
-            .SetValue(client, new Uri($"{Endpoint}/models/{ModelId}:generateContent"));
-
-        client.GetType()
-            .GetField("_chatStreamingEndpoint", BindingFlags.NonPublic | BindingFlags.Instance)?
-            .SetValue(client, new Uri($"{Endpoint}/models/{ModelId}:streamGenerateContent?alt=sse"));
     }
 
     public override PromptExecutionSettings GetPromptExecutionSettings(FunctionChoiceBehavior? functionChoiceBehavior = null)
@@ -64,32 +37,18 @@ public sealed class GoogleKernelMixin : KernelMixinBase
 
         // Convert FunctionChoiceBehavior to GeminiToolCallBehavior
         GeminiToolCallBehavior? toolCallBehavior = null;
-        if (functionChoiceBehavior is not null)
+        if (functionChoiceBehavior is not null and not NoneFunctionChoiceBehavior)
         {
-            // Check if it's auto-invoke based on behavior type
-            var behaviorType = functionChoiceBehavior.GetType();
-            bool autoInvoke = false;
-            
-            try
+            bool autoInvoke = functionChoiceBehavior switch
             {
-                var autoInvokeField = behaviorType.GetField("AutoInvoke", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (autoInvokeField is not null && autoInvokeField.FieldType == typeof(bool))
-                {
-                    autoInvoke = (bool)autoInvokeField.GetValue(functionChoiceBehavior)!;
-                }
-            }
-            catch
-            {
-                // Ignore
-            }
+                AutoFunctionChoiceBehavior auto => auto.AutoInvoke,
+                RequiredFunctionChoiceBehavior required => required.AutoInvoke,
+                _ => true // Default to auto-invoke
+            };
 
-            // Check if it's NoneFunctionChoiceBehavior
-            if (behaviorType.Name != nameof(NoneFunctionChoiceBehavior))
-            {
-                toolCallBehavior = autoInvoke
-                    ? GeminiToolCallBehavior.AutoInvokeKernelFunctions
-                    : GeminiToolCallBehavior.EnableKernelFunctions;
-            }
+            toolCallBehavior = autoInvoke
+                ? GeminiToolCallBehavior.AutoInvokeKernelFunctions
+                : GeminiToolCallBehavior.EnableKernelFunctions;
         }
 
         return new GeminiPromptExecutionSettings
