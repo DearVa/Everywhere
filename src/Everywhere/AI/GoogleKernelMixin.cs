@@ -97,7 +97,12 @@ public sealed class GoogleKernelMixin : KernelMixinBase
             Temperature = temperature,
             TopP = topP,
             MaxTokens = maxTokens,
-            ToolCallBehavior = toolCallBehavior
+            ToolCallBehavior = toolCallBehavior,
+            ThinkingConfig = IsDeepThinkingSupported ? new GeminiThinkingConfig
+            {
+                ThinkingBudget = -1,
+                IncludeThoughts = true
+            } : null
         };
     }
 
