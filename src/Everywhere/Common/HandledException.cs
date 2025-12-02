@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security;
 using System.Security.Authentication;
-using Google;
 using Microsoft.SemanticKernel;
 using OllamaSharp.Models.Exceptions;
 
@@ -628,10 +627,9 @@ public class HandledChatException(
 
         // First layer: provider-specific exceptions
         new ParserChain<ClientResultExceptionParser,
-            ParserChain<GoogleApiExceptionParser,
-                ParserChain<HttpRequestExceptionParser,
-                    ParserChain<OllamaExceptionParser,
-                        HttpOperationExceptionParser>>>>().TryParse(ref context);
+            ParserChain<HttpRequestExceptionParser,
+                ParserChain<OllamaExceptionParser,
+                    HttpOperationExceptionParser>>>().TryParse(ref context);
 
         // Second layer: general network/socket exceptions
         new ParserChain<GeneralExceptionParser,
@@ -688,40 +686,6 @@ public class HandledChatException(
             else
             {
                 context.StatusCode = (HttpStatusCode)clientResult.Status;
-            }
-            return true;
-        }
-    }
-
-    private struct GoogleApiExceptionParser : IExceptionParser
-    {
-        public bool TryParse(ref ExceptionParsingContext context)
-        {
-            if (context.Exception is not GoogleApiException googleApi)
-            {
-                return false;
-            }
-
-            context.StatusCode = googleApi.HttpStatusCode;
-            var message = googleApi.Message;
-            if (message.Contains("API key", StringComparison.OrdinalIgnoreCase) ||
-                message.Contains("credential", StringComparison.OrdinalIgnoreCase) ||
-                message.Contains("permission denied", StringComparison.OrdinalIgnoreCase))
-            {
-                context.ExceptionType = HandledChatExceptionType.InvalidApiKey;
-            }
-            else if (message.Contains("quota", StringComparison.OrdinalIgnoreCase))
-            {
-                context.ExceptionType = HandledChatExceptionType.QuotaExceeded;
-            }
-            else if (message.Contains("rate limit", StringComparison.OrdinalIgnoreCase))
-            {
-                context.ExceptionType = HandledChatExceptionType.RateLimit;
-            }
-            else if (message.Contains("not found", StringComparison.OrdinalIgnoreCase) ||
-                     message.Contains("invalid model", StringComparison.OrdinalIgnoreCase))
-            {
-                context.ExceptionType = HandledChatExceptionType.InvalidConfiguration;
             }
             return true;
         }

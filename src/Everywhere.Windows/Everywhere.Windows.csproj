@@ -68,9 +68,6 @@
     <TrimmerRootAssembly Include="ExCSS"/>
     <TrimmerRootAssembly Include="FlaUI.Core"/>
     <TrimmerRootAssembly Include="FlaUI.UIA3"/>
-    <TrimmerRootAssembly Include="Google.Apis"/>
-    <TrimmerRootAssembly Include="Google.Apis.Core"/>
-    <TrimmerRootAssembly Include="Google.Apis.CustomSearchAPI.v1"/>
     <TrimmerRootAssembly Include="Interop.UIAutomationClient"/>
     <TrimmerRootAssembly Include="MessagePack"/>
     <TrimmerRootAssembly Include="MicroCom.Runtime"/>
