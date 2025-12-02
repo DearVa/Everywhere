@@ -29,11 +29,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
-    <PackageReference Include="Microsoft.SemanticKernel"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Plugins.Web"/>
     <PackageReference Include="ModelContextProtocol"/>
     <PackageReference Include="Nito.AsyncEx"/>
     <PackageReference Include="OpenTelemetry"/>
@@ -55,6 +50,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\..\3rd\shad-ui\src\ShadUI\ShadUI.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\SemanticKernel.Core\SemanticKernel.Core.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\Connectors\Connectors.Google\Connectors.Google.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\Connectors\Connectors.Ollama\Connectors.Ollama.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\Connectors\Connectors.OpenAI\Connectors.OpenAI.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\Plugins\Plugins.Web\Plugins.Web.csproj"/>
     <ProjectReference Include="..\..\3rd\WritableJsonConfiguration\src\WritableJsonConfiguration\WritableJsonConfiguration.csproj"/>
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj"/>
     <ProjectReference Include="..\Everywhere.Configuration.SourceGenerator\Everywhere.Configuration.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>

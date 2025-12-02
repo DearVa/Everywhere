@@ -60,17 +60,50 @@ public sealed class GoogleKernelMixin : KernelMixinBase
     {
         double? temperature = _customAssistant.Temperature.IsCustomValueSet ? _customAssistant.Temperature.ActualValue : null;
         double? topP = _customAssistant.TopP.IsCustomValueSet ? _customAssistant.TopP.ActualValue : null;
+        int? maxTokens = _customAssistant.MaxTokens.IsCustomValueSet ? _customAssistant.MaxTokens.ActualValue : null;
+
+        // Convert FunctionChoiceBehavior to GeminiToolCallBehavior
+        GeminiToolCallBehavior? toolCallBehavior = null;
+        if (functionChoiceBehavior is not null)
+        {
+            // Check if it's auto-invoke based on behavior type
+            var behaviorType = functionChoiceBehavior.GetType();
+            bool autoInvoke = false;
+            
+            try
+            {
+                var autoInvokeField = behaviorType.GetField("AutoInvoke", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (autoInvokeField is not null && autoInvokeField.FieldType == typeof(bool))
+                {
+                    autoInvoke = (bool)autoInvokeField.GetValue(functionChoiceBehavior)!;
+                }
+            }
+            catch
+            {
+                // Ignore
+            }
+
+            // Check if it's NoneFunctionChoiceBehavior
+            if (behaviorType.Name != nameof(NoneFunctionChoiceBehavior))
+            {
+                toolCallBehavior = autoInvoke
+                    ? GeminiToolCallBehavior.AutoInvokeKernelFunctions
+                    : GeminiToolCallBehavior.EnableKernelFunctions;
+            }
+        }
 
         return new GeminiPromptExecutionSettings
         {
             Temperature = temperature,
             TopP = topP,
-            FunctionChoiceBehavior = functionChoiceBehavior
+            MaxTokens = maxTokens,
+            ToolCallBehavior = toolCallBehavior
         };
     }
 
     /// <summary>
-    /// optimized wrapper around Google Gemini's IChatCompletionService to inject Usage metadata.
+    /// Wrapper around Google Gemini's IChatCompletionService to inject Usage metadata.
+    /// The underlying semantic-kernel Gemini connector now supports FunctionCallContent/FunctionResultContent natively.
     /// </summary>
     private sealed class OptimizedGeminiChatCompletionService(IChatCompletionService innerService) : IChatCompletionService
     {
@@ -124,7 +157,10 @@ public sealed class GoogleKernelMixin : KernelMixinBase
                         content.ChoiceIndex,
                         content.ModelId,
                         content.Encoding,
-                        newMetadata);
+                        newMetadata)
+                    {
+                        Items = content.Items
+                    };
                 }
                 else
                 {

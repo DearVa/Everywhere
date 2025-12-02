@@ -7,12 +7,12 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm"/>
     <PackageReference Include="DynamicData"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Abstractions"/>
     <PackageReference Include="ZLinq"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack\MessagePack.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel\dotnet\src\SemanticKernel.Abstractions\SemanticKernel.Abstractions.csproj"/>
   </ItemGroup>
 </Project>

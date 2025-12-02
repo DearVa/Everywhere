@@ -18,6 +18,7 @@ partial class ChatService
         private Dictionary<string, string>? _functionCallIdsByIndex;
         private Dictionary<string, string>? _functionNamesByIndex;
         private Dictionary<string, StringBuilder>? _functionArgumentBuildersByIndex;
+        private Dictionary<string, IReadOnlyDictionary<string, object?>>? _functionMetadataByIndex;
         private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
         /// <summary>
@@ -53,7 +54,8 @@ partial class ChatService
                     update,
                     ref _functionCallIdsByIndex,
                     ref _functionNamesByIndex,
-                    ref _functionArgumentBuildersByIndex);
+                    ref _functionArgumentBuildersByIndex,
+                    ref _functionMetadataByIndex);
             }
         }
 
@@ -81,13 +83,17 @@ partial class ChatService
 
                 var (arguments, exception) = GetFunctionArgumentsSafe(functionCallIndexAndId.Key);
 
+                IReadOnlyDictionary<string, object?>? metadata = null;
+                _functionMetadataByIndex?.TryGetValue(functionCallIndexAndId.Key, out metadata);
+
                 functionCalls[i] = new FunctionCallContent(
                     functionName: functionName,
                     pluginName: null,
                     id: functionCallIndexAndId.Value,
                     arguments)
                 {
-                    Exception = exception
+                    Exception = exception,
+                    Metadata = metadata
                 };
             }
 
@@ -165,11 +171,13 @@ partial class ChatService
         /// <param name="functionCallIdsByIndex">The dictionary of function call IDs by function call index.</param>
         /// <param name="functionNamesByIndex">The dictionary of function names by function call index.</param>
         /// <param name="functionArgumentBuildersByIndex">The dictionary of function argument builders by function call index.</param>
+        /// <param name="functionMetadataByIndex">The dictionary of function metadata by function call index.</param>
         private static void TrackStreamingFunctionCallUpdate(
             StreamingFunctionCallUpdateContent? update,
             ref Dictionary<string, string>? functionCallIdsByIndex,
             ref Dictionary<string, string>? functionNamesByIndex,
-            ref Dictionary<string, StringBuilder>? functionArgumentBuildersByIndex)
+            ref Dictionary<string, StringBuilder>? functionArgumentBuildersByIndex,
+            ref Dictionary<string, IReadOnlyDictionary<string, object?>>? functionMetadataByIndex)
         {
             if (update is null)
             {
@@ -191,6 +199,16 @@ partial class ChatService
             if (update.Name is { Length: > 0 } name)
             {
                 (functionNamesByIndex ??= [])[functionCallIndex] = name;
+            }
+
+            // Track metadata
+            if (update.Metadata is not null && !functionMetadataByIndex?.ContainsKey(functionCallIndex) == true)
+            {
+                (functionMetadataByIndex ??= [])[functionCallIndex] = update.Metadata;
+            }
+            else if (update.Metadata is not null)
+            {
+                (functionMetadataByIndex ??= [])[functionCallIndex] = update.Metadata;
             }
 
             // Ensure we're tracking the function's arguments.
