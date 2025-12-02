@@ -1668,4 +1668,40 @@
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>ツールの呼び出しを生成しています</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>チャットコンテキストの読み込みに失敗しました。</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Markdownファイル</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
+        <value>作成日</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
+        <value>変更日</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>ユーザー</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
+        <value>添付ファイル</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>アシスタント</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>エラー</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>ファイルの保存に失敗しました。</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>エクスポート成功</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
+        <value>ツール呼び出し</value>
+    </data>
+    <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
+        <value>Markdownとしてエクスポート</value>
+    </data>
 </root>

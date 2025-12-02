@@ -1668,4 +1668,40 @@
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>Вызов инструмента генерируется</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>Не удалось загрузить контекст чата.</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Файлы Markdown</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
+        <value>Создано</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
+        <value>Изменено</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>Пользователь</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
+        <value>Вложения</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>Ассистент</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>Ошибка</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>Не удалось сохранить файл</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>Экспорт успешно завершен</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
+        <value>Вызов инструмента</value>
+    </data>
+    <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
+        <value>Экспортировать как Markdown</value>
+    </data>
 </root>

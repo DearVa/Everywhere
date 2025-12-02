@@ -1662,4 +1662,40 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>Araç çağrısı oluşturuluyor</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>Sohbet bağlamı yüklenemedi.</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Markdown Dosyaları</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
+        <value>Oluşturuldu</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
+        <value>Değiştirildi</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>Kullanıcı</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
+        <value>Ekler</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>Asistan</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>Hata</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>Dosya Kaydedilemedi</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>Dışa Aktarma Başarılı</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
+        <value>Araç Çağrısı</value>
+    </data>
+    <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
+        <value>Markdown Olarak Dışa Aktar</value>
+    </data>
 </root>

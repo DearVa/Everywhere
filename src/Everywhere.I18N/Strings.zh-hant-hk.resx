@@ -1668,4 +1668,40 @@
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>工具調用正在生成</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>無法加載聊天上下文。</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Markdown 文件</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
+        <value>創建日期</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
+        <value>修改日期</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>用戶</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
+        <value>附件</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>助手</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>錯誤</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>無法保存文件</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>導出成功</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
+        <value>工具調用</value>
+    </data>
+    <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
+        <value>導出為 Markdown</value>
+    </data>
 </root>

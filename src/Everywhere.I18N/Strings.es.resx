@@ -1668,4 +1668,40 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>La invocación de herramientas se está generando</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>Error al cargar el contexto del chat.</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Archivos Markdown</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
+        <value>Creado</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
+        <value>Modificado</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>Usuario</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
+        <value>Adjuntos</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>Asistente</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>Error</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>Error al guardar el archivo</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>Exportación exitosa</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
+        <value>Invocación de herramienta</value>
+    </data>
+    <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
+        <value>Exportar como Markdown</value>
+    </data>
 </root>

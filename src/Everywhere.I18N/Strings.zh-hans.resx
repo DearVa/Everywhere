@@ -1669,8 +1669,11 @@
     <data name="ChatContext_BusyMessage_CallingTools" xml:space="preserve">
         <value>正在生成工具调用</value>
     </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
-        <value>助手</value>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
+        <value>加载聊天内容失败。</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
+        <value>Markdown 文件</value>
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_DateCreated" xml:space="preserve">
         <value>创建于</value>
@@ -1678,26 +1681,23 @@
     <data name="ChatWindowViewModel_ExportMarkdown_DateModified" xml:space="preserve">
         <value>更改于</value>
     </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
-        <value>错误</value>
-    </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
-        <value>导出成功</value>
-    </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_FailedToLoadChatContext" xml:space="preserve">
-        <value>加载聊天内容失败。</value>
-    </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
-        <value>保存文件失败</value>
-    </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_FilePickerFileType_Markdown" xml:space="preserve">
-        <value>Markdown 文件</value>
+    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
+        <value>用户</value>
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_UserAttachments" xml:space="preserve">
         <value>附件</value>
     </data>
-    <data name="ChatWindowViewModel_ExportMarkdown_UserRole" xml:space="preserve">
-        <value>用户</value>
+    <data name="ChatWindowViewModel_ExportMarkdown_AssistantRole" xml:space="preserve">
+        <value>助手</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ErrorMessage" xml:space="preserve">
+        <value>错误</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_FailedToSaveFile" xml:space="preserve">
+        <value>保存文件失败</value>
+    </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ExportSuccess" xml:space="preserve">
+        <value>导出成功</value>
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_FunctionCall" xml:space="preserve">
         <value>工具调用</value>
