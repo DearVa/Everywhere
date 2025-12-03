@@ -156,9 +156,6 @@
     <data name="ChatWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>Tekrar üret</value>
     </data>
-    <data name="ChatWindow_ChatMessage_Copy" xml:space="preserve">
-        <value>Kopyala</value>
-    </data>
     <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>Penecereyi Aç</value>
     </data>
@@ -1137,9 +1134,6 @@
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Seçilen asistanı kalıcı olarak siler.</value>
     </data>
-    <data name="ChatInputBox_ContextFlyout_CopyMenuItem_Header" xml:space="preserve">
-        <value>Kopyala</value>
-    </data>
     <data name="ChatInputBox_ContextFlyout_CutMenuItem_Header" xml:space="preserve">
         <value>Kes</value>
     </data>
@@ -1697,5 +1691,11 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
         <value>Markdown Olarak Dışa Aktar</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_CopyLink" xml:space="preserve">
+        <value>Bağlantıyı Kopyala</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
+        <value>Bağlantıyı Aç</value>
     </data>
 </root>

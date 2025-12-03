@@ -157,9 +157,6 @@
     <data name="ChatWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>Rigenera</value>
     </data>
-    <data name="ChatWindow_ChatMessage_Copy" xml:space="preserve">
-        <value>Copia</value>
-    </data>
     <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>Apri Finestra</value>
     </data>
@@ -1143,9 +1140,6 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Elimina definitivamente l'assistente selezionato.</value>
     </data>
-    <data name="ChatInputBox_ContextFlyout_CopyMenuItem_Header" xml:space="preserve">
-        <value>Copia</value>
-    </data>
     <data name="ChatInputBox_ContextFlyout_CutMenuItem_Header" xml:space="preserve">
         <value>Taglia</value>
     </data>
@@ -1703,5 +1697,11 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
         <value>Esporta come Markdown</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_CopyLink" xml:space="preserve">
+        <value>Copia collegamento</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
+        <value>Apri collegamento</value>
     </data>
 </root>

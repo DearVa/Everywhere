@@ -157,9 +157,6 @@
     <data name="ChatWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>Régénérer</value>
     </data>
-    <data name="ChatWindow_ChatMessage_Copy" xml:space="preserve">
-        <value>Copier</value>
-    </data>
     <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>Ouvrir la fenêtre</value>
     </data>
@@ -1143,9 +1140,6 @@ Des espaces réservés peuvent être utilisés dans l'invite, entourés de {}, e
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Supprime définitivement l'assistant sélectionné.</value>
     </data>
-    <data name="ChatInputBox_ContextFlyout_CopyMenuItem_Header" xml:space="preserve">
-        <value>Copier</value>
-    </data>
     <data name="ChatInputBox_ContextFlyout_CutMenuItem_Header" xml:space="preserve">
         <value>Couper</value>
     </data>
@@ -1703,5 +1697,11 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
         <value>Exporter en tant que Markdown</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_CopyLink" xml:space="preserve">
+        <value>Copier le lien</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
+        <value>Ouvrir le lien</value>
     </data>
 </root>

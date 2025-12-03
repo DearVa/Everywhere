@@ -157,9 +157,6 @@
     <data name="ChatWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>再生成</value>
     </data>
-    <data name="ChatWindow_ChatMessage_Copy" xml:space="preserve">
-        <value>コピー</value>
-    </data>
     <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>ウィンドウを開く</value>
     </data>
@@ -1143,9 +1140,6 @@
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>選択したアシスタントを完全に削除します。</value>
     </data>
-    <data name="ChatInputBox_ContextFlyout_CopyMenuItem_Header" xml:space="preserve">
-        <value>コピー</value>
-    </data>
     <data name="ChatInputBox_ContextFlyout_CutMenuItem_Header" xml:space="preserve">
         <value>切り取り</value>
     </data>
@@ -1703,5 +1697,11 @@
     </data>
     <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
         <value>Markdownとしてエクスポート</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_CopyLink" xml:space="preserve">
+        <value>リンクをコピー</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
+        <value>リンクを開く</value>
     </data>
 </root>

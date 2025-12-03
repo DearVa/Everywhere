@@ -157,9 +157,6 @@
     <data name="ChatWindow_ChatMessage_Assistant_Regenerate" xml:space="preserve">
         <value>Перегенерировать</value>
     </data>
-    <data name="ChatWindow_ChatMessage_Copy" xml:space="preserve">
-        <value>Копировать</value>
-    </data>
     <data name="Application_TrayIcon_Menu_OpenMainWindow" xml:space="preserve">
         <value>Открыть окно</value>
     </data>
@@ -1143,9 +1140,6 @@
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Удаляет выбранного ассистента навсегда.</value>
     </data>
-    <data name="ChatInputBox_ContextFlyout_CopyMenuItem_Header" xml:space="preserve">
-        <value>Копировать</value>
-    </data>
     <data name="ChatInputBox_ContextFlyout_CutMenuItem_Header" xml:space="preserve">
         <value>Вырезать</value>
     </data>
@@ -1703,5 +1697,11 @@
     </data>
     <data name="ChatWindow_ChatHistory_ExportMarkdownMenuItem_Header" xml:space="preserve">
         <value>Экспортировать как Markdown</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_CopyLink" xml:space="preserve">
+        <value>Скопировать ссылку</value>
+    </data>
+    <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
+        <value>Открыть ссылку</value>
     </data>
 </root>
