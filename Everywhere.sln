@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Everywhere", "src\Everywher
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Everywhere.Windows", "src\Everywhere.Windows\Everywhere.Windows.csproj", "{ABC31E74-02FF-46EB-B3B2-4E6AE43B456C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Everywhere.Linux", "src\Everywhere.Linux\Everywhere.Linux.csproj", "{8B6851BF-B739-4979-89C3-01C7F82083F8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Everywhere.Mac", "src\Everywhere.Mac\Everywhere.Mac.csproj", "{97F60D77-44F8-4297-8C45-B1B28C120F5B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DA99C4E-89E3-4049-9C22-0A7EC60D83D8}"
@@ -174,6 +176,10 @@ Global
 		{41784BA1-16E0-4BB8-BC99-0C5AA4F1DEEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41784BA1-16E0-4BB8-BC99-0C5AA4F1DEEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41784BA1-16E0-4BB8-BC99-0C5AA4F1DEEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B6851BF-B739-4979-89C3-01C7F82083F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {8B6851BF-B739-4979-89C3-01C7F82083F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {8B6851BF-B739-4979-89C3-01C7F82083F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {8B6851BF-B739-4979-89C3-01C7F82083F8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97F60D77-44F8-4297-8C45-B1B28C120F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97F60D77-44F8-4297-8C45-B1B28C120F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97F60D77-44F8-4297-8C45-B1B28C120F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU

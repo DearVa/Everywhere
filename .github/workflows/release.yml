@@ -271,3 +271,50 @@ jobs:
 #      uses: softprops/action-gh-release@v2
 #      with:
 #        files: Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.dmg
+
+#  build-linux:
+#    strategy:
+#      matrix:
+#        include:
+#          - runtime: linux-x64
+#            runner: ubuntu-latest
+#            asset_name: Linux-x64
+#          - runtime: linux-arm64
+#            runner: ubuntu-24.04-arm
+#            asset_name: Linux-arm64
+#
+#    runs-on: ${{ matrix.runner }}
+#
+#    steps:
+#    - name: Checkout code
+#      uses: actions/checkout@v4
+#      with:
+#        fetch-depth: 0
+#        submodules: true
+#        lfs: true
+#
+#    - name: Get version from tag
+#      id: get_version
+#      run: |
+#        echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+#
+#    - name: Setup .NET
+#      uses: actions/setup-dotnet@v4
+#      with:
+#        dotnet-version: 10.0.x
+#
+#    - name: Restore
+#      run: dotnet restore src/Everywhere.Linux/Everywhere.Linux.csproj -r ${{ matrix.runtime }}
+#
+#    - name: Publish
+#      run: |
+#        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish
+#
+#    - name: Build Deb Package
+#      run: |
+#        ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+#
+#    - name: Upload Release Assets
+#      uses: softprops/action-gh-release@v2
+#      with:
+#        files: Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
