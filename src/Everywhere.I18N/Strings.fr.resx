@@ -1704,4 +1704,10 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Ouvrir le lien</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>Créer un vidage de processus</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Veuillez patienter pendant que le vidage est en cours de création. Everywhere sera non réactif pendant ce temps.</value>
+    </data>
 </root>

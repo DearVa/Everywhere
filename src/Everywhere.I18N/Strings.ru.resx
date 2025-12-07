@@ -1704,4 +1704,10 @@
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Открыть ссылку</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>Создать дамп процесса</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Пожалуйста, подождите, пока создается дамп. В это время Everywhere будет неотзывчивым.</value>
+    </data>
 </root>

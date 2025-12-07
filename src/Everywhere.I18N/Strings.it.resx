@@ -1704,4 +1704,10 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Apri collegamento</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>Crea Dump Processo</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Attendere mentre il dump viene creato. Everywhere non risponderà durante questo tempo.</value>
+    </data>
 </root>

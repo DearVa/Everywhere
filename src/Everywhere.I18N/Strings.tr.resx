@@ -1698,4 +1698,10 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Bağlantıyı Aç</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>İşlem Dökümü Oluştur</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Döküm oluşturulurken lütfen bekleyin. Bu süre zarfında Everywhere yanıt vermeyecek.</value>
+    </data>
 </root>

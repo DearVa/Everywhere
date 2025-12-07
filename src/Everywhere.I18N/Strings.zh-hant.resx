@@ -1704,4 +1704,10 @@
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>打開連結</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>建立進程轉儲</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>請稍候，轉儲正在建立中。此期間 Everywhere 將無法響應。</value>
+    </data>
 </root>

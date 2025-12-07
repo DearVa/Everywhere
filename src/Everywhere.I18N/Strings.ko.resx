@@ -1704,4 +1704,10 @@
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>링크 열기</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>프로세스 덤프 생성</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>덤프가 생성되는 동안 잠시 기다려 주십시오. 이 시간 동안 Everywhere는 응답하지 않습니다.</value>
+    </data>
 </root>

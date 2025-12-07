@@ -1704,4 +1704,10 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Abrir enlace</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>Crear volcado de proceso</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Por favor, espera mientras se crea el volcado. Everywhere no responderá durante este tiempo.</value>
+    </data>
 </root>

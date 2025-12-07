@@ -1704,4 +1704,10 @@
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>リンクを開く</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>プロセスダンプを作成</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>ダンプが作成されるまでお待ちください。この間、Everywhereは応答しません。</value>
+    </data>
 </root>

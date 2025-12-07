@@ -1700,4 +1700,10 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="ChatWindow_ChatMessage_ContextFlyout_OpenLink" xml:space="preserve">
         <value>Link öffnen</value>
     </data>
+    <data name="DebugFeaturesControl_CreateDumpButton_Content" xml:space="preserve">
+        <value>Prozess-Dump erstellen</value>
+    </data>
+    <data name="DebugFeaturesControl_CreateDumpToast_Content" xml:space="preserve">
+        <value>Bitte warten, während der Dump erstellt wird. Everywhere wird in dieser Zeit nicht reagieren.</value>
+    </data>
 </root>
