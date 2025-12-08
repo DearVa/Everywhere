@@ -79,7 +79,7 @@ public record ModelProviderTemplate
     [
         new()
         {
-            Id = "openai",
+            Id = ModelProviderIds.OpenAI,
             DisplayName = "OpenAI",
             Endpoint = "https://api.openai.com/v1",
             OfficialWebsiteUrl = "https://openai.com",
@@ -152,7 +152,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "anthropic",
+            Id = ModelProviderIds.Anthropic,
             DisplayName = "Anthropic (Claude)",
             Endpoint = "https://api.anthropic.com",
             OfficialWebsiteUrl = "https://www.anthropic.com",
@@ -225,7 +225,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "google",
+            Id = ModelProviderIds.Google,
             DisplayName = "Google (Gemini)",
             OfficialWebsiteUrl = "https://gemini.google.com",
             Endpoint = "https://generativelanguage.googleapis.com/v1beta",
@@ -278,7 +278,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "deepseek",
+            Id = ModelProviderIds.DeepSeek,
             DisplayName = "DeepSeek",
             Endpoint = "https://api.deepseek.com",
             OfficialWebsiteUrl = "https://www.deepseek.com",
@@ -311,7 +311,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "moonshot",
+            Id = ModelProviderIds.Moonshot,
             DisplayName = "Moonshot (Kimi)",
             Endpoint = "https://api.moonshot.cn/v1",
             OfficialWebsiteUrl = "https://www.moonshot.cn",
@@ -354,7 +354,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "openrouter",
+            Id = ModelProviderIds.OpenRouter,
             DisplayName = "OpenRouter",
             OfficialWebsiteUrl = "https://openrouter.ai",
             Endpoint = "https://openrouter.ai/api/v1",
@@ -397,7 +397,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "siliconcloud",
+            Id = ModelProviderIds.SiliconCloud,
             DisplayName = "SiliconCloud (SiliconFlow)",
             OfficialWebsiteUrl = "https://www.siliconflow.cn",
             Endpoint = "https://api.siliconflow.cn/v1",
@@ -430,7 +430,7 @@ public record ModelProviderTemplate
         },
         new()
         {
-            Id = "ollama",
+            Id = ModelProviderIds.Ollama,
             DisplayName = "Ollama",
             OfficialWebsiteUrl = "https://ollama.com",
             Endpoint = "http://127.0.0.1:11434",
