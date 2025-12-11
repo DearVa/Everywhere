@@ -1451,6 +1451,9 @@
     <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage" xml:space="preserve">
         <value>Puppeteer 브라우저 다운로드 URL에 연결하지 못했습니다.</value>
     </data>
+    <data name="NativeChatPlugin_WebBrowser_PuppeteerBrowserLaunchError_ErrorMessage" xml:space="preserve">
+        <value>Puppeteer 브라우저를 시작하지 못했습니다.</value>
+    </data>
     <data name="ElementPickerToolTip_TipTextBlock_Text" xml:space="preserve">
         <value>왼쪽 클릭으로 선택, 오른쪽 클릭 또는 Esc로 취소
 스크롤 휠 또는 숫자 키로 선택 모드 전환</value>
