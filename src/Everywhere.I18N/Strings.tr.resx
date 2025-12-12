@@ -1584,6 +1584,9 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* Komut</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Komut Satırı Argümanları</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>Çalışma Dizini</value>
     </data>
@@ -1598,6 +1601,15 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>İstek Başlıkları</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* Lütfen anahtarı girin</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
+        <value>* Değer</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>Lütfen değeri girin</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>MCP Eklentisini Düzenle ( * ile işaretli alanlar zorunludur)</value>

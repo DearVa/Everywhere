@@ -1590,6 +1590,9 @@
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* Команда</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Аргументы командной строки</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>Рабочая директория</value>
     </data>
@@ -1604,6 +1607,15 @@
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>Заголовки запроса</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* Пожалуйста, введите ключ</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
+        <value>* Значение</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>Пожалуйста, введите значение</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>Редактировать MCP плагин (поля, отмеченные *, обязательны)</value>

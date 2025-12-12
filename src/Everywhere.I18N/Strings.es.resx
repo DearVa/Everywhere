@@ -1590,6 +1590,9 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* Comando</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Argumentos de línea de comandos</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>Directorio de trabajo</value>
     </data>
@@ -1604,6 +1607,15 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>Encabezados de solicitud</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* Por favor, ingrese la clave</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
+        <value>* Valor</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>Por favor, ingrese el valor</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>Editar plugin MCP (Los campos marcados con * son obligatorios)</value>

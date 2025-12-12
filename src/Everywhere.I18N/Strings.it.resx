@@ -1590,6 +1590,9 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* Comando</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Argomenti della riga di comando</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>Directory di lavoro</value>
     </data>
@@ -1604,6 +1607,15 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>Intestazioni della richiesta</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* Inserisci la chiave</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
+        <value>* Valore</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>Inserisci il valore</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>Modifica plugin MCP (I campi contrassegnati con * sono obbligatori)</value>

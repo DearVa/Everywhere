@@ -1590,6 +1590,9 @@
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* コマンド</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>コマンドライン引数</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>作業ディレクトリ</value>
     </data>
@@ -1605,8 +1608,14 @@
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>リクエストヘッダー</value>
     </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* キーを入力してください</value>
+    </data>
     <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
         <value>* 値</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>値</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>MCPプラグインの編集 (必須フィールドは*でマークされています)</value>
@@ -1697,8 +1706,5 @@
     </data>
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
-    </data>
-    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
-        <value>値</value>
     </data>
 </root>

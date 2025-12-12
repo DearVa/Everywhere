@@ -1590,6 +1590,9 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* Commande</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>Arguments de ligne de commande</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>Répertoire de travail</value>
     </data>
@@ -1604,6 +1607,15 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>En-têtes de requête</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* Veuillez saisir la clé</value>
+    </data>
+    <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
+        <value>* Valeur</value>
+    </data>
+    <data name="McpTransportConfigurationForm_OptionalValueTextBox_Watermark" xml:space="preserve">
+        <value>Veuillez saisir la valeur</value>
     </data>
     <data name="ChatPluginPageViewModel_EditMcpPlugin_DialogTitle" xml:space="preserve">
         <value>Modifier le plugin MCP (Les champs marqués avec * sont obligatoires)</value>

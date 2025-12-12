@@ -1590,6 +1590,9 @@
     <data name="McpTransportConfigurationForm_CommandTextBox_Label" xml:space="preserve">
         <value>* 命令</value>
     </data>
+    <data name="McpTransportConfigurationForm_ArgumentsTextBox_Label" xml:space="preserve">
+        <value>命令列參數</value>
+    </data>
     <data name="McpTransportConfigurationForm_WorkingDirectoryTextBox_Label" xml:space="preserve">
         <value>工作目錄</value>
     </data>
@@ -1604,6 +1607,9 @@
     </data>
     <data name="McpTransportConfigurationForm_HeadersDataList_Label" xml:space="preserve">
         <value>請求標頭</value>
+    </data>
+    <data name="McpTransportConfigurationForm_KeyTextBox_Watermark" xml:space="preserve">
+        <value>* 請輸入金鑰</value>
     </data>
     <data name="McpTransportConfigurationForm_ValueTextBox_Watermark" xml:space="preserve">
         <value>* 值</value>
