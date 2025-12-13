@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>단축키 설정을 클릭하세요</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>단축키 입력...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>이름 없는 세션</value>
     </data>

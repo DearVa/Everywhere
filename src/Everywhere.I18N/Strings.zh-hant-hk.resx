@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>點擊以設定快捷鍵</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>輸入快捷鍵...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>未命名會話</value>
     </data>

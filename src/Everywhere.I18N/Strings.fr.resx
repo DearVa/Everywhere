@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>Cliquez pour définir un raccourci</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>Tapez le raccourci...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>Session sans nom</value>
     </data>

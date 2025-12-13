@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>Haz clic para establecer un atajo</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>Escribe el atajo...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>Sesión sin nombre</value>
     </data>

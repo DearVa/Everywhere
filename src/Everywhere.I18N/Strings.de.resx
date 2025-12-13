@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>Klicken Sie, um eine Tastenkombination festzulegen</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>Tastenkombination eingeben...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>Unbenannte Sitzung</value>
     </data>

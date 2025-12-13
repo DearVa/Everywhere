@@ -205,6 +205,9 @@
     <data name="KeyboardShortcutInputBox_Watermark" xml:space="preserve">
         <value>点击设置快捷键</value>
     </data>
+    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
+        <value>请输入快捷键...</value>
+    </data>
     <data name="ChatContext_Metadata_Topic_Default" xml:space="preserve">
         <value>未命名对话</value>
     </data>
@@ -1704,8 +1707,5 @@
     </data>
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
-    </data>
-    <data name="KeyboardShortcutInputBox_SettingWatermark" xml:space="preserve">
-        <value>请输入快捷键...</value>
     </data>
 </root>
