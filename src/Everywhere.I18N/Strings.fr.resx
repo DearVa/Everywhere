@@ -1707,4 +1707,7 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
     </data>
+    <data name="MacOS_PermissionHelper_PleaseGrantAccessibilityPermission" xml:space="preserve">
+        <value>Veuillez accorder les autorisations d'accessibilité à l'application dans Réglages système &gt; Confidentialité et sécurité &gt; Accessibilité, puis redémarrez l'application.</value>
+    </data>
 </root>

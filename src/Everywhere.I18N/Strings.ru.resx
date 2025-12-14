@@ -1707,4 +1707,7 @@
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
     </data>
+    <data name="MacOS_PermissionHelper_PleaseGrantAccessibilityPermission" xml:space="preserve">
+        <value>Пожалуйста, предоставьте разрешения на доступность приложению в Настройки системы &gt; Конфиденциальность и безопасность &gt; Доступность, и перезапустите приложение.</value>
+    </data>
 </root>

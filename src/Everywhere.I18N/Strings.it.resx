@@ -1707,4 +1707,7 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
     </data>
+    <data name="MacOS_PermissionHelper_PleaseGrantAccessibilityPermission" xml:space="preserve">
+        <value>Si prega di concedere i permessi di accessibilità all'applicazione in Impostazioni di sistema &gt; Privacy e sicurezza &gt; Accessibilità, e riavviare l'applicazione.</value>
+    </data>
 </root>

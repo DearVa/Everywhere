@@ -1707,4 +1707,7 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
     </data>
+    <data name="MacOS_PermissionHelper_PleaseGrantAccessibilityPermission" xml:space="preserve">
+        <value>Por favor, concede permisos de accesibilidad a la aplicación en Configuración del Sistema &gt; Privacidad y Seguridad &gt; Accesibilidad, y reinicia la aplicación.</value>
+    </data>
 </root>

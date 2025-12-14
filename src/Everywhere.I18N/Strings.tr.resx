@@ -1701,4 +1701,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="ModelProviderSchema_OpenAI_Responses" xml:space="preserve">
         <value>OpenAI (Responses API)</value>
     </data>
+    <data name="MacOS_PermissionHelper_PleaseGrantAccessibilityPermission" xml:space="preserve">
+        <value>Lütfen uygulamaya Erişilebilirlik izinlerini Sistem Ayarları &gt; Gizlilik ve Güvenlik &gt; Erişilebilirlik bölümünden verin ve uygulamayı yeniden başlatın.</value>
+    </data>
 </root>
