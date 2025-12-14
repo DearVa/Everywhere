@@ -1125,6 +1125,15 @@ Des espaces réservés peuvent être utilisés dans l'invite, entourés de {}, e
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>L'argument est hors de la plage valide. Veuillez vous assurer que la configuration est correcte.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>La connexion SSL n'a pas pu être établie. Veuillez vérifier vos paramètres réseau ou votre certificat.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>La connexion a été refusée par le serveur. Veuillez vérifier si le service est en cours d'exécution et accessible.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>L'hôte n'a pas pu être trouvé. Veuillez vérifier l'adresse et votre connexion réseau.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@ Contenu :
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>Impossible d'écrire dans un fichier binaire.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>Le modèle a fourni une valeur invalide pour le paramètre '{0}', probablement en raison d'une hallucination.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>La taille du fichier est supérieure à 10 Mo, l'opération de remplacement n'est pas prise en charge.</value>
     </data>
@@ -1572,6 +1584,9 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>Le modèle a tenté d'invoquer l'outil inexistant '{0}', probablement en raison d'une hallucination.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* Nom</value>
     </data>
@@ -1706,5 +1721,8 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere est déjà en cours d'exécution. Veuillez vérifier votre zone de notification pour la fenêtre de l'application.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Le paramètre requis '{0}' est manquant dans l'invocation de l'outil, probablement en raison d'une hallucination.</value>
     </data>
 </root>

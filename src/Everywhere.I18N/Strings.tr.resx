@@ -1119,6 +1119,15 @@
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>Argüman geçerli aralık dışında. Lütfen yapılandırmanın doğru olduğundan emin olun.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>SSL bağlantısı kurulamadı. Lütfen ağ ayarlarınızı veya sertifikanızı kontrol edin.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>Bağlantı sunucu tarafından reddedildi. Lütfen servisin çalıştığından ve erişilebilir olduğundan emin olun.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>Host bulunamadı. Lütfen adresi ve ağ bağlantınızı kontrol edin.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Her Şey</value>
     </data>
@@ -1385,6 +1394,9 @@
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>İkili dosyaya yazılamıyor.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>Model, '{0}' parametresi için geçersiz bir değer sağladı, muhtemelen hayal görme nedeniyle.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>Dosya boyutu 10 MB'dan büyük, değiştirme işlemi desteklenmiyor.</value>
     </data>
@@ -1566,6 +1578,9 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>Model, mevcut olmayan '{0}' aracını çağırmaya çalıştı, muhtemelen hayal görme nedeniyle.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* İsim</value>
     </data>
@@ -1700,5 +1715,8 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere zaten çalışıyor. Lütfen uygulama penceresi için sistem tepsinizi kontrol edin.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Gerekli '{0}' parametresi araç çağrısından eksik, muhtemelen hayal görme nedeniyle.</value>
     </data>
 </root>

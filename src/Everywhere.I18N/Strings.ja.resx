@@ -1125,6 +1125,15 @@
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>引数が有効な範囲外です。設定が正しいことを確認してください。</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>SSL接続を確立できませんでした。ネットワーク設定または証明書を確認してください。</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>サーバーによって接続が拒否されました。サービスが実行中でアクセス可能か確認してください。</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>ホストが見つかりませんでした。アドレスとネットワーク接続を確認してください。</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>バイナリファイルに書き込むことはできません。</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>モデルがパラメータ'{0}'に無効な値を提供しました。おそらく幻覚によるものです。</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>ファイルサイズが10 MBを超えているため、置き換え操作はサポートされていません。</value>
     </data>
@@ -1572,6 +1584,9 @@
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>モデルが存在しないツール'{0}'を呼び出そうとしました。おそらく幻覚によるものです。</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* 名前</value>
     </data>
@@ -1706,5 +1721,8 @@
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhereはすでに実行中です。アプリケーションウィンドウがシステムトレイにあるか確認してください。</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>ツールの呼び出しから必須パラメータ'{0}'が欠落しています。おそらく幻覚によるものです。</value>
     </data>
 </root>

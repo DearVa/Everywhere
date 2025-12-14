@@ -1125,6 +1125,15 @@ Se pueden usar marcadores de posición dentro del mensaje, encerrados en {}, y s
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>El argumento está fuera del rango válido. Por favor, asegúrese de que la configuración sea correcta.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>No se pudo establecer la conexión SSL. Por favor, verifica tu configuración de red o el certificado.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>La conexión fue rechazada por el servidor. Por favor, verifica si el servicio está en funcionamiento y accesible.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>No se pudo encontrar el host. Por favor, verifica la dirección y tu conexión de red.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@ Contenido:
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>No se puede escribir en un archivo binario.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>El modelo proporcionó un valor inválido para el parámetro '{0}', probablemente debido a una alucinación.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>El tamaño del archivo es mayor a 10 MB, la operación de reemplazo no es compatible.</value>
     </data>
@@ -1572,6 +1584,9 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>El modelo intentó invocar la herramienta inexistente '{0}', probablemente debido a una alucinación.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* Nombre</value>
     </data>
@@ -1706,5 +1721,8 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere ya está en ejecución. Por favor, verifica tu bandeja del sistema para la ventana de la aplicación.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Falta el parámetro requerido '{0}' en la invocación de la herramienta, probablemente debido a una alucinación.</value>
     </data>
 </root>

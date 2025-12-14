@@ -1585,6 +1585,9 @@
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>模型尝试调用不存在的工具“{0}”，这可能是由模型幻觉导致的。</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* 名称</value>
     </data>
@@ -1719,9 +1722,6 @@
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere 已在运行，请检查托盘图标。</value>
-    </data>
-    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
-        <value>模型尝试调用不存在的工具“{0}”，这可能是由模型幻觉导致的。</value>
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>调用工具时缺失必需参数“{0}”，这可能是由模型幻觉导致的。</value>

@@ -1125,6 +1125,15 @@
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>Аргумент выходит за пределы допустимого диапазона. Пожалуйста, убедитесь, что конфигурация правильная.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>Не удалось установить SSL-соединение. Пожалуйста, проверьте настройки сети или сертификат.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>Соединение было отклонено сервером. Пожалуйста, проверьте, работает ли служба и доступна ли она.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>Хост не найден. Пожалуйста, проверьте адрес и соединение с сетью.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>Невозможно записать в бинарный файл.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>Модель предоставила недопустимое значение для параметра '{0}', вероятно, из-за галлюцинации.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>Размер файла больше 10 МБ, операция замены не поддерживается.</value>
     </data>
@@ -1572,6 +1584,9 @@
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>Модель попыталась вызвать несуществующий инструмент '{0}', вероятно, из-за галлюцинации.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* Имя</value>
     </data>
@@ -1706,5 +1721,8 @@
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere уже запущен. Пожалуйста, проверьте область уведомлений для окна приложения.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Обязательный параметр '{0}' отсутствует в вызове инструмента, вероятно, из-за галлюцинации.</value>
     </data>
 </root>

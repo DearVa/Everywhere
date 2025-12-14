@@ -1121,6 +1121,15 @@ Platzhalter können im Prompt verwendet werden, eingeschlossen in {}, und werden
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>Das Argument liegt außerhalb des gültigen Bereichs. Bitte stellen Sie sicher, dass die Konfiguration korrekt ist.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>Die SSL-Verbindung konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Netzwerkeinstellungen oder das Zertifikat.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>Die Verbindung wurde vom Server verweigert. Bitte überprüfen Sie, ob der Dienst läuft und erreichbar ist.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>Der Host konnte nicht gefunden werden. Bitte überprüfen Sie die Adresse und Ihre Netzwerkverbindung.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1387,6 +1396,9 @@ Inhalt:
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>Kann nicht in eine Binärdatei schreiben.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>Das Modell hat einen ungültigen Wert für den Parameter '{0}' bereitgestellt, wahrscheinlich aufgrund von Halluzinationen.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>Die Dateigröße ist größer als 10 MB, der Ersetzungsvorgang wird nicht unterstützt.</value>
     </data>
@@ -1568,6 +1580,9 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>Das Modell hat versucht, das nicht vorhandene Werkzeug '{0}' aufzurufen, wahrscheinlich aufgrund von Halluzinationen.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* Name</value>
     </data>
@@ -1702,5 +1717,8 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere läuft bereits. Bitte überprüfen Sie Ihr Systemtray auf das Anwendungsfenster.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Der erforderliche Parameter '{0}' fehlt im Werkzeugaufruf, wahrscheinlich aufgrund von Halluzinationen.</value>
     </data>
 </root>

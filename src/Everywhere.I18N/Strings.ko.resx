@@ -1125,6 +1125,15 @@
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>인수가 유효한 범위를 벗어났습니다. 설정이 올바른지 확인하세요.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>SSL 연결을 설정할 수 없습니다. 네트워크 설정이나 인증서를 확인하세요.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>서버에서 연결을 거부했습니다. 서비스가 실행 중이고 접근 가능한지 확인하세요.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>호스트를 찾을 수 없습니다. 주소와 네트워크 연결을 확인하세요.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>이진 파일에 쓸 수 없습니다.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>모델이 매개변수 '{0}'에 대해 잘못된 값을 제공했습니다. 아마도 환각 때문입니다.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>파일 크기가 10MB를 초과하여 교체 작업이 지원되지 않습니다.</value>
     </data>
@@ -1572,6 +1584,9 @@
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>모델이 존재하지 않는 도구 '{0}'를 호출하려고 했습니다. 아마도 환각 때문입니다.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* 이름</value>
     </data>
@@ -1706,5 +1721,8 @@
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere가 이미 실행 중입니다. 시스템 트레이에서 애플리케이션 창을 확인해 주세요.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>도구 호출에서 필수 매개변수 '{0}'가 누락되었습니다. 아마도 환각 때문입니다.</value>
     </data>
 </root>

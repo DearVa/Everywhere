@@ -1125,6 +1125,15 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     <data name="HandledSystemException_ArgumentOutOfRange" xml:space="preserve">
         <value>L'argomento è fuori dall'intervallo valido. Assicurati che la configurazione sia corretta.</value>
     </data>
+    <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
+        <value>Impossibile stabilire la connessione SSL. Controlla le impostazioni di rete o il certificato.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>La connessione è stata rifiutata dal server. Controlla se il servizio è in esecuzione e accessibile.</value>
+    </data>
+    <data name="HandledSystemException_HostNotFound" xml:space="preserve">
+        <value>L'host non è stato trovato. Controlla l'indirizzo e la tua connessione di rete.</value>
+    </data>
     <data name="NativeChatPlugin_Everything_Header" xml:space="preserve">
         <value>Everything</value>
     </data>
@@ -1391,6 +1400,9 @@ Contenuto:
     <data name="NativeChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
         <value>Impossibile scrivere in un file binario.</value>
     </data>
+    <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
+        <value>Il modello ha fornito un valore non valido per il parametro '{0}', probabilmente a causa di allucinazioni.</value>
+    </data>
     <data name="NativeChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>La dimensione del file è superiore a 10 MB, l'operazione di sostituzione non è supportata.</value>
     </data>
@@ -1572,6 +1584,9 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="HttpTransportMode_Sse" xml:space="preserve">
         <value>SSE</value>
     </data>
+    <data name="HandledFunctionInvokingException_FunctionNotFound" xml:space="preserve">
+        <value>Il modello ha tentato di invocare lo strumento inesistente '{0}', probabilmente a causa di allucinazioni.</value>
+    </data>
     <data name="McpTransportConfigurationForm_NameTextBox_Label" xml:space="preserve">
         <value>* Nome</value>
     </data>
@@ -1706,5 +1721,8 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="Entrance_EverywhereAlreadyRunning" xml:space="preserve">
         <value>Everywhere è già in esecuzione. Controlla l'area di notifica per la finestra dell'applicazione.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
+        <value>Il parametro richiesto '{0}' è mancante dall'invocazione dello strumento, probabilmente a causa di allucinazioni.</value>
     </data>
 </root>
