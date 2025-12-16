@@ -603,6 +603,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>Hata</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>Sürüm</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>Son kontrol:</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>Bilinmeyen</value>
     </data>
@@ -1697,5 +1703,20 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>Gerekli '{0}' parametresi araç çağrısından eksik, muhtemelen hayal görme nedeniyle.</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>Güncelleme Mevcut</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>Güncelleme kontrol ediliyor</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>Güncel durumdasınız</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>Biraz bekleyin...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>Güncelleniyor</value>
     </data>
 </root>

@@ -605,6 +605,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>錯誤</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>版本</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>最後檢查時間：</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>未知</value>
     </data>
@@ -1703,5 +1709,20 @@
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>工具調用中缺少必要的參數 '{0}'，可能是由於幻覺造成的。</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>可用更新</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>正在檢查更新</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>您已是最新版本</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>請稍候...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>正在更新</value>
     </data>
 </root>

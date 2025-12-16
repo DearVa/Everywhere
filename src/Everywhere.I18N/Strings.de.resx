@@ -604,6 +604,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>Fehler</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>Version</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>Letzte Überprüfung:</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>Unbekannt</value>
     </data>
@@ -1699,5 +1705,20 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>Der erforderliche Parameter '{0}' fehlt im Werkzeugaufruf, wahrscheinlich aufgrund von Halluzinationen.</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>Update verfügbar</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>Überprüfung auf Updates</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>Sie sind auf dem neuesten Stand</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>Einen Moment bitte...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>Aktualisierung</value>
     </data>
 </root>

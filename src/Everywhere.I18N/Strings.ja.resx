@@ -605,6 +605,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>エラー</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>バージョン</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>最終チェック:</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>不明</value>
     </data>
@@ -1703,5 +1709,20 @@
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>ツールの呼び出しから必須パラメータ'{0}'が欠落しています。おそらく幻覚によるものです。</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>更新があります</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>更新を確認中</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>最新の状態です</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>少々お待ちください...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>更新中</value>
     </data>
 </root>

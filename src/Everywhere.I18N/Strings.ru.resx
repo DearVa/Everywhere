@@ -605,6 +605,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>Ошибка</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>Версия</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>Последняя проверка:</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>Неизвестно</value>
     </data>
@@ -1703,5 +1709,20 @@
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>Обязательный параметр '{0}' отсутствует в вызове инструмента, вероятно, из-за галлюцинации.</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>Доступно обновление</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>Проверка обновления</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>У вас последняя версия</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>Подождите немного...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>Обновление</value>
     </data>
 </root>

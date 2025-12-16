@@ -605,6 +605,12 @@
     <data name="Common_Error" xml:space="preserve">
         <value>Errore</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableVersionTitle_Text" xml:space="preserve">
+        <value>Versione</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
+        <value>Ultimo controllo:</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>Sconosciuto</value>
     </data>
@@ -1703,5 +1709,20 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="HandledFunctionInvokingException_ArgumentMissing" xml:space="preserve">
         <value>Il parametro richiesto '{0}' è mancante dall'invocazione dello strumento, probabilmente a causa di allucinazioni.</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateAvailableTitle_Text" xml:space="preserve">
+        <value>Aggiornamento disponibile</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateTitle_Text" xml:space="preserve">
+        <value>Controllo aggiornamenti</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdateNotAvailableTitle_Text" xml:space="preserve">
+        <value>Sei aggiornato</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_CheckingUpdateDescription_Text" xml:space="preserve">
+        <value>Un momento...</value>
+    </data>
+    <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
+        <value>Aggiornamento in corso</value>
     </data>
 </root>
