@@ -14,6 +14,8 @@ using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 using FunctionCallContent = Microsoft.Extensions.AI.FunctionCallContent;
 using TextContent = Microsoft.Extensions.AI.TextContent;
 
+#pragma warning disable SCME0001 // Type is for evaluation purposes only and is subject to change or removal in future updates.
+
 namespace Everywhere.AI;
 
 /// <summary>
@@ -98,7 +100,7 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
         private static PropertyInfo? _choiceCountProperty;
         private static PropertyInfo? _choiceIndexerProperty;
         private static PropertyInfo? _choiceDeltaProperty;
-        private static PropertyInfo? _deltaRawDataProperty;
+        private static PropertyInfo? _deltaPatchProperty;
 
         public Task<ChatResponse> GetResponseAsync(
             IEnumerable<ChatMessage> messages,
@@ -164,17 +166,23 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
                         continue;
                     }
 
-                    // Cache PropertyInfo for the internal 'SerializedAdditionalRawData' property of the delta.
-                    _deltaRawDataProperty ??= delta.GetType().GetProperty(
-                        "SerializedAdditionalRawData",
-                        BindingFlags.Instance | BindingFlags.NonPublic);
+                    // Cache PropertyInfo for the internal 'Patch' property of the delta.
+                    _deltaPatchProperty ??= delta.GetType().GetProperty(
+                        "Patch",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     // Extract and process the raw data if it exists.
-                    if (_deltaRawDataProperty?.GetValue(delta) is not IDictionary<string, BinaryData?> source ||
-                        !source.TryGetValue("reasoning_content", out var reasoningContentBinaryData) ||
-                        reasoningContentBinaryData is null ||
-                        reasoningContentBinaryData.Length <= 2 || // start and end are quotes
-                        JsonSerializer.Deserialize<string>(reasoningContentBinaryData.ToString()) is not { Length: > 0 } reasoningContent)
+                    string? reasoningContent = null;
+                    if (_deltaPatchProperty?.GetValue(delta) is JsonPatch jsonPatch)
+                    {
+                        try
+                        {
+                            reasoningContent = jsonPatch.GetString("$.reasoning_content"u8);
+                        }
+                        catch { }
+                    }
+
+                    if (string.IsNullOrEmpty(reasoningContent))
                     {
                         yield return update;
                         continue;
