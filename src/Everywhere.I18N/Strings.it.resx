@@ -1725,4 +1725,16 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>Aggiornamento in corso</value>
     </data>
+    <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
+        <value>Esegui</value>
+    </data>
+    <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
+        <value>Ferma</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>Modifica</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>Rimuovi</value>
+    </data>
 </root>

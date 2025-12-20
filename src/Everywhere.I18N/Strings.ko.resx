@@ -1725,4 +1725,16 @@
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>업데이트 중</value>
     </data>
+    <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
+        <value>실행</value>
+    </data>
+    <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
+        <value>중지</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>편집</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>제거</value>
+    </data>
 </root>

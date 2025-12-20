@@ -1725,4 +1725,16 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>Mise à jour en cours</value>
     </data>
+    <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
+        <value>Exécuter</value>
+    </data>
+    <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
+        <value>Arrêter</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>Modifier</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>Supprimer</value>
+    </data>
 </root>

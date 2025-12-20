@@ -1721,4 +1721,16 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>Aktualisierung</value>
     </data>
+    <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
+        <value>Ausführen</value>
+    </data>
+    <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
+        <value>Stoppen</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>Bearbeiten</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>Entfernen</value>
+    </data>
 </root>

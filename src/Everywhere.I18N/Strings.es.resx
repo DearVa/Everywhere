@@ -1725,4 +1725,16 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>Actualizando</value>
     </data>
+    <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
+        <value>Ejecutar</value>
+    </data>
+    <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
+        <value>Detener</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>Editar</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>Eliminar</value>
+    </data>
 </root>

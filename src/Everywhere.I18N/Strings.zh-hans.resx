@@ -1726,16 +1726,16 @@
     <data name="CommonSettings_SoftwareUpdate_UpdatingTitle_Text" xml:space="preserve">
         <value>更新中</value>
     </data>
-    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
-        <value>编辑</value>
-    </data>
-    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
-        <value>删除</value>
-    </data>
     <data name="ChatPluginPage_StartMcpPluginButton_Content" xml:space="preserve">
         <value>运行</value>
     </data>
     <data name="ChatPluginPage_StopMcpPluginButton_Content" xml:space="preserve">
         <value>停止</value>
+    </data>
+    <data name="ChatPluginPage_EditMcpPluginButton_Content" xml:space="preserve">
+        <value>编辑</value>
+    </data>
+    <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
+        <value>删除</value>
     </data>
 </root>
