@@ -611,6 +611,9 @@
     <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
         <value>最終チェック:</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_NeverChecked_Text" xml:space="preserve">
+        <value>未確認</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>不明</value>
     </data>

@@ -611,6 +611,9 @@
     <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
         <value>마지막 확인:</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_NeverChecked_Text" xml:space="preserve">
+        <value>한 번도 확인하지 않음</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>알 수 없음</value>
     </data>

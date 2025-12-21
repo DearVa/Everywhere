@@ -611,6 +611,9 @@
     <data name="CommonSettings_SoftwareUpdate_LastUpdateCheckTitle_Text" xml:space="preserve">
         <value>Última verificación:</value>
     </data>
+    <data name="CommonSettings_SoftwareUpdate_NeverChecked_Text" xml:space="preserve">
+        <value>Nunca verificado</value>
+    </data>
     <data name="Common_Unknown" xml:space="preserve">
         <value>Desconocido</value>
     </data>
