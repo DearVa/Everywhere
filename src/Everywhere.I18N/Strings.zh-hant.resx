@@ -1807,6 +1807,9 @@
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Consent_Header" xml:space="preserve">
         <value>允許管理備忘錄嗎？</value>
     </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>您拒絕了管理備忘錄的請求。</value>
+    </data>
     <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Header" xml:space="preserve">
         <value>發送電子郵件</value>
     </data>
@@ -1827,9 +1830,6 @@
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
         <value>搜尋：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
-        <value>您拒絕了管理備忘錄的請求。</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Header" xml:space="preserve">
         <value>打開網址</value>
