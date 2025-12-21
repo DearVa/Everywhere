@@ -1831,12 +1831,6 @@
     <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
         <value>검색: {0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
-        <value>지도를 여는 것을 허용하시겠습니까?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
-        <value>지도 열기 요청을 거부하셨습니다.</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
         <value>메모 관리 요청을 거부하셨습니다.</value>
     </data>
@@ -1845,12 +1839,6 @@
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
         <value>URL: {0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
-        <value>URL 열기를 허용하시겠습니까?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
-        <value>URL 열기를 거부했습니다.</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
         <value>AppleScript 실행</value>

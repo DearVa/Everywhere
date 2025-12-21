@@ -1825,12 +1825,6 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
         <value>Arama: {0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
-        <value>Haritaları açmaya izin verilsin mi?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
-        <value>Haritaları açma isteğini reddettiniz.</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
         <value>Notları yönetme isteğini reddettiniz.</value>
     </data>
@@ -1839,12 +1833,6 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
         <value>URL: {0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
-        <value>URL açmaya izin verilsin mi?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
-        <value>URL'yi açma isteğini reddettiniz.</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
         <value>AppleScript'i Çalıştır</value>

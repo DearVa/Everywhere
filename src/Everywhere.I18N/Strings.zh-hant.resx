@@ -1831,12 +1831,6 @@
     <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
         <value>搜尋：{0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
-        <value>允許打開地圖嗎？</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
-        <value>您拒絕了打開地圖的請求。</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
         <value>您拒絕了管理備忘錄的請求。</value>
     </data>
@@ -1845,12 +1839,6 @@
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
         <value>網址：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
-        <value>允許打開網址嗎？</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
-        <value>您拒絕了打開網址的請求。</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
         <value>執行 AppleScript</value>

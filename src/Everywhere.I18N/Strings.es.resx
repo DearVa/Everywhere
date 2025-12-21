@@ -1831,12 +1831,6 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
         <value>Buscar: {0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
-        <value>¿Permitir abrir Mapas?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
-        <value>Has denegado la solicitud para abrir Mapas.</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
         <value>Has denegado la solicitud para gestionar notas.</value>
     </data>
@@ -1845,12 +1839,6 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
         <value>URL: {0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
-        <value>¿Permitir abrir URL?</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
-        <value>Has denegado la solicitud para abrir la URL.</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
         <value>Ejecutar AppleScript</value>
