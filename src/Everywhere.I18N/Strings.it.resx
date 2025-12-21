@@ -665,6 +665,12 @@
     <data name="BuiltInChatPlugin_WebBrowser_Description" xml:space="preserve">
         <value>Fornendo capacità di navigazione web, inclusi motore di ricerca e funzioni di accesso alle pagine web, può ridurre le allucinazioni del modello e fornire informazioni aggiornate. Nota: l'utilizzo dello strumento &quot;Ricerca Web&quot; richiede la configurazione di una chiave API del motore di ricerca (diversa dalla chiave API del modello). Se non intendi configurare una chiave API, puoi deselezionare lo strumento &quot;Ricerca Web&quot; e utilizzare solo lo strumento &quot;Browser Web&quot;.</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Header" xml:space="preserve">
+        <value>PowerShell</value>
+    </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Description" xml:space="preserve">
+        <value>Fornisce la possibilità di eseguire script PowerShell, consentendo l'interazione diretta con il sistema. Tuttavia, è anche pericoloso e potrebbe causare eliminazioni accidentali di file o crash del sistema.</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_Header" xml:space="preserve">
         <value>File System</value>
     </data>
@@ -1269,6 +1275,9 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
         <value>{0} Link</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Il seguente script PowerShell verrà eseguito</value>
+    </data>
     <data name="BuiltInChatPlugin_VisualTree_CaptureVisualElementById_Header" xml:space="preserve">
         <value>Cattura Elemento UI</value>
     </data>
@@ -1328,11 +1337,6 @@ I segnaposto possono essere usati all'interno del prompt, racchiusi in {}, e sar
     </data>
     <data name="ProxySettings_Description" xml:space="preserve">
         <value>Impostazione del proxy di rete.</value>
-    </data>
-    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
-        <value>Descrizione: {0}
-Contenuto:
-{1}</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>Esecuzione dello script PowerShell non riuscita: {0}</value>
@@ -1730,5 +1734,152 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
         <value>Rimuovi</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Header" xml:space="preserve">
+        <value>Sistema macOS</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Description" xml:space="preserve">
+        <value>Controlla le applicazioni di sistema macOS e svolgi attività di sistema.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action" xml:space="preserve">
+        <value>Azione: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Create" xml:space="preserve">
+        <value>Crea</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_List" xml:space="preserve">
+        <value>Elenca Tutto</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Update" xml:space="preserve">
+        <value>Modifica</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Delete" xml:space="preserve">
+        <value>Elimina</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Complete" xml:space="preserve">
+        <value>Completa</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Header" xml:space="preserve">
+        <value>Gestisci Promemoria</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Action" xml:space="preserve">
+        <value>Azione: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Title" xml:space="preserve">
+        <value>Titolo: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Consent_Header" xml:space="preserve">
+        <value>Consentire la gestione dei promemoria?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di gestire i promemoria.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Header" xml:space="preserve">
+        <value>Gestisci Calendario</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Title" xml:space="preserve">
+        <value>Titolo: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Time" xml:space="preserve">
+        <value>Ora: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Location" xml:space="preserve">
+        <value>Luogo: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Notes" xml:space="preserve">
+        <value>Note: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Consent_Header" xml:space="preserve">
+        <value>Consentire la gestione del calendario?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di gestire il calendario.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Header" xml:space="preserve">
+        <value>Gestisci Note</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Title" xml:space="preserve">
+        <value>Titolo: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Content" xml:space="preserve">
+        <value>Contenuto: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Consent_Header" xml:space="preserve">
+        <value>Consentire la gestione delle note?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di gestire le note.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Header" xml:space="preserve">
+        <value>Invia Email</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Recipient" xml:space="preserve">
+        <value>Destinatario: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Subject" xml:space="preserve">
+        <value>Oggetto: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Consent_Header" xml:space="preserve">
+        <value>Consentire l'invio di un'email?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di inviare un'email.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Header" xml:space="preserve">
+        <value>Apri Mappe</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
+        <value>Cerca: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
+        <value>Consentire l'apertura delle Mappe?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di aprire le Mappe.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di gestire le note.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Header" xml:space="preserve">
+        <value>Apri URL</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
+        <value>URL: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
+        <value>Consentire l'apertura dell'URL?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di aprire l'URL.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
+        <value>Esegui AppleScript</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Consentire l'esecuzione di AppleScript?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Hai negato la richiesta di eseguire AppleScript.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Esecuzione di AppleScript fallita: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Header" xml:space="preserve">
+        <value>Shell zsh</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
+        <value>Esegui Script</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Il seguente script zsh verrà eseguito</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>L'utente ha negato il consenso per l'esecuzione dello script zsh.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Esecuzione dello script zsh fallita: {0}</value>
     </data>
 </root>

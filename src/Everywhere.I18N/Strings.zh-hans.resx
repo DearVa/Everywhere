@@ -1769,41 +1769,17 @@
     <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Title" xml:space="preserve">
         <value>标题：{0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Id" xml:space="preserve">
-        <value>ID：{0}</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Consent_Header" xml:space="preserve">
         <value>允许管理提醒事项？</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_DenyMessage" xml:space="preserve">
         <value>你拒绝了管理提醒事项的请求。</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_Header" xml:space="preserve">
-        <value>创建提醒事项</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_Detail_Title" xml:space="preserve">
-        <value>标题：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_Detail_Notes" xml:space="preserve">
-        <value>备注：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_Detail_DueDate" xml:space="preserve">
-        <value>截止日期：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_Consent_Header" xml:space="preserve">
-        <value>允许创建提醒事项？</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_CreateReminder_DenyMessage" xml:space="preserve">
-        <value>你拒绝了创建提醒事项的请求。</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Header" xml:space="preserve">
         <value>管理日历</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Title" xml:space="preserve">
         <value>标题：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Id" xml:space="preserve">
-        <value>ID：{0}</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Time" xml:space="preserve">
         <value>时间：{0}</value>
@@ -1825,9 +1801,6 @@
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Title" xml:space="preserve">
         <value>标题：{0}</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Id" xml:space="preserve">
-        <value>ID：{0}</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Content" xml:space="preserve">
         <value>内容：{0}</value>
@@ -1892,22 +1865,22 @@
     <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>AppleScript 执行失败：{0}</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
-        <value>执行 zsh 脚本。</value>
-    </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_Header" xml:space="preserve">
         <value>zsh 终端</value>
     </data>
-    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
-        <value>用户拒绝了脚本执行。</value>
-    </data>
-    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
-        <value>zsh 脚本执行失败: {0}</value>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
+        <value>执行 zsh 脚本。</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
         <value>执行脚本</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
         <value>即将执行下列 zsh 脚本</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>用户拒绝了脚本执行。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>zsh 脚本执行失败: {0}</value>
     </data>
 </root>

@@ -664,6 +664,12 @@
     <data name="BuiltInChatPlugin_WebBrowser_Description" xml:space="preserve">
         <value>Das Bereitstellen von Web-Browsing-Funktionen, einschließlich Suchmaschinen- und Webseitenzugriffsfunktionen, kann Modellhalluzinationen reduzieren und aktuelle Informationen liefern. Hinweis: Die Verwendung des &quot;Websuche&quot;-Tools erfordert die Konfiguration eines Suchmaschinen-API-Schlüssels (unterschiedlich vom Modell-API-Schlüssel). Wenn Sie nicht beabsichtigen, einen API-Schlüssel zu konfigurieren, können Sie das &quot;Websuche&quot;-Tool deaktivieren und nur das &quot;Webbrowser&quot;-Tool verwenden.</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Header" xml:space="preserve">
+        <value>PowerShell</value>
+    </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Description" xml:space="preserve">
+        <value>Bietet die Möglichkeit, PowerShell-Skripte auszuführen, was eine direkte Interaktion mit dem System ermöglicht. Es ist jedoch auch gefährlich und kann zu versehentlichem Löschen von Dateien oder Systemabstürzen führen.</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_Header" xml:space="preserve">
         <value>Dateisystem</value>
     </data>
@@ -1265,6 +1271,9 @@ Platzhalter können im Prompt verwendet werden, eingeschlossen in {}, und werden
     <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
         <value>{0} Links</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Das folgende PowerShell-Skript wird ausgeführt</value>
+    </data>
     <data name="BuiltInChatPlugin_VisualTree_CaptureVisualElementById_Header" xml:space="preserve">
         <value>UI-Element erfassen</value>
     </data>
@@ -1721,5 +1730,152 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     </data>
     <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
         <value>Entfernen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Header" xml:space="preserve">
+        <value>macOS System</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Description" xml:space="preserve">
+        <value>Steuern Sie macOS-Systemanwendungen und führen Sie Systemaufgaben aus.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action" xml:space="preserve">
+        <value>Aktion: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Create" xml:space="preserve">
+        <value>Erstellen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_List" xml:space="preserve">
+        <value>Alle auflisten</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Update" xml:space="preserve">
+        <value>Bearbeiten</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Delete" xml:space="preserve">
+        <value>Löschen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Complete" xml:space="preserve">
+        <value>Abschließen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Header" xml:space="preserve">
+        <value>Erinnerungen verwalten</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Action" xml:space="preserve">
+        <value>Aktion: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Title" xml:space="preserve">
+        <value>Titel: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Consent_Header" xml:space="preserve">
+        <value>Erlauben Sie das Verwalten von Erinnerungen?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zum Verwalten von Erinnerungen abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Header" xml:space="preserve">
+        <value>Kalender verwalten</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Title" xml:space="preserve">
+        <value>Titel: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Time" xml:space="preserve">
+        <value>Zeit: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Location" xml:space="preserve">
+        <value>Ort: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Notes" xml:space="preserve">
+        <value>Notizen: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Consent_Header" xml:space="preserve">
+        <value>Kalender verwalten erlauben?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zur Verwaltung des Kalenders abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Header" xml:space="preserve">
+        <value>Notizen verwalten</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Title" xml:space="preserve">
+        <value>Titel: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Content" xml:space="preserve">
+        <value>Inhalt: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Consent_Header" xml:space="preserve">
+        <value>Notizen verwalten erlauben?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zur Verwaltung der Notizen abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Header" xml:space="preserve">
+        <value>E-Mail senden</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Recipient" xml:space="preserve">
+        <value>Empfänger: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Subject" xml:space="preserve">
+        <value>Betreff: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Consent_Header" xml:space="preserve">
+        <value>E-Mail senden erlauben?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zum Senden einer E-Mail abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Header" xml:space="preserve">
+        <value>Karten öffnen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
+        <value>Suche: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
+        <value>Karten öffnen erlauben?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zum Öffnen der Karten abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zur Verwaltung der Notizen abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Header" xml:space="preserve">
+        <value>URL öffnen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
+        <value>URL: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
+        <value>URL öffnen erlauben?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zum Öffnen der URL abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
+        <value>AppleScript ausführen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Erlauben Sie die Ausführung von AppleScript?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Sie haben die Anfrage zur Ausführung von AppleScript abgelehnt.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Die Ausführung von AppleScript ist fehlgeschlagen: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Header" xml:space="preserve">
+        <value>zsh-Shell</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
+        <value>Skript ausführen</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Das folgende zsh-Skript wird ausgeführt</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Der Benutzer hat die Zustimmung zur Ausführung des zsh-Skripts verweigert.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Die Ausführung des zsh-Skripts ist fehlgeschlagen: {0}</value>
     </data>
 </root>

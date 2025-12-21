@@ -665,6 +665,12 @@
     <data name="BuiltInChatPlugin_WebBrowser_Description" xml:space="preserve">
         <value>検索エンジンやウェブページアクセス機能を提供し、モデルの幻覚を減らし、最新情報を提供します。注意: 「ウェブ検索」ツールを使用するには、検索エンジンAPIキーの設定が必要です（モデルAPIキーとは異なります）。APIキーを設定しない場合は、「ウェブ検索」ツールのチェックを外し、「ウェブブラウザ」ツールのみを使用できます。</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Header" xml:space="preserve">
+        <value>PowerShell</value>
+    </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Description" xml:space="preserve">
+        <value>PowerShellスクリプトを実行する機能を提供し、システムとの直接的な対話を可能にします。ただし、危険であり、ファイルの誤削除やシステムクラッシュを引き起こす可能性があります。</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_Header" xml:space="preserve">
         <value>ファイルシステム</value>
     </data>
@@ -1269,6 +1275,9 @@
     <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
         <value>{0} リンク</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>次のPowerShellスクリプトが実行されます</value>
+    </data>
     <data name="BuiltInChatPlugin_VisualTree_CaptureVisualElementById_Header" xml:space="preserve">
         <value>UI要素をキャプチャ</value>
     </data>
@@ -1328,11 +1337,6 @@
     </data>
     <data name="ProxySettings_Description" xml:space="preserve">
         <value>ネットワークプロキシの設定。</value>
-    </data>
-    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
-        <value>説明: {0}
-内容:
-{1}</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>PowerShellスクリプトの実行に失敗しました: {0}</value>
@@ -1730,5 +1734,152 @@
     </data>
     <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
         <value>削除</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Header" xml:space="preserve">
+        <value>macOSシステム</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Description" xml:space="preserve">
+        <value>macOSのシステムアプリケーションを制御し、システムタスクを実行します。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action" xml:space="preserve">
+        <value>アクション: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Create" xml:space="preserve">
+        <value>作成</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_List" xml:space="preserve">
+        <value>すべてをリスト</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Update" xml:space="preserve">
+        <value>編集</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Delete" xml:space="preserve">
+        <value>削除</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Complete" xml:space="preserve">
+        <value>完了</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Header" xml:space="preserve">
+        <value>リマインダーを管理</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Action" xml:space="preserve">
+        <value>アクション: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Title" xml:space="preserve">
+        <value>タイトル: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Consent_Header" xml:space="preserve">
+        <value>リマインダーの管理を許可しますか?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_DenyMessage" xml:space="preserve">
+        <value>リマインダーの管理を拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Header" xml:space="preserve">
+        <value>カレンダーを管理</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Title" xml:space="preserve">
+        <value>タイトル: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Time" xml:space="preserve">
+        <value>時間: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Location" xml:space="preserve">
+        <value>場所: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Notes" xml:space="preserve">
+        <value>ノート: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Consent_Header" xml:space="preserve">
+        <value>カレンダーの管理を許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_DenyMessage" xml:space="preserve">
+        <value>カレンダーの管理リクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Header" xml:space="preserve">
+        <value>ノートの管理</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Title" xml:space="preserve">
+        <value>タイトル: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Content" xml:space="preserve">
+        <value>内容: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Consent_Header" xml:space="preserve">
+        <value>ノートの管理を許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>ノートの管理リクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Header" xml:space="preserve">
+        <value>メールを送信</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Recipient" xml:space="preserve">
+        <value>受取人: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Subject" xml:space="preserve">
+        <value>件名: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Consent_Header" xml:space="preserve">
+        <value>メールを送信することを許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_DenyMessage" xml:space="preserve">
+        <value>メール送信リクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Header" xml:space="preserve">
+        <value>マップを開く</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
+        <value>検索: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
+        <value>マップを開くことを許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
+        <value>マップを開くリクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>ノートの管理リクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Header" xml:space="preserve">
+        <value>URLを開く</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
+        <value>URL: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
+        <value>URLを開くことを許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
+        <value>URLを開くリクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
+        <value>AppleScriptを実行</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>AppleScriptの実行を許可しますか？</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>AppleScriptの実行リクエストを拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>AppleScriptの実行に失敗しました: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Header" xml:space="preserve">
+        <value>zshシェル</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
+        <value>スクリプトを実行</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>以下のzshスクリプトが実行されます</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>ユーザーがzshスクリプトの実行を拒否しました。</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>zshスクリプトの実行に失敗しました: {0}</value>
     </data>
 </root>

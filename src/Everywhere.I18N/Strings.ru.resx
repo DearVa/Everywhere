@@ -665,6 +665,12 @@
     <data name="BuiltInChatPlugin_WebBrowser_Description" xml:space="preserve">
         <value>Предоставление возможностей веб-браузинга, включая функции поисковой системы и доступа к веб-страницам, может уменьшить галлюцинации модели и предоставить актуальную информацию. Примечание: использование инструмента &quot;Поиск в интернете&quot; требует настройки API ключа поисковой системы (отличного от API ключа модели). Если вы не собираетесь настраивать API ключ, вы можете снять отметку с инструмента &quot;Поиск в интернете&quot; и использовать только инструмент &quot;Веб-браузер&quot;.</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Header" xml:space="preserve">
+        <value>PowerShell</value>
+    </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_Description" xml:space="preserve">
+        <value>Предоставляет возможность выполнять скрипты PowerShell, позволяя прямое взаимодействие с системой. Однако это также опасно и может привести к случайному удалению файлов или сбоям системы.</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_Header" xml:space="preserve">
         <value>Файловая система</value>
     </data>
@@ -1269,6 +1275,9 @@
     <data name="ChatPluginDisplayBlockPresenter_Urls_TotalCountTextBlock_Text" xml:space="preserve">
         <value>{0} Ссылки</value>
     </data>
+    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Следующий скрипт PowerShell будет выполнен</value>
+    </data>
     <data name="BuiltInChatPlugin_VisualTree_CaptureVisualElementById_Header" xml:space="preserve">
         <value>Захват элемента интерфейса</value>
     </data>
@@ -1328,11 +1337,6 @@
     </data>
     <data name="ProxySettings_Description" xml:space="preserve">
         <value>Настройка сетевого прокси.</value>
-    </data>
-    <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_DetailMessage" xml:space="preserve">
-        <value>Описание: {0}
-Содержимое:
-{1}</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>Ошибка выполнения скрипта PowerShell: {0}</value>
@@ -1730,5 +1734,152 @@
     </data>
     <data name="ChatPluginPage_RemoveMcpPluginButton_Content" xml:space="preserve">
         <value>Удалить</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Header" xml:space="preserve">
+        <value>Система macOS</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Description" xml:space="preserve">
+        <value>Управляйте приложениями системы macOS и выполняйте системные задачи.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action" xml:space="preserve">
+        <value>Действие: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Create" xml:space="preserve">
+        <value>Создать</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_List" xml:space="preserve">
+        <value>Список всех</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Update" xml:space="preserve">
+        <value>Редактировать</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Delete" xml:space="preserve">
+        <value>Удалить</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_Action_Complete" xml:space="preserve">
+        <value>Завершить</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Header" xml:space="preserve">
+        <value>Управление напоминаниями</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Action" xml:space="preserve">
+        <value>Действие: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Detail_Title" xml:space="preserve">
+        <value>Название: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_Consent_Header" xml:space="preserve">
+        <value>Разрешить управление напоминаниями?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageReminders_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на управление напоминаниями.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Header" xml:space="preserve">
+        <value>Управление календарем</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Title" xml:space="preserve">
+        <value>Название: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Time" xml:space="preserve">
+        <value>Время: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Location" xml:space="preserve">
+        <value>Место: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Detail_Notes" xml:space="preserve">
+        <value>Заметки: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_Consent_Header" xml:space="preserve">
+        <value>Разрешить управление календарем?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageCalendar_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на управление календарем.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Header" xml:space="preserve">
+        <value>Управление заметками</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Title" xml:space="preserve">
+        <value>Название: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Detail_Content" xml:space="preserve">
+        <value>Содержимое: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_Consent_Header" xml:space="preserve">
+        <value>Разрешить управление заметками?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на управление заметками.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Header" xml:space="preserve">
+        <value>Отправить электронное письмо</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Recipient" xml:space="preserve">
+        <value>Получатель: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Detail_Subject" xml:space="preserve">
+        <value>Тема: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_Consent_Header" xml:space="preserve">
+        <value>Разрешить отправку электронного письма?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_SendEmail_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на отправку электронного письма.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Header" xml:space="preserve">
+        <value>Открыть карты</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Detail_Query" xml:space="preserve">
+        <value>Поиск: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_Consent_Header" xml:space="preserve">
+        <value>Разрешить открытие карт?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenMaps_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на открытие карт.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ManageNotes_DenyMessage" xml:space="preserve">
+        <value>Вы отказали в запросе на управление заметками.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Header" xml:space="preserve">
+        <value>Открыть URL</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Detail_Url" xml:space="preserve">
+        <value>URL: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_Consent_Header" xml:space="preserve">
+        <value>Разрешить открытие URL?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_OpenUrl_DenyMessage" xml:space="preserve">
+        <value>Вы отклонили запрос на открытие URL.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_Header" xml:space="preserve">
+        <value>Выполнить AppleScript</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Разрешить выполнение AppleScript?</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Вы отклонили запрос на выполнение AppleScript.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_System_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Ошибка выполнения AppleScript: {0}</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Header" xml:space="preserve">
+        <value>zsh оболочка</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
+        <value>Выполнить скрипт</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Следующий zsh скрипт будет выполнен</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Пользователь отклонил согласие на выполнение zsh скрипта.</value>
+    </data>
+    <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Ошибка выполнения zsh скрипта: {0}</value>
     </data>
 </root>
