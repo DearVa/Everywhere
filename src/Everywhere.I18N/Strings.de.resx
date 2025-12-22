@@ -1863,8 +1863,32 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>Die Ausführung des zsh-Skripts ist fehlgeschlagen: {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>Neuen Assistenten zuweisen</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>Es ermöglicht dem Assistenten, einen brandneuen Assistenten zuzuweisen, um Unteraufgaben auszuführen, was hilft, den Kontext innerhalb einzelner Modelle zu bewahren und komplexe Aufgaben besser zu bewältigen.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>To-do-Liste verwalten</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>Es ermöglicht dem Assistenten, eine prägnante To-do-Liste zu führen, die sich als äußerst nützlich erweist, wenn komplexe Aufgaben bearbeitet werden. Beachten Sie, dass diese Liste vorübergehend ist und beim Wechseln der Gespräche oder beim Verlassen von Everywhere verschwindet.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>Wesentlich</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>Bereitstellung einer Suite wesentlicher Funktionen, die den Assistenten befähigen, komplexe Aufgaben besser zu bewältigen.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>To-do-Liste ist leer.</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} ein · {1} aus · {2} insgesamt</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

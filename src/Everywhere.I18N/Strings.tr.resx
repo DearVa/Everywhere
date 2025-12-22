@@ -1861,8 +1861,32 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>zsh script'i çalıştırma hatası: {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>Yeni Asistan Ata</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>Asistanın alt görevleri yerine getirmesi için tamamen yeni bir asistan atamasına izin vermek, bireysel modeller içinde bağlamı korumaya yardımcı olurken karmaşık görevleri daha iyi yönetmesini sağlar.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>Yapılacaklar Listesini Yönet</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>Asistanın, karmaşık görevleri yönetirken son derece faydalı olan kısa bir yapılacaklar listesi tutmasına izin vermek. Bu listenin geçici olduğunu ve sohbetleri değiştirdiğinizde veya Everywhere'dan çıktığınızda kaybolacağını unutmayın.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>Temel</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>Asistanın karmaşık görevleri daha iyi yönetmesini sağlayan temel yetenekler seti sunmak.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>Yapılacaklar listesi boş.</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} girdi · {1} çıktı · {2} toplam</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

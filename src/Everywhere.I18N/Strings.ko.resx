@@ -1867,8 +1867,32 @@
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>zsh 스크립트 실행 실패: {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>새 보조 도우미 할당</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>보조 도우미가 새로운 보조 도우미를 할당하여 하위 작업을 수행하도록 허용하면 개별 모델 내에서 컨텍스트를 보존하면서 복잡한 작업을 더 잘 처리할 수 있습니다.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>할 일 목록 관리</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>보조 도우미가 간결한 할 일 목록을 유지하도록 허용하면 복잡한 작업을 처리할 때 매우 유용합니다. 이 목록은 임시 목록이며 대화를 전환하거나 Everywhere를 종료하면 사라집니다.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>필수</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>보조 도우미가 복잡한 작업을 더 잘 처리할 수 있도록 하는 필수 기능 모음을 제공합니다.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>할 일 목록이 비어 있습니다.</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} 입력 · {1} 출력 · {2} 총</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

@@ -1867,8 +1867,32 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>Esecuzione dello script zsh fallita: {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>Assegna Nuovo Assistente</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>Consentire all'assistente di assegnare un nuovo assistente per eseguire sottocompiti aiuta a conservare il contesto all'interno dei singoli modelli mentre gestisce meglio compiti complessi.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>Gestisci Lista di Attività</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>Consentire all'assistente di mantenere una lista di attività concisa, che si rivela molto utile quando si gestiscono compiti complessi. Nota che questa lista è temporanea e scomparirà al cambio di conversazione o all'uscita da Everywhere.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>Essenziale</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>Fornire una suite di capacità essenziali che consentono all'assistente di gestire meglio compiti complessi.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>La lista di attività è vuota.</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} in · {1} out · {2} totale</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

@@ -1867,8 +1867,32 @@
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>zshスクリプトの実行に失敗しました: {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>新しいアシスタントを割り当てる</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>アシスタントが新しいアシスタントを割り当ててサブタスクを実行することを許可することで、個々のモデル内でのコンテキストを保存しながら、複雑なタスクをより良く処理できます。</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>タスク管理</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>アシスタントが簡潔なタスクリストを維持することを許可し、複雑なタスクを処理する際に非常に役立ちます。このリストは一時的であり、会話を切り替えたり、Everywhereを終了したりすると消えます。</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>基本機能</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>アシスタントが複雑なタスクをより良く処理できるようにする基本的な機能のスイートを提供します。</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>タスクリストは空です。</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} 入力 · {1} 出力 · {2} 合計</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

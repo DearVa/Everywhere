@@ -1868,11 +1868,11 @@
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>zsh 脚本执行失败: {0}</value>
     </data>
-    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
-        <value>必备</value>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>指派新助手</value>
     </data>
-    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
-        <value>提供一系列必备功能，可以帮助助手更好地完成复杂工作。</value>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>允许助手指派一个全新的助手去执行子任务，有利于节省单个模型的上下文，同时更好地处理复杂任务。</value>
     </data>
     <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
         <value>管理待办清单</value>
@@ -1880,11 +1880,11 @@
     <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
         <value>允许助手维护一个简洁的待办清单，这在处理复杂任务时非常有用。请注意此清单是临时的，会在切换对话或退出 Everywhere 后消失。</value>
     </data>
-    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
-        <value>指派新助手</value>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>必备</value>
     </data>
-    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
-        <value>允许助手指派一个全新的助手去执行子任务，有利于节省单个模型的上下文，同时更好地处理复杂任务。</value>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>提供一系列必备功能，可以帮助助手更好地完成复杂工作。</value>
     </data>
     <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
         <value>待办列表为空。</value>

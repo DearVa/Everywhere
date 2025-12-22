@@ -1867,8 +1867,32 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>L'exécution du script zsh a échoué : {0}</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Header" xml:space="preserve">
+        <value>Attribuer un nouvel assistant</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_Description" xml:space="preserve">
+        <value>Permettre à l'assistant d'attribuer un tout nouvel assistant pour exécuter des sous-tâches aide à conserver le contexte au sein des modèles individuels tout en gérant mieux les tâches complexes.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Header" xml:space="preserve">
+        <value>Gérer la liste de tâches</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Description" xml:space="preserve">
+        <value>Permettre à l'assistant de maintenir une liste de tâches concise, ce qui s'avère très utile lors de la gestion de tâches complexes. Notez que cette liste est temporaire et disparaîtra lors du changement de conversation ou de la fermeture d'Everywhere.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Header" xml:space="preserve">
+        <value>Essentiel</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_Description" xml:space="preserve">
+        <value>Fournir une suite de capacités essentielles qui permettent à l'assistant de mieux gérer les tâches complexes.</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Empty" xml:space="preserve">
+        <value>La liste de tâches est vide.</value>
+    </data>
     <data name="BuiltInChatPlugin_Essential_RunSubagent_Title" xml:space="preserve">
         <value>🤖 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
+        <value>{0} dans · {1} hors · {2} total</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
