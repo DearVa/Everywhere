@@ -762,14 +762,14 @@ internal sealed class GeminiChatCompletionClient : ClientBase
 
         // Gemini sometimes returns function calls with text parts, so collect them
         var functionCallParts = parts
-            .Select(p => p.FunctionCall)
-            .OfType<GeminiPart.FunctionCallPart>();
+            .Where(p => p.FunctionCall is not null)
+            .ToList();
 
         var message = new GeminiChatMessageContent(
             role: candidate.Content?.Role ?? AuthorRole.Assistant,
             content: text,
             modelId: this._modelId,
-            functionsToolCalls: functionCallParts,
+            functionCallParts: functionCallParts,
             metadata: GetResponseMetadata(geminiResponse, candidate));
 
         // Add thinking content as separate TextContent items with metadata
