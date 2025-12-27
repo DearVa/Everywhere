@@ -112,9 +112,6 @@
     <Compile Include="$(ProjectRoot)\Models\Gemini\GeminiSafetySetting.cs">
       <Link>Models\Gemini\GeminiSafetySetting.cs</Link>
     </Compile>
-    <Compile Include="$(ProjectRoot)\Models\Gemini\GeminiChatMessageContent.cs">
-      <Link>Models\Gemini\GeminiChatMessageContent.cs</Link>
-    </Compile>
     <Compile Include="$(ProjectRoot)\Services\GoogleAIEmbeddingGenerator.cs">
       <Link>Services\GoogleAIEmbeddingGenerator.cs</Link>
     </Compile>
