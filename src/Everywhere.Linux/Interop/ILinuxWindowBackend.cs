@@ -1,0 +1,34 @@
+using Avalonia;
+using Avalonia.Media.Imaging;
+using Avalonia.Controls;
+using Everywhere.Interop;
+
+namespace Everywhere.Linux.Interop;
+
+/// <summary>
+/// Abstract display backend contract (X11[Xorg] / Wayland Compositor / other).
+/// </summary>
+public interface ILinuxWindowBackend : IWindowHelper
+{
+    void SendKeyboardShortcut(KeyboardShortcut shortcut);
+
+    PixelPoint GetPointer();
+
+    IVisualElement? GetFocusedWindowElement();
+
+    IVisualElement GetWindowElementAt(PixelPoint point);
+
+    IVisualElement? GetWindowElementByPid(int pid);
+
+    IVisualElement GetScreenElement();
+
+    /// <summary>
+    /// Capture screen bitmap of window within rect
+    /// </summary>
+    /// <param name="window">capture target, full screen(root window used) if not given</param>
+    /// <param name="rect">captured rect relative to window</param>
+    /// <returns></returns>
+    Bitmap Capture(IVisualElement? window, PixelRect rect);
+
+    void SetPickerWindow(Window? window);
+}

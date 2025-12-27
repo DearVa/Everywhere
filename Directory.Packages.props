@@ -89,6 +89,11 @@
     <PackageVersion Include="FlaUI.UIA3" Version="4.0.0" />
     <PackageVersion Include="Vortice.Direct3D11" Version="3.6.2" />
     <PackageVersion Include="Vortice.DirectComposition" Version="3.6.2" />
+    <!-- Linux packages -->
+    <PackageVersion Include="Tmds.LibC" Version="0.5.0" />
+    <PackageVersion Include="X11.Net" Version="1.0.7" />
+    <PackageVersion Include="GirCore.GObject-2.0" Version="0.7.0" />
+    <PackageVersion Include="GirCore.GObject-2.0.Integration" Version="0.7.0" />
     <!-- NUnit packages -->
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
