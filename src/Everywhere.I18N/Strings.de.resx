@@ -1893,4 +1893,7 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>KI-Anbieter konfigurieren</value>
+    </data>
 </root>

@@ -1897,4 +1897,7 @@
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>AI 제공자 설정</value>
+    </data>
 </root>

@@ -1897,4 +1897,7 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Configura il fornitore di AI</value>
+    </data>
 </root>
