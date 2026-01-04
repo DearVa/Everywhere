@@ -527,6 +527,9 @@
     <data name="CustomAssistant_Endpoint_Header" xml:space="preserve">
         <value>URL</value>
     </data>
+    <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
+        <value>Deve iniziare con http:// o https://.</value>
+    </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>Chiave API</value>
     </data>
@@ -536,11 +539,23 @@
     <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
         <value>Supporto per Input Immagine</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
+        <value>Il modello supporta l'input di immagini. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
+    </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>Supporto per Uso Strumenti</value>
     </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+        <value>Il modello supporta l'uso degli strumenti configurati. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+        <value>Il modello supporta il pensiero profondo prima di rispondere. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
+    </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Supporto per Pensiero Profondo</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>La lunghezza massima del contesto della conversazione. Questo influenzerà la strategia di costruzione dell'albero visivo, cerca di impostarlo su un valore reale.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Lunghezza Massima del Contesto (max_tokens)</value>
@@ -550,6 +565,9 @@
     </data>
     <data name="CustomAssistant_Schema_Header" xml:space="preserve">
         <value>Schema API</value>
+    </data>
+    <data name="CustomAssistant_Schema_Description" xml:space="preserve">
+        <value>Seleziona il protocollo API. Tieni presente che questo non è sempre associato al modello, ad esempio Gemini fornirà un protocollo compatibile con OpenAI, per dettagli consulta le istruzioni ufficiali del modello corrispondente.</value>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>Esegui all'avvio</value>
@@ -616,6 +634,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Header" xml:space="preserve">
         <value>ID Modello</value>
+    </data>
+    <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
+        <value>Identificatore del modello per le chiamate API, ad esempio gpt-4o.</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>Plugin di Chat</value>
@@ -712,26 +733,18 @@ Suggerimento: puoi riaprire questo messaggio cliccando su &quot;Informazioni - N
     <data name="WelcomeView_NextStepButton_Content" xml:space="preserve">
         <value>Passo successivo</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_openai_Description" xml:space="preserve">
-        <value>OpenAI è un fornitore popolare di modelli AI, noto per la sua serie GPT e altri. Puoi registrarti e ottenere una chiave API sul loro sito ufficiale. Controlla la loro lista di paesi e regioni supportati.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
+        <value>Ora facciamo il primo passo: scegli un “cervello” per me!
+La mia intelligenza è fornita da un grande modello linguistico e ho bisogno del tuo aiuto per configurarlo. Ti offro diverse modalità di configurazione, scegli quella che ti si addice di più.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_anthropic_Description" xml:space="preserve">
-        <value>Anthropic si concentra sullo sviluppo di modelli AI sicuri e affidabili, con il suo prodotto di punta che è la serie Claude. Visita il loro sito ufficiale per i dettagli sui modelli e i prezzi delle API.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
+        <value>Non preoccuparti, se non va bene, puoi tornare indietro e scegliere di nuovo in qualsiasi momento.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_google_Description" xml:space="preserve">
-        <value>Google sviluppa la serie di modelli AI multimodali Gemini. Puoi ottenere una chiave API tramite Google AI Studio o Google Cloud Platform. Verifica che il servizio sia disponibile nella tua regione.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
+        <value>Benvenuto nella modalità preimpostata. Devi solo scegliere il fornitore del grande modello che vuoi utilizzare, poi ottenere la chiave API e compilarla, infine selezionare il modello per iniziare a usarlo!</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_deepseek_Description" xml:space="preserve">
-        <value>DeepSeek è un'azienda focalizzata sull'intelligenza artificiale generale, con modelli che eccellono nella generazione di codice e nell'elaborazione della lingua cinese. Puoi registrarti e iniziare sul loro sito ufficiale.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_moonshot_Description" xml:space="preserve">
-        <value>Moonshot AI è nota per il suo assistente intelligente Kimi, che supporta input di testi lunghi. L'azienda offre una piattaforma aperta con servizi API. Per maggiori dettagli, visita il loro sito ufficiale.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_openrouter_Description" xml:space="preserve">
-        <value>OpenRouter è un servizio di aggregazione e instradamento API che ti consente di accedere a una varietà di modelli da diversi fornitori (come OpenAI, Anthropic, Google, ecc.) tramite un'unica interfaccia unificata. Questo è molto conveniente per testare e confrontare diversi modelli (inclusi modelli gratuiti). Consulta la loro documentazione ufficiale per prezzi e modelli disponibili.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_siliconflow_Description" xml:space="preserve">
-        <value>SiliconFlow è una piattaforma di inferenza AI efficiente che supporta una vasta gamma di modelli open-source e proprietari (inclusi modelli gratuiti). Fornisce agli sviluppatori servizi di distribuzione e inferenza di modelli flessibili e ad alte prestazioni. Per i modelli supportati specifici e i prezzi, visita il loro sito ufficiale.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
+        <value>Non preoccuparti, la tua chiave sarà memorizzata in modo crittografato e io non posso leggerla.</value>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Sito ufficiale</value>
@@ -748,8 +761,17 @@ Suggerimento: puoi riaprire questo messaggio cliccando su &quot;Informazioni - N
     <data name="WelcomeView_IntroStep_Message4" xml:space="preserve">
         <value>Se è la prima volta che lo usi, ti guiderò attraverso la configurazione iniziale in tre semplici passaggi.</value>
     </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
+        <value>Se non sai come scegliere o come ottenere la chiave API, consulta qui le istruzioni.</value>
+    </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Clicca per aprire</value>
+    </data>
+    <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
+        <value>Testa la disponibilità dell'assistente</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
+        <value>Dopo aver completato la selezione, fai clic su “Testa la disponibilità dell'assistente”, controllerò se la configurazione è corretta.</value>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>Inserisci qui la chiave API...</value>
@@ -940,6 +962,10 @@ Suggerimento: puoi riaprire questo messaggio cliccando su &quot;Informazioni - N
     <data name="CustomAssistant_Description_Description" xml:space="preserve">
         <value>Specifica la descrizione dell'assistente, usata solo per scopi di visualizzazione e differenziazione.</value>
     </data>
+    <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
+        <value>Il prompt di sistema verrà inviato al modello all'inizio della conversazione e sarà aggiornato ad ogni invio di messaggio.
+Nel prompt possono essere utilizzati segnaposto, racchiusi in {}, che verranno sostituiti con i contenuti corrispondenti prima di essere inviati al modello.</value>
+    </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>Prompt di Sistema</value>
     </data>
@@ -957,6 +983,18 @@ Suggerimento: puoi riaprire questo messaggio cliccando su &quot;Informazioni - N
     </data>
     <data name="Common_No" xml:space="preserve">
         <value>No</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
+        <value>Fornitore del modello</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
+        <value>Nome del modello</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Seleziona un nome di modello preimpostato.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Seleziona un fornitore di modelli preimpostato.</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>Si è verificato un errore generale di I/O. Questo potrebbe essere dovuto a un problema con la lettura o la scrittura di un file.</value>
@@ -1837,6 +1875,87 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>Configura il fornitore di AI</value>
+    </data>
+    <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
+        <value>Aggiungi chiave API</value>
+    </data>
+    <data name="ApiKeyComboBox_ManageApiKey" xml:space="preserve">
+        <value>Gestisci chiavi API</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeys_Dialog_Message" xml:space="preserve">
+        <value>Sei sicuro di voler eliminare {0} chiavi API? Questa operazione non può essere annullata!</value>
+    </data>
+    <data name="Common_Copied" xml:space="preserve">
+        <value>Copiato</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKey_Flyout_Content" xml:space="preserve">
+        <value>Sei sicuro di voler eliminare? Questa operazione non può essere annullata!</value>
+    </data>
+    <data name="ManageApiKeyForm_SecretKeyDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Chiave</value>
+    </data>
+    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>Nome</value>
+    </data>
+    <data name="CustomAssistantInformationForm_IconButton_ToolTip" xml:space="preserve">
+        <value>Clicca per cambiare l'icona</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
+        <value>Modalità avanzata</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
+        <value>Configura liberamente tutti i parametri del modello, compatibile con modelli di terze parti</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
+        <value>Modalità preimpostata</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
+        <value>Seleziona modelli comuni dalle preimpostazioni e inizia rapidamente</value>
+    </data>
+    <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
+        <value>Nome (solo per visualizzazione e distinzione)</value>
+    </data>
+    <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
+        <value>Chiave</value>
+    </data>
+    <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
+        <value>Aggiungi</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
+        <value>Elimina selezionati</value>
+    </data>
+    <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
+        <value>Clicca qui per vedere</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
+        <value>Benvenuto nella modalità avanzata. Puoi configurare i modelli di terze parti supportati dal protocollo API.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
+        <value>Tieni presente che non posso garantire la compatibilità perfetta con tutti i modelli di terze parti.</value>
+    </data>
+    <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
+        <value>Deve essere un URL valido che inizia con http:// o https://</value>
+    </data>
+    <data name="VisualElementType_Spinner" xml:space="preserve">
+        <value>Elenco a discesa</value>
+    </data>
+    <data name="VisualElementType_Splitter" xml:space="preserve">
+        <value>Divisore</value>
+    </data>
+    <data name="VisualElementType_StatusBar" xml:space="preserve">
+        <value>Barra di stato</value>
+    </data>
+    <data name="VisualElementType_ToolBar" xml:space="preserve">
+        <value>Barra degli strumenti</value>
+    </data>
+    <data name="VisualElementType_Header" xml:space="preserve">
+        <value>Intestazione</value>
+    </data>
+    <data name="VisualElementType_HeaderItem" xml:space="preserve">
+        <value>Elemento intestazione</value>
+    </data>
+    <data name="ApiKey_EmptyName" xml:space="preserve">
+        <value>(vuoto)</value>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>Inizia sempre una nuova chat</value>

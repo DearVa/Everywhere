@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- English -->
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-
-        </xsd:element>
-    </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -14,16 +8,10 @@
         <value>1.3</value>
     </resheader>
     <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0,
-            Culture=neutral,
-            PublicKeyToken=b77a5c561934e089
-        </value>
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0,
-            Culture=neutral,
-            PublicKeyToken=b77a5c561934e089
-        </value>
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="SettingsPage_Saved_Toast_Title" xml:space="preserve">
         <value>Settings Saved</value>
@@ -131,7 +119,7 @@
         <value>API Url</value>
     </data>
     <data name="WebSearchEngineProvider_EndPoint_Description" xml:space="preserve">
-        <value>Leaving this to default if you don't know what to do. Must starts with "http(s)://".</value>
+        <value>Leaving this to default if you don't know what to do. Must starts with &quot;http(s)://&quot;.</value>
     </data>
     <data name="ChatInputArea_Watermark" xml:space="preserve">
         <value>Ask Everywhere, or just chat</value>
@@ -196,12 +184,10 @@
     <data name="ChatWindow_DragDrop_Overlay_Unsupported" xml:space="preserve">
         <value>This item type isn't supported</value>
     </data>
-    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_PickVisualElement"
-        xml:space="preserve">
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_PickVisualElement" xml:space="preserve">
         <value>Pick Visual Element</value>
     </data>
-    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_PasteFromClipboard"
-        xml:space="preserve">
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_PasteFromClipboard" xml:space="preserve">
         <value>Paste from Clipboard</value>
     </data>
     <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_AttachFile" xml:space="preserve">
@@ -542,7 +528,7 @@
         <value>URL</value>
     </data>
     <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>API Key</value>
@@ -554,22 +540,22 @@
         <value>Image Input Support</value>
     </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>Tools Usage Support</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Deep Thinking Support</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Maximum Context Length (max_tokens)</value>
@@ -581,7 +567,7 @@
         <value>API Schema</value>
     </data>
     <data name="CustomAssistant_Schema_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>Run at Startup</value>
@@ -596,7 +582,7 @@
         <value>Everywhere will start automatically as administrator. You can only turn this option on or off in administrator mode.</value>
     </data>
     <data name="CommonSettings_RestartAsAdministrator_Description" xml:space="preserve">
-        <value>Due to operating system restrictions, when running any application as an administrator (elevated permissions), Everywhere may not work correctly when the elevated applications are in focus or trying to interact with a Everywhere feature like "Pick Element". This can be addressed by running Everywhere as administrator.</value>
+        <value>Due to operating system restrictions, when running any application as an administrator (elevated permissions), Everywhere may not work correctly when the elevated applications are in focus or trying to interact with a Everywhere feature like &quot;Pick Element&quot;. This can be addressed by running Everywhere as administrator.</value>
     </data>
     <data name="CommonSettings_RestartAsAdministrator_Header" xml:space="preserve">
         <value>Restart as Administrator</value>
@@ -650,7 +636,7 @@
         <value>Model ID</value>
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>Chat Plugins</value>
@@ -677,7 +663,7 @@
         <value>Web Browser</value>
     </data>
     <data name="BuiltInChatPlugin_WebBrowser_Description" xml:space="preserve">
-        <value>Providing web browsing capabilities, including search engine and webpage access functions, can reduce model hallucinations and deliver up-to-date information. Note: Using the "Web Search" tool requires configuring a search engine API key (different from the model API key). If you do not intend to configure an API key, you may uncheck the "Web Search" tool and use only the "Web Browser" tool.</value>
+        <value>Providing web browsing capabilities, including search engine and webpage access functions, can reduce model hallucinations and deliver up-to-date information. Note: Using the &quot;Web Search&quot; tool requires configuring a search engine API key (different from the model API key). If you do not intend to configure an API key, you may uncheck the &quot;Web Search&quot; tool and use only the &quot;Web Browser&quot; tool.</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_Header" xml:space="preserve">
         <value>PowerShell</value>
@@ -748,16 +734,16 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Next step</value>
     </data>
     <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Official website</value>
@@ -775,16 +761,16 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>If this is your first time using it, I'll guide you through the initial setup in three simple steps.</value>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Click to open</value>
     </data>
     <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>Enter API key here...</value>
@@ -976,7 +962,7 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Specify the description of the assistant, used solely for display and differentiation purposes.</value>
     </data>
     <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>System Prompt</value>
@@ -988,7 +974,7 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Warning</value>
     </data>
     <data name="CustomAssistantPageViewModel_DeleteCustomAssistant_Dialog_Message" xml:space="preserve">
-        <value>Are you sure you want to delete the "{0}"?</value>
+        <value>Are you sure you want to delete the &quot;{0}&quot;?</value>
     </data>
     <data name="Common_Yes" xml:space="preserve">
         <value>Yes</value>
@@ -997,16 +983,16 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>No</value>
     </data>
     <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>A general I/O error occurred. This might be due to a problem with reading or writing a file.</value>
@@ -1145,7 +1131,7 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
     </data>
     <data name="Common_Ignore" xml:space="preserve">
         <value>Ignore</value>
-	</data>
+    </data>
     <data name="ConsentDecision_Deny" xml:space="preserve">
         <value>Deny</value>
     </data>
@@ -1619,7 +1605,7 @@ Scroll wheel or number keys to switch pick modes</value>
         <value>Invalid MCP configuration.</value>
     </data>
     <data name="ChatPluginManager_Common_FailedToStartMcpPlugin" xml:space="preserve">
-        <value>Failed to start MCP plugin "{0}"</value>
+        <value>Failed to start MCP plugin &quot;{0}&quot;</value>
     </data>
     <data name="ChatPluginPage_TabItem_Logs_Header" xml:space="preserve">
         <value>Logs</value>
@@ -1903,59 +1889,62 @@ Scroll wheel or number keys to switch pick modes</value>
     <data name="ManageApiKeyForm_DeleteApiKey_Flyout_Content" xml:space="preserve">
         <value>Are you sure to delete? This action cannot be undone.</value>
     </data>
-    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
-        <value>Name</value>
-    </data>
     <data name="ManageApiKeyForm_SecretKeyDataGridTemplateColumn_Header" xml:space="preserve">
         <value>Secret Key</value>
+    </data>
+    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>Name</value>
     </data>
     <data name="CustomAssistantInformationForm_IconButton_ToolTip" xml:space="preserve">
         <value>Click to change icon</value>
     </data>
-    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
-        <value />
-    </data>
-    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
-        <value />
-    </data>
     <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
-        <value />
+        <value/>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
+        <value/>
     </data>
     <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="VisualElementType_Spinner" xml:space="preserve">
         <value>Spinner</value>
     </data>
-    <data name="VisualElementType_ToolBar" xml:space="preserve">
-        <value>Tool bar</value>
+    <data name="VisualElementType_Splitter" xml:space="preserve">
+        <value>Splitter</value>
     </data>
     <data name="VisualElementType_StatusBar" xml:space="preserve">
         <value>Status bar</value>
+    </data>
+    <data name="VisualElementType_ToolBar" xml:space="preserve">
+        <value>Tool bar</value>
     </data>
     <data name="VisualElementType_Header" xml:space="preserve">
         <value>Header</value>
@@ -1963,11 +1952,8 @@ Scroll wheel or number keys to switch pick modes</value>
     <data name="VisualElementType_HeaderItem" xml:space="preserve">
         <value>Header item</value>
     </data>
-    <data name="VisualElementType_Splitter" xml:space="preserve">
-        <value>Splitter</value>
-    </data>
     <data name="ApiKey_EmptyName" xml:space="preserve">
-        <value />
+        <value/>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>Always start new chat</value>

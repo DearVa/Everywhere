@@ -527,6 +527,9 @@
     <data name="CustomAssistant_Endpoint_Header" xml:space="preserve">
         <value>URL</value>
     </data>
+    <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
+        <value>http:// または https:// で始まる必要があります。</value>
+    </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>APIキー</value>
     </data>
@@ -536,11 +539,23 @@
     <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
         <value>画像入力サポート</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
+        <value>モデルは画像入力をサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
+    </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>ツール使用サポート</value>
     </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+        <value>モデルは設定されたツールの使用をサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+        <value>モデルは考えてから回答することをサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
+    </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>深い思考サポート</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>会話の最大コンテキスト長です。この値は視覚ツリーの構築戦略に影響を与えるため、できるだけ実際の値に設定してください。</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>最大コンテキスト長 (max_tokens)</value>
@@ -550,6 +565,9 @@
     </data>
     <data name="CustomAssistant_Schema_Header" xml:space="preserve">
         <value>APIスキーマ</value>
+    </data>
+    <data name="CustomAssistant_Schema_Description" xml:space="preserve">
+        <value>APIプロトコルを選択します。この項目はモデルに常に関連付けられているわけではないことに注意してください。たとえば、GeminiはOpenAI互換プロトコルを提供します。詳細については、対応するモデルの公式使用説明を参照してください。</value>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>スタートアップ時に実行</value>
@@ -616,6 +634,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Header" xml:space="preserve">
         <value>モデルID</value>
+    </data>
+    <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
+        <value>API呼び出しに使用するモデル識別子、例：gpt-4o。</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>チャットプラグイン</value>
@@ -712,26 +733,18 @@
     <data name="WelcomeView_NextStepButton_Content" xml:space="preserve">
         <value>次のステップ</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_openai_Description" xml:space="preserve">
-        <value>OpenAIは、GPTシリーズなどで知られる人気のAIモデルプロバイダーです。公式ウェブサイトで登録し、APIキーを取得できます。対応国と地域のリストを確認してください。</value>
+    <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
+        <value>さあ、最初のステップに進みましょう：私のために「脳」を選んでください！
+私の知能は大規模言語モデルによって提供されており、あなたに設定を手伝ってもらう必要があります。いくつかの設定モードを提供しますので、あなたに最適なものを選んでください。</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_anthropic_Description" xml:space="preserve">
-        <value>Anthropicは、安全で信頼性のあるAIモデルの開発に注力しており、主力製品はClaudeシリーズです。モデルの詳細とAPIの価格については、公式ウェブサイトをご覧ください。</value>
+    <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
+        <value>心配しないでください、合わなければいつでも戻って再選択できます。</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_google_Description" xml:space="preserve">
-        <value>GoogleはGeminiシリーズのマルチモーダルAIモデルを開発しています。Google AI StudioまたはGoogle Cloud Platformを通じてAPIキーを取得できます。サービスがあなたの地域で利用可能か確認してください。</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
+        <value>プリセットモードへようこそ。使用したい大規模モデルプロバイダーを選択し、APIキーを取得して入力し、最後にモデルを選択するだけで使用を開始できます！</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_deepseek_Description" xml:space="preserve">
-        <value>DeepSeekは一般人工知能に焦点を当てた企業で、コード生成や中国語処理に優れたモデルを提供しています。公式ウェブサイトで登録して始めることができます。</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_moonshot_Description" xml:space="preserve">
-        <value>Moonshot AIは長文入力をサポートするKimiインテリジェントアシスタントで知られています。同社はAPIサービスを提供するオープンプラットフォームを提供しています。詳細は公式ウェブサイトをご覧ください。</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_openrouter_Description" xml:space="preserve">
-        <value>OpenRouterは、複数のプロバイダー（OpenAI、Anthropic、Googleなど）のさまざまなモデルに単一の統一インターフェースを通じてアクセスできるAPI集約およびルーティングサービスです。これは異なるモデルのテストや比較に非常に便利です（無料モデルを含む）。価格と利用可能なモデルについては、公式ドキュメントを参照してください。</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_siliconflow_Description" xml:space="preserve">
-        <value>SiliconFlowは、オープンソースおよび独自モデル（無料モデルを含む）を幅広くサポートする効率的なAI推論プラットフォームです。開発者に柔軟で高性能なモデルのデプロイと推論サービスを提供します。サポートされている具体的なモデルと価格については、公式ウェブサイトをご覧ください。</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
+        <value>心配しないでください、あなたのキーは暗号化されて保存され、私には読み取れません。</value>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 公式ウェブサイト</value>
@@ -748,8 +761,17 @@
     <data name="WelcomeView_IntroStep_Message4" xml:space="preserve">
         <value>初めてのご利用の場合、3つの簡単なステップで初期設定を案内します。</value>
     </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
+        <value>どのように選択するか、またはAPIキーを取得する方法がわからない場合は、こちらのチュートリアルを参照してください。</value>
+    </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 クリックして開く</value>
+    </data>
+    <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
+        <value>アシスタントの可用性をテスト</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
+        <value>選択が完了したら、「アシスタントの可用性をテスト」をクリックしてください。設定が正しいかどうかを確認します。</value>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>ここにAPIキーを入力...</value>
@@ -940,6 +962,10 @@
     <data name="CustomAssistant_Description_Description" xml:space="preserve">
         <value>アシスタントの説明を指定します。表示と区別のためにのみ使用されます。</value>
     </data>
+    <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
+        <value>システムプロンプトは会話の最初にモデルに送信され、メッセージを送信するたびに最新の状態を保ちます。
+プロンプト内では、{}内に含まれるプレースホルダーを使用でき、モデルに送信する前に対応する内容に置き換えられます。</value>
+    </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>システムプロンプト</value>
     </data>
@@ -957,6 +983,18 @@
     </data>
     <data name="Common_No" xml:space="preserve">
         <value>いいえ</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
+        <value>モデルプロバイダー</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
+        <value>モデル名</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>プリセットのモデル名を選択します。</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>プリセットのモデルプロバイダーを選択します。</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>一般的なI/Oエラーが発生しました。これはファイルの読み書きに問題がある可能性があります。</value>
@@ -1837,6 +1875,87 @@
     </data>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>AIプロバイダーを設定</value>
+    </data>
+    <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
+        <value>APIキーを追加</value>
+    </data>
+    <data name="ApiKeyComboBox_ManageApiKey" xml:space="preserve">
+        <value>APIキーを管理</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeys_Dialog_Message" xml:space="preserve">
+        <value>{0} 個のAPIキーを削除してもよろしいですか？この操作は元に戻せません！</value>
+    </data>
+    <data name="Common_Copied" xml:space="preserve">
+        <value>コピーしました</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKey_Flyout_Content" xml:space="preserve">
+        <value>削除してもよろしいですか？この操作は元に戻せません！</value>
+    </data>
+    <data name="ManageApiKeyForm_SecretKeyDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>キー</value>
+    </data>
+    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>名前</value>
+    </data>
+    <data name="CustomAssistantInformationForm_IconButton_ToolTip" xml:space="preserve">
+        <value>アイコンを変更するにはクリック</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
+        <value>高度なモード</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
+        <value>すべてのモデルパラメータを自由に設定し、サードパーティモデルに対応</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
+        <value>プリセットモード</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
+        <value>プリセットから一般的なモデルを選択してすぐに使用開始</value>
+    </data>
+    <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
+        <value>名前（表示と区別のためのみ）</value>
+    </data>
+    <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
+        <value>キー</value>
+    </data>
+    <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
+        <value>追加</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
+        <value>選択項目を削除</value>
+    </data>
+    <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
+        <value>こちらをクリックして確認</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
+        <value>高度なモードへようこそ。APIプロトコルに対応したサードパーティモデルを自分で設定できます。</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
+        <value>すべてのサードパーティモデルとの完全な互換性は保証できませんのでご注意ください。</value>
+    </data>
+    <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
+        <value>http://またはhttps://で始まる有効なURLである必要があります</value>
+    </data>
+    <data name="VisualElementType_Spinner" xml:space="preserve">
+        <value>ドロップダウンリスト</value>
+    </data>
+    <data name="VisualElementType_Splitter" xml:space="preserve">
+        <value>スプリッター</value>
+    </data>
+    <data name="VisualElementType_StatusBar" xml:space="preserve">
+        <value>ステータスバー</value>
+    </data>
+    <data name="VisualElementType_ToolBar" xml:space="preserve">
+        <value>ツールバー</value>
+    </data>
+    <data name="VisualElementType_Header" xml:space="preserve">
+        <value>ヘッダー</value>
+    </data>
+    <data name="VisualElementType_HeaderItem" xml:space="preserve">
+        <value>ヘッダー項目</value>
+    </data>
+    <data name="ApiKey_EmptyName" xml:space="preserve">
+        <value>(空)</value>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>常に新しいチャットを開始</value>

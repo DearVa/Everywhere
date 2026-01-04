@@ -527,6 +527,9 @@
     <data name="CustomAssistant_Endpoint_Header" xml:space="preserve">
         <value>URL</value>
     </data>
+    <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
+        <value>Должен начинаться с http:// или https://.</value>
+    </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>API Key</value>
     </data>
@@ -536,11 +539,23 @@
     <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
         <value>Поддержка ввода изображений</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
+        <value>Модель поддерживает ввод изображений. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
+    </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>Поддержка использования инструментов</value>
     </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+        <value>Модель поддерживает использование настроенных инструментов. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+        <value>Модель поддерживает предварительное обдумывание перед ответом. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
+    </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Поддержка глубокого мышления</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>Максимальная длина контекста диалога. Это повлияет на стратегию построения визуального дерева, постарайтесь установить реальное значение.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Максимальная длина контекста (max_tokens)</value>
@@ -550,6 +565,9 @@
     </data>
     <data name="CustomAssistant_Schema_Header" xml:space="preserve">
         <value>Схема API</value>
+    </data>
+    <data name="CustomAssistant_Schema_Description" xml:space="preserve">
+        <value>Выберите API протокол. Обратите внимание, что это не всегда связано с моделью, например, Gemini предоставляет совместимый с OpenAI протокол, подробности смотрите в официальной документации соответствующей модели.</value>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>Запуск при старте</value>
@@ -616,6 +634,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Header" xml:space="preserve">
         <value>ID модели</value>
+    </data>
+    <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
+        <value>Идентификатор модели для вызова API, например, gpt-4o.</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>Чат-плагины</value>
@@ -712,26 +733,18 @@
     <data name="WelcomeView_NextStepButton_Content" xml:space="preserve">
         <value>Следующий шаг</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_openai_Description" xml:space="preserve">
-        <value>OpenAI - популярный поставщик AI моделей, известный своей серией GPT и другими. Вы можете зарегистрироваться и получить API ключ на их официальном сайте. Пожалуйста, проверьте их список поддерживаемых стран и регионов.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
+        <value>Теперь давайте перейдем к первому шагу: выберите для меня «мозг»!
+Мой интеллект основан на большом языковом модели, и мне нужно, чтобы вы помогли мне настроить его. Я предлагаю вам несколько режимов настройки, выберите тот, который вам подходит.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_anthropic_Description" xml:space="preserve">
-        <value>Anthropic сосредоточен на разработке безопасных и надежных AI моделей, флагманским продуктом является серия Claude. Пожалуйста, посетите их официальный сайт для получения информации о моделях и ценах на API.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
+        <value>Не волнуйтесь, если что-то не подойдет, вы всегда можете вернуться и выбрать заново.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_google_Description" xml:space="preserve">
-        <value>Google разрабатывает серию мультимодальных AI моделей Gemini. Вы можете получить API ключ через Google AI Studio или Google Cloud Platform. Пожалуйста, убедитесь, что услуга доступна в вашем регионе.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
+        <value>Добро пожаловать в режим предустановок. Просто выберите поставщика большого модели, затем получите API-ключ и заполните его, и наконец выберите модель, чтобы начать использовать!</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_deepseek_Description" xml:space="preserve">
-        <value>DeepSeek — это компания, сосредоточенная на общей искусственной интеллекции, с моделями, которые хорошо работают в генерации кода и обработке китайского языка. Вы можете зарегистрироваться и начать на их официальном сайте.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_moonshot_Description" xml:space="preserve">
-        <value>Moonshot AI известна своим интеллектуальным помощником Kimi, который поддерживает ввод длинных текстов. Компания предлагает открытую платформу с API сервисами. Для получения дополнительной информации посетите их официальный сайт.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_openrouter_Description" xml:space="preserve">
-        <value>OpenRouter — это сервис агрегации и маршрутизации API, который позволяет вам получить доступ к различным моделям от нескольких поставщиков (таких как OpenAI, Anthropic, Google и др.) через единый, унифицированный интерфейс. Это очень удобно для тестирования и сравнения различных моделей (включая бесплатные модели). Пожалуйста, обратитесь к их официальной документации для получения информации о ценах и доступных моделях.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_siliconflow_Description" xml:space="preserve">
-        <value>SiliconFlow — это эффективная платформа AI-инференса, поддерживающая широкий спектр открытых и проприетарных моделей (включая бесплатные модели). Она предоставляет разработчикам гибкие, высокопроизводительные услуги по развертыванию и инференсу моделей. Для получения информации о поддерживаемых моделях и ценах посетите их официальный сайт.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
+        <value>Не волнуйтесь, ваш ключ будет зашифрован и сохранен, я не смогу его прочитать.</value>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Официальный сайт</value>
@@ -748,8 +761,17 @@
     <data name="WelcomeView_IntroStep_Message4" xml:space="preserve">
         <value>Если вы используете это впервые, я проведу вас через начальную настройку в три простых шага.</value>
     </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
+        <value>Если вы не знаете, как выбрать или как получить API-ключ, пожалуйста, обратитесь к обучающим материалам здесь.</value>
+    </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Нажмите, чтобы открыть</value>
+    </data>
+    <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
+        <value>Проверить доступность помощника</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
+        <value>После завершения выбора нажмите «Проверить доступность помощника», я проверю, правильно ли настроено.</value>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>Введите API ключ здесь...</value>
@@ -940,6 +962,10 @@
     <data name="CustomAssistant_Description_Description" xml:space="preserve">
         <value>Укажите описание ассистента, используемое исключительно для отображения и различения.</value>
     </data>
+    <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
+        <value>Системный подсказка будет отправлена модели в начале диалога и будет обновляться с каждым отправленным сообщением.
+В подсказке можно использовать заполнители, заключенные в {}, которые будут заменены соответствующим содержимым перед отправкой модели.</value>
+    </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>Системный запрос</value>
     </data>
@@ -957,6 +983,18 @@
     </data>
     <data name="Common_No" xml:space="preserve">
         <value>Нет</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
+        <value>Поставщик модели</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
+        <value>Название модели</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Выберите предустановленное название модели.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Выберите предустановленного поставщика модели.</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>Произошла общая ошибка ввода-вывода. Это может быть связано с проблемой чтения или записи файла.</value>
@@ -1837,6 +1875,87 @@
     </data>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>Настроить поставщика ИИ</value>
+    </data>
+    <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
+        <value>Добавить API-ключ</value>
+    </data>
+    <data name="ApiKeyComboBox_ManageApiKey" xml:space="preserve">
+        <value>Управление API ключами</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeys_Dialog_Message" xml:space="preserve">
+        <value>Вы уверены, что хотите удалить {0} API ключей? Это действие нельзя отменить!</value>
+    </data>
+    <data name="Common_Copied" xml:space="preserve">
+        <value>Скопировано</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKey_Flyout_Content" xml:space="preserve">
+        <value>Вы уверены, что хотите удалить? Это действие нельзя отменить!</value>
+    </data>
+    <data name="ManageApiKeyForm_SecretKeyDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Ключ</value>
+    </data>
+    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>Название</value>
+    </data>
+    <data name="CustomAssistantInformationForm_IconButton_ToolTip" xml:space="preserve">
+        <value>Нажмите, чтобы изменить иконку</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
+        <value>Расширенный режим</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
+        <value>Свободная настройка всех параметров модели, совместима с сторонними моделями</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
+        <value>Предустановленный режим</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
+        <value>Выберите распространенные модели из предустановок и быстро начните работу</value>
+    </data>
+    <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
+        <value>Название (только для отображения и различения)</value>
+    </data>
+    <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
+        <value>Ключ</value>
+    </data>
+    <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
+        <value>Добавить</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
+        <value>Удалить выделенные</value>
+    </data>
+    <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
+        <value>Нажмите, чтобы просмотреть</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
+        <value>Добро пожаловать в расширенный режим. Вы можете настроить сторонние модели, поддерживаемые API.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
+        <value>Обратите внимание, что я не могу гарантировать полную совместимость со всеми сторонними моделями.</value>
+    </data>
+    <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
+        <value>Должен быть действительный URL, начинающийся с http:// или https://</value>
+    </data>
+    <data name="VisualElementType_Spinner" xml:space="preserve">
+        <value>Выпадающий список</value>
+    </data>
+    <data name="VisualElementType_Splitter" xml:space="preserve">
+        <value>Разделитель</value>
+    </data>
+    <data name="VisualElementType_StatusBar" xml:space="preserve">
+        <value>Статусная строка</value>
+    </data>
+    <data name="VisualElementType_ToolBar" xml:space="preserve">
+        <value>Панель инструментов</value>
+    </data>
+    <data name="VisualElementType_Header" xml:space="preserve">
+        <value>Заголовок</value>
+    </data>
+    <data name="VisualElementType_HeaderItem" xml:space="preserve">
+        <value>Элемент заголовка</value>
+    </data>
+    <data name="ApiKey_EmptyName" xml:space="preserve">
+        <value>(пусто)</value>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>Всегда начинать новый чат</value>

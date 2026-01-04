@@ -526,6 +526,9 @@
     <data name="CustomAssistant_Endpoint_Header" xml:space="preserve">
         <value>URL</value>
     </data>
+    <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
+        <value>http:// veya https:// ile başlamalıdır.</value>
+    </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>API Anahtarı</value>
     </data>
@@ -535,11 +538,23 @@
     <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
         <value>Görüntü Girişi Desteği</value>
     </data>
+    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
+        <value>Model görüntü girişi destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
+    </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>Araç Kullanım Desteği</value>
     </data>
+    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+        <value>Model yapılandırılmış araçları kullanmayı destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
+    </data>
+    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+        <value>Model önce düşünmeyi sonra yanıt vermeyi destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
+    </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Derin Düşünme Desteği</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>Sohbetin maksimum bağlam uzunluğu. Bu, görsel ağaç oluşturma stratejisini etkiler, mümkünse gerçek bir değer olarak ayarlayın.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Maksimum Bağlam Uzunluğu (max_tokens)</value>
@@ -549,6 +564,9 @@
     </data>
     <data name="CustomAssistant_Schema_Header" xml:space="preserve">
         <value>API Şeması</value>
+    </data>
+    <data name="CustomAssistant_Schema_Description" xml:space="preserve">
+        <value>API protokolünü seçin. Bu seçeneğin her zaman modelle ilişkili olmadığını unutmayın; örneğin, Gemini OpenAI uyumlu protokol sunar, detaylar için ilgili modelin resmi kullanım kılavuzuna bakın.</value>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>Başlangıçta Çalıştır</value>
@@ -615,6 +633,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Header" xml:space="preserve">
         <value>Model Kimliği</value>
+    </data>
+    <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
+        <value>API çağrıları için model kimliği, örneğin gpt-4o.</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>Sohbet Eklentileri</value>
@@ -709,26 +730,18 @@
     <data name="WelcomeView_NextStepButton_Content" xml:space="preserve">
         <value>Sonraki adım</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_openai_Description" xml:space="preserve">
-        <value>OpenAI, GPT serisi ve diğerleriyle tanınan popüler bir yapay zeka modeli sağlayıcısıdır. Resmi web sitesinde kaydolabilir ve bir API anahtarı alabilirsiniz. Desteklenen ülkeler ve bölgeler listesini kontrol edin.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
+        <value>Şimdi ilk adımı atıyoruz: benim için bir “beyin” seç! 
+Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapılandırmam gerekiyor. Sana birkaç yapılandırma modu sunuyorum, en uygun olanı seçebilirsin.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_anthropic_Description" xml:space="preserve">
-        <value>Anthropic, güvenli ve güvenilir yapay zeka modelleri geliştirmeye odaklanır; başlıca ürünü Claude serisidir. Model ayrıntıları ve API fiyatlandırması için resmi web sitesini ziyaret edin.</value>
+    <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
+        <value>Endişelenme, eğer uygun değilse, istediğin zaman geri dönüp yeniden seçebilirsin.</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_google_Description" xml:space="preserve">
-        <value>Google, çoklu modalite yapay zeka modelleri Gemini serisini geliştirir. Google AI Studio veya Google Cloud Platform üzerinden bir API anahtarı alabilirsiniz. Hizmetin bölgenizde mevcut olup olmadığını doğrulayın.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
+        <value>Ön ayar moduna hoş geldin. Sadece kullanmak istediğin büyük model sağlayıcısını seç, ardından API anahtarını al ve doldur, son olarak modeli seçerek kullanmaya başlayabilirsin!</value>
     </data>
-    <data name="WelcomeView_ModelProviderWrapper_deepseek_Description" xml:space="preserve">
-        <value>DeepSeek, genel yapay zeka üzerine odaklanan bir şirkettir; kod üretimi ve Çince dil işleme alanlarında iyi performans gösteren modelleri vardır. Resmi web sitesinde kaydolabilir ve başlayabilirsiniz.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_moonshot_Description" xml:space="preserve">
-        <value>Moonshot AI, uzun metin girişlerini destekleyen Kimi akıllı asistanıyla tanınır. Şirket, API hizmetleri sunan açık bir platform sunar. Daha fazla ayrıntı için resmi web sitesini ziyaret edin.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_openrouter_Description" xml:space="preserve">
-        <value>OpenRouter, birden fazla sağlayıcıdan (OpenAI, Anthropic, Google vb.) çeşitli modellere tek bir birleşik arayüz üzerinden erişmenizi sağlayan API toplama ve yönlendirme hizmetidir. Farklı modelleri (ücretsiz modeller dahil) test etmek ve karşılaştırmak için çok uygundur. Fiyatlandırma ve mevcut modeller için resmi belgelerine bakın.</value>
-    </data>
-    <data name="WelcomeView_ModelProviderWrapper_siliconflow_Description" xml:space="preserve">
-        <value>SiliconFlow, açık kaynak ve özelleştirilmiş modelleri (ücretsiz modeller dahil) destekleyen verimli bir yapay zeka çıkarım platformudur. Geliştiricilere esnek, yüksek performanslı model dağıtımı ve çıkarım hizmetleri sunar. Desteklenen belirli modeller ve fiyatlandırma için resmi web sitesini ziyaret edin.</value>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
+        <value>Endişelenme, anahtarın şifrelenmiş olarak saklanacak, ben okuyamam.</value>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Resmi web sitesi</value>
@@ -745,8 +758,17 @@
     <data name="WelcomeView_IntroStep_Message4" xml:space="preserve">
         <value>Bu ilk kez kullanıyorsanız, yeni kurulum adımlarını üç basit adımda yönlendireceğim.</value>
     </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
+        <value>Eğer nasıl seçeceğin veya API anahtarını nasıl alacağın hakkında bir fikrin yoksa, buradaki eğitime bak.</value>
+    </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Tıklayarak aç</value>
+    </data>
+    <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
+        <value>Asistanın kullanılabilirliğini test et</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
+        <value>Seçimi tamamladıktan sonra, “Asistanın kullanılabilirliğini test et” butonuna tıkla, yapılandırmanın doğru olup olmadığını kontrol edeceğim.</value>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>API anahtarını buraya girin...</value>
@@ -937,6 +959,10 @@
     <data name="CustomAssistant_Description_Description" xml:space="preserve">
         <value>Asistanın açıklamasını belirtin; yalnızca görüntüleme ve ayırt etme amacıyla kullanılır.</value>
     </data>
+    <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
+        <value>Sistem istemi, sohbetin başında modele gönderilir ve her mesaj gönderildiğinde güncel tutulur.
+İstemde { } içinde yer alan yer tutucular kullanılabilir, modele gönderilmeden önce ilgili içerikle değiştirilir.</value>
+    </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>Sistem İstemi</value>
     </data>
@@ -954,6 +980,18 @@
     </data>
     <data name="Common_No" xml:space="preserve">
         <value>Hayır</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
+        <value>Model Sağlayıcı</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
+        <value>Model Adı</value>
+    </data>
+    <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
+        <value>Ön ayarlı bir model adı seçin.</value>
+    </data>
+    <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
+        <value>Ön ayarlı bir model sağlayıcı seçin.</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>A genel G/Ç hatası oluştu. Bu, dosya okuma veya yazma sorunu nedeniyle olabilir.</value>
@@ -1834,6 +1872,87 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     </data>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>AI sağlayıcısını yapılandır</value>
+    </data>
+    <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
+        <value>API anahtarı ekle</value>
+    </data>
+    <data name="ApiKeyComboBox_ManageApiKey" xml:space="preserve">
+        <value>API Anahtarını Yönet</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeys_Dialog_Message" xml:space="preserve">
+        <value>{0} adet API anahtarını silmek istediğinize emin misiniz? Bu işlem geri alınamaz!</value>
+    </data>
+    <data name="Common_Copied" xml:space="preserve">
+        <value>Kopyalandı</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKey_Flyout_Content" xml:space="preserve">
+        <value>Silmek istediğinize emin misiniz? Bu işlem geri alınamaz!</value>
+    </data>
+    <data name="ManageApiKeyForm_SecretKeyDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Anahtar</value>
+    </data>
+    <data name="ManageApiKeyForm_NameDataGridTextColumn_Header" xml:space="preserve">
+        <value>İsim</value>
+    </data>
+    <data name="CustomAssistantInformationForm_IconButton_ToolTip" xml:space="preserve">
+        <value>İkonu değiştirmek için tıklayın</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
+        <value>Gelişmiş Mod</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
+        <value>Tüm model parametrelerini serbestçe yapılandırın, üçüncü taraf modellerle uyumlu</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
+        <value>Ön Ayar Modu</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
+        <value>Ön ayarlardan yaygın modelleri seçin ve hızlıca başlayın</value>
+    </data>
+    <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
+        <value>İsim (sadece görüntüleme ve ayırt etme için)</value>
+    </data>
+    <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
+        <value>Anahtar</value>
+    </data>
+    <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
+        <value>Ekle</value>
+    </data>
+    <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
+        <value>Seçilenleri Sil</value>
+    </data>
+    <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
+        <value>Beni tıklayın</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
+        <value>Gelişmiş moda hoş geldiniz. API protokolü destekleyen üçüncü taraf modelleri kendiniz yapılandırabilirsiniz.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
+        <value>Lütfen dikkat edin, tüm üçüncü taraf modellerle mükemmel uyum garantisi veremem.</value>
+    </data>
+    <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
+        <value>http:// veya https:// ile başlayan geçerli bir URL olmalıdır</value>
+    </data>
+    <data name="VisualElementType_Spinner" xml:space="preserve">
+        <value>Açılır Liste</value>
+    </data>
+    <data name="VisualElementType_Splitter" xml:space="preserve">
+        <value>Bölücü</value>
+    </data>
+    <data name="VisualElementType_StatusBar" xml:space="preserve">
+        <value>Durum Çubuğu</value>
+    </data>
+    <data name="VisualElementType_ToolBar" xml:space="preserve">
+        <value>Araç Çubuğu</value>
+    </data>
+    <data name="VisualElementType_Header" xml:space="preserve">
+        <value>Başlık</value>
+    </data>
+    <data name="VisualElementType_HeaderItem" xml:space="preserve">
+        <value>Başlık Öğesi</value>
+    </data>
+    <data name="ApiKey_EmptyName" xml:space="preserve">
+        <value>(boş)</value>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>Her zaman yeni sohbet başlat</value>
