@@ -1900,7 +1900,37 @@
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>配置 AI 提供者</value>
     </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
+        <value>總是開始新的對話</value>
+    </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Description" xml:space="preserve">
+        <value>透過快捷鍵呼叫應用程式時，自動開始一個全新的會話，跳過之前的對話。</value>
+    </data>
+    <data name="ChatPluginPage_ImportMcpPluginButton_ToolTip" xml:space="preserve">
+        <value>從 JSON 匯入</value>
+    </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value></value>
+        <value/>
+    </data>
+    <data name="McpImportForm_Description" xml:space="preserve">
+        <value>在下方粘貼您的 MCP 配置 JSON，或從本地文件導入。</value>
+    </data>
+    <data name="McpImportForm_OpenButton_Content" xml:space="preserve">
+        <value>打開</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_SuccessToast_Title" xml:space="preserve">
+        <value>已匯入 {0} 個 MCP 插件</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_FailedToast_Title" xml:space="preserve">
+        <value>匯入 MCP 插件失敗</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_NotFoundToast_Title" xml:space="preserve">
+        <value>未找到有效的 MCP 插件</value>
+    </data>
+    <data name="McpTransportConfiguration_DefaultName" xml:space="preserve">
+        <value>MCP 伺服器</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_PartialSuccessToast_Title" xml:space="preserve">
+        <value>成功匯入 {0} 個插件，{1} 個失敗</value>
     </data>
 </root>

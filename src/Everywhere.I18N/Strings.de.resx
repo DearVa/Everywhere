@@ -1896,7 +1896,37 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>KI-Anbieter konfigurieren</value>
     </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
+        <value>Immer neuen Chat starten</value>
+    </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Description" xml:space="preserve">
+        <value>Automatisch eine neue Sitzung starten, wenn die App über die Verknüpfung aufgerufen wird, und die vorherige Unterhaltung umgehen.</value>
+    </data>
+    <data name="ChatPluginPage_ImportMcpPluginButton_ToolTip" xml:space="preserve">
+        <value>Von JSON importieren</value>
+    </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value></value>
+        <value/>
+    </data>
+    <data name="McpImportForm_Description" xml:space="preserve">
+        <value>Fügen Sie Ihre MCP-Konfigurations-JSON unten ein oder importieren Sie sie von einer lokalen Datei.</value>
+    </data>
+    <data name="McpImportForm_OpenButton_Content" xml:space="preserve">
+        <value>Öffnen</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_SuccessToast_Title" xml:space="preserve">
+        <value>{0} MCP-Plugins importiert</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_FailedToast_Title" xml:space="preserve">
+        <value>Import von MCP-Plugins fehlgeschlagen</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_NotFoundToast_Title" xml:space="preserve">
+        <value>Keine gültigen MCP-Plugins gefunden</value>
+    </data>
+    <data name="McpTransportConfiguration_DefaultName" xml:space="preserve">
+        <value>MCP-Server</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_PartialSuccessToast_Title" xml:space="preserve">
+        <value>{0} Plugins erfolgreich importiert, {1} fehlgeschlagen</value>
     </data>
 </root>

@@ -1900,7 +1900,37 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
         <value>Configurar proveedor de IA</value>
     </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
+        <value>Siempre iniciar un nuevo chat</value>
+    </data>
+    <data name="ChatWindowSettings_AlwaysStartNewChat_Description" xml:space="preserve">
+        <value>Iniciar automáticamente una nueva sesión al invocar la aplicación mediante un atajo, omitiendo la conversación anterior.</value>
+    </data>
+    <data name="ChatPluginPage_ImportMcpPluginButton_ToolTip" xml:space="preserve">
+        <value>Importar desde JSON</value>
+    </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value></value>
+        <value/>
+    </data>
+    <data name="McpImportForm_Description" xml:space="preserve">
+        <value>Pega tu configuración MCP en formato JSON a continuación, o impórtala desde un archivo local.</value>
+    </data>
+    <data name="McpImportForm_OpenButton_Content" xml:space="preserve">
+        <value>Abrir</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_SuccessToast_Title" xml:space="preserve">
+        <value>Importados {0} plugins MCP</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_FailedToast_Title" xml:space="preserve">
+        <value>Error al importar plugins MCP</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_NotFoundToast_Title" xml:space="preserve">
+        <value>No se encontraron plugins MCP válidos</value>
+    </data>
+    <data name="McpTransportConfiguration_DefaultName" xml:space="preserve">
+        <value>Servidor MCP</value>
+    </data>
+    <data name="ChatPluginPageViewModel_ImportMcpPlugin_PartialSuccessToast_Title" xml:space="preserve">
+        <value>Se importaron con éxito {0} plugins, {1} fallaron</value>
     </data>
 </root>
