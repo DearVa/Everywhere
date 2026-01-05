@@ -1967,7 +1967,7 @@
         <value>從 JSON 匯入</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>導入 MCP 插件</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>在下面粘貼您的 MCP 配置 JSON，或從本地文件導入。</value>

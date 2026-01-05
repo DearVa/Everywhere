@@ -1967,7 +1967,7 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
         <value>Importer depuis JSON</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>Importer le plugin MCP</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>Collez votre configuration MCP JSON ci-dessous, ou importez-la depuis un fichier local.</value>

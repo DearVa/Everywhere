@@ -1829,7 +1829,7 @@
         <value>zsh 셸</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
-        <value/>
+        <value>zsh 스크립트를 실행할 수 있는 기능을 제공하며, 시스템과 직접 상호작용할 수 있지만 매우 위험할 수 있으며, 파일 삭제나 시스템 충돌을 초래할 수 있습니다.</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
         <value>스크립트 실행</value>
@@ -1967,7 +1967,7 @@
         <value>JSON에서 가져오기</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>MCP 플러그인 가져오기</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>아래에 MCP 구성 JSON을 붙여넣거나 로컬 파일에서 가져오세요.</value>

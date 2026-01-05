@@ -1964,7 +1964,7 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
         <value>Von JSON importieren</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>MCP-Plugin importieren</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>Fügen Sie Ihre MCP-Konfigurations-JSON unten ein oder importieren Sie sie von einer lokalen Datei.</value>

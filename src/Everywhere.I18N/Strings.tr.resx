@@ -1964,7 +1964,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
         <value>JSON'dan içe aktar</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>MCP Eklentisini İçe Aktar</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>Aşağıya MCP yapılandırma JSON'unuzu yapıştırın veya yerel bir dosyadan içe aktarın.</value>

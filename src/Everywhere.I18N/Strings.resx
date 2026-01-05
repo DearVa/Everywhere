@@ -528,7 +528,7 @@
         <value>URL</value>
     </data>
     <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
-        <value/>
+        <value>Must start with http:// or https://.</value>
     </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>API Key</value>
@@ -540,22 +540,22 @@
         <value>Image Input Support</value>
     </data>
     <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value/>
+        <value>The model supports image input. Enabling this option may cause errors during conversation if the model does not support it.</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
         <value>Tools Usage Support</value>
     </data>
     <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
-        <value/>
+        <value>The model supports using configured tools. Enabling this option may cause errors during conversation if the model does not support it.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
-        <value/>
+        <value>The model supports thinking before answering. Enabling this option may cause errors during conversation if the model does not support it.</value>
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Deep Thinking Support</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
-        <value/>
+        <value>The maximum context length for the conversation. This will affect the strategy for building the visual tree, so please set it to a realistic value.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Maximum Context Length (max_tokens)</value>
@@ -567,7 +567,7 @@
         <value>API Schema</value>
     </data>
     <data name="CustomAssistant_Schema_Description" xml:space="preserve">
-        <value/>
+        <value>Select the API protocol. Note that this is not always associated with the model; for example, Gemini provides an OpenAI-compatible protocol, please refer to the official usage instructions for the corresponding model.</value>
     </data>
     <data name="CommonSettings_IsStartupEnabled_Header" xml:space="preserve">
         <value>Run at Startup</value>
@@ -636,7 +636,7 @@
         <value>Model ID</value>
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
-        <value/>
+        <value>The model identifier for API calls, such as gpt-4o.</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
         <value>Chat Plugins</value>
@@ -734,16 +734,17 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Next step</value>
     </data>
     <data name="WelcomeView_ConfiguratorStep_Message1" xml:space="preserve">
-        <value/>
+        <value>Let's start with the first step: choose a 'brain' for me!
+My intelligence is powered by large language models, and I need your help to configure it. I have provided several configuration modes for you to choose from, just select the one that suits you best.</value>
     </data>
     <data name="WelcomeView_ConfiguratorStep_Message2" xml:space="preserve">
-        <value/>
+        <value>Don't worry, if it doesn't fit, you can always go back and choose again.</value>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message1" xml:space="preserve">
-        <value/>
+        <value>Welcome to the preset mode. Just select the large model provider you want to use, then obtain the API key and fill it in, and finally choose the model to get started!</value>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message2" xml:space="preserve">
-        <value/>
+        <value>Don't worry, your key will be stored encrypted, I cannot read it.</value>
     </data>
     <data name="WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Official website</value>
@@ -761,16 +762,16 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>If this is your first time using it, I'll guide you through the initial setup in three simple steps.</value>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message3" xml:space="preserve">
-        <value/>
+        <value>If you don't know how to choose or obtain the API key, please refer to the tutorial here.</value>
     </data>
     <data name="WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content" xml:space="preserve">
         <value>👉 Click to open</value>
     </data>
     <data name="WelcomeView_CheckConnectivityButton_Content" xml:space="preserve">
-        <value/>
+        <value>Test assistant availability</value>
     </data>
     <data name="WelcomeView_AssistantStep_PresetBased_Message4" xml:space="preserve">
-        <value/>
+        <value>After completing your selection, please click 'Test assistant availability', and I will check if the configuration is correct.</value>
     </data>
     <data name="WelcomeView_ApiKeyTextBox_Watermark" xml:space="preserve">
         <value>Enter API key here...</value>
@@ -962,7 +963,8 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Specify the description of the assistant, used solely for display and differentiation purposes.</value>
     </data>
     <data name="CustomAssistant_SystemPrompt_Description" xml:space="preserve">
-        <value/>
+        <value>The system prompt will be sent to the model at the beginning of the conversation and will be kept up to date with each message sent.
+Placeholders can be used in the prompt, enclosed in {}, which will be replaced with the corresponding content before being sent to the model.</value>
     </data>
     <data name="CustomAssistant_SystemPrompt_Header" xml:space="preserve">
         <value>System Prompt</value>
@@ -983,16 +985,16 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>No</value>
     </data>
     <data name="CustomAssistant_ModelProviderTemplate_Header" xml:space="preserve">
-        <value/>
+        <value>Model Provider</value>
     </data>
     <data name="CustomAssistant_ModelDefinitionTemplate_Header" xml:space="preserve">
-        <value/>
+        <value>Model Name</value>
     </data>
     <data name="CustomAssistant_ModelDefinitionTemplate_Description" xml:space="preserve">
-        <value/>
+        <value>Select a preset model name.</value>
     </data>
     <data name="CustomAssistant_ModelProviderTemplate_Description" xml:space="preserve">
-        <value/>
+        <value>Select a preset model provider.</value>
     </data>
     <data name="HandledSystemException_IOException" xml:space="preserve">
         <value>A general I/O error occurred. This might be due to a problem with reading or writing a file.</value>
@@ -1899,40 +1901,40 @@ Scroll wheel or number keys to switch pick modes</value>
         <value>Click to change icon</value>
     </data>
     <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header" xml:space="preserve">
-        <value/>
+        <value>Advanced Mode</value>
     </data>
     <data name="ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description" xml:space="preserve">
-        <value/>
+        <value>Freely configure all model parameters, compatible with third-party models.</value>
     </data>
     <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header" xml:space="preserve">
-        <value/>
+        <value>Preset Mode</value>
     </data>
     <data name="ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description" xml:space="preserve">
-        <value/>
+        <value>Select common models from presets and get started quickly.</value>
     </data>
     <data name="CreateApiKeyForm_NameTextBox_Label" xml:space="preserve">
-        <value/>
+        <value>Name (for display and differentiation only)</value>
     </data>
     <data name="CreateApiKeyForm_SecretKeyTextBox_Label" xml:space="preserve">
-        <value/>
+        <value>Key</value>
     </data>
     <data name="ManageApiKeyForm_AddApiKeyButton_Content" xml:space="preserve">
-        <value/>
+        <value>Add</value>
     </data>
     <data name="ManageApiKeyForm_DeleteApiKeysButton_Content" xml:space="preserve">
-        <value/>
+        <value>Delete selected items</value>
     </data>
     <data name="WelcomeView_ModelProviderHyperlinkButton_Content" xml:space="preserve">
-        <value/>
+        <value>Click me to view</value>
     </data>
     <data name="WelcomeView_AssistantStep_Advanced_Message1" xml:space="preserve">
-        <value/>
+        <value>Welcome to advanced mode. You can configure third-party models supported by the API protocol.</value>
     </data>
     <data name="WelcomeView_AssistantStep_Advanced_Message2" xml:space="preserve">
-        <value/>
+        <value>Please note that I cannot guarantee perfect compatibility with all third-party models.</value>
     </data>
     <data name="AdvancedModelProviderConfigurator_InvalidEndpoint" xml:space="preserve">
-        <value/>
+        <value>Must be a valid URL starting with http:// or https://</value>
     </data>
     <data name="VisualElementType_Spinner" xml:space="preserve">
         <value>Spinner</value>
@@ -1953,7 +1955,7 @@ Scroll wheel or number keys to switch pick modes</value>
         <value>Header item</value>
     </data>
     <data name="ApiKey_EmptyName" xml:space="preserve">
-        <value/>
+        <value>(empty)</value>
     </data>
     <data name="ChatWindowSettings_AlwaysStartNewChat_Header" xml:space="preserve">
         <value>Always start new chat</value>

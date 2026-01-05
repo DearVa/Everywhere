@@ -1967,7 +1967,7 @@
         <value>JSONからインポート</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>MCP プラグインのインポート</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>以下にMCP設定JSONを貼り付けるか、ローカルファイルからインポートしてください。</value>

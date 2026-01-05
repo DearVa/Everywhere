@@ -1829,7 +1829,7 @@
         <value>zsh оболочка</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_Description" xml:space="preserve">
-        <value/>
+        <value>Предоставляет возможность выполнять скрипты zsh, позволяя взаимодействовать с системой напрямую, но это также опасно и может привести к случайному удалению файлов или сбоям системы.</value>
     </data>
     <data name="MacOS_BuiltInChatPlugin_Zsh_ExecuteScript_Header" xml:space="preserve">
         <value>Выполнить скрипт</value>
@@ -1967,7 +1967,7 @@
         <value>Импортировать из JSON</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>Импортировать MCP плагин</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>Вставьте ваш JSON конфигурации MCP ниже или импортируйте его из локального файла.</value>

@@ -1967,7 +1967,7 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
         <value>Importa da JSON</value>
     </data>
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_DialogTitle" xml:space="preserve">
-        <value/>
+        <value>Importa plugin MCP</value>
     </data>
     <data name="McpImportForm_Description" xml:space="preserve">
         <value>Incolla la tua configurazione MCP JSON qui sotto, oppure importala da un file locale.</value>
