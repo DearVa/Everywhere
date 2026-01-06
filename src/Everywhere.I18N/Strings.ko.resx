@@ -1990,4 +1990,7 @@
     <data name="ChatPluginPageViewModel_ImportMcpPlugin_PartialSuccessToast_Title" xml:space="preserve">
         <value>{0} 플러그인이 성공적으로 가져와졌고, {1}개가 실패했습니다.</value>
     </data>
+    <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
+        <value>채팅 창 열기</value>
+    </data>
 </root>
