@@ -1990,4 +1990,10 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Sohbet Penceresini Aç</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>Linux sistemlerinde genellikle yalnızca kullanıcı izinleri kullanılır. Yönetici izinlerine ihtiyaç duyulursa, lütfen uygulamayı sudo ile yeniden başlatın.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>Kısayol tuşunu kaydetmek mümkün olmadı. Bu kombinasyon tuşu zaten kullanılıyor olabilir.</value>
+    </data>
 </root>

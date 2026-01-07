@@ -1990,4 +1990,10 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Chatfenster öffnen</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>Unter Linux werden normalerweise nur Benutzerrechte verwendet. Wenn Administratorrechte erforderlich sind, starten Sie die Anwendung bitte mit sudo neu.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>Konnte die Tastenkombination nicht registrieren. Diese Kombination könnte bereits belegt sein.</value>
+    </data>
 </root>

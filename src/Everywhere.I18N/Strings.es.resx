@@ -1993,4 +1993,10 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Abrir ventana de chat</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>En Linux, normalmente solo se utilizan permisos de usuario. Si necesita permisos de administrador, reinicie la aplicación usando sudo.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>No se pudo registrar la tecla de acceso rápido. Esa combinación de teclas puede estar en uso.</value>
+    </data>
 </root>

@@ -1993,4 +1993,10 @@
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Открыть окно чата</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>В Linux обычно используются только пользовательские права. Если вам нужны права администратора, перезапустите приложение с помощью sudo.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>Не удалось зарегистрировать горячую клавишу. Эта комбинация клавиш может быть занята.</value>
+    </data>
 </root>

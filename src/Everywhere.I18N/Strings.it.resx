@@ -1993,4 +1993,10 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Apri finestra chat</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>Sotto Linux, l'applicazione viene eseguita normalmente con i privilegi dell'utente. Per eseguire con privilegi di amministratore, riavvia l'app utilizzando sudo.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>Impossibile registrare la scorciatoia. Questa combinazione di tasti potrebbe essere già in uso.</value>
+    </data>
 </root>

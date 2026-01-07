@@ -1993,4 +1993,10 @@
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>開啟聊天窗口</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>Linux系統下通常僅使用使用者權限。如果需要管理員權限，請使用sudo重新啟動應用。</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>無法註冊快捷鍵。該組合鍵可能已被佔用。</value>
+    </data>
 </root>

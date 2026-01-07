@@ -1993,4 +1993,10 @@
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>채팅 창 열기</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>리눅스 시스템에서는 일반적으로 사용자 권한만 사용합니다. 관리자 권한이 필요한 경우 sudo를 사용하여 애플리케이션을 다시 시작하세요.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>단축키를 등록할 수 없습니다. 해당 조합 키가 이미 사용 중일 수 있습니다.</value>
+    </data>
 </root>

@@ -1993,4 +1993,10 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="Application_TrayIcon_Menu_OpenChatWindow" xml:space="preserve">
         <value>Ouvrir la fenêtre de chat</value>
     </data>
+    <data name="Linux_NativeHelper_RestartAsAdministrator_DesktopNotification" xml:space="preserve">
+        <value>Sous Linux, l'application fonctionne généralement avec des privilèges utilisateur. Pour utiliser des privilèges administratifs, veuillez redémarrer l'application avec sudo.</value>
+    </data>
+    <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
+        <value>Échec de l'enregistrement du raccourci. Cette combinaison de touches peut déjà être utilisée.</value>
+    </data>
 </root>
