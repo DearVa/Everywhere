@@ -1999,4 +1999,14 @@
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>Не удалось зарегистрировать горячую клавишу. Эта комбинация клавиш может быть занята.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Свободный</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Удерживайте левую кнопку мыши для выделения, правой кнопкой или Esc для выхода
+Прокрутка или цифровые клавиши для переключения режима выбора</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Скриншот</value>
+    </data>
 </root>

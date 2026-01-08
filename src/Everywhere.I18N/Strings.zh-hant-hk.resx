@@ -1999,4 +1999,14 @@
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>無法註冊快捷鍵。該組合鍵可能已被佔用。</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>自由</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>按住左鍵框選，右鍵或 Esc 退出
+滾輪或數字鍵切換選擇模式</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>螢幕截圖</value>
+    </data>
 </root>

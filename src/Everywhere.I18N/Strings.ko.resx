@@ -1999,4 +1999,14 @@
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>단축키를 등록할 수 없습니다. 해당 조합 키가 이미 사용 중일 수 있습니다.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>자유</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>왼쪽 버튼을 눌러 선택하고, 오른쪽 버튼이나 Esc로 종료
+휠 또는 숫자 키로 선택 모드 전환</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>스크린샷</value>
+    </data>
 </root>

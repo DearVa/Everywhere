@@ -1996,4 +1996,14 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>Kısayol tuşunu kaydetmek mümkün olmadı. Bu kombinasyon tuşu zaten kullanılıyor olabilir.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Serbest</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Sol tuşa basılı tutarak seçim yapın, sağ tuş veya Esc ile çıkın
+Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Ekran görüntüsü</value>
+    </data>
 </root>

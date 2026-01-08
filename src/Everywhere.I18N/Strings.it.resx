@@ -1999,4 +1999,14 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>Impossibile registrare la scorciatoia. Questa combinazione di tasti potrebbe essere già in uso.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Libero</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Tieni premuto il tasto sinistro per selezionare, tasto destro o Esc per uscire
+Rotella o tasti numerici per cambiare modalità di selezione</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Cattura schermo</value>
+    </data>
 </root>

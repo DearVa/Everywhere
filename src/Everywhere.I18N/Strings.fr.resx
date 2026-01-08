@@ -1999,4 +1999,14 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>Échec de l'enregistrement du raccourci. Cette combinaison de touches peut déjà être utilisée.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Libre</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Maintenez le bouton gauche enfoncé pour sélectionner, appuyez sur le bouton droit ou sur Échap pour quitter
+Utilisez la molette ou les touches numériques pour changer de mode de sélection</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Capture d'écran</value>
+    </data>
 </root>

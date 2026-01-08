@@ -2000,12 +2000,13 @@ Scroll wheel or number keys to switch pick modes</value>
         <value>Failed to grab the hotkey. The key combination may be already in use.</value>
     </data>
     <data name="ScreenSelectionMode_Free" xml:space="preserve">
-        <value />
+        <value>Free</value>
     </data>
     <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
-        <value />
+        <value>Hold left mouse button to select, right-click or Esc to exit
+Use scroll wheel or number keys to switch selection mode</value>
     </data>
     <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
-        <value />
+        <value>Screenshot</value>
     </data>
 </root>

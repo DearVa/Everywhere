@@ -1996,4 +1996,14 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>Konnte die Tastenkombination nicht registrieren. Diese Kombination könnte bereits belegt sein.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Frei</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Halten Sie die linke Maustaste gedrückt, um auszuwählen, rechte Maustaste oder Esc zum Beenden
+Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Bildschirmfoto</value>
+    </data>
 </root>

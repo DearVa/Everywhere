@@ -1999,4 +1999,14 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="Linux_ShortcutListener_Register_FailedToGrabHotkey" xml:space="preserve">
         <value>No se pudo registrar la tecla de acceso rápido. Esa combinación de teclas puede estar en uso.</value>
     </data>
+    <data name="ScreenSelectionMode_Free" xml:space="preserve">
+        <value>Libre</value>
+    </data>
+    <data name="ScreenSelectionToolTip_TipText_Free" xml:space="preserve">
+        <value>Mantén presionado el botón izquierdo del ratón para seleccionar, usa el botón derecho o Esc para salir
+Rueda o teclas numéricas para cambiar el modo de selección</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
+        <value>Captura de pantalla</value>
+    </data>
 </root>
