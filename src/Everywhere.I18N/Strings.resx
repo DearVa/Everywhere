@@ -789,22 +789,22 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Authentication error.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>To help me grow, we invite you to join the user experience program. We will collect your usage data, which will only be used for analysis and does not contain or allow for any inference about your personal data.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
-        <value />
+        <value>If you do not join, only necessary data will be sent. Rest assured, this choice will not affect core functionality.</value>
     </data>
     <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
-        <value></value>
+        <value>Do not join</value>
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>Enable telemetry</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
-        <value />
+        <value>Join the user experience program</value>
     </data>
     <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
-        <value />
+        <value>To help us improve, we invite you to join the user experience program. We will collect your usage data, which will only be used for analysis and does not contain or allow for any inference about your personal data. If you do not join, only necessary data will be sent. This choice will not affect core functionality.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Show Chat Statistics</value>

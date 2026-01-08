@@ -789,10 +789,22 @@
         <value>認証エラー。</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>私が成長するために、ユーザーエクスペリエンスプログラムに参加していただくことをお勧めします。使用データを収集し、分析のみに使用します。個人に関連するデータは含まれず、推測することもできません。</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>参加しない場合、必要なデータのみが送信されます。ご安心ください。この選択はコア機能に影響を与えません。</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>参加しない</value>
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>テレメトリを有効にする</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>ユーザーエクスペリエンスプログラムに参加</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>私たちが改善するために、ユーザーエクスペリエンスプログラムに参加していただくことをお勧めします。使用データを収集し、分析のみに使用します。個人に関連するデータは含まれず、推測することもできません。参加しない場合、必要なデータのみが送信されます。この選択はコア機能に影響を与えません。</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>チャット統計を表示</value>

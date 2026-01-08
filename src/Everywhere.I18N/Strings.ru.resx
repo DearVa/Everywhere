@@ -789,10 +789,22 @@
         <value>Ошибка аутентификации.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>Чтобы помочь мне расти, мы приглашаем вас присоединиться к программе пользовательского опыта. Мы будем собирать ваши данные использования, которые будут использоваться только для анализа и не будут содержать и не смогут быть использованы для вывода каких-либо данных, относящихся к вам лично.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>Если вы не присоединитесь, будут отправлены только необходимые данные. Пожалуйста, будьте уверены, что этот выбор не повлияет на основные функции.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>Не присоединяться</value>
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>Включить телеметрию</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Присоединиться к программе пользовательского опыта</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>Чтобы помочь нам улучшить, мы приглашаем вас присоединиться к программе пользовательского опыта. Мы будем собирать ваши данные использования, которые будут использоваться только для анализа и не будут содержать и не смогут быть использованы для вывода каких-либо данных, относящихся к вам лично. Если вы не присоединитесь, будут отправлены только необходимые данные. Этот выбор не повлияет на основные функции.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Показать статистику чата</value>

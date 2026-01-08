@@ -789,10 +789,22 @@
         <value>인증 오류.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>저의 성장을 돕기 위해 사용자 경험 프로그램에 참여해 주시기를 초대합니다. 우리는 귀하의 사용 데이터를 수집하며, 이 데이터는 분석 목적으로만 사용되며 귀하와 관련된 개인 정보를 포함하거나 추론할 수 없습니다.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>참여하지 않으면 필요한 데이터만 전송됩니다. 이 선택은 핵심 기능에 영향을 미치지 않으니 안심하십시오.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>참여하지 않음</value>
     </data>
     <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
         <value>텔레메트리 활성화</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>사용자 경험 프로그램 참여</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>우리를 개선하는 데 도움을 주기 위해 사용자 경험 프로그램에 참여해 주시기를 초대합니다. 우리는 귀하의 사용 데이터를 수집하며, 이 데이터는 분석 목적으로만 사용되며 귀하와 관련된 개인 정보를 포함하거나 추론할 수 없습니다. 참여하지 않으면 필요한 데이터만 전송됩니다. 이 선택은 핵심 기능에 영향을 미치지 않습니다.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>채팅 통계 표시</value>
