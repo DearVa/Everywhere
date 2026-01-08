@@ -789,7 +789,22 @@ Mi inteligencia está impulsada por un modelo de lenguaje grande, y necesito que
         <value>Error de autenticación.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>Para ayudarme a crecer, le invitamos a unirse al programa de experiencia del usuario. Recopilaremos sus datos de uso, que solo se utilizarán para análisis y no contendrán ni se podrán inferir datos personales relacionados con usted.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>Si no se une, solo se enviarán los datos necesarios. Puede estar tranquilo, esta elección no afectará las funciones principales.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>No unirse</value>
+    </data>
+    <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
+        <value>Unirse</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Unirse al programa de experiencia del usuario</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>Para ayudarnos a mejorar, le invitamos a unirse al programa de experiencia del usuario. Recopilaremos sus datos de uso, que solo se utilizarán para análisis y no contendrán ni se podrán inferir datos personales relacionados con usted. Si no se une, solo se enviarán los datos necesarios. Esta elección no afectará las funciones principales.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Mostrar estadísticas del chat</value>

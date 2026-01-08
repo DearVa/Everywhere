@@ -789,7 +789,22 @@ Mon intelligence est alimentée par un grand modèle de langage, et j'ai besoin 
         <value>Erreur d'authentification.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>Pour m'aider à grandir, nous vous invitons à rejoindre le programme d'expérience utilisateur. Nous collecterons vos données d'utilisation, qui ne seront utilisées qu'à des fins d'analyse et ne contiendront ni ne permettront d'inférer des données personnelles vous concernant.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>Si vous ne rejoignez pas, seules les données nécessaires seront envoyées. Soyez assuré que ce choix n'affectera pas les fonctionnalités essentielles.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>Ne pas rejoindre</value>
+    </data>
+    <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
+        <value>Rejoindre</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Rejoindre le programme d'expérience utilisateur</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>Pour nous aider à nous améliorer, nous vous invitons à rejoindre le programme d'expérience utilisateur. Nous collecterons vos données d'utilisation, qui ne seront utilisées qu'à des fins d'analyse et ne contiendront ni ne permettront d'inférer des données personnelles vous concernant. Si vous ne rejoignez pas, seules les données nécessaires seront envoyées. Ce choix n'affectera pas les fonctionnalités essentielles.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Afficher les statistiques de chat</value>

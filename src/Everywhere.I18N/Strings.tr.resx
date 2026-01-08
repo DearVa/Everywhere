@@ -786,7 +786,22 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
         <value>Kimlik doğrulama hatası.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>Büyümeme yardımcı olmak için sizi kullanıcı deneyimi programına katılmaya davet ediyoruz. Kullanım verilerinizi toplayacağız, bu veriler yalnızca analiz için kullanılacak ve sizinle ilgili herhangi bir kişisel bilgi içermeyecek veya çıkarım yapılamayacaktır.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>Katılmazsanız yalnızca gerekli veriler gönderilecektir. Lütfen bu seçimin temel işlevleri etkilemeyeceğinden emin olun.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>Katılmıyorum</value>
+    </data>
+    <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
+        <value>Katılıyorum</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Kullanıcı deneyimi programına katılın</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>Gelişmemize yardımcı olmak için sizi kullanıcı deneyimi programına katılmaya davet ediyoruz. Kullanım verilerinizi toplayacağız, bu veriler yalnızca analiz için kullanılacak ve sizinle ilgili herhangi bir kişisel bilgi içermeyecek veya çıkarım yapılamayacaktır. Katılmazsanız yalnızca gerekli veriler gönderilecektir. Bu seçim temel işlevleri etkilemeyecektir.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Sohbet İstatistiklerini Göster</value>

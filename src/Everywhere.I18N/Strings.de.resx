@@ -786,7 +786,22 @@ Meine Intelligenz wird von einem großen Sprachmodell bereitgestellt, und ich be
         <value>Authentifizierungsfehler.</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>Um mir beim Wachsen zu helfen, laden wir Sie ein, am Nutzererfahrungsprogramm teilzunehmen. Wir werden Ihre Nutzungsdaten sammeln, diese Daten dienen ausschließlich der Analyse und enthalten keine personenbezogenen Daten oder können nicht auf Sie zurückgeführt werden.</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>Wenn Sie nicht teilnehmen, werden nur notwendige Daten gesendet. Seien Sie versichert, dass diese Wahl die Kernfunktionen nicht beeinträchtigt.</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>Nicht teilnehmen</value>
+    </data>
+    <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
+        <value>Teilnehmen</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>Teilnahme am Nutzererfahrungsprogramm</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>Um uns bei der Verbesserung zu helfen, laden wir Sie ein, am Nutzererfahrungsprogramm teilzunehmen. Wir werden Ihre Nutzungsdaten sammeln, diese Daten dienen ausschließlich der Analyse und enthalten keine personenbezogenen Daten oder können nicht auf Sie zurückgeführt werden. Wenn Sie nicht teilnehmen, werden nur notwendige Daten gesendet. Diese Wahl hat keinen Einfluss auf die Kernfunktionen.</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>Chat-Statistik anzeigen</value>

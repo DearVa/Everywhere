@@ -789,7 +789,22 @@
         <value>身份驗證錯誤。</value>
     </data>
     <data name="WelcomeView_TelemetryStep_Message1" xml:space="preserve">
-        <value></value>
+        <value>為了幫助我成長，我們誠邀您加入用戶體驗計劃。我們會收集您的使用數據，這些數據僅用於分析，不包含也無法從中推斷出任何和您個人有關的數據。</value>
+    </data>
+    <data name="WelcomeView_TelemetryStep_Message2" xml:space="preserve">
+        <value>如果不加入，將只會發送必要數據。請放心，此選擇不會影響核心功能。</value>
+    </data>
+    <data name="WelcomeView_SendOnlyNecessaryDataButton_Content" xml:space="preserve">
+        <value>不加入</value>
+    </data>
+    <data name="WelcomeView_EnableTelemetryButton_Content" xml:space="preserve">
+        <value>加入</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Header" xml:space="preserve">
+        <value>加入用戶體驗計劃</value>
+    </data>
+    <data name="CommonSettings_DiagnosticData_Description" xml:space="preserve">
+        <value>為了幫助我們改進，我們誠邀您加入用戶體驗計劃。我們會收集您的使用數據，這些數據僅用於分析，不包含也無法從中推斷出任何和您個人有關的數據。如果不加入，將只會發送必要數據。此選擇不會影響核心功能。</value>
     </data>
     <data name="ChatWindowSettings_ShowChatStatistics_Header" xml:space="preserve">
         <value>顯示聊天統計</value>
