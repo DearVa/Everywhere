@@ -14,6 +14,7 @@ public partial class VisualElementContext
         {
             var window = new ElementPicker(context, backend, mode);
             window.Show();
+            window.Activate();
             return window._pickingPromise.Task;
         }
 
@@ -28,6 +29,7 @@ public partial class VisualElementContext
             : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window, ScreenSelectionMode.Element], screenSelectionMode)
         {
             _context = context;
+            backend.SetFocusable(this, true);
         }
 
         protected override void OnCanceled()
@@ -42,7 +44,8 @@ public partial class VisualElementContext
 
         protected override bool OnLeftButtonUp()
         {
-            // Confirm selection
+            Backend.SetCloaked(ToolTipWindow, true);
+            foreach (var maskWindow in MaskWindows) Backend.SetCloaked(maskWindow, true);
             return true;
         }
 

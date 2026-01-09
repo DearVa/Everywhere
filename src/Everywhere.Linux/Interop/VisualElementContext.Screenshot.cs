@@ -39,6 +39,7 @@ public partial class VisualElementContext
             : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window, ScreenSelectionMode.Element], initialMode)
         {
             _context = context;
+            backend.SetFocusable(this, true);
 
             CaptureAndSetBackground();
         }
