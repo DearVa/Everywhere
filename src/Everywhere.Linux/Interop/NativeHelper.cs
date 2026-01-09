@@ -8,64 +8,62 @@ namespace Everywhere.Linux.Interop;
 
 public class NativeHelper(IEventHelper eventHelper) : INativeHelper
 {
-    private static string SystemdServiceFile
+    private static string AutostartFolder => 
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config/autostart");
+
+    private static string ShortcutFile => Path.Combine(AutostartFolder, "Everywhere.desktop");
+
+    /// <summary>
+    /// Gets the proper executable path, handling AppImage environments.
+    /// </summary>
+    private static string GetExecutablePath()
     {
-        get
+        // If running as AppImage, use the environment variable provided by the AppImage runtime
+        string? appImagePath = Environment.GetEnvironmentVariable("APPIMAGE");
+        if (!string.IsNullOrEmpty(appImagePath))
         {
-            string? home = Environment.GetEnvironmentVariable("HOME");
-            return string.IsNullOrEmpty(home) ?
-                throw new InvalidOperationException("HOME environment variable is not set.") :
-                Path.Combine(home, ".config/systemd/user/Everywhere.service");
+            return appImagePath;
         }
+
+        // Fallback to current process path
+        return Process.GetCurrentProcess().MainModule?.FileName ?? "/usr/bin/Everywhere";
     }
 
-    public bool IsInstalled => false; // implement proper detection if needed
+    public bool IsInstalled => File.Exists("/usr/bin/Everywhere");
 
-    public bool IsAdministrator => false; // Linux elevation detection omitted
+    public bool IsAdministrator => Environment.UserName == "root";
 
-    // About Startup setting:
-    // Most modern Linux Use Systemd to manage this feature.
-    // For easy use, we attach a service config file in Installation dir.
-    // Thus write systemd service file in user mode and enable the service.
     public bool IsUserStartupEnabled
     {
-        get
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "systemctl",
-                Arguments = "--user is-enabled Everywhere.service",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            var p = Process.Start(startInfo);
-            p?.WaitForExit();
-            return p?.ExitCode == 0;
-        }
+        get => File.Exists(ShortcutFile);
         set
         {
-            const string serviceFileContent =
-                """
-                [Unit]
-                Description=Everywhere
-                After=graphical-session.target
-
-                [Service]
-                ExecStart=/usr/bin/Everywhere
-
-                [Install]
-                WantedBy=graphical-session.target
-                """;
-            if (!File.Exists(SystemdServiceFile) || value)
+            if (value)
             {
-                File.WriteAllText(SystemdServiceFile, serviceFileContent);
-            }
-            var action = value ? "enable" : "disable";
-            Process.Start(new ProcessStartInfo("systemctl", $"--user {action} Everywhere.service"))?.WaitForExit();
-        }
+                string execPath = GetExecutablePath();
+                string content =
+                    $"""
+                    [Desktop Entry]
+                    Type=Application
+                    Name=Everywhere
+                    Comment=Everywhere Startup Service
+                    Exec="{execPath}"
+                    Icon=Everywhere
+                    Terminal=false
+                    Categories=Utility;
+                    X-GNOME-Autostart-enabled=true
+                    """;
 
+                if (!Directory.Exists(AutostartFolder))
+                    Directory.CreateDirectory(AutostartFolder);
+
+                File.WriteAllText(ShortcutFile, content);
+            }
+            else if (File.Exists(ShortcutFile))
+            {
+                File.Delete(ShortcutFile);
+            }
+        }
     }
 
     public bool IsAdministratorStartupEnabled { get; set; }
