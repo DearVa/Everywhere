@@ -10,6 +10,7 @@ using Tmds.Linux;
 using Window = Avalonia.Controls.Window;
 using X11;
 using X11Window = X11.Window;
+using System.Diagnostics;
 
 namespace Everywhere.Linux.Interop;
 
@@ -31,6 +32,9 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
     private readonly int _wakePipeR = -1;
     private readonly int _wakePipeW = -1;
     private readonly ConcurrentDictionary<X11Window, IVisualElement> _windowCache = new();
+
+    // Current process id - used to identify and skip our own overlay windows during hit testing
+    private readonly int _processId = Process.GetCurrentProcess().Id;
 
     private volatile bool _running;
 
@@ -559,6 +563,10 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
             return ScanSkipWindow;
         }
         Xlib.XGetWindowAttributes(_display, window, out var attr);
+        if (XGetWindowPid(window) == _processId)
+        {
+            return X11Window.None;
+        }
         if ((MapState)attr.map_state != MapState.IsViewable || attr.override_redirect) // skip hidden
         {
             return X11Window.None;
