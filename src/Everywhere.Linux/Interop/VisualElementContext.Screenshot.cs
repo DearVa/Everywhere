@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Media.Imaging;
 using Everywhere.Interop;
 using Everywhere.Utilities;
+using System.Threading;
 
 namespace Everywhere.Linux.Interop;
 
@@ -109,6 +110,9 @@ public partial class VisualElementContext
                 captureRect = _selectedElement.BoundingRectangle;
             }
 
+            Backend.SetCloaked(ToolTipWindow, true);
+            foreach (var maskWindow in MaskWindows) Backend.SetCloaked(maskWindow, true);
+            
             _resultBitmap = CaptureScreen(captureRect);
             return true;
         }
