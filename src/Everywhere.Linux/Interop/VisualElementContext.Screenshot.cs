@@ -170,9 +170,23 @@ public partial class VisualElementContext
             ToolTipWindow.ToolTip.SizeInfo = $"{rect.Width} x {rect.Height}";
         }
 
-        private static Bitmap? CaptureScreen(PixelRect rect)
+        private Bitmap? CaptureScreen(PixelRect rect)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (rect.Width <= 0 || rect.Height <= 0)
+                {
+                    return null;
+                }
+
+                // Use the backend's Capture method which handles X11 screenshot via XGetImage
+                // The backend will capture from the root window (screen)
+                return Backend.Capture(null, rect);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

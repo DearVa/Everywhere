@@ -13,10 +13,10 @@ OUTPUT_APPIMAGE="Everywhere-x86_64.AppImage"
 
 mkdir -p "$APPDIR/usr/bin"
 mkdir -p "$APPDIR/usr/lib/Everywhere"
-wget -c "$RUNTIME_URL" -O "$RUNTIME_FILE"
 
 # Publish .NET application
 echo "Publishing .NET application..."
+dotnet restore Everywhere.Linux.slnf
 if ! dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj \
     -c Release -r linux-x64 \
     -o "$APPDIR/usr/lib/Everywhere"; then
@@ -61,6 +61,7 @@ mksquashfs "$APPDIR" root.squashfs -root-owned -noappend -comp zstd
 # Create the AppImage
 mkdir -p "$OUTPUT_DIR"
 echo "Creating AppImage..."
+wget -c "$RUNTIME_URL" -O "$RUNTIME_FILE"
 cat "$RUNTIME_FILE" root.squashfs > "$OUTPUT_DIR/$OUTPUT_APPIMAGE"
 chmod +x "$OUTPUT_DIR/$OUTPUT_APPIMAGE"
 
