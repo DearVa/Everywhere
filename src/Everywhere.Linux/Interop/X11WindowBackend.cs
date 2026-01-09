@@ -419,19 +419,72 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
 
     private int XGetWindowPid(X11Window window)
     {
+        if (window == X11Window.None) return 0;
+
         int pid = 0;
-        XGetProperty(
-            window,
-            "_NET_WM_PID",
-            1,
-            Atom.Cardinal,
-            (_, _, nItems, _, prop) =>
+
+        // local helper to try read _NET_WM_PID from a window
+        bool TryReadPidFromWindow(X11Window w)
+        {
+            pid = 0;
+            XGetProperty(
+                w,
+                "_NET_WM_PID",
+                1,
+                Atom.Cardinal,
+                (_, _, nItems, _, prop) =>
+                {
+                    if (nItems == 0 || prop == IntPtr.Zero) return;
+                    pid = Marshal.ReadInt32(prop);
+                });
+            return pid != 0;
+        }
+
+        // 1) Try the window itself
+        if (TryReadPidFromWindow(window)) return pid;
+
+        // 2) Walk up the parent chain to look for a PID on an ancestor
+        try
+        {
+            var root = X11Window.None;
+            var parent = X11Window.None;
+            Xlib.XQueryTree(_display, window, ref root, ref parent, out var children);
+            var current = parent;
+            while (current != X11Window.None && current != _rootWindow)
             {
-                if (nItems == 0 || prop == IntPtr.Zero)
-                    return;
-                pid = Marshal.ReadInt32(prop);
-            });
-        return pid;
+                if (TryReadPidFromWindow(current)) return pid;
+                Xlib.XQueryTree(_display, current, ref root, ref parent, out children);
+                current = parent;
+            }
+        }
+        catch { /* ignore errors while walking parents */ }
+
+        // 3) If not found, search children recursively (depth-limited)
+        try
+        {
+            const int MaxDepth = 8; // avoid pathological recursion
+            var stack = new Stack<(X11Window window, int depth)>();
+            stack.Push((window, 0));
+            while (stack.Count > 0)
+            {
+                var (w, depth) = stack.Pop();
+                var root = X11Window.None;
+                var parent = X11Window.None;
+                Xlib.XQueryTree(_display, w, ref root, ref parent, out var children);
+                foreach (var child in children)
+                {
+                    if (child == X11Window.None) continue;
+                    if (TryReadPidFromWindow(child)) return pid;
+                    if (depth + 1 < MaxDepth)
+                    {
+                        stack.Push((child, depth + 1));
+                    }
+                }
+            }
+        }
+        catch { /* ignore errors while walking children */ }
+
+        return 0;
     }
 
     private void XForEachTopWindow(Action<X11Window> handle)
