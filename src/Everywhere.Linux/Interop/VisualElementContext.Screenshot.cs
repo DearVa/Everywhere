@@ -36,7 +36,7 @@ public partial class VisualElementContext
             VisualElementContext context,
             IWindowBackend backend,
             ScreenSelectionMode initialMode)
-            : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window, ScreenSelectionMode.Element], initialMode)
+            : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window, ScreenSelectionMode.Element, ScreenSelectionMode.Free], initialMode)
         {
             _context = context;
             backend.SetFocusable(this, true);
