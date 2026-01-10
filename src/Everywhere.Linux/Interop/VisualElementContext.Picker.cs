@@ -7,12 +7,13 @@ public partial class VisualElementContext
 {
     private class ElementPicker : ScreenSelectionSession
     {
+        private static ScreenSelectionMode _previousMode = ScreenSelectionMode.Element;
         public static Task<IVisualElement?> PickAsync(
             VisualElementContext context,
             IWindowBackend backend,
-            ScreenSelectionMode mode)
+            ScreenSelectionMode? initialMode)
         {
-            var window = new ElementPicker(context, backend, mode);
+            var window = new ElementPicker(context, backend, initialMode ?? _previousMode);
             window.Show();
             window.Activate();
             return window._pickingPromise.Task;
@@ -67,6 +68,12 @@ public partial class VisualElementContext
 
             foreach (var maskWindow in MaskWindows) maskWindow.SetMask(maskRect);
             ToolTipWindow.ToolTip.Element = _selectedElement;
+        }
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            _previousMode = CurrentMode;
         }
     }
 }
