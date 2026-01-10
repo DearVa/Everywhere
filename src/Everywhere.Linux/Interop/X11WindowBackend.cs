@@ -32,6 +32,7 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
     private readonly int _wakePipeR = -1;
     private readonly int _wakePipeW = -1;
     private readonly ConcurrentDictionary<X11Window, IVisualElement> _windowCache = new();
+    private readonly AtomCache _atomCache;
 
     // Current process id - used to identify and skip our own overlay windows during hit testing
     private readonly int _processId = Process.GetCurrentProcess().Id;
@@ -48,6 +49,7 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
     {
         _logger = logger;
         _display = Xlib.XOpenDisplay(Environment.GetEnvironmentVariable("DISPLAY"));
+        _atomCache = new AtomCache(_display);
         if (_display == IntPtr.Zero) return;
         _rootWindow = Xlib.XDefaultRootWindow(_display);
         // select key events on root window so we receive KeyPress/KeyRelease
@@ -395,7 +397,7 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
         Atom reqType,
         Action<Atom, int, ulong, ulong, IntPtr> propertyCallback)
     { // actualType, actualFormat, nitems, bytesAfter, data
-        var atom = Xlib.XInternAtom(_display, propertyName, true);
+        var atom = _atomCache.GetAtom(propertyName, onlyIfExists: true);
         if (atom == Atom.None) return;
 
         XGetWindowProperty(
@@ -695,7 +697,7 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
 
             if (_display == IntPtr.Zero) return;
 
-            var atomHints = Xlib.XInternAtom(_display, "WM_HINTS", false);
+            var atomHints = _atomCache.GetAtom("WM_HINTS", onlyIfExists: false);
             if (atomHints != Atom.None)
             {
                 // WM_HINTS：flags(32 bit) + input(32 bit) + Others...
@@ -767,7 +769,7 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
             _logger.LogError("X11 SetHitTestVisible {visible} Failed: {Message}", visible, ex.Message);
         }
     }
-    
+
     public void SetOverrideRedirect(Window window, bool redirect)
     {
         try
@@ -803,10 +805,10 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
         {
             return false;
         }
-        var xaAtom = Xlib.XInternAtom(_display, "ATOM", false);
+        var xaAtom = _atomCache.GetAtom("ATOM", onlyIfExists: false);
         if (xaAtom == Atom.None) return false;
 
-        var hiddenAtom = Xlib.XInternAtom(_display, "_NET_WM_STATE_HIDDEN", false);
+        var hiddenAtom = _atomCache.GetAtom("_NET_WM_STATE_HIDDEN", onlyIfExists: false);
         if (hiddenAtom == Atom.None) return false;
 
         bool isHidden = false;
