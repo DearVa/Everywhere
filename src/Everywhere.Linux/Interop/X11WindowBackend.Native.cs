@@ -55,6 +55,12 @@ public partial class X11WindowBackend
         out ulong nitemsReturn,
         out ulong bytesAfterReturn,
         out IntPtr propReturn);
+        
+    [LibraryImport(LibX11)] private static partial int XChangeWindowAttributes(
+        IntPtr display,
+        X11Window window,
+        ulong valueMask,
+        ref XSetWindowAttributes attributes);
 
     private const int ShapeInput = 2;
 
@@ -80,6 +86,7 @@ public partial class X11WindowBackend
 
     [LibraryImport("libXfixes.so.3")] private static partial int XFixesQueryExtension(IntPtr display, out int eventBase, out int errorBase);
 
+
     #endregion
 
     #region X11 Constants and Structures
@@ -89,6 +96,25 @@ public partial class X11WindowBackend
         IsUnmapped = 0,
         IsUnviewable = 1,
         IsViewable = 2
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct XSetWindowAttributes
+    {
+        public IntPtr background_pixmap;
+        public ulong background_pixel;
+        public IntPtr border_pixmap;
+        public ulong border_pixel;
+        public int bit_gravity;
+        public int win_gravity;
+        public int backing_store;
+        public ulong backing_planes;
+        public ulong backing_pixel;
+        public int save_under;
+        public ulong event_mask;
+        public ulong do_not_propagate_mask;
+        public int override_redirect; // use int to match X11 Bool (int)
+        public IntPtr colormap;
     }
 
     private const X11Window ScanSkipWindow = (X11Window)ulong.MaxValue;
