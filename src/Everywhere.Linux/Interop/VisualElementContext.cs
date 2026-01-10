@@ -85,7 +85,7 @@ public partial class VisualElementContext(
 
         var windows = desktopLifetime.Windows.AsValueEnumerable().Where(w => w.IsVisible).ToList();
         foreach (var window in windows) window.Hide();
-        var result = await ElementPicker.PickAsync(this, backend, initialMode ?? ScreenSelectionMode.Element);
+        var result = await ElementPicker.PickAsync(this, backend, initialMode);
         foreach (var window in windows) window.IsVisible = true;
         return result;
     }

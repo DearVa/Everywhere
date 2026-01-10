@@ -10,12 +10,13 @@ public partial class VisualElementContext
 {
     private sealed class ScreenshotPicker : ScreenSelectionSession
     {
+        private static ScreenSelectionMode _previousMode = ScreenSelectionMode.Element;
         public static Task<Bitmap?> ScreenshotAsync(
             VisualElementContext context,
             IWindowBackend backend,
             ScreenSelectionMode? initialMode)
         {
-            var window = new ScreenshotPicker(context, backend, initialMode ?? ScreenSelectionMode.Element);
+            var window = new ScreenshotPicker(context, backend, initialMode ?? _previousMode);
             window.Show();
             return window._pickingPromise.Task;
         }
@@ -168,6 +169,13 @@ public partial class VisualElementContext
                 ToolTipWindow.ToolTip.Element = _selectedElement;
                 UpdateToolTipInfo(maskRect);
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            _previousMode = CurrentMode;
         }
 
         private void UpdateToolTipInfo(PixelRect rect)
