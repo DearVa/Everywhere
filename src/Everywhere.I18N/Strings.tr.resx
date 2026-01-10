@@ -2027,4 +2027,19 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
         <value>Daha Fazla Ayar</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Header" xml:space="preserve">
+        <value>fd-find</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Description" xml:space="preserve">
+        <value>fd-find (yüksek performanslı bir yerel dosya arama aracı) kullanarak bilgisayarınızdaki dosyaları arar. Bu araç kullanılmadan önce fd-find'in yüklenmiş olması gerekir.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Header" xml:space="preserve">
+        <value>Dosya ara</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Description" xml:space="preserve">
+        <value>Linux'ta fd-find kullanarak dosya veya dizin ara.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0} dosya bulundu</value>
+    </data>
 </root>

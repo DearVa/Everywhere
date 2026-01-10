@@ -2030,4 +2030,19 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
         <value>Ulteriori Impostazioni</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Header" xml:space="preserve">
+        <value>fd-find</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Description" xml:space="preserve">
+        <value>Cerca file sul tuo computer usando fd-find (uno strumento di ricerca file locale ad alte prestazioni). Questo strumento richiede che fd-find sia installato per poter essere utilizzato.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Header" xml:space="preserve">
+        <value>Cerca file</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Description" xml:space="preserve">
+        <value>Cerca file o directory su Linux usando fd-find.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>Trovati {0} file</value>
+    </data>
 </root>

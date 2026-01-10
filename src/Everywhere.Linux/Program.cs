@@ -9,6 +9,7 @@ using Everywhere.Configuration;
 using Everywhere.Extensions;
 using Everywhere.Initialization;
 using Everywhere.Interop;
+using Everywhere.Linux.Chat.Plugin;
 using Everywhere.Linux.Configuration;
 using Everywhere.Linux.Interop;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,6 +77,7 @@ public static class Program
                 .AddTransient<BuiltInChatPlugin, VisualContextPlugin>()
                 .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
                 .AddTransient<BuiltInChatPlugin, FileSystemPlugin>()
+                .AddTransient<BuiltInChatPlugin, FdFindPlugin>()
 
                 #endregion
 

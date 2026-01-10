@@ -2030,4 +2030,19 @@
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
         <value>추가 설정</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Header" xml:space="preserve">
+        <value>fd-find</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_Description" xml:space="preserve">
+        <value>fd-find(고성능 로컬 파일 검색 도구)를 사용하여 컴퓨터에서 파일을 검색합니다. 이 도구를 사용하려면 fd-find를 설치해야 합니다。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Header" xml:space="preserve">
+        <value>파일 검색</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_Description" xml:space="preserve">
+        <value>Linux에서 fd-find를 사용하여 파일 또는 디렉터리를 검색합니다。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
+        <value>{0}개의 파일을 찾았습니다</value>
+    </data>
 </root>
