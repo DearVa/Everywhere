@@ -37,13 +37,21 @@ internal abstract class ScreenSelectionSession : ScreenSelectionTransparentWindo
             var screen = allScreens[i];
             allScreenBounds = allScreenBounds.Union(screen.Bounds);
             var maskWindow = new ScreenSelectionMaskWindow(screen.Bounds);
-            backend.SetHitTestVisible(maskWindow, false);
             MaskWindows[i] = maskWindow;
         }
 
         SetPlacement(allScreenBounds, out _);
         ToolTipWindow = new ScreenSelectionToolTipWindow(allowedModes, initialMode);
-        backend.SetHitTestVisible(ToolTipWindow, false);
+        if (backend is X11WindowBackend x11backend)
+        {
+            foreach (var maskWindow in MaskWindows)
+            {
+                x11backend.SetHitTestVisible(maskWindow, false);
+                x11backend.SetOverrideRedirect(maskWindow, true);
+            }
+            x11backend.SetHitTestVisible(ToolTipWindow, false);
+            x11backend.SetOverrideRedirect(ToolTipWindow, true);
+        }
 
         // Ensure proper initialization of focus/hit-test state
         // On Linux/X11, we rely on the backend to manage window flags/types

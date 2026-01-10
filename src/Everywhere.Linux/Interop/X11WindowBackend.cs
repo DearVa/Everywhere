@@ -767,6 +767,31 @@ public sealed partial class X11WindowBackend : IWindowBackend, IEventHelper
             _logger.LogError("X11 SetHitTestVisible {visible} Failed: {Message}", visible, ex.Message);
         }
     }
+    
+    public void SetOverrideRedirect(Window window, bool redirect)
+    {
+        try
+        {
+            var ph = window.TryGetPlatformHandle();
+            if (ph is null) return;
+            var wnd = (X11Window)ph.Handle;
+
+            if (_display == IntPtr.Zero) return;
+
+            var swa = new XSetWindowAttributes
+            {
+                override_redirect = redirect ? 1 : 0
+            };
+
+            const ulong CWOverrideRedirect = 1UL << 9; // CWOverrideRedirect from X11/X.h
+            XChangeWindowAttributes(_display, wnd, CWOverrideRedirect, ref swa);
+            Xlib.XFlush(_display);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("X11 SetOverrideRedirect Failed: {Message}", ex.Message);
+        }
+    }
 
     public bool GetEffectiveVisible(Window window)
     {
