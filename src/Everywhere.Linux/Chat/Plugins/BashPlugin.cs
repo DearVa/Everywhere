@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using DynamicData;
+using Everywhere.Chat;
 using Everywhere.Chat.Permissions;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
@@ -38,6 +39,8 @@ public class BashPlugin : BuiltInChatPlugin
     [DynamicResourceKey(LocaleKey.Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header)]
     private async Task<string> ExecuteScriptAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
+        [FromKernelServices] IChatContextManager chatContextManager,
+        [FromKernelServices] ChatContext chatContext,
         [Description("A concise description for user, explaining what you are doing")] string description,
         [Description("Single or multi-line")] string script,
         CancellationToken cancellationToken)
@@ -84,44 +87,58 @@ public class BashPlugin : BuiltInChatPlugin
 
         userInterface.DisplaySink.AppendBlocks(detailBlock);
 
+        var workingDirectory = chatContextManager.EnsureWorkingDirectory(chatContext);
+        var scopeName = $"everywhere-bash-{Guid.NewGuid():N}";
+        
+        // Use systemd-run to create a scope for bash process
         var psi = new ProcessStartInfo
         {
-            FileName = "/bin/bash",
-            Arguments = "-s",
+            FileName = "systemd-run",
+            Arguments = $"--user --scope --quiet --unit={scopeName} /bin/bash -s",
             RedirectStandardError = true,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true,
+            WorkingDirectory = workingDirectory
         };
 
         string result;
         using (var process = Process.Start(psi))
         {
-            if (process is null)
+            if (process is null) throw new SystemException("Failed to start Bash process.");
+            await using var registration = cancellationToken.Register(() =>
             {
-                throw new SystemException("Failed to start Bash script execution process.");
-            }
+                _ = Task.Run(() =>
+                {
+                    // Stop the scope gracefully
+                    Process.Start("systemctl", $"--user stop {scopeName}.scope")?.WaitForExit(2000);
+                });
+            });
 
             await process.StandardInput.WriteAsync(script);
             process.StandardInput.Close();
+            var outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var errorTask = process.StandardError.ReadToEndAsync(cancellationToken);
 
-            result = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-            var errorOutput = await process.StandardError.ReadToEndAsync(cancellationToken);
-
+            await Task.WhenAll(outputTask, errorTask);
             await process.WaitForExitAsync(cancellationToken);
+
+            result = await outputTask;
+            var errorOutput = await errorTask;
+
             if (process.ExitCode != 0)
             {
                 throw new HandledException(
-                    new SystemException($"Bash script execution failed: {errorOutput}"),
+                    new SystemException($"Bash failed: {errorOutput}"),
                     new FormattedDynamicResourceKey(
                         LocaleKey.Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage,
-                        new DirectResourceKey(errorOutput)),
+                        new DirectResourceKey(errorOutput.Trim())),
                     showDetails: false);
             }
         }
 
-        userInterface.DisplaySink.AppendCodeBlock(result, "log");
+        userInterface.DisplaySink.AppendCodeBlock(result.Trim(), "log");
         return result;
     }
 }
