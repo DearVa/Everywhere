@@ -78,6 +78,7 @@ public static class Program
                 .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
                 .AddTransient<BuiltInChatPlugin, FileSystemPlugin>()
                 .AddTransient<BuiltInChatPlugin, FdFindPlugin>()
+                .AddTransient<BuiltInChatPlugin, BashPlugin>()
 
                 #endregion
 
