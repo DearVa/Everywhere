@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Threading;
 using Avalonia.Media.Imaging;
 using Everywhere.Interop;
 using Everywhere.Utilities;
@@ -11,14 +12,15 @@ public partial class VisualElementContext
     private sealed class ScreenshotPicker : ScreenSelectionSession
     {
         private static ScreenSelectionMode _previousMode = ScreenSelectionMode.Element;
-        public static Task<Bitmap?> ScreenshotAsync(
+        public static async Task<Bitmap?> ScreenshotAsync(
             VisualElementContext context,
             IWindowBackend backend,
             ScreenSelectionMode? initialMode)
         {
+            await Dispatcher.UIThread.InvokeAsync(() => { }, DispatcherPriority.Background);
             var window = new ScreenshotPicker(context, backend, initialMode ?? _previousMode);
             window.Show();
-            return window._pickingPromise.Task;
+            return await window._pickingPromise.Task;
         }
 
         private readonly TaskCompletionSource<Bitmap?> _pickingPromise = new();
