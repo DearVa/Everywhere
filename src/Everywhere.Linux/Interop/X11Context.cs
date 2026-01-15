@@ -22,6 +22,34 @@ public sealed class X11Context : IDisposable
     public IntPtr Display { get; private set; }
     public X11Window RootWindow { get; private set; }
     public AtomCache AtomCache { get; private set; } = null!;
+    private  IEnumerable<string> PredefinedAtoms = new[]
+    {
+        "ATOM",
+        "PRIMARY",
+        "SECONDARY",
+        "CLIPBOARD",
+        "WM_HINTS",
+        "WM_PROTOCOLS",
+        "WM_DELETE_WINDOW",
+        "WM_TAKE_FOCUS",
+        "UTF8_STRING",
+        "_NET_WM_NAME",
+        "_NET_WM_ICON",
+        "_NET_WM_PID",
+        "_NET_ACTIVE_WINDOW",
+        "_NET_WM_WINDOW_TYPE",
+        "_NET_WM_WINDOW_TYPE_NORMAL",
+        "_NET_WM_STATE",
+        "_NET_WM_STATE_FULLSCREEN",
+        "_NET_WM_STATE_ABOVE",
+        "_NET_WM_STATE_HIDDEN",
+        "_NET_WM_BYPASS_COMPOSITOR",
+        "_NET_SUPPORTED",
+        "_NET_CLIENT_LIST",
+        "_NET_CLIENT_LIST_STACKING",
+        "_NET_FRAME_EXTENTS",
+        "_MOTIF_WM_HINTS"
+    };
 
     // Fired on XThread when an event arrives
     public event Action<IntPtr>? XEventReceived;
@@ -41,7 +69,7 @@ public sealed class X11Context : IDisposable
             return;
         }
 
-        AtomCache = new AtomCache(Display);
+        AtomCache = new AtomCache(Display, PredefinedAtoms);
         RootWindow = Xlib.XDefaultRootWindow(Display);
 
         // Select key events on root window
