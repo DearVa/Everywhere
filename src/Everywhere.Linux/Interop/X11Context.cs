@@ -1,0 +1,260 @@
+using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
+using Tmds.Linux;
+using X11;
+using X11Window = X11.Window;
+
+namespace Everywhere.Linux.Interop;
+
+/// <summary>
+/// Manages the X11 Display connection, the dedicated X11 thread, and the IO loop.
+/// </summary>
+public sealed class X11Context : IDisposable
+{
+    private readonly ILogger _logger;
+    private readonly BlockingCollection<Action> _ops = new(new ConcurrentQueue<Action>());
+    private Thread? _xThread;
+    private int _wakePipeR = -1;
+    private int _wakePipeW = -1;
+    private volatile bool _running;
+    
+    public IntPtr Display { get; private set; }
+    public X11Window RootWindow { get; private set; }
+    public AtomCache AtomCache { get; private set; } = null!;
+
+    // Fired on XThread when an event arrives
+    public event Action<IntPtr>? XEventReceived;
+
+    public X11Context(ILogger logger)
+    {
+        _logger = logger;
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        Display = Xlib.XOpenDisplay(Environment.GetEnvironmentVariable("DISPLAY"));
+        if (Display == IntPtr.Zero)
+        {
+            _logger.LogError("Failed to open X Display.");
+            return;
+        }
+
+        AtomCache = new AtomCache(Display);
+        RootWindow = Xlib.XDefaultRootWindow(Display);
+
+        // Select key events on root window
+        Xlib.XSelectInput(
+            Display,
+            RootWindow,
+            EventMask.KeyPressMask | EventMask.KeyReleaseMask
+            | EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask
+            | EventMask.FocusChangeMask);
+
+        InitializeWakePipe();
+
+        _running = true;
+        _xThread = new Thread(XThreadMain) { IsBackground = true, Name = "X11DisplayThread" };
+        _xThread.Start();
+    }
+
+    private void InitializeWakePipe()
+    {
+        try
+        {
+            var fds = new int[2];
+            unsafe
+            {
+                fixed (int* pfds = fds)
+                {
+                    if (LibC.pipe(pfds) == 0)
+                    {
+                        _wakePipeR = fds[0];
+                        _wakePipeW = fds[1];
+                        ConfigurePipeFd(_wakePipeR);
+                        ConfigurePipeFd(_wakePipeW);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create wake pipe");
+        }
+    }
+
+    private void ConfigurePipeFd(int fd)
+    {
+        var flags = LibC.fcntl(fd, LibC.F_GETFL, 0);
+        LibC.fcntl(fd, LibC.F_SETFL, flags | LibC.O_NONBLOCK);
+        LibC.fcntl(fd, LibC.F_SETFD, LibC.FD_CLOEXEC);
+    }
+
+    /// <summary>
+    /// Enqueues an operation to be executed on the X11 thread.
+    /// </summary>
+    public void Invoke(Action action)
+    {
+        _ops.Add(action);
+        WakeThread();
+    }
+
+    private void WakeThread()
+    {
+        if (_wakePipeW == -1) return;
+        try
+        {
+            var b = new byte[] { 1 };
+            unsafe
+            {
+                fixed (byte* pb = b)
+                {
+                    LibC.write(_wakePipeW, pb, b.Length);
+                }
+            }
+        }
+        catch (Exception ex) { _logger.LogWarning(ex, "Failed to write wake pipe"); }
+    }
+
+    private void XThreadMain()
+    {
+        Xlib.XSetErrorHandler(OnXError);
+        var evPtr = Marshal.AllocHGlobal(256);
+        var buf = new byte[4];
+
+        try
+        {
+            var xfd = Xlib.XConnectionNumber(Display);
+            var fds = new pollfd[2];
+            fds[0].fd = xfd;
+            fds[0].events = LibC.POLLIN;
+            fds[1].fd = _wakePipeR;
+            fds[1].events = LibC.POLLIN;
+
+            while (_running || !_ops.IsCompleted)
+            {
+                // 1. Process pending ops
+                while (_ops.TryTake(out var op))
+                {
+                    try { op(); } catch (Exception ex) { _logger.LogWarning(ex, "X op failed"); }
+                }
+
+                // 2. Poll
+                unsafe
+                {
+                    fixed (pollfd* pfds = fds)
+                    {
+                        var rc = LibC.poll(pfds, (uint)fds.Length, -1);
+                        if (rc <= 0) continue;
+
+                        // Check wake pipe
+                        if ((fds[1].revents & LibC.POLLIN) != 0)
+                        {
+                            DrainWakePipe(buf);
+                            // Process ops again immediately after wake
+                            while (_ops.TryTake(out var op))
+                            {
+                                try { op(); } catch (Exception ex) { _logger.LogWarning(ex, "X op failed"); }
+                            }
+                        }
+
+                        // Check X Event
+                        if ((fds[0].revents & LibC.POLLIN) != 0)
+                        {
+                            while (Xlib.XPending(Display) > 0)
+                            {
+                                Xlib.XNextEvent(Display, evPtr);
+                                try
+                                {
+                                    XEventReceived?.Invoke(evPtr);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError(ex, "Error processing XEvent");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(evPtr);
+        }
+    }
+
+    private void DrainWakePipe(byte[] buf)
+    {
+        unsafe
+        {
+            fixed (byte* pbuf = buf)
+            {
+                while (LibC.read(_wakePipeR, pbuf, buf.Length) > 0) { }
+            }
+        }
+    }
+
+        private int OnXError(IntPtr display, ref XErrorEvent ev)
+    {
+        try
+        {
+            string text;
+            try
+            {
+                var buffer = new byte[256];
+                unsafe
+                {
+                    fixed (byte* buff = buffer)
+                    {
+                        Xlib.XGetErrorText(display, ev.error_code, (IntPtr)buff, buffer.Length);
+                    }
+                }
+                text = System.Text.Encoding.ASCII.GetString(buffer).TrimEnd('\0');
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to get X error text for code {code}", ev.error_code);
+                text = $"Unknown error code {ev.error_code}";
+            }
+            _logger.LogError(
+                "X Error: code={code}({errorName}) request={req}({reqName}) minor={minor} resource={res} text={text}",
+                ev.error_code,
+                X11Native.GetErrorCodeName(ev.error_code),
+                ev.request_code,
+                X11Native.GetRequestCodeName(ev.request_code),
+                ev.minor_code,
+                ev.resourceid,
+                text);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to handle X error");
+        }
+        return 0;
+    }
+
+    public void Dispose()
+    {
+        _running = false;
+        try
+        {
+            _ops.CompleteAdding();
+            WakeThread();
+            if (_xThread?.IsAlive == true) _xThread.Join(500);
+            
+            if (Display != IntPtr.Zero)
+            {
+                Xlib.XCloseDisplay(Display);
+                Display = IntPtr.Zero;
+            }
+            if (_wakePipeR != -1) LibC.close(_wakePipeR);
+            if (_wakePipeW != -1) LibC.close(_wakePipeW);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "X11 Context Dispose Error");
+        }
+    }
+}
