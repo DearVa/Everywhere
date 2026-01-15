@@ -57,7 +57,7 @@ jobs:
 
     - name: Publish
       run: |
-        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish
+        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }}
 
     - name: Build Deb Package
       run: |
