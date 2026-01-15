@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Native P/Invoke definitions for X11 and related extensions.

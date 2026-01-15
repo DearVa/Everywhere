@@ -9,7 +9,7 @@ using Tmds.Linux;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Responsible for window tree traversal, PID queries, focus management and hit testing.

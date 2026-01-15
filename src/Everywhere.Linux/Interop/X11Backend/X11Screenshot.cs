@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Handles screen capture and pixel format conversions.

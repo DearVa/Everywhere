@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Everywhere.Interop;
 using Microsoft.Extensions.Logging;
 using X11;
+using Everywhere.Linux.Interop.X11Backend;
 using AvaloniaWindow = Avalonia.Controls.Window;
 using X11Window = X11.Window;
 

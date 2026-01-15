@@ -6,7 +6,7 @@ using Everywhere.Interop;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Represents a visual element in the X11 system (Window or Screen).

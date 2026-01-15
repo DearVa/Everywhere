@@ -3,7 +3,7 @@ using Avalonia.Input;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Provides core X11 services: Property reading, Coordinate translation, Atom resolution, Key conversion, etc.

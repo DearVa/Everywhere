@@ -5,7 +5,7 @@ using Tmds.Linux;
 using X11;
 using X11Window = X11.Window;
 
-namespace Everywhere.Linux.Interop;
+namespace Everywhere.Linux.Interop.X11Backend;
 
 /// <summary>
 /// Manages the X11 Display connection, the dedicated X11 thread, and the IO loop.
@@ -224,7 +224,7 @@ public sealed class X11Context : IDisposable
         }
     }
 
-        private int OnXError(IntPtr display, ref XErrorEvent ev)
+    private int OnXError(IntPtr display, ref XErrorEvent ev)
     {
         try
         {

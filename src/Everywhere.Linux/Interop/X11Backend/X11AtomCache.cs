@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using X11;
 
-namespace Everywhere.Linux.Interop
+namespace Everywhere.Linux.Interop.X11Backend
 {
     public sealed class AtomCache
     {
