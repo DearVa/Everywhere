@@ -8,7 +8,7 @@ using Everywhere.I18N;
 using Lucide.Avalonia;
 using Microsoft.SemanticKernel;
 
-namespace Everywhere.Linux.Chat.Plugin;
+namespace Everywhere.Linux.Chat.Plugins;
 
 /// <summary>
 /// A plugin that integrates with the `fd` (fd-find) command-line tool to provide fast file search on Linux.

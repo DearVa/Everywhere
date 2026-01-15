@@ -10,7 +10,7 @@ using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
-namespace Everywhere.Linux.Chat.Plugin;
+namespace Everywhere.Linux.Chat.Plugins;
 
 public class BashPlugin : BuiltInChatPlugin
 {
