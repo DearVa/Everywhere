@@ -63,7 +63,13 @@ jobs:
       run: |
         ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
 
+    - name: Build AppImage
+      run: |
+        ./build_appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
+
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
-        files: Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
+        files: |
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
+          Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage

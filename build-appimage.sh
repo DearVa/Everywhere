@@ -1,72 +1,92 @@
 #!/bin/bash
 set -e
 
+RUNTIME_ARCH=$1
+ASSET_NAME=$2
+PUBLISH_DIR=$3
+BUILD_PROJECT=$4
+VERSION=$5
+
+case $RUNTIME_ARCH in
+    "linux-x64")   ARCH="x86_64" ;;
+    "linux-arm64") ARCH="aarch64" ;;
+    *)             ARCH="x86_64" ;;
+esac
+
 APP_NAME="Everywhere"
 APP_ID="com.Sylinko.Everywhere"
-BUILD_DIR="build_appimage"
-APPDIR="$BUILD_DIR/Everywhere.AppDir"
-RUNTIME_FILE="$BUILD_DIR/runtime-x86_64"
-RUNTIME_URL="https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-x86_64"
-
+APPDIR="Everywhere.AppDir"
 OUTPUT_DIR="./Releases"
-OUTPUT_APPIMAGE="Everywhere-x86_64.AppImage"
+OUTPUT_APPIMAGE="Everywhere-${ASSET_NAME}-v${VERSION}.AppImage"
 
-mkdir -p "$APPDIR/usr/bin"
-mkdir -p "$APPDIR/usr/lib/Everywhere"
 
-# Publish .NET application
-echo "Publishing .NET application..."
-dotnet restore Everywhere.Linux.slnf
-if ! dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj \
-    -c Release -r linux-x64 \
-    -o "$APPDIR/usr/lib/Everywhere"; then
-    echo -e "\033[0;31mdotnet publish failed. make sure you have the .NET SDK installed.\033[0m"
-    echo -e "\033[0;33mYou can download it from https://dotnet.microsoft.com/download\033[0m"
-    echo "Cleaning up..."
-    rm -rf "$BUILD_DIR"
+# if --build-project is specified, build the project first
+if [[ "$BUILD_PROJECT" == "true" ]]; then
+    if [ -z "$VERSION" ]; then
+        echo "Version not specified. Defaulting to \"1.0.0.0\"."
+        VERSION="1.0.0.0"
+    fi
+    echo "Building project for runtime '$RUNTIME_ARCH'..."
+    dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r "$RUNTIME_ARCH" -o "$PUBLISH_DIR" /p:Version="$VERSION"
+fi
+
+if [ ! -d "$PUBLISH_DIR" ]; then
+    echo "Publish directory '$PUBLISH_DIR' does not exist."
     exit 1
 fi
 
-# prepare AppDir
-ln -sr "$APPDIR/usr/lib/Everywhere/$APP_NAME" "$APPDIR/usr/bin/$APP_NAME"
-cp img/Everywhere-icon.png "$APPDIR/$APP_ID.png"
+echo "==== Starting AppImage Build for $ARCH ===="
 
-# Desktop file
+rm -rf "$APPDIR"
+mkdir -p "$APPDIR/usr/bin"
+mkdir -p "$APPDIR/usr/lib/$APP_NAME"
+
+cp -r "$PUBLISH_DIR"/* "$APPDIR/usr/lib/$APP_NAME/"
+
+mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
+cp img/Everywhere-icon.png "$APPDIR/usr/share/icons/hicolor/256x256/apps/$APP_ID.png"
+ln -s "usr/share/icons/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
+ln -s "usr/share/icons/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/.DirIcon"
+
 cat > "$APPDIR/$APP_ID.desktop" <<EOF
 [Desktop Entry]
-Name=Everywhere
+Name=$APP_NAME
 Exec=$APP_NAME
 Icon=$APP_ID
 Type=Application
 Categories=Utility;
 EOF
+ln -s "$APP_ID.desktop" "$APPDIR/Everywhere.desktop"
 
-# Create AppRun
 cat > "$APPDIR/AppRun" <<EOF
 #!/bin/sh
-HERE=\$(dirname "\$(readlink -f "\$0")")
+SELF=\$(readlink -f "\$0")
+HERE=\${SELF%/*}
 export PATH="\$HERE/usr/bin:\$PATH"
-exec "\$HERE/usr/bin/$APP_NAME" "\$@"
+export LD_LIBRARY_PATH="\$HERE/usr/lib/$APP_NAME:\$LD_LIBRARY_PATH"
+exec "\$HERE/usr/lib/$APP_NAME/$APP_NAME" "\$@"
 EOF
 chmod +x "$APPDIR/AppRun"
 
-cd "$APPDIR"
-
-# Fix broken symlinks
-find . -type l -exec symlinks -cr {} + || true 
-cd ../..
-
+echo "Creating Squashfs filesystem..."
+rm -f root.squashfs
 mksquashfs "$APPDIR" root.squashfs -root-owned -noappend -comp zstd
 
-# Create the AppImage
+RUNTIME_URL="https://github.com/AppImage/type2-runtime/releases/download/continuous/runtime-${ARCH}"
+RUNTIME_FILE="runtime-${ARCH}"
+
+if [ ! -f "$RUNTIME_FILE" ]; then
+    echo "Downloading runtime from $RUNTIME_URL..."
+    curl -L "$RUNTIME_URL" -o "$RUNTIME_FILE"
+fi
+chmod +x "$RUNTIME_FILE"
+
 mkdir -p "$OUTPUT_DIR"
-echo "Creating AppImage..."
-wget -c "$RUNTIME_URL" -O "$RUNTIME_FILE"
 cat "$RUNTIME_FILE" root.squashfs > "$OUTPUT_DIR/$OUTPUT_APPIMAGE"
 chmod +x "$OUTPUT_DIR/$OUTPUT_APPIMAGE"
 
-# clean up
-echo "Cleaning up..."
 rm root.squashfs
-rm -rf "$BUILD_DIR"
+rm -rf "$APPDIR"
+rm "$RUNTIME_FILE"
+
 echo -e "\033[0;32mAppImage created at $OUTPUT_DIR/$OUTPUT_APPIMAGE\033[0m"
