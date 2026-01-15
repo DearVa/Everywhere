@@ -163,7 +163,10 @@ public sealed class X11WindowManager
             if (child != X11Window.None)
             {
                 var sub = GetWindowAtPointInternal(child, rx, ry);
-                if (sub == X11Native.ScanSkipWindow) return (window != _context.RootWindow) ? X11Native.ScanSkipWindow : X11Window.None;
+                if (sub == X11Native.ScanSkipWindow){
+                     if (window != _context.RootWindow) return X11Native.ScanSkipWindow;
+                     else continue;
+                }
                 if (sub != X11Window.None) return sub;
             }
         }
