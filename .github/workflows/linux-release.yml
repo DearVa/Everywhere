@@ -61,10 +61,12 @@ jobs:
 
     - name: Build Deb Package
       run: |
+        chmod +x ./src/Everywhere.Linux/packaging_deb.sh
         ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
 
     - name: Build AppImage
       run: |
+        chmod +x build_appimage.sh
         ./build_appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
 
     - name: Upload Release Assets
