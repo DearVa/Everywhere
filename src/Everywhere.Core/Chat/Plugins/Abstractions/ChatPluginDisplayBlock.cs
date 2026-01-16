@@ -157,7 +157,7 @@ public partial class ChatPluginFileReference(string fullPath, DynamicResourceKey
             ".mp4" or ".avi" or ".mov" or ".wmv" or ".mkv" => LucideIconKind.FileVideoCamera,
             ".sh" or ".exe" or ".bat" or ".cmd" or ".ps1" => LucideIconKind.FileTerminal,
             ".zip" or ".rar" or ".7z" or ".tar" or ".gz" => LucideIconKind.FileArchive,
-            ".mp3" or ".wav" or ".flac" or ".aac" => LucideIconKind.FileAudio,
+            ".mp3" or ".wav" or ".flac" or ".aac" => LucideIconKind.FileMusic,
             _ => LucideIconKind.File
         };
     });

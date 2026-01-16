@@ -20,7 +20,7 @@
             <Button
               Classes="Secondary" DockPanel.Dock="Right"
               Margin="0,-16,0,0" VerticalAlignment="Top"
-              shadui:ButtonAssist.Icon="{LucideIconContent FileCode2}"
+              shadui:ButtonAssist.Icon="{LucideIconContent FileCodeCorner}"
               Command="{Binding OpenMcpJsonFileCommand, RelativeSource={RelativeSource TemplatedParent}}"
               Content="{I18N {x:Static LocaleKey.McpImportForm_OpenButton_Content}}"/>
             <TextBlock Text="{I18N {x:Static LocaleKey.McpImportForm_Description}}"/>

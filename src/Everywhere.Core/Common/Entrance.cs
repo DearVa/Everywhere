@@ -81,7 +81,7 @@ public static class Entrance
         {
             o.Dsn = "https://25114ca299b74da64aed26ffc2ac072e@o4510145762689024.ingest.us.sentry.io/4510145814069248";
             o.AutoSessionTracking = true;
-            o.Experimental.EnableLogs = true;
+            o.EnableLogs = true;
 #if DEBUG
             o.TracesSampleRate = 1.0;
             o.Environment = "debug";

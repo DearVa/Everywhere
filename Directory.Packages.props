@@ -1,16 +1,16 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <MicrosoftPackageVersion>10.0.0</MicrosoftPackageVersion>
-    <EntityFrameworkVersion>10.0.0</EntityFrameworkVersion>
+    <MicrosoftPackageVersion>10.0.2</MicrosoftPackageVersion>
+    <EntityFrameworkVersion>10.0.2</EntityFrameworkVersion>
     <SemanticKernelVersion>1.68.0</SemanticKernelVersion>
     <OpenTelemetryVersion>1.14.0</OpenTelemetryVersion>
-    <SentryVersion>5.16.2</SentryVersion>
-    <AvaloniaVersion>11.3.10</AvaloniaVersion>
+    <SentryVersion>6.0.0</SentryVersion>
+    <AvaloniaVersion>11.3.11</AvaloniaVersion>
     <AvaloniaEditVersion>11.3.0</AvaloniaEditVersion>
     <LiveMarkdownVersion>1.7.0</LiveMarkdownVersion>
     <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
-    <XamlBehaviorsVersion>11.3.9</XamlBehaviorsVersion>
+    <XamlBehaviorsVersion>11.3.9.3</XamlBehaviorsVersion>
   </PropertyGroup>
   <ItemGroup>
     <!-- Base packages -->
@@ -23,7 +23,7 @@
     <PackageVersion Include="Grpc.Tools" Version="2.71.0" />
     <PackageVersion Include="JetBrains.Profiler.Api" Version="1.4.10" />
     <PackageVersion Include="Lib.Harmony" Version="2.4.2" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EntityFrameworkVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(EntityFrameworkVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EntityFrameworkVersion)" />
@@ -56,7 +56,7 @@
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="$(SemanticKernelVersion)-alpha" />
     <PackageVersion Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="$(SemanticKernelVersion)" />
     <PackageVersion Include="ModelContextProtocol" Version="0.4.0-preview.3" />
-    <PackageVersion Include="PuppeteerSharp" Version="20.2.4" />
+    <PackageVersion Include="PuppeteerSharp" Version="20.2.5" />
     <PackageVersion Include="Tavily" Version="1.0.0" />
     <!-- Avalonia packages -->
     <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)" />
@@ -69,14 +69,14 @@
     <PackageVersion Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
     <PackageVersion Include="AvaloniaEdit.TextMate" Version="$(AvaloniaEditVersion)" />
-    <PackageVersion Include="MinVer" Version="6.0.0">
+    <PackageVersion Include="MinVer" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="HotAvalonia" Version="3.0.0" />
+    <PackageVersion Include="HotAvalonia" Version="3.0.2" />
     <PackageVersion Include="LiveMarkdown.Avalonia" Version="$(LiveMarkdownVersion)" />
     <PackageVersion Include="LiveMarkdown.Avalonia.Math" Version="$(LiveMarkdownVersion)" />
-    <PackageVersion Include="Lucide.Avalonia" Version="0.1.44" />
+    <PackageVersion Include="Lucide.Avalonia" Version="0.1.55" />
     <PackageVersion Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="$(SkiaSharpVersion)" />
     <PackageVersion Include="SkiaSharp.NativeAssets.macOS" Version="$(SkiaSharpVersion)" />
@@ -84,13 +84,13 @@
     <PackageVersion Include="Xaml.Behaviors.Avalonia" Version="$(XamlBehaviorsVersion)" />
     <!-- Windows packages -->
     <PackageVersion Include="Microsoft.PowerShell.SDK" Version="7.5.4" />
-    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.257">
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.269">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageVersion>
-    <PackageVersion Include="FlaUI.UIA3" Version="4.0.0" />
-    <PackageVersion Include="Vortice.Direct3D11" Version="3.6.2" />
-    <PackageVersion Include="Vortice.DirectComposition" Version="3.6.2" />
+    <PackageVersion Include="FlaUI.UIA3" Version="5.0.0" />
+    <PackageVersion Include="Vortice.Direct3D11" Version="3.8.2" />
+    <PackageVersion Include="Vortice.DirectComposition" Version="3.8.2" />
     <!-- Linux packages -->
     <PackageVersion Include="Tmds.LibC" Version="0.5.0" />
     <PackageVersion Include="X11.Net" Version="1.0.7" />
@@ -101,10 +101,10 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="NUnit" Version="4.4.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.11.2" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="5.2.0" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="6.1.0" />
     <!-- ShadUI packages -->
-    <PackageVersion Include="Jab" Version="0.11.0" />
+    <PackageVersion Include="Jab" Version="0.12.0" />
     <PackageVersion Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc5.4" />
-    <PackageVersion Include="TextMateSharp.Grammars" Version="1.0.69" />
+    <PackageVersion Include="TextMateSharp.Grammars" Version="2.0.2" />
   </ItemGroup>
 </Project>
