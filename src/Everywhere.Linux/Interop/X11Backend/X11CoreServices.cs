@@ -12,14 +12,16 @@ public sealed class X11CoreServices
 {
     private readonly IntPtr _display;
     private readonly AtomCache _atomCache;
+    private readonly X11Context _context;
 
-    public X11CoreServices(IntPtr display, AtomCache atomCache)
+    public X11CoreServices(X11Context context)
     {
-        _display = display;
-        _atomCache = atomCache;
+        _display = context.Display;
+        _atomCache = context.AtomCache;
+        _context = context;
     }
 
-    public Atom GetAtom(string name, bool onlyIfExists = false) => _atomCache.GetAtom(name, onlyIfExists);
+    public Atom GetAtom(string name, bool onlyIfExists = false) => _context.GetAtom(name, onlyIfExists);
 
     public KeyCode XKeycode(Key key)
     {

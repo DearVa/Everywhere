@@ -38,7 +38,7 @@ public sealed class X11WindowBackend : IWindowBackend, IEventHelper
         }
 
         // 2. Initialize Services
-        CoreServices = new X11CoreServices(Context.Display, Context.AtomCache);
+        CoreServices = new X11CoreServices(Context);
         InputHandler = new X11InputHandler(logger, Context, CoreServices);
         WindowManager = new X11WindowManager(logger, Context, CoreServices);
         Screenshot = new X11Screenshot(logger, Context, CoreServices);

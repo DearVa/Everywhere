@@ -128,6 +128,63 @@ public sealed class X11Context : IDisposable
         WakeThread();
     }
 
+    public T InvokeSync<T>(Func<T> func)
+    {
+        if (Thread.CurrentThread == _xThread)
+        {
+            return func();
+        }
+        var tcs = new TaskCompletionSource<T>();
+        _ops.Add(() =>
+        {
+            try
+            {
+                var result = func();
+                tcs.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+        WakeThread();
+        return tcs.Task.GetAwaiter().GetResult();
+    }
+
+    public void InvokeSync(Action action)
+    {
+        if (Thread.CurrentThread == _xThread)
+        {
+            action();
+            return;
+        }
+        var tcs = new TaskCompletionSource<bool>();
+        _ops.Add(() =>
+        {
+            try
+            {
+                action();
+                tcs.SetResult(true);
+            }
+            catch (Exception ex)
+            {
+                tcs.SetException(ex);
+            }
+        });
+        WakeThread();
+        tcs.Task.GetAwaiter().GetResult();
+    }
+
+    public void XFlush()
+    {
+        Invoke(() => Xlib.XFlush(Display));
+    }
+
+    public Atom GetAtom(string name, bool onlyIfExists = false)
+    {
+        return InvokeSync(() => AtomCache.GetAtom(name, onlyIfExists));
+    }
+
     private void WakeThread()
     {
         if (_wakePipeW == -1) return;

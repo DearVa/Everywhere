@@ -32,64 +32,10 @@ public sealed class X11WindowManager
 
     public int GetWindowPid(X11Window window)
     {
-        if (window == X11Window.None) return 0;
-
-        int pid = 0;
-
-        // local helper to try read _NET_WM_PID from a window
-        bool TryReadPidFromWindow(X11Window w)
+        if (TryReadPid(window, out var pid))
         {
-            pid = 0;
-            _services.GetProperty(w, "_NET_WM_PID", 1, Atom.Cardinal, (_, _, nItems, _, prop) =>
-            {
-                if (nItems > 0 && prop != IntPtr.Zero) pid = Marshal.ReadInt32(prop);
-            });
-            return pid != 0;
+            return pid;
         }
-        // 1) Try read PID directly from the window
-        if (TryReadPidFromWindow(window)) return pid;
-
-        // 2) Walk up the parent chain to look for a PID on an ancestor
-        try
-        {
-            var root = X11Window.None;
-            var parent = X11Window.None;
-            Xlib.XQueryTree(_context.Display, window, ref root, ref parent, out var children);
-            var current = parent;
-            while (current != X11Window.None && current != _context.RootWindow)
-            {
-                if (TryReadPidFromWindow(current)) return pid;
-                Xlib.XQueryTree(_context.Display, current, ref root, ref parent, out children);
-                current = parent;
-            }
-        }
-        catch { /* ignore errors while walking parents */ }
-
-        // 3) If not found, search children recursively (depth-limited)
-        try
-        {
-            const int MaxDepth = 8; // avoid pathological recursion
-            var stack = new Stack<(X11Window window, int depth)>();
-            stack.Push((window, 0));
-            while (stack.Count > 0)
-            {
-                var (w, depth) = stack.Pop();
-                var root = X11Window.None;
-                var parent = X11Window.None;
-                Xlib.XQueryTree(_context.Display, w, ref root, ref parent, out var children);
-                foreach (var child in children)
-                {
-                    if (child == X11Window.None) continue;
-                    if (TryReadPidFromWindow(child)) return pid;
-                    if (depth + 1 < MaxDepth)
-                    {
-                        stack.Push((child, depth + 1));
-                    }
-                }
-            }
-        }
-        catch { /* ignore errors while walking children */ }
-
         return 0;
     }
 
@@ -130,9 +76,16 @@ public sealed class X11WindowManager
     private bool TryReadPid(X11Window w, out int pid)
     {
         int foundPid = 0;
-        _services.GetProperty(w, "_NET_WM_PID", 1, Atom.Cardinal, (_, _, nItems, _, prop) =>
+        _context.InvokeSync(() =>
         {
-            if (nItems > 0 && prop != IntPtr.Zero) foundPid = Marshal.ReadInt32(prop);
+            _services.GetProperty(w, "_NET_WM_PID", 1, Atom.Cardinal, (type, format, count, _, data) =>
+            {
+                if (type == Atom.Cardinal && format == 32 && count >= 1)
+                {
+                    var ptr = new IntPtr(data.ToInt64());
+                    foundPid = Marshal.ReadInt32(ptr);
+                }
+            });
         });
         pid = foundPid;
         return pid != 0;
@@ -140,13 +93,16 @@ public sealed class X11WindowManager
 
     public X11Window GetWindowAtPoint(int x, int y)
     {
-        return GetWindowAtPointInternal(_context.RootWindow, x, y);
+        var result = _context.InvokeSync(() =>
+        {
+            return GetWindowAtPointInternal(_context.RootWindow, x, y);
+        });
+        return result;
     }
 
     private X11Window GetWindowAtPointInternal(X11Window window, int x, int y)
     {
         if (window == ScanSkipWindow) return X11Native.ScanSkipWindow;
-        
         Xlib.XGetWindowAttributes(_context.Display, window, out var attr);
         if (GetWindowPid(window) == _currentProcessId) return X11Window.None;
         if ((X11Native.MapState)attr.map_state != X11Native.MapState.IsViewable || attr.override_redirect != false) return X11Window.None;
@@ -177,37 +133,61 @@ public sealed class X11WindowManager
 
     public PixelRect GetWindowBounds(X11Window window)
     {
-        if (window == X11Window.None) return default;
-        Xlib.XGetWindowAttributes(_context.Display, window, out var attr);
-        
-        if (_services.TranslateCoordinates(window, _context.RootWindow, 0, 0, out int absX, out int absY))
-            return new PixelRect(absX, absY, (int)attr.width, (int)attr.height);
-
-        return new PixelRect(attr.x, attr.y, (int)attr.width, (int)attr.height);
+        var result = _context.InvokeSync(() => { 
+            if (window == X11Window.None) return default;
+                Xlib.XGetWindowAttributes(_context.Display, window, out var attr);
+            if (_services.TranslateCoordinates(window, _context.RootWindow, 0, 0, out int absX, out int absY))
+                return new PixelRect(absX, absY, (int)attr.width, (int)attr.height);
+            else return new PixelRect(attr.x, attr.y, (int)attr.width, (int)attr.height);
+        });
+        return result;
     }
 
     public void ForEachTopLevelWindow(Action<X11Window> action)
     {
-        _services.GetProperty(_context.RootWindow, "_NET_CLIENT_LIST", -1, Atom.Window, (type, format, count, _, data) =>
+        _context.InvokeSync(() =>
         {
-            if (type == Atom.Window && format == 32)
+            _services.GetProperty(_context.RootWindow, "_NET_CLIENT_LIST", -1, Atom.Window, (type, format, count, _, data) =>
             {
-                for (var i = 0; i < (int)count; i++)
+                if (type == Atom.Window && format == 32)
                 {
-                    var ptr = new IntPtr(data.ToInt64() + i * sizeof(long)); // X11Window is usually long on 64bit
-                    var w = (X11Window)Marshal.ReadInt64(ptr);
-                    if (w != X11Window.None) action(w);
+                    for (var i = 0; i < (int)count; i++)
+                    {
+                        var ptr = new IntPtr(data.ToInt64() + i * sizeof(long)); // X11Window is usually long on 64bit
+                        var w = (X11Window)Marshal.ReadInt64(ptr);
+                        if (w != X11Window.None) action(w);
+                    }
                 }
-            }
+            });
         });
     }
     public void SetFocusable(X11Window wnd, bool focusable)
     {
-        var atomHints = _services.GetAtom("WM_HINTS");
-        if (atomHints == Atom.None) return;
-        var hints = new ulong[] { 1u << 0, focusable ? 1u : 0u }; // InputHint
-        unsafe { fixed (ulong* p = hints) Xlib.XChangeProperty(_context.Display, wnd, atomHints, atomHints, 32, (int)PropertyMode.Replace, (IntPtr)p, 2); }
-        Xlib.XFlush(_context.Display);
+        _context.InvokeSync(() =>
+        {
+            IntPtr pExistingHints = X11Native.XGetWMHints(_context.Display, wnd);
+            X11Native.XWMHints hints;
+
+            if (pExistingHints != IntPtr.Zero)
+            {
+                hints = Marshal.PtrToStructure<X11Native.XWMHints>(pExistingHints);
+            }
+            else
+            {
+                hints = new X11Native.XWMHints();
+            }
+
+            // 1L << 0 is the Input flag
+            hints.flags = (IntPtr)((long)hints.flags | 1L); 
+            hints.input = focusable ? 1 : 0; 
+
+            X11Native.XSetWMHints(_context.Display, wnd, ref hints);
+
+            if (pExistingHints != IntPtr.Zero)
+            {
+                Xlib.XFree(pExistingHints);
+            }
+        });
     }
 
     public void SetHitTestVisible(X11Window window, bool visible, ushort width, ushort height)
@@ -215,31 +195,32 @@ public sealed class X11WindowManager
         try
         {
             if (_context.Display == IntPtr.Zero) return;
-
-            if (X11Native.XFixesQueryExtension(_context.Display, out _, out _) != 0)
-            {
-                if (visible)
+            _context.InvokeSync(() => {
+                if (X11Native.XFixesQueryExtension(_context.Display, out _, out _) != 0)
                 {
-                    IntPtr fullRegion = X11Native.XFixesCreateRegion(
-                        _context.Display,
-                        new[]
-                        {
-                            new X11Native.XRectangle { x = 0, y = 0, width = width, height = height }
-                        },
-                        1);
-                    X11Native.XFixesSetWindowShapeRegion(_context.Display, window, (int)X11Native.ShapeKind.Input, 0, 0, fullRegion);
-                    X11Native.XFixesDestroyRegion(_context.Display, fullRegion);
+                    if (visible)
+                    {
+                        IntPtr fullRegion = X11Native.XFixesCreateRegion(
+                            _context.Display,
+                            new[]
+                            {
+                                new X11Native.XRectangle { x = 0, y = 0, width = width, height = height }
+                            },
+                            1);
+                        X11Native.XFixesSetWindowShapeRegion(_context.Display, window, (int)X11Native.ShapeKind.Input, 0, 0, fullRegion);
+                        X11Native.XFixesDestroyRegion(_context.Display, fullRegion);
+                    }
+                    else
+                    {
+                        IntPtr emptyRegion = X11Native.XFixesCreateRegion(
+                            _context.Display,
+                            [],
+                            0);
+                        X11Native.XFixesSetWindowShapeRegion(_context.Display, window, (int)X11Native.ShapeKind.Input, 0, 0, emptyRegion);
+                        X11Native.XFixesDestroyRegion(_context.Display, emptyRegion);
+                    }
                 }
-                else
-                {
-                    IntPtr emptyRegion = X11Native.XFixesCreateRegion(
-                        _context.Display,
-                        [],
-                        0);
-                    X11Native.XFixesSetWindowShapeRegion(_context.Display, window, (int)X11Native.ShapeKind.Input, 0, 0, emptyRegion);
-                    X11Native.XFixesDestroyRegion(_context.Display, emptyRegion);
-                }
-            }
+            });
         }
         catch (Exception ex)
         {
@@ -258,7 +239,7 @@ public sealed class X11WindowManager
 
             const ulong CWOverrideRedirect = 1UL << 9; // CWOverrideRedirect from X11/X.h
             X11Native.XChangeWindowAttributes(_context.Display, window, CWOverrideRedirect, ref swa);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         }
         catch (Exception ex)
         {
@@ -268,34 +249,41 @@ public sealed class X11WindowManager
 
     public bool GetEffectiveVisible(X11Window window)
     {
-        Xlib.XGetWindowAttributes(_context.Display, window, out var attr);
+        var attr = _context.InvokeSync(() =>
+        {
+            Xlib.XGetWindowAttributes(_context.Display, window, out var attributes);
+            return attributes;
+        });
         if ((X11Native.MapState)attr.map_state != X11Native.MapState.IsViewable)
         {
             return false;
         }
-        var xaAtom = _context.AtomCache.GetAtom("ATOM", onlyIfExists: false);
+        var xaAtom = _context.GetAtom("ATOM", onlyIfExists: false);
         if (xaAtom == Atom.None) return false;
 
-        var hiddenAtom = _context.AtomCache.GetAtom("_NET_WM_STATE_HIDDEN", onlyIfExists: false);
+        var hiddenAtom = _context.GetAtom("_NET_WM_STATE_HIDDEN", onlyIfExists: false);
         if (hiddenAtom == Atom.None) return false;
 
         bool isHidden = false;
 
-        _services.GetProperty(window, "_NET_WM_STATE", 0, xaAtom, (type, format, count, _, data) =>
+        _context.InvokeSync(() =>
         {
-            if (type == xaAtom && format == 32)
+            _services.GetProperty(window, "_NET_WM_STATE", -1, xaAtom, (type, format, count, _, data) =>
             {
-                for (var i = 0; i < (int)count; i++)
+                if (type == xaAtom && format == 32)
                 {
-                    var ptr = new IntPtr(data.ToInt64() + i * sizeof(long)); // X11Window is usually long on 64bit
-                    var atom = (Atom)Marshal.ReadInt64(ptr);
-                    if (atom == hiddenAtom)
+                    for (var i = 0; i < (int)count; i++)
                     {
-                        isHidden = true;
-                        break;
+                        var ptr = new IntPtr(data.ToInt64() + i * sizeof(long)); // Atom is usually long on 64bit
+                        var atom = (Atom)Marshal.ReadInt64(ptr);
+                        if (atom == hiddenAtom)
+                        {
+                            isHidden = true;
+                            break;
+                        }
                     }
                 }
-            }
+            });
         });
         return !isHidden;
     }

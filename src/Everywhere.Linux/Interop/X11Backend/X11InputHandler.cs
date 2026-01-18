@@ -55,9 +55,11 @@ public sealed class X11InputHandler
                 var variants = new[] { 0u, (uint)KeyButtonMask.LockMask, (uint)KeyButtonMask.Mod2Mask, (uint)KeyButtonMask.LockMask | (uint)KeyButtonMask.Mod2Mask };
                 foreach (var v in variants)
                 {
-                    Xlib.XGrabKey(_context.Display, keycode, (KeyButtonMask)(mods | v), _context.RootWindow, false, GrabMode.Async, GrabMode.Async);
+                    _context.Invoke(() =>
+                        Xlib.XGrabKey(_context.Display, keycode, (KeyButtonMask)(mods | v), _context.RootWindow, false, GrabMode.Async, GrabMode.Async)
+                    );
                 }
-                Xlib.XFlush(_context.Display);
+                _context.XFlush();
 
                 var id = Interlocked.Increment(ref _nextId);
                 _regs[id] = new RegInfo { Keycode = keycode, Mods = mods, Handler = handler };
@@ -81,7 +83,7 @@ public sealed class X11InputHandler
             var variants = new[] { 0u, (uint)KeyButtonMask.LockMask, (uint)KeyButtonMask.Mod2Mask, (uint)KeyButtonMask.LockMask | (uint)KeyButtonMask.Mod2Mask };
             foreach (var v in variants)
                 Xlib.XUngrabKey(_context.Display, info.Keycode, (KeyButtonMask)(info.Mods | v), _context.RootWindow);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
 
@@ -91,7 +93,7 @@ public sealed class X11InputHandler
         _context.Invoke(() =>
         {
             X11Native.XGrabKeyboard(_context.Display, _context.RootWindow, 0, GrabMode.Async, GrabMode.Async, X11Native.CurrentTime);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
 
@@ -102,7 +104,7 @@ public sealed class X11InputHandler
         {
             X11Native.XUngrabKeyboard(_context.Display, _context.RootWindow);
             Xlib.XSetInputFocus(_context.Display, _context.RootWindow, RevertFocus.RevertToPointerRoot, X11Native.CurrentTime);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
 
@@ -114,7 +116,7 @@ public sealed class X11InputHandler
             Xlib.XGrabPointer(_context.Display, _context.RootWindow, false, 
                 EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.ButtonMotionMask, 
                 GrabMode.Async, GrabMode.Async, X11Window.None, 0, X11Native.CurrentTime);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
 
@@ -124,7 +126,7 @@ public sealed class X11InputHandler
         _context.Invoke(() =>
         {
             Xlib.XUngrabPointer(_context.Display, X11Native.CurrentTime);
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
     public void SendKeyboardShortcut(KeyboardShortcut shortcut)
@@ -162,7 +164,7 @@ public sealed class X11InputHandler
             {
                 XTest.XTestFakeKeyEvent(_context.Display, code, false, 0);
             }
-            Xlib.XFlush(_context.Display);
+            _context.XFlush();
         });
     }
 

@@ -19,7 +19,8 @@ public static partial class X11Native
         Clip = 1,
         Input = 2
     }
-
+    [LibraryImport(LibX11)] internal static partial IntPtr XGetWMHints(IntPtr display, X11Window window);
+    [LibraryImport(LibX11)] internal static partial void XSetWMHints(IntPtr display, X11Window window, ref XWMHints hints);
     [LibraryImport(LibX11)] internal static partial int XScreenCount(IntPtr display);
     [LibraryImport(LibX11)] internal static partial int XDisplayWidth(IntPtr display, int screenNumber);
     [LibraryImport(LibX11)] internal static partial int XDisplayHeight(IntPtr display, int screenNumber);
@@ -61,6 +62,20 @@ public static partial class X11Native
         public short y;
         public ushort width;
         public ushort height;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XWMHints
+    {
+        public IntPtr flags;
+        public int input;
+        public int initial_state;
+        public IntPtr icon_pixmap;
+        public IntPtr icon_window;
+        public int icon_x;
+        public int icon_y;
+        public IntPtr icon_mask;
+        public IntPtr window_group;
     }
 
     public enum MapState
