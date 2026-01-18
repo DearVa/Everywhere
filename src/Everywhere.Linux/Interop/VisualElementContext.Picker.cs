@@ -8,7 +8,7 @@ public partial class VisualElementContext
 {
     private class ElementPicker : ScreenSelectionSession
     {
-        private static ScreenSelectionMode _previousMode = ScreenSelectionMode.Element;
+        private static ScreenSelectionMode _previousMode = ScreenSelectionMode.Window;
         public static async Task<IVisualElement?> PickAsync(
             VisualElementContext context,
             IWindowBackend backend,
@@ -29,7 +29,7 @@ public partial class VisualElementContext
             VisualElementContext context,
             IWindowBackend backend,
             ScreenSelectionMode screenSelectionMode)
-            : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window, ScreenSelectionMode.Element], screenSelectionMode)
+            : base(backend, [ScreenSelectionMode.Screen, ScreenSelectionMode.Window], screenSelectionMode)
         {
             _context = context;
             backend.SetFocusable(this, true);
