@@ -66,8 +66,8 @@ jobs:
 
     - name: Build AppImage
       run: |
-        chmod +x build_appimage.sh
-        ./build_appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
+        chmod +x build-appimage.sh
+        ./build-appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
 
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
