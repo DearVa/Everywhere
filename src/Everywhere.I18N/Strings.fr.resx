@@ -692,6 +692,12 @@
     <data name="ChatPluginPage_TabItem_Functions_Header" xml:space="preserve">
         <value>Fonctions</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_Header" xml:space="preserve">
+        <value>Contexte Visuel</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_Description" xml:space="preserve">
+        <value>Fournit la capacité de percevoir et d'interagir avec le contenu de l'écran.</value>
+    </data>
     <data name="ChangeLogView_ViewOnGitHubHyperlinkButton_Content" xml:space="preserve">
         <value>Voir sur GitHub</value>
     </data>
@@ -1251,8 +1257,8 @@ Le prompt peut contenir des espaces réservés, inclus dans {}, qui seront rempl
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Header" xml:space="preserve">
         <value>Capturer l'élément UI</value>
     </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_Header" xml:space="preserve">
-        <value>Capturer l'écran entier</value>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Header" xml:space="preserve">
+        <value>Actions Automatisées</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_Everything_SearchFiles_Header" xml:space="preserve">
         <value>Rechercher des fichiers via Everything</value>
@@ -1377,11 +1383,8 @@ Le prompt peut contenir des espaces réservés, inclus dans {}, qui seront rempl
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Description" xml:space="preserve">
         <value>Capturez une capture d'écran d'un élément visuel.</value>
     </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_Description" xml:space="preserve">
-        <value>Capturez une capture d'écran de l'ensemble de l'écran.</value>
-    </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
-        <value>Aucun écran n'est disponible pour la capture.</value>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Description" xml:space="preserve">
+        <value>Exécute un ensemble d'actions automatisées, telles que cliquer, saisir ou envoyer des raccourcis.</value>
     </data>
     <data name="BuiltInChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
         <value>Effectuez une recherche sur le web.</value>
@@ -1997,7 +2000,34 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
         <value>Capture d'écran</value>
     </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
+        <value>Ajouter Sélection de Texte Automatiquement</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Description" xml:space="preserve">
+        <value>Une fois activé, le texte sélectionné sera automatiquement ajouté en tant que pièce jointe.</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Header" xml:space="preserve">
+        <value>Lister les Fenêtres</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Description" xml:space="preserve">
+        <value>Liste toutes les fenêtres sur l'écran.</value>
+    </data>
+    <data name="ExperimentalBadge_Content" xml:space="preserve">
+        <value>Expérimental</value>
+    </data>
+    <data name="ExperimentalBadge_ToolTip" xml:space="preserve">
+        <value>Cette fonctionnalité est expérimentale et peut entraîner des erreurs et des résultats inattendus.</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Header" xml:space="preserve">
+        <value>Démarrer au Lancement</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Description" xml:space="preserve">
+        <value>Everywhere se lancera automatiquement au démarrage.</value>
+    </data>
     <data name="ModelProviderSchema_DeepSeek" xml:space="preserve">
         <value>DeepSeek</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
+        <value>Plus de Paramètres</value>
     </data>
 </root>

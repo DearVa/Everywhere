@@ -691,6 +691,12 @@
     <data name="ChatPluginPage_TabItem_Functions_Header" xml:space="preserve">
         <value>Funktionen</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_Header" xml:space="preserve">
+        <value>Visueller Kontext</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_Description" xml:space="preserve">
+        <value>Bietet die Fähigkeit, Bildschirminhalte wahrzunehmen und zu steuern.</value>
+    </data>
     <data name="ChangeLogView_ViewOnGitHubHyperlinkButton_Content" xml:space="preserve">
         <value>Auf GitHub anzeigen</value>
     </data>
@@ -1248,6 +1254,9 @@ Im Prompt können Platzhalter verwendet werden, die in {} enthalten sind und vor
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Header" xml:space="preserve">
         <value>UI-Element erfassen</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Header" xml:space="preserve">
+        <value>Automatisierte Aktionen</value>
+    </data>
     <data name="Windows_BuiltInChatPlugin_Everything_SearchFiles_Header" xml:space="preserve">
         <value>Dateien über Everything suchen</value>
     </data>
@@ -1370,6 +1379,9 @@ Im Prompt können Platzhalter verwendet werden, die in {} enthalten sind und vor
     </data>
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Description" xml:space="preserve">
         <value>Erstellen Sie einen Screenshot eines visuellen Elements.</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Description" xml:space="preserve">
+        <value>Führt eine Reihe automatisierter Aktionen aus, wie Klicken, Eingeben oder Senden von Tastenkombinationen.</value>
     </data>
     <data name="BuiltInChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
         <value>Führen Sie eine Websuche durch.</value>
@@ -1985,7 +1997,34 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
         <value>Bildschirmfoto</value>
     </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
+        <value>Textauswahl Automatisch Hinzufügen</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Description" xml:space="preserve">
+        <value>Wenn aktiviert, wird der ausgewählte Text automatisch als Anhang hinzugefügt.</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Header" xml:space="preserve">
+        <value>Fenster Auflisten</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Description" xml:space="preserve">
+        <value>Listet alle Fenster auf dem Bildschirm auf.</value>
+    </data>
+    <data name="ExperimentalBadge_Content" xml:space="preserve">
+        <value>Experimentell</value>
+    </data>
+    <data name="ExperimentalBadge_ToolTip" xml:space="preserve">
+        <value>Diese Funktion ist experimentell und kann unerwartete Fehler und Ergebnisse verursachen.</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Header" xml:space="preserve">
+        <value>Beim Start Ausführen</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Description" xml:space="preserve">
+        <value>Everywhere wird nach dem Start automatisch ausgeführt.</value>
+    </data>
     <data name="ModelProviderSchema_DeepSeek" xml:space="preserve">
         <value>DeepSeek</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
+        <value>Weitere Einstellungen</value>
     </data>
 </root>

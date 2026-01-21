@@ -692,6 +692,12 @@
     <data name="ChatPluginPage_TabItem_Functions_Header" xml:space="preserve">
         <value>機能</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_Header" xml:space="preserve">
+        <value>視覚コンテキスト</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_Description" xml:space="preserve">
+        <value>画面の内容を認識し操作する能力を提供します。</value>
+    </data>
     <data name="ChangeLogView_ViewOnGitHubHyperlinkButton_Content" xml:space="preserve">
         <value>GitHubで見る</value>
     </data>
@@ -1251,8 +1257,8 @@
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Header" xml:space="preserve">
         <value>UI要素をキャプチャ</value>
     </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_Header" xml:space="preserve">
-        <value>全画面をキャプチャ</value>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Header" xml:space="preserve">
+        <value>自動化操作</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_Everything_SearchFiles_Header" xml:space="preserve">
         <value>Everythingでファイルを検索</value>
@@ -1377,11 +1383,8 @@
     <data name="BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Description" xml:space="preserve">
         <value>ビジュアル要素のスクリーンショットをキャプチャします。</value>
     </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_Description" xml:space="preserve">
-        <value>画面全体のスクリーンショットをキャプチャします。</value>
-    </data>
-    <data name="BuiltInChatPlugin_VisualContext_CaptureFullScreen_NoScreenAvailable_ErrorMessage" xml:space="preserve">
-        <value>キャプチャするための画面が利用できません。</value>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Description" xml:space="preserve">
+        <value>クリック、入力、またはショートカットキーの送信など、一連の自動化操作を実行します。</value>
     </data>
     <data name="BuiltInChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
         <value>ウェブ検索を実行します。</value>
@@ -1997,7 +2000,34 @@
     <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_Screenshot" xml:space="preserve">
         <value>スクリーンショット</value>
     </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
+        <value>選択したテキストを自動追加</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Description" xml:space="preserve">
+        <value>有効にすると、選択したテキストが自動的に添付ファイルとして追加されます。</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Header" xml:space="preserve">
+        <value>ウィンドウを一覧表示</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ListWindows_Description" xml:space="preserve">
+        <value>画面上のすべてのウィンドウを一覧表示します。</value>
+    </data>
+    <data name="ExperimentalBadge_Content" xml:space="preserve">
+        <value>実験的</value>
+    </data>
+    <data name="ExperimentalBadge_ToolTip" xml:space="preserve">
+        <value>これは実験的な機能であり、予期しないエラーや結果を引き起こす可能性があります。</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Header" xml:space="preserve">
+        <value>起動時に開始</value>
+    </data>
+    <data name="CommonSettings_IsUserStartupEnabled_Description" xml:space="preserve">
+        <value>Everywhereは、起動後に自動的に実行されます。</value>
+    </data>
     <data name="ModelProviderSchema_DeepSeek" xml:space="preserve">
         <value>DeepSeek</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_MoreSettings" xml:space="preserve">
+        <value>さらに設定</value>
     </data>
 </root>

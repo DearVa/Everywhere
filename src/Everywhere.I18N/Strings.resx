@@ -693,10 +693,10 @@
         <value>Functions</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_Header" xml:space="preserve">
-        <value />
+        <value>Visual Context</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_Description" xml:space="preserve">
-        <value />
+        <value>Provides the ability to perceive and interact with screen content.</value>
     </data>
     <data name="ChangeLogView_ViewOnGitHubHyperlinkButton_Content" xml:space="preserve">
         <value>View on GitHub</value>
@@ -1258,7 +1258,7 @@ Placeholders can be used in the prompt, enclosed in {}, which will be replaced w
         <value>Capture UI Element</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Header" xml:space="preserve">
-        <value />
+        <value>Automate Actions</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_Everything_SearchFiles_Header" xml:space="preserve">
         <value>Search Files via Everything</value>
@@ -1384,7 +1384,7 @@ Placeholders can be used in the prompt, enclosed in {}, which will be replaced w
         <value>Capture a screenshot of a visual element.</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Description" xml:space="preserve">
-        <value />
+        <value>Execute a set of automated actions, such as clicks, inputs, or sending shortcuts.</value>
     </data>
     <data name="BuiltInChatPlugin_WebBrowser_WebSearch_Description" xml:space="preserve">
         <value>Perform a web search.</value>
@@ -2001,28 +2001,28 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Screenshot</value>
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
-        <value />
+        <value>Automatically Add Text Selection</value>
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Description" xml:space="preserve">
-        <value />
+        <value>When enabled, selected text will be automatically added as an attachment.</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_ListWindows_Header" xml:space="preserve">
         <value>List Windows</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_ListWindows_Description" xml:space="preserve">
-        <value />
+        <value>List all windows on the screen.</value>
     </data>
     <data name="ExperimentalBadge_Content" xml:space="preserve">
-        <value />
+        <value>Experimental</value>
     </data>
     <data name="ExperimentalBadge_ToolTip" xml:space="preserve">
-        <value />
+        <value>This is an experimental feature that may lead to unexpected errors and results.</value>
     </data>
     <data name="CommonSettings_IsUserStartupEnabled_Header" xml:space="preserve">
-        <value />
+        <value>Launch at Startup</value>
     </data>
     <data name="CommonSettings_IsUserStartupEnabled_Description" xml:space="preserve">
-        <value />
+        <value>Everywhere will automatically run after startup.</value>
     </data>
     <data name="ModelProviderSchema_DeepSeek" xml:space="preserve">
         <value>DeepSeek</value>
