@@ -1,4 +1,4 @@
-﻿<ResourceDictionary
+<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:v="using:Everywhere.Views">
   <ControlTheme
@@ -28,7 +28,7 @@
           </ItemsControl.ItemsPanel>
 
           <ItemsControl.DataTemplates>
-            <DataTemplate DataType="chat:ChatFileAttachment">
+            <DataTemplate DataType="chat:FileAttachment">
               <Border
                 x:Name="PART_Border" Height="24"
                 Background="{DynamicResource CardBackgroundColor}"

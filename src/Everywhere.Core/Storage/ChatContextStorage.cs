@@ -218,7 +218,7 @@ public sealed class ChatContextStorage(
             var msg = DeserializeMessage(row.Payload);
             if (msg is IHaveChatAttachments { Attachments: { } attachments })
             {
-                foreach (var attachment in attachments.OfType<ChatFileAttachment>())
+                foreach (var attachment in attachments.OfType<FileAttachment>())
                 {
                     if (blobsByHash.TryGetValue(attachment.Sha256, out var blobEntity))
                     {
@@ -354,7 +354,7 @@ public sealed class ChatContextStorage(
 
             if (node.Message is IHaveChatAttachments messageWithChatAttachments)
             {
-                var fileAttachments = messageWithChatAttachments.Attachments.AsValueEnumerable().OfType<ChatFileAttachment>().ToList();
+                var fileAttachments = messageWithChatAttachments.Attachments.AsValueEnumerable().OfType<FileAttachment>().ToList();
                 for (var i = 0; i < fileAttachments.Count; i++)
                 {
                     var attachment = fileAttachments[i];

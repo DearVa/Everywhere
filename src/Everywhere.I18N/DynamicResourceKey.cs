@@ -28,6 +28,8 @@ public abstract partial class DynamicResourceKeyBase : IObservable<object?>
     public DynamicResourceKeyBase Self => this;
 
     public abstract IDisposable Subscribe(IObserver<object?> observer);
+
+    public static implicit operator DynamicResourceKeyBase(string key) => new DirectResourceKey(key);
 }
 
 /// <summary>
@@ -35,7 +37,7 @@ public abstract partial class DynamicResourceKeyBase : IObservable<object?>
 /// </summary>
 /// <param name="key"></param>
 [MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
-public partial class DynamicResourceKey(object? key) : DynamicResourceKeyBase, IRecipient<LocaleChangedMessage>
+public class DynamicResourceKey(object? key) : DynamicResourceKeyBase, IRecipient<LocaleChangedMessage>
 {
     [Key(0)]
     public object Key { get; } = key ?? string.Empty; // avoid null key (especially for MessagePack)
@@ -149,6 +151,8 @@ public partial class DirectResourceKey(object key) : DynamicResourceKey(key)
     public override bool Equals(object? obj) => obj is DynamicResourceKey other && Equals(Key, other.Key);
 
     public override int GetHashCode() => Key.GetHashCode();
+
+    public static implicit operator DirectResourceKey(string key) => new(key);
 }
 
 /// <summary>

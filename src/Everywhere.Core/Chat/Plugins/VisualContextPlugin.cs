@@ -122,7 +122,7 @@ public class VisualContextPlugin : BuiltInChatPlugin
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Header,
         LocaleKey.BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Description)]
-    private Task<ChatFileAttachment> CaptureVisualElementByIdAsync(
+    private Task<FileAttachment> CaptureVisualElementByIdAsync(
         [FromKernelServices] ChatContext chatContext,
         int elementId,
         CancellationToken cancellationToken = default)
@@ -130,7 +130,7 @@ public class VisualContextPlugin : BuiltInChatPlugin
         return CaptureVisualElementAsync(ResolveVisualElement(chatContext, elementId, nameof(elementId)), cancellationToken);
     }
 
-    private async Task<ChatFileAttachment> CaptureVisualElementAsync(IVisualElement visualElement, CancellationToken cancellationToken)
+    private async Task<FileAttachment> CaptureVisualElementAsync(IVisualElement visualElement, CancellationToken cancellationToken)
     {
         var bitmap = await visualElement.CaptureAsync(cancellationToken);
 
@@ -141,7 +141,7 @@ public class VisualContextPlugin : BuiltInChatPlugin
             blob = await _blobStorage.StorageBlobAsync(stream, "image/png", cancellationToken);
         }
 
-        return new ChatFileAttachment(
+        return new FileAttachment(
             new DynamicResourceKey(string.Empty),
             blob.LocalPath,
             blob.Sha256,

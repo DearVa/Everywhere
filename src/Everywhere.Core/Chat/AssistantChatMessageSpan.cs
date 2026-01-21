@@ -233,7 +233,7 @@ public partial class AssistantChatMessageImageSpan : AssistantChatMessageSpan, I
 {
     [Key(3)]
     [ObservableProperty]
-    public partial ChatFileAttachment? ImageOutput { get; set; }
+    public partial FileAttachment? ImageOutput { get; set; }
 
     [IgnoreMember]
     [JsonIgnore]

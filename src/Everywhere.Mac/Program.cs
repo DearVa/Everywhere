@@ -9,6 +9,7 @@ using Everywhere.Extensions;
 using Everywhere.I18N;
 using Everywhere.Initialization;
 using Everywhere.Interop;
+using Everywhere.StrategyEngine;
 using Everywhere.Mac.Chat.Plugin;
 using Everywhere.Mac.Common;
 using Everywhere.Mac.Configuration;
@@ -70,6 +71,12 @@ public static class Program
                 .AddSingleton<IChatPluginManager, ChatPluginManager>()
                 .AddSingleton<IChatService, ChatService>()
                 .AddChatContextManager()
+
+                #endregion
+
+                #region Strategy Engine
+
+                .AddStrategyEngine()
 
                 #endregion
 

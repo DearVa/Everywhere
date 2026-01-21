@@ -256,13 +256,13 @@ public sealed partial class ChatWindowViewModel :
             IsOpened = true;
 
             // Avoid adding duplicate attachments
-            if (_chatAttachmentsSource.Items.Any(a => a is ChatVisualElementAttachment vea && Equals(vea.Element?.Target, targetElement))) return;
+            if (_chatAttachmentsSource.Items.Any(a => a is VisualElementAttachment vea && Equals(vea.Element?.Target, targetElement))) return;
 
             if (targetElement == null)
             {
                 _chatAttachmentsSource.Edit(list =>
                 {
-                    if (list is [ChatVisualElementAttachment { IsPrimary: true }, ..])
+                    if (list is [VisualElementAttachment { IsPrimary: true }, ..])
                     {
                         list.RemoveAt(0);
                     }
@@ -279,7 +279,7 @@ public sealed partial class ChatWindowViewModel :
             {
                 _chatAttachmentsSource.Edit(list =>
                 {
-                    list.RemoveWhere(a => a is ChatVisualElementAttachment { IsPrimary: true });
+                    list.RemoveWhere(a => a is VisualElementAttachment { IsPrimary: true });
                     list.Insert(0, attachment.With(a => a.IsPrimary = true));
                 });
             }
@@ -304,7 +304,7 @@ public sealed partial class ChatWindowViewModel :
             windowHelper.SetCloaked(chatWindow, false);
 
             if (element is null) return;
-            if (_chatAttachmentsSource.Items.OfType<ChatVisualElementAttachment>().Any(a => Equals(a.Element?.Target, element))) return;
+            if (_chatAttachmentsSource.Items.OfType<VisualElementAttachment>().Any(a => Equals(a.Element?.Target, element))) return;
             _chatAttachmentsSource.Add(await Task.Run(() => CreateFromVisualElement(element), cancellationToken));
         },
         _logger.ToExceptionHandler());
@@ -446,7 +446,7 @@ public sealed partial class ChatWindowViewModel :
         try
         {
             _chatAttachmentsSource.Add(
-                await ChatFileAttachment.CreateAsync(
+                await FileAttachment.CreateAsync(
                     filePath,
                     description: description,
                     cancellationToken: cancellationToken));
@@ -477,7 +477,7 @@ public sealed partial class ChatWindowViewModel :
         await AddFileUncheckAsync(filePath, "from drag&drop", _cancellationTokenSource.Token);
     }
 
-    private static ChatVisualElementAttachment CreateFromVisualElement(IVisualElement element)
+    private static VisualElementAttachment CreateFromVisualElement(IVisualElement element)
     {
         DynamicResourceKey headerKey;
         var elementTypeKey = new DynamicResourceKey($"VisualElementType_{element.Type}");
@@ -491,7 +491,7 @@ public sealed partial class ChatWindowViewModel :
             headerKey = elementTypeKey;
         }
 
-        return new ChatVisualElementAttachment(
+        return new VisualElementAttachment(
             headerKey,
             element.Type switch
             {
@@ -524,13 +524,13 @@ public sealed partial class ChatWindowViewModel :
             element);
     }
 
-    private async Task<ChatFileAttachment> CreateFromBitmapAsync(Bitmap bitmap, CancellationToken cancellationToken)
+    private async Task<FileAttachment> CreateFromBitmapAsync(Bitmap bitmap, CancellationToken cancellationToken)
     {
         using var memoryStream = new MemoryStream();
         bitmap.Save(memoryStream, 100);
 
         var blob = await _blobStorage.StorageBlobAsync(memoryStream, "image/png", cancellationToken);
-        return new ChatFileAttachment(
+        return new FileAttachment(
             new DynamicResourceKey(string.Empty),
             blob.LocalPath,
             blob.Sha256,
@@ -582,7 +582,7 @@ public sealed partial class ChatWindowViewModel :
         {
             _chatAttachmentsBeforeEditing = list.ToList();
             list.Clear();
-            list.AddRange(userChatMessage.Attachments.Where(a => a is not ChatVisualElementAttachment { IsElementValid: false }));
+            list.AddRange(userChatMessage.Attachments.Where(a => a is not VisualElementAttachment { IsElementValid: false }));
         });
     }
 
@@ -935,10 +935,10 @@ public sealed partial class ChatWindowViewModel :
         _chatAttachmentsSource.Edit(list =>
         {
             // Remove existing text selection attachment
-            list.RemoveWhere(a => a is ChatTextSelectionAttachment);
+            list.RemoveWhere(a => a is TextSelectionAttachment);
 
             // Insert the new attachment at the beginning if it has text
-            if (!data.Text.IsNullOrEmpty()) list.Insert(0, new ChatTextSelectionAttachment(data.Text, data.Element));
+            if (!data.Text.IsNullOrEmpty()) list.Insert(0, new TextSelectionAttachment(data.Text, data.Element));
         });
     }
 

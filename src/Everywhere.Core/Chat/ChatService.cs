@@ -129,7 +129,7 @@ public sealed partial class ChatService(
         var visualElementAttachments = userChatMessage
             .Attachments
             .AsValueEnumerable()
-            .OfType<ChatVisualElementAttachment>()
+            .OfType<VisualElementAttachment>()
             .ToList();
 
         if (visualElementAttachments.Count == 0) return;
@@ -173,7 +173,7 @@ public sealed partial class ChatService(
                     foreach (var reference in userChatMessage
                                  .Attachments
                                  .AsValueEnumerable()
-                                 .OfType<ChatVisualElementAttachment>()
+                                 .OfType<VisualElementAttachment>()
                                  .Select(a => a.Element)
                                  .OfType<ResilientReference<IVisualElement>>())
                     {
@@ -459,7 +459,7 @@ public sealed partial class ChatService(
                     {
                         using var memoryStream = new MemoryStream(binaryContent.Data.Value.ToArray());
                         var blob = await blobStorage.StorageBlobAsync(memoryStream, binaryContent.MimeType, cancellationToken);
-                        EnsureSpan<AssistantChatMessageImageSpan>(true).ImageOutput = new ChatFileAttachment(
+                        EnsureSpan<AssistantChatMessageImageSpan>(true).ImageOutput = new FileAttachment(
                             new DynamicResourceKey(string.Empty),
                             blob.LocalPath,
                             blob.Sha256,

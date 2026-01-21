@@ -52,7 +52,7 @@ public partial class VisualTreeBuilder(
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static IReadOnlyDictionary<int, IVisualElement> BuildAndPopulate(
-        IReadOnlyList<ChatVisualElementAttachment> attachments,
+        IReadOnlyList<VisualElementAttachment> attachments,
         int approximateTokenLimit,
         int startingId,
         VisualTreeDetailLevel detailLevel,
