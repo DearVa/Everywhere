@@ -50,6 +50,7 @@
     <PackageReference Include="Serilog.Sinks.File"/>
     <PackageReference Include="System.Drawing.Common"/>
     <PackageReference Include="Tavily"/>
+    <PackageReference Include="Maa.Framework"/>
   </ItemGroup>
 
   <ItemGroup>

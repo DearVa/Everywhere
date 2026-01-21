@@ -48,6 +48,7 @@ public static class Program
                 .AddSingleton<INativeHelper, NativeHelper>()
                 .AddSingleton<IWindowHelper, WindowHelper>()
                 .AddSingleton<ISoftwareUpdater, SoftwareUpdater>()
+                .AddSingleton<IOcrService, MaaOcrService>()
                 .AddSettings()
                 .AddWatchdogManager()
                 .ConfigureNetwork()
