@@ -19,10 +19,20 @@
         <Button
           Classes="Ghost" Width="24"
           Height="24" Padding="0"
-          Click="HandlePickElementButtonClicked">
+          Click="HandlePickElementButtonClicked"
+          ToolTip.Tip="Pick Element">
           <LucideIcon
             HorizontalAlignment="Center" VerticalAlignment="Center"
             Kind="SquareMousePointer" Size="18"/>
+        </Button>
+        <Button
+          Classes="Ghost" Width="24"
+          Height="24" Padding="0"
+          Click="HandleOcrButtonClicked"
+          ToolTip.Tip="OCR Recognition">
+          <LucideIcon
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            Kind="ScanText" Size="18"/>
         </Button>
       </StackPanel>
     </Border>
@@ -46,67 +56,85 @@
       </TreeView.ItemTemplate>
     </TreeView>
 
-    <Grid
-      Grid.Row="1" Grid.Column="2"
-      Margin="4,0" RowDefinitions="4*,1,Auto,*">
-      <ScrollViewer
-        Grid.Row="0" HorizontalScrollBarVisibility="Disabled"
-        VerticalScrollBarVisibility="Auto">
-        <ItemsControl x:Name="PropertyItemsControl">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate DataType="v:VisualElementProperty">
-              <StackPanel
-                Margin="0,0,0,8" Orientation="Vertical"
-                Spacing="4">
-                <TextBlock
-                  FontSize="16"
-                  Text="{Binding Name}"
-                  TextWrapping="Wrap"/>
+    <TabControl
+      x:Name="RightTabControl" Grid.Row="1"
+      Grid.Column="2" Margin="4,0">
+      <TabItem Header="Properties">
+        <Grid RowDefinitions="4*,1,Auto,*">
+          <ScrollViewer
+            Grid.Row="0" HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="PropertyItemsControl">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="v:VisualElementProperty">
+                  <StackPanel
+                    Margin="0,0,0,8" Orientation="Vertical"
+                    Spacing="4">
+                    <TextBlock
+                      FontSize="16"
+                      Text="{Binding Name}"
+                      TextWrapping="Wrap"/>
 
-                <TextBox
-                  AcceptsReturn="True"
-                  IsReadOnly="{Binding IsReadOnly}"
-                  MaxLines="5"
-                  Text="{Binding Value, Mode=TwoWay}"
-                  TextWrapping="Wrap"/>
-              </StackPanel>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </ScrollViewer>
+                    <TextBox
+                      AcceptsReturn="True"
+                      IsReadOnly="{Binding IsReadOnly}"
+                      MaxLines="5"
+                      Text="{Binding Value, Mode=TwoWay}"
+                      TextWrapping="Wrap"/>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
 
-      <GridSplitter
-        Grid.Row="1" Height="3"
-        Background="Transparent"/>
-      <Border
-        Grid.Row="1" Height="1"
-        Background="{DynamicResource BorderColor}"
-        IsHitTestVisible="False"/>
+          <GridSplitter
+            Grid.Row="1" Height="3"
+            Background="Transparent"/>
+          <Border
+            Grid.Row="1" Height="1"
+            Background="{DynamicResource BorderColor}"
+            IsHitTestVisible="False"/>
 
-      <DockPanel Grid.Row="2">
-        <Button
-          DockPanel.Dock="Right" Click="HandleBuildXmlButtonClicked"
-          Content="Build XML"/>
-        <TextBox
-          x:Name="TokenLimitTextBox" Text="8000"
-          Watermark="Token limit"/>
-      </DockPanel>
+          <DockPanel Grid.Row="2">
+            <Button
+              DockPanel.Dock="Right" Click="HandleBuildXmlButtonClicked"
+              Content="Build XML"/>
+            <TextBox
+              x:Name="TokenLimitTextBox" Text="8000"
+              Watermark="Token limit"/>
+          </DockPanel>
 
-      <Button
-        Grid.Row="3" Click="HandleCaptureButtonClicked"
-        Cursor="Hand">
-        <Panel>
+          <Button
+            Grid.Row="3" Click="HandleCaptureButtonClicked"
+            Cursor="Hand">
+            <Panel>
+              <TextBlock
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="Click to Capture"/>
+              <Image x:Name="CaptureImage">
+                <ToolTip.Tip>
+                  <Image Source="{Binding $parent[Image].Source}"/>
+                </ToolTip.Tip>
+              </Image>
+            </Panel>
+          </Button>
+        </Grid>
+      </TabItem>
+      <TabItem Header="OCR">
+        <Grid RowDefinitions="Auto,*">
           <TextBlock
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            Text="Click to Capture"/>
-          <Image x:Name="CaptureImage">
-            <ToolTip.Tip>
-              <Image Source="{Binding $parent[Image].Source}"/>
-            </ToolTip.Tip>
-          </Image>
-        </Panel>
-      </Button>
-    </Grid>
+            x:Name="OcrTimeTextBlock" Grid.Row="0"
+            Margin="0,4" FontWeight="Bold"/>
+          <ScrollViewer
+            Grid.Row="1" HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto">
+            <SelectableTextBlock
+              x:Name="OcrResultTextBlock" FontFamily="Cascadia Code,Consolas,Monospace"
+              TextWrapping="NoWrap"/>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+    </TabControl>
 
     <GridSplitter
       Grid.Row="1" Grid.Column="1"

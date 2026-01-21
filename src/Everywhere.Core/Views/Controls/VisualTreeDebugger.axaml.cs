@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -23,6 +25,7 @@ public partial class VisualTreeDebugger : UserControl
 {
     private readonly IVisualElementContext _visualElementContext;
     private readonly IWindowHelper _windowHelper;
+    private readonly IOcrService _ocrService;
     private readonly ObservableCollection<IVisualElement> _rootElements = [];
     private readonly IReadOnlyList<VisualElementProperty> _properties = typeof(DebuggerVisualElement)
         .GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -33,10 +36,12 @@ public partial class VisualTreeDebugger : UserControl
     public VisualTreeDebugger(
         IShortcutListener shortcutListener,
         IVisualElementContext visualElementContext,
-        IWindowHelper windowHelper)
+        IWindowHelper windowHelper,
+        IOcrService ocrService)
     {
         _visualElementContext = visualElementContext;
         _windowHelper = windowHelper;
+        _ocrService = ocrService;
 
         InitializeComponent();
 
@@ -136,6 +141,59 @@ public partial class VisualTreeDebugger : UserControl
             CaptureImage.Source = null;
             Debug.WriteLine(ex);
         }
+    }
+
+    private async void HandleOcrButtonClicked(object? sender, RoutedEventArgs e)
+    {
+        var window = TopLevel.GetTopLevel(this) as Window;
+        if (window is not null) _windowHelper.SetCloaked(window, true);
+
+        try
+        {
+            // Pick element for OCR
+            var element = await _visualElementContext.PickElementAsync(ElementPickMode.Element);
+            if (element == null)
+            {
+                if (window is not null) _windowHelper.SetCloaked(window, false);
+                return;
+            }
+
+            // Immediately show window after picking
+            if (window is not null) _windowHelper.SetCloaked(window, false);
+
+            // Capture screenshot
+            var bitmap = await element.CaptureAsync(CancellationToken.None);
+            CaptureImage.Source = bitmap;
+
+            // Run OCR in background
+            var sw = Stopwatch.StartNew();
+            var result = await _ocrService.RecognizeAsync(bitmap, CancellationToken.None);
+            sw.Stop();
+
+            if (result == null)
+            {
+                Debug.WriteLine("OCR returned null result");
+                return;
+            }
+
+            // Display result in UI
+            var resultJson = JsonSerializer.Serialize(result, new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            });
+            OcrResultTextBlock.Text = resultJson;
+            OcrTimeTextBlock.Text = $"OCR Time: {sw.ElapsedMilliseconds} ms";
+
+            // Switch to OCR tab
+            RightTabControl.SelectedIndex = 1;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"OCR failed: {ex}");
+        }
+
+        if (window is not null) _windowHelper.SetCloaked(window, false);
     }
 
     private async void HandleBuildXmlButtonClicked(object? sender, RoutedEventArgs e)
