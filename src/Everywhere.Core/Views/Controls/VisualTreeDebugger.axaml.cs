@@ -151,7 +151,7 @@ public partial class VisualTreeDebugger : UserControl
         try
         {
             // Pick element for OCR
-            var element = await _visualElementContext.PickElementAsync(ElementPickMode.Element);
+            var element = await _visualElementContext.PickElementAsync(ScreenSelectionMode.Element);
             if (element == null)
             {
                 if (window is not null) _windowHelper.SetCloaked(window, false);
