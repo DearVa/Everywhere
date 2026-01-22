@@ -19,6 +19,7 @@ public static partial class X11Native
         Clip = 1,
         Input = 2
     }
+    [LibraryImport(LibX11)] internal static partial void XConvertSelection(IntPtr display, Atom selection, Atom target, Atom property, X11Window requestor, uint time);
     [LibraryImport(LibX11)] internal static partial IntPtr XGetWMHints(IntPtr display, X11Window window);
     [LibraryImport(LibX11)] internal static partial void XSetWMHints(IntPtr display, X11Window window, ref XWMHints hints);
     [LibraryImport(LibX11)] internal static partial int XScreenCount(IntPtr display);
@@ -35,6 +36,140 @@ public static partial class X11Native
     [LibraryImport(LibXFixes)] internal static partial void XFixesDestroyRegion(IntPtr display, IntPtr region);
     [LibraryImport(LibXFixes)] internal static partial void XFixesSetWindowShapeRegion(IntPtr display, X11Window window, int shapeKind, int xOffset, int yOffset, IntPtr region);
     [LibraryImport(LibXFixes)] internal static partial int XFixesQueryExtension(IntPtr display, out int eventBase, out int errorBase);
+    [LibraryImport(LibXFixes)] internal static partial void XFixesSelectSelectionInput(IntPtr display, X11Window window, Atom selection, uint eventMask);
+
+    public const string LibXi = "libXi.so.6";
+    [LibraryImport(LibXi)] internal static partial int XIQueryVersion(IntPtr display, ref int major, ref int minor);
+    [LibraryImport(LibXi)] internal static partial int XISelectEvents(IntPtr display, X11Window window, XIEventMask[] masks, int numMasks);
+    [LibraryImport(LibXi)] internal static partial int XIGetEventData(IntPtr display, IntPtr cookie);
+    [LibraryImport(LibXi)] internal static partial void XIFreeEventData(IntPtr display, IntPtr cookie);
+    [LibraryImport(LibXi)] internal static partial int XIQueryExtension(IntPtr display, out int opcode, out int eventBase, out int errorBase);
+
+    public const int XI_AllDevices = 0;
+    public const int XI_AllMasterDevices = 1;
+
+    public const int XI_ButtonPress = 4;
+    public const int XI_ButtonRelease = 5;
+
+    public const int XFixesSelectionNotify = 0;
+    public const uint XFixesSetSelectionOwnerNotifyMask = 1 << 0;
+
+    public enum XFixesSelectionEventMask : ulong
+    {
+        SetSelectionOwnerMask = 1 << 0,
+        SelectionWindowDestroyMask = 1 << 1,
+        SelectionClientCloseMask = 1 << 2
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIEventMask
+    {
+        public int deviceid;
+        public int mask_len;
+        public IntPtr mask;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIButtonState
+    {
+        public int mask_len;
+        public IntPtr mask;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIValuatorState
+    {
+        public int mask_len;
+        public IntPtr mask;
+        public IntPtr values;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIModifierState
+    {
+        public int @base;
+        public int latched;
+        public int locked;
+        public int effective;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIGroupState
+    {
+        public int @base;
+        public int latched;
+        public int locked;
+        public int effective;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XIDeviceEvent
+    {
+        public int type;
+        public ulong serial;
+        public int send_event;
+        public IntPtr display;
+        public int extension;
+        public int evtype;
+        public uint time;
+        public int deviceid;
+        public int sourceid;
+        public int detail;
+        public X11Window root;
+        public X11Window event_window;
+        public X11Window child;
+        public double root_x;
+        public double root_y;
+        public double event_x;
+        public double event_y;
+        public int flags;
+        public XIButtonState buttons;
+        public XIValuatorState valuators;
+        public XIModifierState mods;
+        public XIGroupState group;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XGenericEventCookie
+    {
+        public int type;
+        public ulong serial;
+        public int send_event;
+        public IntPtr display;
+        public int extension;
+        public int evtype;
+        public uint cookie;
+        public IntPtr data;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XFixesSelectionNotifyEvent
+    {
+        public int type;
+        public ulong serial;
+        public int send_event;
+        public IntPtr display;
+        public X11Window window;
+        public Atom selection;
+        public X11Window owner;
+        public Atom subtype;
+        public uint time;
+        public uint selection_time;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct XSelectionEvent
+    {
+        public int type;
+        public ulong serial;
+        public int send_event;
+        public IntPtr display;
+        public X11Window requestor;
+        public Atom selection;
+        public Atom target;
+        public Atom property;
+        public uint time;
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct XSetWindowAttributes

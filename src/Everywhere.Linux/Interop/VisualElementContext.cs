@@ -40,6 +40,8 @@ public partial class VisualElementContext(
         }
     }
 
+    public IEnumerable<IVisualElement> Screens => backend.Screens;
+
     private readonly AtspiService _atspi = new(backend);
 
     public IVisualElement? ElementFromPoint(PixelPoint point, ScreenSelectionMode mode = ScreenSelectionMode.Element)
@@ -106,4 +108,8 @@ public partial class VisualElementContext(
         return result;
     }
 
+    public IDisposable Subscribe(IObserver<TextSelectionData> observer)
+    {
+        return backend.Subscribe(observer);
+    }
 }

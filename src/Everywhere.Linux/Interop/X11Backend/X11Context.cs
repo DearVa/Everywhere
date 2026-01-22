@@ -21,6 +21,7 @@ public sealed class X11Context : IDisposable
     
     public IntPtr Display { get; private set; }
     public X11Window RootWindow { get; private set; }
+    public X11Window MessageWindow { get; private set; }
     public AtomCache AtomCache { get; private set; } = null!;
     private  IEnumerable<string> PredefinedAtoms = new[]
     {
@@ -71,6 +72,7 @@ public sealed class X11Context : IDisposable
 
         AtomCache = new AtomCache(Display, PredefinedAtoms);
         RootWindow = Xlib.XDefaultRootWindow(Display);
+        MessageWindow = Xlib.XCreateSimpleWindow(Display, RootWindow, -10, -10, 1, 1, 0, 0, 0);
 
         // Select key events on root window
         Xlib.XSelectInput(

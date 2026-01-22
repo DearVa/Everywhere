@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -25,6 +26,7 @@ public sealed class X11WindowBackend : IWindowBackend, IEventHelper
     public X11InputHandler InputHandler { get; }
     public X11WindowManager WindowManager { get; }
     public X11Screenshot Screenshot { get; }
+    public X11SelectionHandler SelectionHandler { get; }
 
     public X11WindowBackend(ILogger<X11WindowBackend> logger)
     {
@@ -42,6 +44,7 @@ public sealed class X11WindowBackend : IWindowBackend, IEventHelper
         InputHandler = new X11InputHandler(logger, Context, CoreServices);
         WindowManager = new X11WindowManager(logger, Context, CoreServices);
         Screenshot = new X11Screenshot(logger, Context, CoreServices);
+        SelectionHandler = new X11SelectionHandler(logger, Context, CoreServices);
     }
 
     ~X11WindowBackend()
@@ -166,5 +169,14 @@ public sealed class X11WindowBackend : IWindowBackend, IEventHelper
     public void SendKeyboardShortcut(KeyboardShortcut shortcut)
     {
         InputHandler.SendKeyboardShortcut(shortcut);
+    }
+
+    public IEnumerable<IVisualElement> Screens => new[] { GetScreenElement() };
+
+    public IDisposable Subscribe(IObserver<TextSelectionData> observer)
+    {
+        return SelectionHandler
+            .Select(text => new TextSelectionData(text, GetFocusedWindowElement()))
+            .Subscribe(observer);
     }
 }

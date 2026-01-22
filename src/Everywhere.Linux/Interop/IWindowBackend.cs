@@ -8,7 +8,7 @@ namespace Everywhere.Linux.Interop;
 /// <summary>
 /// Abstract display backend contract (X11[Xorg] / Wayland Compositor / other).
 /// </summary>
-public interface IWindowBackend : IWindowHelper
+public interface IWindowBackend : IWindowHelper, IObservable<TextSelectionData>
 {
     void SendKeyboardShortcut(KeyboardShortcut shortcut);
 
@@ -21,6 +21,8 @@ public interface IWindowBackend : IWindowHelper
     IVisualElement? GetWindowElementByInfo(int pid, PixelRect rect);
 
     IVisualElement GetScreenElement();
+
+    IEnumerable<IVisualElement> Screens { get; }
 
     /// <summary>
     /// Capture screen bitmap of window within rect
