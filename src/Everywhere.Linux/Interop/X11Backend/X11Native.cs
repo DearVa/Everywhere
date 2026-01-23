@@ -41,9 +41,8 @@ public static partial class X11Native
     public const string LibXi = "libXi.so.6";
     [LibraryImport(LibXi)] internal static partial int XIQueryVersion(IntPtr display, ref int major, ref int minor);
     [LibraryImport(LibXi)] internal static partial int XISelectEvents(IntPtr display, X11Window window, XIEventMask[] masks, int numMasks);
-    [LibraryImport(LibXi)] internal static partial int XIGetEventData(IntPtr display, IntPtr cookie);
-    [LibraryImport(LibXi)] internal static partial void XIFreeEventData(IntPtr display, IntPtr cookie);
-    [LibraryImport(LibXi)] internal static partial int XIQueryExtension(IntPtr display, out int opcode, out int eventBase, out int errorBase);
+    [LibraryImport(LibX11)] internal static partial int XGetEventData(IntPtr display, IntPtr cookie);
+    [LibraryImport(LibX11)] internal static partial void XFreeEventData(IntPtr display, IntPtr cookie);
 
     public const int XI_AllDevices = 0;
     public const int XI_AllMasterDevices = 1;
@@ -150,9 +149,9 @@ public static partial class X11Native
         public int send_event;
         public IntPtr display;
         public X11Window window;
-        public Atom selection;
-        public X11Window owner;
         public Atom subtype;
+        public X11Window owner;
+        public Atom selection;
         public uint time;
         public uint selection_time;
     }

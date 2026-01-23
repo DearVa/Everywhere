@@ -41,29 +41,30 @@ public sealed class X11SelectionHandler : IObservable<string>, IDisposable
             }
 
             // Initialize XInput2
-            if (X11Native.XIQueryExtension(_context.Display, out _xiOpcode, out _, out _) != 0)
+            int major = 2, minor = 0;
+            if (X11Native.XIQueryVersion(_context.Display, ref major, ref minor) == 0)
             {
-                int major = 2, minor = 0;
-                if (X11Native.XIQueryVersion(_context.Display, ref major, ref minor) == 0)
-                {
-                    var mask = new byte[4]; // Enough for XI_ButtonRelease (5)
+                var mask = new byte[4]; // Enough for XI_ButtonRelease (5)
                     mask[XI_ButtonPress / 8] |= (byte)(1 << (XI_ButtonPress % 8));
                     mask[XI_ButtonRelease / 8] |= (byte)(1 << (XI_ButtonRelease % 8));
 
-                    unsafe
+                unsafe
+                {
+                    fixed (byte* pMask = mask)
                     {
-                        fixed (byte* pMask = mask)
+                        var evMask = new X11Native.XIEventMask
                         {
-                            var evMask = new X11Native.XIEventMask
-                            {
-                                deviceid = X11Native.XI_AllMasterDevices,
-                                mask_len = mask.Length,
-                                mask = (IntPtr)pMask
-                            };
-                            X11Native.XISelectEvents(_context.Display, _context.RootWindow, new[] { evMask }, 1);
-                        }
+                            deviceid = X11Native.XI_AllMasterDevices,
+                            mask_len = mask.Length,
+                            mask = (IntPtr)pMask
+                        };
+                        X11Native.XISelectEvents(_context.Display, _context.RootWindow, new[] { evMask }, 1); 
                     }
                 }
+            }
+            else
+            {
+                _logger.LogWarning("XInput2 not supported, current version:{major}.{minor}", major, minor);
             }
 
             _context.XEventReceived += OnXEvent;
@@ -99,7 +100,7 @@ public sealed class X11SelectionHandler : IObservable<string>, IDisposable
         else if (type == GenericEvent)
         {
             var cookie = Marshal.PtrToStructure<X11Native.XGenericEventCookie>(evPtr);
-            if (cookie.extension == _xiOpcode && X11Native.XIGetEventData(_context.Display, evPtr) != 0)
+            if (cookie.extension == _xiOpcode && X11Native.XGetEventData(_context.Display, evPtr) != 0)
             {
                 try
                 {
@@ -129,7 +130,7 @@ public sealed class X11SelectionHandler : IObservable<string>, IDisposable
                 }
                 finally
                 {
-                    X11Native.XIFreeEventData(_context.Display, evPtr);
+                    X11Native.XFreeEventData(_context.Display, evPtr);
                 }
             }
         }
