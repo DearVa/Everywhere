@@ -28,6 +28,7 @@ if [[ "$BUILD_PROJECT" == "true" ]]; then
     fi
     echo "Building project for runtime '$RUNTIME_ARCH'..."
     dotnet clean Everywhere.Linux.slnf -c Release
+    dotnet restore Everywhere.Linux.slnf
     dotnet publish Everywhere.Linux.slnf -c Release -r "$RUNTIME_ARCH" -o "$PUBLISH_DIR" /p:Version="$VERSION"
 fi
 
