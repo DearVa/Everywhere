@@ -2045,4 +2045,22 @@
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>{0} 個のファイルが見つかりました</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>bash スクリプトを実行する能力を提供し、システムと直接対話できます。ただし、予期しないファイルの削除やシステムのクラッシュを引き起こすリスクもあります。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>ユーザーはbashスクリプトの実行を拒否しました。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>bash スクリプトの実行に失敗しました：{0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>スクリプトの実行</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>以下のbashスクリプトが実行されます</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash シェル</value>
+    </data>
 </root>

@@ -2045,4 +2045,22 @@
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>找到 {0} 個檔案</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>提供執行 bash 腳本的能力，允許直接與系統互動。然而，這也存在風險，可能導致意外文件刪除或系統崩潰。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>用戶拒絕了執行 bash 腳本的許可。</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>bash 腳本執行失敗：{0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>執行腳本</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>以下 bash 腳本將被執行</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash Shell</value>
+    </data>
 </root>

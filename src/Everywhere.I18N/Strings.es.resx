@@ -2045,4 +2045,22 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>Encontrados {0} archivos</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>Proporciona la capacidad de ejecutar scripts bash, permitiendo la interacción directa con el sistema. Sin embargo, esto también conlleva riesgos, como la posible eliminación accidental de archivos o fallos del sistema.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>El usuario ha denegado el permiso para ejecutar el script bash.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Error al ejecutar el script bash: {0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>Ejecutar Script</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>El siguiente script bash será ejecutado</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash Shell</value>
+    </data>
 </root>

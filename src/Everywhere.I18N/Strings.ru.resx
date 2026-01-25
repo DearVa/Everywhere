@@ -2045,4 +2045,22 @@
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>Найдено {0} файлов</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>Предоставляет возможность выполнения bash-скриптов, позволяя взаимодействовать с системой напрямую. Однако это также связано с рисками, которые могут привести к случайному удалению файлов или сбоям системы.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Пользователь отказал в разрешении на выполнение bash-скрипта.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Ошибка выполнения bash-скрипта: {0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>Выполнение скрипта</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Следующий bash-скрипт будет выполнен</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash Shell</value>
+    </data>
 </root>

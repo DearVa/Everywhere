@@ -2045,4 +2045,22 @@
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>{0}개의 파일을 찾았습니다</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>bash 스크립트를 실행할 수 있는 기능을 제공하며, 시스템과 직접 상호작용할 수 있습니다. 그러나 이로 인해 예기치 않은 파일 삭제나 시스템 충돌이 발생할 위험이 있습니다.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>사용자가 bash 스크립트 실행 허가를 거부했습니다.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>bash 스크립트 실행 실패: {0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>스크립트 실행</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>다음 bash 스크립트가 실행됩니다</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash 셸</value>
+    </data>
 </root>

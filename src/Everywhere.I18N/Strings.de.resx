@@ -2042,4 +2042,22 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="Linux_BuiltInChatPlugin_FdFind_SearchFiles_DetailMessage" xml:space="preserve">
         <value>Gefunden {0} Dateien</value>
     </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Description" xml:space="preserve">
+        <value>Bietet die Möglichkeit, Bash-Skripte auszuführen und direkt mit dem System zu interagieren. Dies birgt jedoch Risiken, die zu versehentlichen Dateilöschungen oder Systemabstürzen führen können.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_DenyMessage" xml:space="preserve">
+        <value>Der Benutzer hat die Erlaubnis zur Ausführung des Bash-Skripts verweigert.</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ErrorMessage" xml:space="preserve">
+        <value>Ausführung des Bash-Skripts fehlgeschlagen: {0}</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_Header" xml:space="preserve">
+        <value>Skript Ausführen</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_ExecuteScript_ScriptConsent_Header" xml:space="preserve">
+        <value>Das folgende Bash-Skript wird ausgeführt</value>
+    </data>
+    <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
+        <value>Bash-Shell</value>
+    </data>
 </root>
