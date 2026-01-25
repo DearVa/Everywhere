@@ -2060,4 +2060,10 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>Veri ayrıştırılırken hata oluştu.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>Araç çağrılırken hata oluştu.</value>
+    </data>
 </root>

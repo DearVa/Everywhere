@@ -2063,4 +2063,10 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>Error al analizar los datos.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>Error al invocar la herramienta.</value>
+    </data>
 </root>
