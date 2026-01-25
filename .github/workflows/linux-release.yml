@@ -69,6 +69,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y squashfs-tools libfuse2
 
+    - name: Create Archive
+      run: |
+        sudo apt-get update && sudo apt-get install -y zstd
+        tar -I 'zstd -19 -T0' -cf Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst -C ./publish .
+
     - name: Build AppImage
       run: |
         chmod +x build-appimage.sh
@@ -80,3 +85,4 @@ jobs:
         files: |
           Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
           Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst
