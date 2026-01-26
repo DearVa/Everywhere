@@ -69,9 +69,17 @@ jobs:
         chmod +x build-appimage.sh
         ./build-appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
 
+    - name: Create Archive
+      run: |
+        sudo apt-get update && sudo apt-get install -y zstd
+        tar -I 'zstd -19 -T0' -cf Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst -C ./publish .
+
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v2
       with:
         files: |
           Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
           Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst
+        append_body: true
+        make_latest: true
