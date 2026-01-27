@@ -11,11 +11,14 @@ provides=('everywhere')
 conflicts=('everywhere')
 
 _filename="Everywhere-Linux-x64-v${pkgver}.tar.zst"
+_iconfile="Everywhere-icon.png"
 
 source=("${url}/releases/download/v${pkgver}/${_filename}"
-        "https://raw.githubusercontent.com/pasical/Everywhere/main/LICENSE")
+        "https://raw.githubusercontent.com/DearVa/Everywhere/main/LICENSE"
+        "https://media.githubusercontent.com/media/DearVa/Everywhere/refs/heads/main/img/Everywhere-icon.png")
 
 sha256sums=('SKIP'
+           'SKIP'
            'SKIP')
 
 package() {
@@ -26,10 +29,22 @@ package() {
     mkdir -p "${pkgdir}/usr/bin"
     ln -s "/opt/Everywhere/Everywhere" "${pkgdir}/usr/bin/Everywhere"
     
-    if [ -f "${pkgdir}/opt/Everywhere/Everywhere.desktop" ]; then
-        mkdir -p "${pkgdir}/usr/share/applications"
-        cp "${pkgdir}/opt/Everywhere/Everywhere.desktop" "${pkgdir}/usr/share/applications/"
-    fi  
+    mkdir -p "${pkgdir}/usr/share/applications"
+    cat > "${pkgdir}/usr/share/applications/Everywhere.desktop" << EOF
+[Desktop Entry]
+Name=Everywhere
+Comment=A context-aware AI assistant for your desktop.
+Exec=/usr/bin/Everywhere
+X-KDE-StartupNotify=true
+Icon=Everywhere
+Type=Application
+Terminal=false
+Categories=Utility
+Keywords=AI;tool;
+EOF
+    
+    mkdir -p "${pkgdir}/usr/share/pixmaps"
+    cp "${srcdir}/${_iconfile}" "${pkgdir}/usr/share/pixmaps/Everywhere.png"
     
     mkdir -p "${pkgdir}/usr/share/licenses/everywhere"
     if [ -f "${srcdir}/LICENSE" ]; then
