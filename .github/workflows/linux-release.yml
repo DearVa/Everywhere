@@ -57,12 +57,22 @@ jobs:
 
     - name: Publish
       run: |
-        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }} -p:SentryDsn=${{ secrets.SENTRY_DSN }}
+        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }} --self-contained true --no-restore -p:SentryDsn=${{ secrets.SENTRY_DSN }}
 
     - name: Build Deb Package
       run: |
         chmod +x ./src/Everywhere.Linux/packaging_deb.sh
         ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+
+    - name: Install AppImage Build Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y squashfs-tools libfuse2
+
+    - name: Create Archive
+      run: |
+        sudo apt-get update && sudo apt-get install -y zstd
+        tar -I 'zstd -19 -T0' -cf Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst -C ./publish .
 
     - name: Build AppImage
       run: |
@@ -75,5 +85,4 @@ jobs:
         files: |
           Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
           Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage
-        append_body: true
-        make_latest: true
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst
