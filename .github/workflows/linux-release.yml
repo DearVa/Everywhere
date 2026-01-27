@@ -58,11 +58,14 @@ jobs:
     - name: Publish
       run: |
         dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }} --self-contained true --no-restore -p:SentryDsn=${{ secrets.SENTRY_DSN }}
+          mkdir -p ./publish/img
+          cp ./img/Everywhere-icon.png ./publish/img/
+          cp ./LICENSE ./publish/
 
     - name: Build Deb Package
       run: |
-        chmod +x ./src/Everywhere.Linux/packaging_deb.sh
-        ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+        chmod +x ./packaging_deb.sh
+        ./packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
 
     - name: Install AppImage Build Dependencies
       run: |
