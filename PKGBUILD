@@ -10,7 +10,7 @@ depends=('dotnet-runtime' 'fontconfig' 'libx11' 'libice' 'libsm' 'hicolor-icon-t
 provides=('everywhere')
 conflicts=('everywhere')
 
-_filename="Everywhere-Linux-x64-v${pkgver}.deb"
+_filename="Everywhere-Linux-x64-v${pkgver}.tar.zst"
 
 source=("${url}/releases/download/v${pkgver}/${_filename}"
         "https://raw.githubusercontent.com/pasical/Everywhere/main/LICENSE")
@@ -20,9 +20,8 @@ sha256sums=('SKIP'
 
 package() {
     cd "${srcdir}"
-    _deb_file="${startdir}/${_filename}"
-    bsdtar -xf "$_deb_file"
-    bsdtar -xf data.tar.* -C "${pkgdir}"
+    mkdir -p "${pkgdir}/opt/Everywhere"
+    bsdtar -xf "${_filename}" -C "${pkgdir}/opt/Everywhere"
     find "${pkgdir}" -type d -exec chmod 755 {} +
     mkdir -p "${pkgdir}/usr/bin"
     ln -s "/opt/Everywhere/Everywhere" "${pkgdir}/usr/bin/Everywhere"
