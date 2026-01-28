@@ -2060,4 +2060,10 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash-Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>Fehler beim Parsen der Daten.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>Fehler beim Aufrufen des Tools.</value>
+    </data>
 </root>

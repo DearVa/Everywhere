@@ -387,6 +387,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         }
         catch (Exception ex)
         {
+            ex = HandledSystemException.Handle(ex);
             _logger.LogError(ex, "Failed to load chat context {ChatContextId}", id);
 
             await Dispatcher.UIThread.InvokeOnDemandAsync(() =>

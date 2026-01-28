@@ -2063,4 +2063,10 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>Error parsing data.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>Error invoking tool.</value>
+    </data>
 </root>

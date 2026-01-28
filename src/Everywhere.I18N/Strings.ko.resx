@@ -2063,4 +2063,10 @@
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash 셸</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>데이터를 분석하는 중 오류가 발생했습니다.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>도구 호출 중 오류가 발생했습니다.</value>
+    </data>
 </root>

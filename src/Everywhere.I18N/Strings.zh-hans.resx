@@ -2064,4 +2064,10 @@
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>解析数据时出错。</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>工具调用时出错。</value>
+    </data>
 </root>

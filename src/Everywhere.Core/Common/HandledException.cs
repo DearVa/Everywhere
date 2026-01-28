@@ -4,7 +4,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security;
 using System.Security.Authentication;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using MessagePack;
 using Microsoft.SemanticKernel;
 using OllamaSharp.Models.Exceptions;
 
@@ -243,9 +245,14 @@ public enum HandledSystemExceptionType
     HostNotFound,
 
     /// <summary>
-    /// Semantic Kernel related exception.
+    /// Serialization related exception.
     /// </summary>
-    SemanticKernel,
+    Serialization,
+
+    /// <summary>
+    /// An error occurred while invoking a function or method.
+    /// </summary>
+    FunctionInvoking,
 }
 
 /// <summary>
@@ -303,6 +310,8 @@ public class HandledSystemException : HandledException
                 HandledSystemExceptionType.SSLConnectionError => LocaleKey.HandledSystemException_SSLConnectionError,
                 HandledSystemExceptionType.ConnectionRefused => LocaleKey.HandledSystemException_ConnectionRefused,
                 HandledSystemExceptionType.HostNotFound => LocaleKey.HandledSystemException_HostNotFound,
+                HandledSystemExceptionType.Serialization => LocaleKey.HandledSystemException_Serialization,
+                HandledSystemExceptionType.FunctionInvoking => LocaleKey.HandledSystemException_FunctionInvoking,
                 _ => LocaleKey.HandledSystemException_Unknown,
             }),
         isExpected)
@@ -571,6 +580,7 @@ public class HandledSystemException : HandledException
                 TimeoutException => HandledSystemExceptionType.Timeout,
                 NotSupportedException => HandledSystemExceptionType.NotSupported,
                 SecurityException => HandledSystemExceptionType.Security,
+                JsonException or MessagePackSerializationException => HandledSystemExceptionType.Serialization,
                 _ => null
             };
 
@@ -1118,7 +1128,7 @@ public sealed partial class HandledFunctionInvokingException : HandledSystemExce
         DynamicResourceKeyBase? customFriendlyMessageKey = null) : this(
         customException ?? MakeException(type, name),
         type,
-        HandledSystemExceptionType.SemanticKernel,
+        HandledSystemExceptionType.FunctionInvoking,
         customFriendlyMessageKey ?? MakeFriendlyMessageKey(type, name)) { }
 
     private static Exception MakeException(HandledFunctionInvokingExceptionType type, string name) => type switch

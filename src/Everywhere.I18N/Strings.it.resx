@@ -2063,4 +2063,10 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="Linux_BuiltInChatPlugin_Bash_Header" xml:space="preserve">
         <value>Bash Shell</value>
     </data>
+    <data name="HandledSystemException_Serialization" xml:space="preserve">
+        <value>Errore durante l'analisi dei dati.</value>
+    </data>
+    <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
+        <value>Errore durante la chiamata dello strumento.</value>
+    </data>
 </root>
