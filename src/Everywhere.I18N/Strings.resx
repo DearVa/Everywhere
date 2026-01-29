@@ -2070,6 +2070,6 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Error invoking tool.</value>
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
-        <value />
+        <value>Deep Thinking</value>
     </data>
 </root>
