@@ -22,6 +22,6 @@ body:
     attributes:
       label: 应用版本
       description: 输入你正在使用的版本
-      placeholder: 例如 1.0.0-alpha.1
+      placeholder: 例如 0.5.5
     validations:
       required: true

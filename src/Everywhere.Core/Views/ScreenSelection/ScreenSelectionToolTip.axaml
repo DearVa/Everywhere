@@ -1,0 +1,67 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:interop="clr-namespace:Everywhere.Interop" xmlns:v="clr-namespace:Everywhere.Views"
+  xmlns:vc="clr-namespace:Everywhere.ValueConverters">
+  <ControlTheme
+    x:Key="{x:Type v:ScreenSelectionToolTip}"
+    TargetType="v:ScreenSelectionToolTip">
+    <Setter Property="TextElement.Foreground" Value="{DynamicResource ForegroundColor}"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border
+          Padding="8,6"
+          Background="{DynamicResource AcrylicWindowBackgroundColor}">
+          <Border.CornerRadius>
+            <OnPlatform
+              x:TypeArguments="CornerRadius" Linux="0"
+              Windows="0" macOS="10"/>
+          </Border.CornerRadius>
+
+          <StackPanel Spacing="4">
+            <TextBlock
+              FontWeight="SemiBold"
+              Foreground="{DynamicResource PrimaryColor}"
+              IsVisible="{Binding Mode, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static interop:ScreenSelectionMode.Free}}"
+              Text="{TemplateBinding Header}"/>
+            <TextBlock
+              FontSize="12"
+              Foreground="{DynamicResource ForegroundColor}"
+              Text="{TemplateBinding TipText}"/>
+            <TextBlock
+              FontSize="12"
+              Foreground="{DynamicResource PrimaryColor}"
+              IsVisible="{Binding SizeInfo, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}"
+              Text="{TemplateBinding SizeInfo}"/>
+
+            <ListBox
+              Width="{Binding $parent[DockPanel].Bounds.Width}"
+              ItemsSource="{Binding AllowedModes, RelativeSource={RelativeSource TemplatedParent}}"
+              SelectedItem="{TemplateBinding Mode}">
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+              <ListBox.ItemContainerTheme>
+                <!--  ReSharper disable once Xaml.StaticResourceNotResolved  -->
+                <ControlTheme
+                  BasedOn="{StaticResource TabListBoxItemTheme}"
+                  TargetType="ListBoxItem">
+                  <Setter Property="Padding" Value="3"/>
+                  <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </ControlTheme>
+              </ListBox.ItemContainerTheme>
+              <ListBox.DataTemplates>
+                <DataTemplate DataType="interop:ScreenSelectionMode">
+                  <TextBlock
+                    HorizontalAlignment="Center"
+                    Text="{Binding Converter={x:Static vc:DynamicResourceKeyConverter.Shared}}"/>
+                </DataTemplate>
+              </ListBox.DataTemplates>
+            </ListBox>
+          </StackPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

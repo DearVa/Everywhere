@@ -1,28 +1,25 @@
-﻿using System.Reflection;
-using FlaUI.Core;
+﻿using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Identifiers;
 using FlaUI.Core.Patterns;
+using FlaUI.UIA3;
 using FlaUI.UIA3.Patterns;
-using AutomationElement = FlaUI.Core.AutomationElements.AutomationElement;
+using Interop.UIAutomationClient;
 
 namespace Everywhere.Windows.Interop;
 
 public static class AutomationExtension
 {
-    private delegate object InternalGetPatternDelegate(FrameworkAutomationElementBase element, int patternId, bool cached);
-
-    private readonly static InternalGetPatternDelegate InternalGetPatternMethod =
-        typeof(FrameworkAutomationElementBase)
-            .GetMethod("InternalGetPattern", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .CreateDelegate<InternalGetPatternDelegate>();
-
     extension(AutomationElement element)
     {
-        public T? TryGetPattern<T>(PatternId pattern) where T : class
+        private TPattern? TryGetPattern<TNativePattern, TPattern>(
+            PatternId pattern,
+            Func<UIA3FrameworkAutomationElement, TNativePattern, TPattern> transformer) where TPattern : class
         {
             try
             {
-                return InternalGetPatternMethod(element.FrameworkAutomationElement, pattern.Id, false) as T;
+                if (element.FrameworkAutomationElement is not UIA3FrameworkAutomationElement uia3Element) return null;
+                var result = uia3Element.NativeElement.GetCurrentPattern(pattern.Id);
+                return result is null ? null : transformer(uia3Element, (TNativePattern)result);
             }
             catch
             {
@@ -31,24 +28,45 @@ public static class AutomationExtension
         }
 
         public IValuePattern? TryGetValuePattern() =>
-            TryGetPattern<IValuePattern>(element, ValuePattern.Pattern);
+            TryGetPattern<IUIAutomationValuePattern, ValuePattern>(
+                element,
+                ValuePattern.Pattern,
+                (e, p) => new ValuePattern(e, p));
 
         public ITextPattern? TryGetTextPattern() =>
-            TryGetPattern<ITextPattern>(element, TextPattern.Pattern);
+            TryGetPattern<IUIAutomationTextPattern, TextPattern>(
+                element,
+                TextPattern.Pattern,
+                (e, p) => new TextPattern(e, p));
 
         public IInvokePattern? TryGetInvokePattern() =>
-            TryGetPattern<IInvokePattern>(element, InvokePattern.Pattern);
+            TryGetPattern<IUIAutomationInvokePattern, InvokePattern>(
+                element,
+                InvokePattern.Pattern,
+                (e, p) => new InvokePattern(e, p));
 
         public ITogglePattern? TryGetTogglePattern() =>
-            TryGetPattern<ITogglePattern>(element, TogglePattern.Pattern);
+            TryGetPattern<IUIAutomationTogglePattern, TogglePattern>(
+                element,
+                TogglePattern.Pattern,
+                (e, p) => new TogglePattern(e, p));
 
         public IExpandCollapsePattern? TryGetExpandCollapsePattern() =>
-            TryGetPattern<IExpandCollapsePattern>(element, ExpandCollapsePattern.Pattern);
+            TryGetPattern<IUIAutomationExpandCollapsePattern, ExpandCollapsePattern>(
+                element,
+                ExpandCollapsePattern.Pattern,
+                (e, p) => new ExpandCollapsePattern(e, p));
 
         public ISelectionItemPattern? TryGetSelectionItemPattern() =>
-            TryGetPattern<ISelectionItemPattern>(element, SelectionItemPattern.Pattern);
+            TryGetPattern<IUIAutomationSelectionItemPattern, SelectionItemPattern>(
+                element,
+                SelectionItemPattern.Pattern,
+                (e, p) => new SelectionItemPattern(e, p));
 
         public ILegacyIAccessiblePattern? TryGetLegacyIAccessiblePattern() =>
-            TryGetPattern<ILegacyIAccessiblePattern>(element, LegacyIAccessiblePattern.Pattern);
+            TryGetPattern<IUIAutomationLegacyIAccessiblePattern, LegacyIAccessiblePattern>(
+                element,
+                LegacyIAccessiblePattern.Pattern,
+                (e, p) => new LegacyIAccessiblePattern(e, p));
     }
 }

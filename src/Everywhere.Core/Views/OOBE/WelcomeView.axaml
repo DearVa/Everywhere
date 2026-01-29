@@ -1,17 +1,21 @@
-﻿<UserControl
+<UserControl
   x:Class="Everywhere.Views.WelcomeView" xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ai="clr-namespace:Everywhere.AI"
   xmlns:be="clr-namespace:Everywhere.Behaviors" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
-  xmlns:vm="clr-namespace:Everywhere.ViewModels" d:DesignHeight="450"
-  d:DesignWidth="800" x:DataType="vm:WelcomeViewModel"
-  mc:Ignorable="d">
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vm="clr-namespace:Everywhere.ViewModels"
+  d:DesignHeight="450" d:DesignWidth="800"
+  x:DataType="vm:WelcomeViewModel" mc:Ignorable="d">
   <Grid
     Width="800" MinHeight="600"
     Margin="0,0,0,16" ColumnDefinitions="Auto,*"
-    ColumnSpacing="8" RowDefinitions="44,*,200"
-    RowSpacing="8">
+    ColumnSpacing="8" RowSpacing="8">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="44"/>
+      <RowDefinition/>
+      <RowDefinition MinHeight="200"/>
+    </Grid.RowDefinitions>
+
     <Viewbox
       Grid.Row="1" Grid.Column="0"
       Width="36" Height="36"
@@ -19,11 +23,12 @@
       <ContentPresenter Content="{StaticResource AssistantAvatar}"/>
     </Viewbox>
 
-    <Carousel
+    <TransitioningContentControl
       Grid.Row="1" Grid.Column="1"
       Margin="0,8,32,0"
-      SelectedIndex="{Binding CurrentStep, Mode=OneWay}">
-      <Carousel.Styles>
+      Content="{Binding CurrentStep}"
+      IsTransitionReversed="{Binding IsPageTransitionReversed}">
+      <TransitioningContentControl.Styles>
         <Style Selector="ListBox.AssistantMessage">
           <Style Selector="^ TextBlock">
             <Setter Property="TextWrapping" Value="Wrap"/>
@@ -53,7 +58,7 @@
                 <Setter Property="Interaction.Behaviors">
                   <BehaviorCollectionTemplate>
                     <BehaviorCollection>
-                      <be:FadeInAnimationBehavior ItemDelayMultiplier="0:0:1.0"/>
+                      <be:FadeInAnimationBehavior ItemDelayMultiplier="0:0:0.6"/>
                     </BehaviorCollection>
                   </BehaviorCollectionTemplate>
                 </Setter>
@@ -76,220 +81,219 @@
             </Setter.Value>
           </Setter>
         </Style>
-      </Carousel.Styles>
+      </TransitioningContentControl.Styles>
 
-      <Carousel.PageTransition>
+      <TransitioningContentControl.PageTransition>
         <CompositePageTransition>
           <CrossFade
             FadeInEasing="CubicEaseInOut" FadeOutEasing="CubicEaseInOut"
             Duration="0:00:00.3"/>
         </CompositePageTransition>
-      </Carousel.PageTransition>
+      </TransitioningContentControl.PageTransition>
 
-      <Carousel.Items>
-        <ListBox Classes="AssistantMessage">
-          <TextBlock
-            Classes="Large"
-            Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message1}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message2}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message3}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message4}}"/>
-          <StackPanel
-            Orientation="Horizontal" Spacing="8">
+      <TransitioningContentControl.DataTemplates>
+        <DataTemplate DataType="vm:WelcomeViewModelIntroStep">
+          <ListBox Classes="AssistantMessage">
             <TextBlock
-              Margin="0,0,-8,0" VerticalAlignment="Center"
-              Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message5}}"/>
-            <HyperlinkButton
-              VerticalAlignment="Center"
-              Content="{I18N {x:Static LocaleKey.WelcomeView_OfficialDocsHyperlinkButton_Content}}"
-              NavigateUri="https://everywhere.sylinko.com"
-              TextElement.Foreground="{DynamicResource InfoColor}"/>
-            <HyperlinkButton
-              VerticalAlignment="Center"
-              Content="{I18N {x:Static LocaleKey.WelcomeView_DiscordHyperlinkButton_Content}}"
-              NavigateUri="https://discord.gg/5fyg6nE3yn"
-              TextElement.Foreground="{DynamicResource InfoColor}"/>
-            <HyperlinkButton
-              VerticalAlignment="Center"
-              Content="{I18N {x:Static LocaleKey.WelcomeView_QQGroupHyperlinkButton_Content}}"
-              NavigateUri="https://qm.qq.com/cgi-bin/qm/qr?k=wp9aDBBnLc7pYATqT99tB-N2ZP2ETmJC&amp;jump_from=webapi&amp;authKey=97qUJfsQoI70dUNcgBZ0C3HCZeiEn8inLT7pzg8x+KinbQwfIrHFu3dB2+aHMbRD"
-              TextElement.Foreground="{DynamicResource InfoColor}"/>
-          </StackPanel>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message6}}"/>
-        </ListBox>
+              Classes="Large"
+              Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message1}}"/>
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message2}}"/>
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message3}}"/>
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message4}}"/>
+            <StackPanel
+              Orientation="Horizontal" Spacing="8">
+              <TextBlock
+                Margin="0,0,-8,0" VerticalAlignment="Center"
+                Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message5}}"/>
+              <HyperlinkButton
+                VerticalAlignment="Center"
+                Content="{I18N {x:Static LocaleKey.WelcomeView_OfficialDocsHyperlinkButton_Content}}"
+                NavigateUri="https://everywhere.sylinko.com"
+                TextElement.Foreground="{DynamicResource InfoColor}"/>
+              <HyperlinkButton
+                VerticalAlignment="Center"
+                Content="{I18N {x:Static LocaleKey.WelcomeView_DiscordHyperlinkButton_Content}}"
+                NavigateUri="https://discord.gg/5fyg6nE3yn"
+                TextElement.Foreground="{DynamicResource InfoColor}"/>
+              <HyperlinkButton
+                VerticalAlignment="Center"
+                Content="{I18N {x:Static LocaleKey.WelcomeView_QQGroupHyperlinkButton_Content}}"
+                NavigateUri="https://qm.qq.com/cgi-bin/qm/qr?k=wp9aDBBnLc7pYATqT99tB-N2ZP2ETmJC&amp;jump_from=webapi&amp;authKey=97qUJfsQoI70dUNcgBZ0C3HCZeiEn8inLT7pzg8x+KinbQwfIrHFu3dB2+aHMbRD"
+                TextElement.Foreground="{DynamicResource InfoColor}"/>
+            </StackPanel>
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_IntroStep_Message6}}"/>
+          </ListBox>
+        </DataTemplate>
 
-        <ListBox Classes="AssistantMessage">
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_SelectModelProviderStep_Message1}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_SelectModelProviderStep_Message2}}"/>
-          <TextBlock
-            IsVisible="{Binding SelectedModelProvider, Converter={x:Static ObjectConverters.IsNotNull}}"
-            Text="{Binding SelectedModelProvider.DescriptionKey^, FallbackValue={x:Null}}"/>
-          <HyperlinkButton
-            Content="{I18N {x:Static LocaleKey.WelcomeView_SelectModelProviderStep_OfficialWebsiteHyperlinkButton_Content}}"
-            IsVisible="{Binding SelectedModelProvider, Converter={x:Static ObjectConverters.IsNotNull}}"
-            NavigateUri="{Binding SelectedModelProvider.OfficialWebsiteUri, FallbackValue={x:Null}}"/>
-        </ListBox>
+        <DataTemplate DataType="vm:WelcomeViewModelConfiguratorStep">
+          <ListBox Classes="AssistantMessage">
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_ConfiguratorStep_Message1}}"/>
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_ConfiguratorStep_Message2}}"/>
+            <v:ModelProviderConfiguratorSelector
+              CustomAssistant="{Binding ViewModel.Assistant, Mode=OneTime}"
+              IsSettingsVisible="False"/>
+          </ListBox>
+        </DataTemplate>
 
-        <ListBox Classes="AssistantMessage">
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message1}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message2}}"/>
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message3}}"/>
-            <HyperlinkButton
-              Content="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_HowToGetApiKeyHyperlinkButton_Content}}"
-              NavigateUri="{Binding SelectedModelProvider.ApiKeyHelpUri, FallbackValue={x:Null}}"/>
-          </StackPanel>
-          <TextBlock
-            Classes="Muted"
-            Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message4}}"/>
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message5}}"/>
-          <ComboBox
-            Margin="-10,-6" Background="Transparent"
-            BorderThickness="0"
-            ItemTemplate="{StaticResource {x:Type ai:ModelDefinitionTemplate}}"
-            ItemsSource="{Binding ModelDefinitions}"
-            SelectedItem="{Binding SelectedModelDefinition}"/>
-          <TextBlock
-            IsVisible="{Binding IsApiKeyValid}"
-            Text="{I18N {x:Static LocaleKey.WelcomeView_EnterApiKeyStep_Message6}}"/>
-        </ListBox>
+        <DataTemplate DataType="vm:WelcomeViewModelAssistantStep">
+          <Panel>
+            <ListBox
+              Classes="AssistantMessage"
+              IsVisible="{Binding ViewModel.Assistant.ConfiguratorType, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static ai:ModelProviderConfiguratorType.PresetBased}}">
+              <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_PresetBased_Message1}}"/>
+              <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_PresetBased_Message2}}"/>
+              <StackPanel
+                Orientation="Horizontal" Spacing="4">
+                <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_PresetBased_Message3}}"/>
+                <HyperlinkButton
+                  VerticalAlignment="Center"
+                  Content="{I18N {x:Static LocaleKey.WelcomeView_ModelProviderHyperlinkButton_Content}}"
+                  NavigateUri="https://everywhere.sylinko.com/model-provider/"
+                  TextElement.Foreground="{DynamicResource InfoColor}"/>
+              </StackPanel>
+              <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_PresetBased_Message4}}"/>
+              <TextBlock
+                IsVisible="{Binding ViewModel.IsConnectivityChecked}"
+                Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_PresetBased_Message5}}"/>
+            </ListBox>
 
-        <ListBox Classes="AssistantMessage">
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_ShortcutStep_Message1}}"/>
-          <v:KeyboardShortcutInputBox
-            MinWidth="160" MinHeight="32"
-            Margin="-10,-6" Background="Transparent"
-            BorderThickness="0"
-            Shortcut="{Binding Settings.ChatWindow.Shortcut, Mode=TwoWay}"/>
-          <TextBlock
-            Classes="Muted"
-            Text="{I18N {x:Static LocaleKey.WelcomeView_ShortcutStep_Message2}}"/>
-        </ListBox>
+            <ListBox
+              Classes="AssistantMessage"
+              IsVisible="{Binding ViewModel.Assistant.ConfiguratorType, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static ai:ModelProviderConfiguratorType.Advanced}}">
+              <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_Advanced_Message1}}"/>
+              <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_AssistantStep_Advanced_Message2}}"/>
+            </ListBox>
+          </Panel>
+        </DataTemplate>
 
-        <ListBox Classes="AssistantMessage">
-          <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_TelemetryStep_Message1}}"/>
-          <TextBlock
-            Classes="Muted"
-            Text="{I18N {x:Static LocaleKey.WelcomeView_TelemetryStep_Message2}}"/>
-        </ListBox>
-      </Carousel.Items>
-    </Carousel>
+        <DataTemplate DataType="vm:WelcomeViewModelShortcutStep">
+          <ListBox Classes="AssistantMessage">
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_ShortcutStep_Message1}}"/>
+            <v:KeyboardShortcutInputBox
+              MinWidth="160" MinHeight="32"
+              Margin="-10,-6" Background="Transparent"
+              BorderThickness="0"
+              Shortcut="{Binding ViewModel.Settings.ChatWindow.Shortcut, Mode=TwoWay}"/>
+            <TextBlock
+              Classes="Muted"
+              Text="{I18N {x:Static LocaleKey.WelcomeView_ShortcutStep_Message2}}"/>
+          </ListBox>
+        </DataTemplate>
 
-    <Carousel
+        <DataTemplate DataType="vm:WelcomeViewModelTelemetryStep">
+          <ListBox Classes="AssistantMessage">
+            <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_TelemetryStep_Message1}}"/>
+            <TextBlock
+              Classes="Muted"
+              Text="{I18N {x:Static LocaleKey.WelcomeView_TelemetryStep_Message2}}"/>
+          </ListBox>
+        </DataTemplate>
+      </TransitioningContentControl.DataTemplates>
+    </TransitioningContentControl>
+
+    <TransitioningContentControl
       Grid.Row="2" Grid.Column="0"
       Grid.ColumnSpan="2" Margin="32,8,32,0"
-      SelectedIndex="{Binding CurrentStep, Mode=OneWay}">
-      <Carousel.PageTransition>
+      Content="{Binding CurrentStep}">
+      <TransitioningContentControl.PageTransition>
         <CompositePageTransition>
           <PageSlide
             Orientation="Horizontal" SlideInEasing="CubicEaseInOut"
             SlideOutEasing="CubicEaseInOut" Duration="0:00:00.6"/>
         </CompositePageTransition>
-      </Carousel.PageTransition>
+      </TransitioningContentControl.PageTransition>
 
-      <Carousel.Items>
-        <Button
-          Classes="Primary" VerticalAlignment="Bottom"
-          Command="{Binding GoToSelectProviderStepCommand}"
-          Content="{I18N {x:Static LocaleKey.WelcomeView_LetsStartButton_Content}}"/>
-
-        <Grid
-          VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
-          ColumnSpacing="8" RowDefinitions="*,Auto"
-          RowSpacing="12">
-          <ListBox
-            Grid.Row="0" Grid.Column="0"
-            Grid.ColumnSpan="2" HorizontalAlignment="Center"
-            BorderThickness="0"
-            ItemsSource="{Binding ModelProviders}"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            SelectedItem="{Binding SelectedModelProvider}">
-            <ListBox.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel
-                  ItemSpacing="8" Orientation="Horizontal"/>
-              </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-
-            <ListBox.ItemTemplate>
-              <DataTemplate DataType="vm:WelcomeViewModel+ModelProviderWrapper">
-                <StackPanel Orientation="Horizontal">
-                  <Border CornerRadius="8">
-                    <Image
-                      Width="36" Height="36"
-                      md:AsyncImageLoader.Source="{Binding ProviderTemplate.IconUrl, FallbackValue={x:Null}}"/>
-                  </Border>
-
-                  <TextBlock
-                    Classes="Large" Margin="8,0,0,0"
-                    VerticalAlignment="Center"
-                    Text="{Binding ProviderTemplate.DisplayName, FallbackValue={x:Null}}"/>
-                </StackPanel>
-              </DataTemplate>
-            </ListBox.ItemTemplate>
-          </ListBox>
-
+      <TransitioningContentControl.DataTemplates>
+        <DataTemplate DataType="vm:WelcomeViewModelIntroStep">
           <Button
-            Classes="Secondary" Grid.Row="1"
-            Grid.Column="0"
-            Command="{Binding PreviousStepCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
-          <Button
-            Classes="Primary" Grid.Row="1"
-            Grid.Column="1"
-            Command="{Binding GoToEnterApiKeyStepCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"/>
-        </Grid>
+            Classes="Primary" VerticalAlignment="Bottom"
+            Command="{Binding ViewModel.MoveNextCommand}"
+            Content="{I18N {x:Static LocaleKey.WelcomeView_LetsStartButton_Content}}"/>
+        </DataTemplate>
 
-        <Grid
-          VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
-          ColumnSpacing="8" RowDefinitions="*,Auto"
-          RowSpacing="12">
-          <TextBox
-            Grid.Row="0" Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Text="{Binding ApiKey}"
-            Watermark="{I18N {x:Static LocaleKey.WelcomeView_ApiKeyTextBox_Watermark}}"/>
+        <DataTemplate DataType="vm:WelcomeViewModelConfiguratorStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8">
+            <Button
+              Classes="Secondary" Grid.Column="0"
+              Command="{Binding ViewModel.MovePreviousCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
+            <Button
+              Classes="Primary" Grid.Column="1"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"/>
+          </Grid>
+        </DataTemplate>
 
-          <Button
-            Classes="Secondary" Grid.Row="1"
-            Grid.Column="0"
-            Command="{Binding PreviousStepCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
-          <Button
-            Classes="Primary" Grid.Row="1"
-            Grid.Column="1"
-            Command="{Binding GoToShortcutStepCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"
-            IsVisible="{Binding IsApiKeyValid}"/>
-          <Button
-            Classes="Primary" Grid.Row="1"
-            Grid.Column="1"
-            shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
-            Command="{Binding ValidateApiKeyCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_VerifyApiKeyButton_Content}}"
-            IsVisible="{Binding !IsApiKeyValid}"/>
-        </Grid>
+        <DataTemplate DataType="vm:WelcomeViewModelAssistantStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8" RowDefinitions="*,Auto"
+            RowSpacing="12">
+            <ScrollViewer
+              Grid.Row="0" Grid.Column="0"
+              Grid.ColumnSpan="2" HorizontalScrollBarVisibility="Disabled">
+              <v:SettingsItemsControl
+                IsEnabled="{Binding IsNotBusy}"
+                ItemsSource="{Binding ViewModel.Assistant.Configurator.SettingsItems}"/>
+            </ScrollViewer>
 
-        <Button
-          Classes="Primary" VerticalAlignment="Bottom"
-          Command="{Binding GoToTelemetryStepCommand}"
-          Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"/>
+            <Button
+              Classes="Secondary" Grid.Row="1"
+              Grid.Column="0"
+              Command="{Binding ViewModel.MovePreviousCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
+            <Button
+              Classes="Primary" Grid.Row="1"
+              Grid.Column="1"
+              shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
+              Command="{Binding CheckConnectivityCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_CheckConnectivityButton_Content}}"
+              IsVisible="{Binding !ViewModel.IsConnectivityChecked}"/>
+            <Button
+              Classes="Primary" Grid.Row="1"
+              Grid.Column="1"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"
+              IsVisible="{Binding ViewModel.IsConnectivityChecked}"/>
+          </Grid>
+        </DataTemplate>
 
-        <Grid
-          VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
-          ColumnSpacing="8">
-          <Button
-            Classes="Secondary" Grid.Column="0"
-            Command="{Binding SendOnlyNecessaryTelemetryCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_SendOnlyNecessaryDataButton_Content}}"/>
-          <Button
-            Classes="Primary" Grid.Column="1"
-            Command="{Binding CloseCommand}"
-            Content="{I18N {x:Static LocaleKey.WelcomeView_EnableTelemetryButton_Content}}"/>
-        </Grid>
-      </Carousel.Items>
-    </Carousel>
+        <DataTemplate DataType="vm:WelcomeViewModelShortcutStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8" RowDefinitions="*,Auto"
+            RowSpacing="12">
+            <Button
+              Classes="Secondary" Grid.Row="1"
+              Grid.Column="0"
+              Command="{Binding ViewModel.MovePreviousCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
+            <Button
+              Classes="Primary" Grid.Row="1"
+              Grid.Column="1"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"/>
+          </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:WelcomeViewModelTelemetryStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8">
+            <Button
+              Classes="Secondary" Grid.Column="0"
+              Command="{Binding SendOnlyNecessaryTelemetryCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_SendOnlyNecessaryDataButton_Content}}"/>
+            <Button
+              Classes="Primary" Grid.Column="1"
+              Command="{Binding ViewModel.CloseCommand}"
+              Content="{I18N {x:Static LocaleKey.WelcomeView_EnableTelemetryButton_Content}}"/>
+          </Grid>
+        </DataTemplate>
+      </TransitioningContentControl.DataTemplates>
+    </TransitioningContentControl>
 
     <Button
       Classes="Ghost" Grid.Row="0"
@@ -297,7 +301,7 @@
       HorizontalAlignment="Right" VerticalAlignment="Top"
       Command="{Binding CloseCommand}"
       Content="{I18N {x:Static LocaleKey.WelcomeView_SkipButton_Content}}"
-      IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.NotEqual}, ConverterParameter={x:Static vm:WelcomeViewModel+Step.Shortcut}}"/>
+      IsVisible="{Binding CanSkipAll}"/>
 
     <v:ConfettiEffect
       x:Name="ConfettiEffect" Grid.Row="0"

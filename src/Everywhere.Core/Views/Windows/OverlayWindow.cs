@@ -2,17 +2,16 @@
 using Everywhere.Common;
 using Everywhere.Interop;
 using Serilog;
+using ZLinq;
 
 namespace Everywhere.Views;
 
 public class OverlayWindow : Window
 {
-    private readonly WindowBase? _owner;
+    private WeakReference<IVisualElement>? _visualElement;
 
-    public OverlayWindow(WindowBase? owner = null)
+    public OverlayWindow()
     {
-        _owner = owner;
-
         CanResize = false;
         ShowInTaskbar = false;
         ShowActivated = false;
@@ -33,32 +32,74 @@ public class OverlayWindow : Window
 
     public async void UpdateForVisualElement(IVisualElement? element)
     {
-        try
+        if (element is null)
         {
-            if (element == null)
+            _visualElement = null;
+            Hide();
+        }
+        else if (_visualElement?.TryGetTarget(out var existingElement) is not true || !Equals(existingElement, element))
+        {
+            if (_visualElement is null)
             {
-                Hide();
+                _visualElement = new WeakReference<IVisualElement>(element);
             }
             else
             {
-                Show();
-                var boundingRectangle = await Task.Run(() => element.BoundingRectangle).WaitAsync(TimeSpan.FromSeconds(0.5));
-                Position = new PixelPoint(boundingRectangle.X, boundingRectangle.Y);
-                var scaling = DesktopScaling;
-                Width = boundingRectangle.Width / scaling;
-                Height = boundingRectangle.Height / scaling;
-
-                if (_owner is { Topmost: true })
-                {
-                    _owner.Topmost = false;
-                    _owner.Topmost = true;
-                }
+                _visualElement.SetTarget(element);
             }
-        }
-        catch (TimeoutException) { }
-        catch (Exception ex)
-        {
-            Log.Logger.ForContext<OverlayWindow>().Error(ex, "Failed to update OverlayWindow for visual element.");
+
+            PixelRect boundingRectangle;
+            try
+            {
+                boundingRectangle = await Task.Run(() => element.BoundingRectangle).WaitAsync(TimeSpan.FromSeconds(1));
+            }
+            catch (TimeoutException)
+            {
+                _visualElement = null;
+                return;
+            }
+            catch (Exception ex)
+            {
+                _visualElement = null;
+                Log.Logger.ForContext<OverlayWindow>().Error(ex, "Failed to update OverlayWindow for visual element.");
+                Hide();
+                return;
+            }
+
+            if (boundingRectangle.Width <= 0 || boundingRectangle.Height <= 0)
+            {
+                _visualElement = null;
+                Hide();
+                return;
+            }
+
+            var screenBounds = Screens.All
+                .AsValueEnumerable()
+                .Select(s => s.Bounds)
+                .Aggregate((a, b) => a.Union(b));
+
+            // Clamp to screen bounds
+            var x = Math.Clamp(boundingRectangle.X, screenBounds.X, screenBounds.Right);
+            var y = Math.Clamp(boundingRectangle.Y, screenBounds.Y, screenBounds.Bottom);
+            var right = Math.Min(boundingRectangle.Right, screenBounds.Right);
+            var bottom = Math.Min(boundingRectangle.Bottom, screenBounds.Bottom);
+            var width = right - x;
+            var height = bottom - y;
+
+            if (width <= 0 || height <= 0)
+            {
+                _visualElement = null;
+                Hide();
+                return;
+            }
+
+            Position = new PixelPoint(x, y);
+
+            var scaling = DesktopScaling;
+            Width = width / scaling;
+            Height = height / scaling;
+
+            Show();
         }
     }
 }

@@ -26,27 +26,42 @@ public class ChatWindowInitializer(
     private readonly Lock _syncLock = new();
 
     private IDisposable? _chatShortcutSubscription;
+    private IDisposable? _textSelectionSubscription;
 
     public Task InitializeAsync()
     {
+        var chatWindow = ServiceLocator.Resolve<ChatWindow>();
+        var chatWindowViewModel = chatWindow.ViewModel;
+        var chatWindowHandle = chatWindow.TryGetPlatformHandle()?.Handle ?? 0;
+
+        // Preload ChatWindow to avoid delay on first open
+        chatWindow.Initialize();
+
         // initialize hotkey listener
         settings.ChatWindow.PropertyChanged += (_, args) =>
         {
-            if (args.PropertyName == nameof(settings.ChatWindow.Shortcut))
+            switch (args.PropertyName)
             {
-                HandleChatShortcutChanged(settings.ChatWindow.Shortcut);
+                case nameof(ChatWindowSettings.Shortcut):
+                {
+                    HandleChatShortcutChanged(chatWindow, chatWindowHandle, settings.ChatWindow.Shortcut);
+                    break;
+                }
+                case nameof(ChatWindowSettings.AutomaticallyAddTextSelection):
+                {
+                    HandleTextSelectionChanged(chatWindowViewModel, settings.ChatWindow.AutomaticallyAddTextSelection);
+                    break;
+                }
             }
         };
 
-        HandleChatShortcutChanged(settings.ChatWindow.Shortcut);
-
-        // Preload ChatWindow to avoid delay on first open
-        Dispatcher.UIThread.Invoke(() => ServiceLocator.Resolve<ChatWindow>().Initialize());
+        HandleChatShortcutChanged(chatWindow, chatWindowHandle, settings.ChatWindow.Shortcut);
+        HandleTextSelectionChanged(chatWindowViewModel, settings.ChatWindow.AutomaticallyAddTextSelection);
 
         return Task.CompletedTask;
     }
 
-    private void HandleChatShortcutChanged(KeyboardShortcut shortcut)
+    private void HandleChatShortcutChanged(ChatWindow chatWindow, nint chatWindowHandle, KeyboardShortcut shortcut)
     {
         using var _ = _syncLock.EnterScope();
 
@@ -57,16 +72,25 @@ public class ChatWindowInitializer(
             shortcut,
             () => ThreadPool.QueueUserWorkItem(_ =>
             {
-                var element = visualElementContext.KeyboardFocusedElement ??
-                    visualElementContext.ElementFromPointer()?
-                        .GetAncestors(true)
-                        .LastOrDefault();
-                var hWnd = element?.NativeWindowHandle;
+                IVisualElement? element;
+                nint? hWnd;
+                try
+                {
+                    element = visualElementContext.FocusedElement ??
+                        visualElementContext.ElementFromPointer()?
+                            .GetAncestors(true)
+                            .LastOrDefault();
+                    hWnd = element?.NativeWindowHandle;
+                }
+                catch
+                {
+                    element = null;
+                    hWnd = null;
+                }
 
                 Dispatcher.UIThread.Invoke(() =>
                 {
-                    var chatWindow = ServiceLocator.Resolve<ChatWindow>();
-                    if (chatWindow.IsFocused || chatWindow.TryGetPlatformHandle() is { } handle && handle.Handle == hWnd)
+                    if (chatWindow.IsFocused || chatWindowHandle == hWnd)
                     {
                         chatWindow.ViewModel.IsOpened = false; // Hide chat window if it's already focused
                     }
@@ -76,5 +100,13 @@ public class ChatWindowInitializer(
                     }
                 });
             }));
+    }
+
+    private void HandleTextSelectionChanged(ChatWindowViewModel chatWindowViewModel, bool isEnabled)
+    {
+        using var _ = _syncLock.EnterScope();
+
+        _textSelectionSubscription?.Dispose();
+        if (isEnabled) _textSelectionSubscription = visualElementContext.Subscribe(chatWindowViewModel);
     }
 }

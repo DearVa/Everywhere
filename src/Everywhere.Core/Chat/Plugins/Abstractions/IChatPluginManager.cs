@@ -60,7 +60,7 @@ public interface IChatPluginManager
     /// Functions in the scope must not have the same name.
     /// </summary>
     /// <returns></returns>
-    Task<IChatPluginScope> CreateScopeAsync(ChatContext chatContext, CustomAssistant customAssistant, CancellationToken cancellationToken);
+    Task<IChatPluginScope> CreateScopeAsync(CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -71,7 +71,7 @@ public interface IChatPluginScope
     /// <summary>
     /// Gets all plugins in this scope.
     /// </summary>
-    IEnumerable<ChatPlugin> Plugins { get; }
+    IReadOnlyList<ChatPlugin> Plugins { get; }
 
     /// <summary>
     /// Tries to get the plugin and function by function name. Returns similar function names if not found.

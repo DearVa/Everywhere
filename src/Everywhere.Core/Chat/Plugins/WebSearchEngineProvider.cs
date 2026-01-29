@@ -1,16 +1,30 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using Avalonia.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Configuration;
+using Everywhere.Views;
 
 namespace Everywhere.Chat.Plugins;
 
-[GeneratedSettingsItems]
-public partial class WebSearchEngineProvider : ObservableObject
+public enum WebSearchEngineProviderId
 {
+    Google,
+    Tavily,
+    Brave,
+    Bocha,
+    Jina,
+    UniFuncs,
+    SearXNG
+}
+
+[GeneratedSettingsItems]
+public sealed partial class WebSearchEngineProvider(ObservableCollection<ApiKey> apiKeys) : ObservableObject
+{
+    [JsonIgnore]
     [HiddenSettingsItem]
-    [IgnoreDataMember]
-    public required string Id { get; init; } = string.Empty;
+    public required WebSearchEngineProviderId Id { get; init; }
 
     [JsonIgnore]
     [HiddenSettingsItem]
@@ -21,22 +35,32 @@ public partial class WebSearchEngineProvider : ObservableObject
         LocaleKey.WebSearchEngineProvider_EndPoint_Description)]
     public required Customizable<string> EndPoint { get; init; }
 
-    [IgnoreDataMember]
     [ObservableProperty]
+    [HiddenSettingsItem]
+    public partial Guid ApiKey { get; set; }
+
+    [JsonIgnore]
+    [HiddenSettingsItem]
+    public bool IsSearchEngineIdVisible => Id == WebSearchEngineProviderId.Google;
+
+    [JsonIgnore]
+    [HiddenSettingsItem]
+    public bool IsApiKeyVisible => Id != WebSearchEngineProviderId.SearXNG;
+
+    [JsonIgnore]
     [DynamicResourceKey(
-        LocaleKey.WebSearchEngineProvider_ApiKey_Header,
-        LocaleKey.WebSearchEngineProvider_ApiKey_Description)]
-    [SettingsItem(IsVisibleBindingPath = nameof(IsApiKeyRequired))]
-    [SettingsStringItem(IsPassword = true)]
-    public partial string? ApiKey { get; set; }
-
-    [JsonIgnore]
-    [HiddenSettingsItem]
-    public bool IsSearchEngineIdVisible => Id.Equals("google", StringComparison.OrdinalIgnoreCase);
-
-    [JsonIgnore]
-    [HiddenSettingsItem]
-    public bool IsApiKeyRequired => !Id.Equals("searxng", StringComparison.OrdinalIgnoreCase);
+        LocaleKey.CustomAssistant_ApiKey_Header,
+        LocaleKey.CustomAssistant_ApiKey_Description)]
+    [SettingsItem(IsVisibleBindingPath = nameof(IsApiKeyVisible))]
+    public SettingsControl<ApiKeyComboBox> ApiKeyControl => new(
+        new ApiKeyComboBox(apiKeys)
+        {
+            [!ApiKeyComboBox.SelectedIdProperty] = new Binding(nameof(ApiKey))
+            {
+                Source = this,
+                Mode = BindingMode.TwoWay
+            },
+        });
 
     /// <summary>
     /// for Google search engine, this is the search engine ID.

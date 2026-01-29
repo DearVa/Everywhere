@@ -1,3 +1,165 @@
+## [v0.6.0](https://github.com/DearVa/Everywhere/releases/tag/v0.6.0) - 2026-01-21
+
+### ✨ Features
+- 🎉 **macOS Support**: Native macOS support is here! We have brought a complete experience almost identical to the Windows version.
+- Added "Selection Context" (Experimental): When enabled in settings, the selected text and its context will be automatically attached, providing better context understanding for translation and explanation tasks.
+- Added a button to open the Settings window directly from the Chat Window.
+
+### 🚀 Improvements
+- Improved encoding detection accuracy for the file reader tool.
+- Optimized prompts for the web search tool.
+
+### 🐛 Bug Fixes
+- Fixed broken support for DeepSeek reasoning models.
+- Fixed an issue where token usage statistics for Claude models were displayed incorrectly.
+- Fixed an issue where files could not be pasted correctly if the file path contained spaces.
+- Fixed an issue where the color picker in the assistant icon editor was unresponsive.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.11...v0.6.0
+
+
+
+## [v0.5.11](https://github.com/DearVa/Everywhere/releases/tag/v0.5.11) - 2026-01-12
+
+### 🐛 Bug Fixes
+- Model provider combobox is empty in preset mode (#254)
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.10...v0.5.11
+
+
+
+## [v0.5.10](https://github.com/DearVa/Everywhere/releases/tag/v0.5.10) - 2026-01-12
+
+### 🐛 Bug Fixes
+- (Critical) Fixed an issue where Everywhere cannot get details/contents of UI elements.
+- (Windows) Fixed an issue where API keys cannot be configured when startup as administrator.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.9...v0.5.10
+
+
+
+## [v0.5.9](https://github.com/DearVa/Everywhere/releases/tag/v0.5.9) - 2026-01-10
+
+### 🐛 Bug Fixes
+- Fixed an issue where the display order of content in the ApiKey selection box was incorrect.
+- (Windows) Fixed an issue where custom assistants were not migrating correctly.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.8...v0.5.9
+
+
+
+## [v0.5.8](https://github.com/DearVa/Everywhere/releases/tag/v0.5.8) - 2026-01-08
+
+### ✨ Features
+- Added a screenshot tool for quickly attaching screen captures in the chat window.
+- Added support for the UniFuncs search engine.
+
+### 🔄️ Changed
+- Removed the unstable UI element manipulation tool.
+
+### 🐛 Bug Fixes
+- Fixed a critical issue where assistant preset modes were not correctly applied.
+- Fixed an issue where assistants could not be duplicated.
+- Fixed styling issues on the Welcome Page.
+- Fixed an issue where the update check timestamp did not use the local time zone.
+- (Windows) Fixed an issue where the PowerShell plugin failed to refresh environment variables.
+- (Windows) Fixed an issue where the main window could incorrectly remain always-on-top.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.7...v0.5.8
+
+
+
+## [v0.5.7](https://github.com/DearVa/Everywhere/releases/tag/v0.5.7) - 2026-01-06
+
+⚠️ IMPORTANT WARNING
+If upgrading from v0.5.5 or earlier, this version will automatically migrate your settings file. It is recommended to backup `C:\Users\[Username]\AppData\Roaming\Everywhere\settings.json` beforehand. Migration completes upon startup. All existing API keys will be cleared and moved to the `LegacyApiKeys` property in `settings.json`. You will need to reconfigure them. For security reasons, please delete `LegacyApiKeys` immediately after reconfiguring your keys.
+
+### ✨ Features
+- Improved tray icon interaction: Single-click to open the Chat Window, double-click to open the Main Window.
+
+### 🐛 Bug Fixes
+- (Important) Fixed an issue where "Advanced Configuration" settings were not applied correctly.
+- Fixed an issue where the Main Window could not be restored from the tray menu if it was minimized.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.6...v0.5.7
+
+
+
+## [v0.5.6](https://github.com/DearVa/Everywhere/releases/tag/v0.5.6) - 2026-01-05
+
+### ⚠️ Important Changes
+**Security Update**: API keys are now stored using a more secure encryption method.
+
+**IMPORTANT WARNING**: This version will automatically migrate your settings file. It is recommended to backup `C:\Users\[Username]\AppData\Roaming\Everywhere\settings.json` beforehand. Migration completes upon startup. All existing API keys will be cleared and moved to the `LegacyApiKeys` property in `settings.json`. You will need to reconfigure them. For security reasons, please delete `LegacyApiKeys` immediately after reconfiguring your keys.
+
+### ✨ Features
+- **New "Essential" Plugin**: Adds support for running Sub-Agents and managing Todo lists, enhancing LLM performance on complex tasks.
+- **Refactored Custom Assistant & Welcome Page**: Now features "Preset Mode" and "Advanced Mode" for a more user-friendly experience.
+- Added the ability to import MCP servers from JSON (#191).
+- Added a setting to automatically create a new chat every time the chat window is opened (#32).
+
+### 🚀 Improvements
+- Assistants now reliably use the correct working directory instead of defaulting to `C:\Windows\System32` (#161).
+- Optimized the default system prompt.
+- Improved the UI for checking updates.
+- Various other UI/UX improvements.
+
+### 🐛 Bug Fixes
+- Fixed a critical issue where file attachments could cause an infinite loop and memory exhaustion crash.
+- Fixed an issue where Gemini 3 might fail when calling tools.
+- Fixed an issue where the File System plugin returned incomplete paths during file search.
+- Fixed an issue where the PowerShell plugin failed to capture Warning output (#225).
+- Fixed encoding issues in the PowerShell plugin.
+- Fixed an issue where LaTeX formulas were not clearly visible in Light Mode.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.5...v0.5.6
+
+
+
+## [v0.5.5](https://github.com/DearVa/Everywhere/releases/tag/v0.5.5) - 2025-12-21
+
+### 🚀 Improvements
+- Optimized various UI visual details.
+
+### 🐛 Bug Fixes
+- Fixed an issue where the "Everywhere minimized to tray" notification appeared every time.
+- Fixed an issue where the enabled state of MCP tools failed to load correctly.
+- Fixed an issue where the tool permission consent dialog failed to display.
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.4...v0.5.5
+
+
+
+## [v0.5.4](https://github.com/DearVa/Everywhere/releases/tag/v0.5.4) - 2025-12-20
+
+### ⚠️ Important Changes
+- Changed the software license from Apache 2.0 to **BSL 1.1**.
+
+### ✨ Features
+- 🎨 Brand New UI: 
+  - A complete refactor of the user interface, featuring a modern design, responsive layout, and a fresh chat window style with Light Mode support. The app now automatically syncs with the system accent color and includes more helpful tooltips.
+- Added support for the OpenAI Responses API.
+- Added shortcuts for quick navigation:
+  - Scroll on the assistant icon or use `Ctrl` + `0-9` keys to switch assistants.
+  - Press `Ctrl` + `H` to toggle the chat history view.
+
+### 🚀 Improvements
+- Window position and size (for both Settings and Chat) are now automatically saved and restored.
+- Improved the visual style of the element selector popup.
+- Streamlined the MCP configuration process.
+- Font size settings now correctly apply to the chat window.
+
+### 🐛 Bug Fixes
+- Fixed an issue where the element selector was offset on multi-monitor setups with different scaling factors (#17).
+- Fixed an issue where the screenshot tool could freeze (#177).
+- Fixed an issue where Anthropic API calls would fail (#198).
+- Fixed an issue where DeepSeek models encountered errors when using tools during the reasoning process (#208).
+- Fixed a potential memory leak (#207).
+
+**Full Changelog**: https://github.com/DearVa/Everywhere/compare/v0.5.3...v0.5.4
+
+
+
 ## [v0.5.3](https://github.com/DearVa/Everywhere/releases/tag/v0.5.3) - 2025-12-7
 
 ### ✨ Features

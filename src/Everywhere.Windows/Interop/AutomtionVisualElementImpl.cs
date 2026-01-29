@@ -1,6 +1,6 @@
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -9,13 +9,14 @@ using Windows.Win32.UI.WindowsAndMessaging;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Media.Imaging;
-using Avalonia.Threading;
 using Everywhere.Extensions;
 using Everywhere.Interop;
 using Everywhere.Windows.Extensions;
+using FlaUI.Core;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
-using IDataObject = System.Windows.IDataObject;
+using FlaUI.Core.Identifiers;
+using Serilog;
 
 namespace Everywhere.Windows.Interop;
 
@@ -23,6 +24,9 @@ public partial class VisualElementContext
 {
     private class AutomationVisualElementImpl(AutomationElement element) : IVisualElement
     {
+        private static readonly TextAttributeId IsSelectionActivePropertyId =
+            TextAttributeId.Register(AutomationType.UIA3, 30034, "IsSelectionActive");
+
         public string Id { get; } = string.Join('.', element.Properties.RuntimeId.ValueOrDefault ?? []);
 
         public IVisualElement? Parent
@@ -41,7 +45,7 @@ public partial class VisualElementContext
                     var parent = TreeWalker.GetParent(_element);
                     return parent is null ? null : new AutomationVisualElementImpl(parent);
                 }
-                catch (COMException)
+                catch
                 {
                     return null;
                 }
@@ -52,11 +56,38 @@ public partial class VisualElementContext
         {
             get
             {
-                var child = TreeWalker.GetFirstChild(_element);
+                AutomationElement? child;
+                try
+                {
+                    child = TreeWalker.GetFirstChild(_element);
+                }
+                catch
+                {
+                    yield break;
+                }
+
                 while (child is not null)
                 {
-                    yield return new AutomationVisualElementImpl(child);
-                    child = TreeWalker.GetNextSibling(child);
+                    AutomationVisualElementImpl item;
+                    try
+                    {
+                        item = new AutomationVisualElementImpl(child);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
+
+                    yield return item;
+
+                    try
+                    {
+                        child = TreeWalker.GetNextSibling(child);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
                 }
             }
         }
@@ -111,7 +142,7 @@ public partial class VisualElementContext
                         _ => VisualElementType.Unknown
                     };
                 }
-                catch (COMException)
+                catch
                 {
                     return VisualElementType.Unknown;
                 }
@@ -139,7 +170,7 @@ public partial class VisualElementContext
                         states |= VisualElementStates.Password;
                     return states;
                 }
-                catch (COMException)
+                catch
                 {
                     return VisualElementStates.None;
                 }
@@ -175,7 +206,7 @@ public partial class VisualElementContext
                         r.Width,
                         r.Height));
                 }
-                catch (COMException)
+                catch
                 {
                     return default;
                 }
@@ -203,18 +234,6 @@ public partial class VisualElementContext
             }
         }
 
-        private void EnsureFocusable()
-        {
-            try
-            {
-                _element.Focus();
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Failed to focus element before sending shortcut.", ex);
-            }
-        }
-
         public void Invoke()
         {
             try
@@ -224,19 +243,43 @@ public partial class VisualElementContext
                     invokePattern.Invoke();
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ignore
+                LogError(ex, "InvokePattern");
+            }
 
+            try
+            {
                 if (_element.TryGetTogglePattern() is { } togglePattern)
                 {
                     togglePattern.Toggle();
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ignore
+                LogError(ex, "TogglePattern");
+            }
 
+            try
+            {
                 if (_element.TryGetSelectionItemPattern() is { } selectionItemPattern)
                 {
                     selectionItemPattern.Select();
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ignore
+                LogError(ex, "SelectionItemPattern");
+            }
 
+            try
+            {
                 if (_element.TryGetExpandCollapsePattern() is { } expandCollapsePattern)
                 {
                     var state = expandCollapsePattern.ExpandCollapseState.ValueOrDefault;
@@ -251,22 +294,108 @@ public partial class VisualElementContext
 
                     return;
                 }
+            }
+            catch (Exception ex)
+            {
+                // ignore
+                LogError(ex, "ExpandCollapsePattern");
+            }
 
+            try
+            {
                 if (_element.TryGetLegacyIAccessiblePattern() is { } legacyPattern)
                 {
                     legacyPattern.DoDefaultAction();
                 }
             }
-            catch (COMException ex)
+            catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to invoke the element through UI Automation.", ex);
-            }
-            catch (Exception ex) when (IsAutomationException(ex))
-            {
-                throw new InvalidOperationException("Failed to invoke the element through UI Automation.", ex);
+                // ignore
+                LogError(ex, "LegacyIAccessiblePattern");
             }
 
-            throw new NotSupportedException("The target element does not expose an invoke-capable automation pattern.");
+            // Last try, get clickable point and Send mouse click
+            if (!_element.TryGetClickablePoint(out var point))
+            {
+                throw new InvalidOperationException("The target element does not support invocation.");
+            }
+
+            // Ensure the point is within screen bounds
+            var screenLeft = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_XVIRTUALSCREEN);
+            var screenTop = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_YVIRTUALSCREEN);
+            var screenWidth = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXVIRTUALSCREEN);
+            var screenHeight = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYVIRTUALSCREEN);
+            if (point.X < screenLeft || point.X >= screenLeft + screenWidth ||
+                point.Y < screenTop || point.Y >= screenTop + screenHeight)
+            {
+                throw new InvalidOperationException("The clickable point of the target element is outside of the screen bounds.");
+            }
+
+            if (TryGetAncestorWithNativeWindowHandle(_element, out var hWnd) is not { } windowElement)
+            {
+                throw new InvalidOperationException("The target element does not belong to a valid window.");
+            }
+
+            var rootHwnd = PInvoke.GetAncestor((HWND)hWnd, GET_ANCESTOR_FLAGS.GA_ROOTOWNER);
+            if (rootHwnd != 0) PInvoke.SetForegroundWindow(rootHwnd);
+
+            windowElement.FocusNative();
+
+            // Ensure window is foreground
+            var windowFromPoint = PInvoke.WindowFromPoint(point);
+            if (windowFromPoint == 0 || PInvoke.GetAncestor(windowFromPoint, GET_ANCESTOR_FLAGS.GA_ROOTOWNER) != rootHwnd)
+            {
+                throw new InvalidOperationException("Failed to bring the target element's window to the foreground.");
+            }
+
+            // Send mouse click to the point
+            PInvoke.SendInput(
+            [
+                new INPUT
+                {
+                    Anonymous =
+                    {
+                        mi =
+                        {
+                            dx = point.X * 65535 / PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSCREEN),
+                            dy = point.Y * 65535 / PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSCREEN),
+                            dwFlags = MOUSE_EVENT_FLAGS.MOUSEEVENTF_ABSOLUTE | MOUSE_EVENT_FLAGS.MOUSEEVENTF_MOVE,
+                        }
+                    },
+                    type = INPUT_TYPE.INPUT_MOUSE,
+                },
+                new INPUT
+                {
+                    Anonymous =
+                    {
+                        mi =
+                        {
+                            dwFlags = MOUSE_EVENT_FLAGS.MOUSEEVENTF_LEFTDOWN,
+                        }
+                    },
+                    type = INPUT_TYPE.INPUT_MOUSE,
+                }
+            ], Unsafe.SizeOf<INPUT>());
+
+            // A short delay to ensure the click is done before sending mouse up
+            Thread.Sleep(30);
+            PInvoke.SendInput(
+            [
+                new INPUT
+                {
+                    Anonymous =
+                    {
+                        mi =
+                        {
+                            dwFlags = MOUSE_EVENT_FLAGS.MOUSEEVENTF_LEFTUP,
+                        }
+                    },
+                    type = INPUT_TYPE.INPUT_MOUSE,
+                }
+            ], Unsafe.SizeOf<INPUT>());
+
+            void LogError(Exception ex, string action) =>
+                Log.ForContext<AutomationVisualElementImpl>().Information(ex, "Failed to perform {Action} on element {Type}", action, Type);
         }
 
         public void SetText(string text)
@@ -298,7 +427,15 @@ public partial class VisualElementContext
 
         public void SendShortcut(KeyboardShortcut shortcut)
         {
-            EnsureFocusable();
+            if (TryGetAncestorWithNativeWindowHandle(_element, out var hWnd) is not { } windowElement)
+            {
+                throw new InvalidOperationException("The target element does not belong to a valid window.");
+            }
+
+            var rootHwnd = PInvoke.GetAncestor((HWND)hWnd, GET_ANCESTOR_FLAGS.GA_ROOTOWNER);
+            if (rootHwnd != 0) PInvoke.SetForegroundWindow(rootHwnd);
+
+            windowElement.FocusNative();
 
             // Use PInvoke.SendInput to send the shortcut to the focused element.
             var inputs = new List<INPUT>();
@@ -308,7 +445,7 @@ public partial class VisualElementContext
             if (shortcut.Modifiers.HasFlag(KeyModifiers.Meta)) MakeInputs(VIRTUAL_KEY.VK_LWIN);
             MakeInputs(shortcut.Key.ToVirtualKey());
 
-            var result = PInvoke.SendInput(CollectionsMarshal.AsSpan(inputs), Marshal.SizeOf<INPUT>());
+            var result = PInvoke.SendInput(CollectionsMarshal.AsSpan(inputs), Unsafe.SizeOf<INPUT>());
             if (result == 0)
             {
                 throw new Win32Exception(Marshal.GetLastWin32Error(), "Failed to send keyboard input to the target element.");
@@ -354,108 +491,81 @@ public partial class VisualElementContext
                 // 1) Prefer UIA TextPattern selection text
                 if (_element.TryGetTextPattern() is { } textPattern)
                 {
-                    var ranges = textPattern.GetSelection();
-                    if (ranges is { Length: > 0 })
-                    {
-                        var selected = string.Join(null, ranges.Select(r => r.GetText(-1)));
-                        if (!string.IsNullOrEmpty(selected))
-                            return selected;
-                    }
-                }
-
-                // 2) Fallback to SelectionItemPattern (if selected, return element's text)
-                if (_element.TryGetSelectionItemPattern() is { } selectionItemPattern)
-                {
-                    if (selectionItemPattern.IsSelected.ValueOrDefault)
-                    {
-                        var v = GetText();
-                        if (!string.IsNullOrEmpty(v))
-                            return v;
-                    }
-                }
-
-                // TODO: Following method takes no effect QAQ
-                // 3) Last resort: send WM_COPY to the focused child window of target thread, then wait for clipboard update
-                if (!TryGetWindow(_element, out var topLevel) || topLevel == 0)
-                    return null;
-
-                var hTop = (HWND)topLevel;
-
-                // Resolve the real focused child HWND in the target GUI thread
-                var target = hTop;
-                var targetTid = PInvoke.GetWindowThreadProcessId(hTop);
-                var currentTid = PInvoke.GetCurrentThreadId();
-                var attached = false;
-                try
-                {
-                    attached = PInvoke.AttachThreadInput(currentTid, targetTid, true);
-                    var hFocus = PInvoke.GetFocus();
-                    if (hFocus != HWND.Null)
-                        target = hFocus;
-                }
-                finally
-                {
-                    if (attached)
-                        _ = PInvoke.AttachThreadInput(currentTid, targetTid, false);
-                }
-
-                // Read clipboard text (best effort)
-                string? result = null;
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    // Backup current clipboard (best effort, avoid user-visible side effects)
-                    IDataObject? backup = null;
                     try
                     {
-                        // backup = Clipboard.GetDataObject();
-                    }
-                    catch
-                    {
-                        /* ignore */
-                    }
-
-                    // Arm the clipboard listener before sending WM_COPY to avoid race
-                    var listener = ClipboardListener.Shared;
-                    listener.BeginWait();
-
-                    // Ask target control to copy selection without simulating Ctrl+C
-                    PInvoke.SendMessage(target, (uint)WINDOW_MESSAGE.WM_COPY, 0, 0);
-
-                    // Wait for WM_CLIPBOARDUPDATE (timeout ~50ms)
-                    if (!listener.WaitNextUpdate(50)) return;
-
-                    try
-                    {
-                        if (Clipboard.ContainsText())
+                        var ranges = textPattern.GetSelection();
+                        if (ranges is { Length: > 0 })
                         {
-                            result = Clipboard.GetText();
+                            var selected = string.Join(null, ranges.Select(r => r.GetText(-1)));
+                            if (!string.IsNullOrEmpty(selected))
+                                return selected;
                         }
                     }
                     catch
                     {
-                        /* ignore */
+                        // Ignore errors in getting selection, try other methods
                     }
 
-                    // Restore clipboard
-                    if (backup != null)
+                    try
                     {
-                        try
+                        var documentRange = textPattern.DocumentRange;
+                        if (documentRange?.GetAttributeValue(IsSelectionActivePropertyId) is true)
                         {
-                            Clipboard.SetDataObject(backup, true);
-                        }
-                        catch
-                        {
-                            /* ignore */
+                            var selected = documentRange.GetText(-1);
+                            if (!string.IsNullOrEmpty(selected))
+                                return selected;
                         }
                     }
-                });
+                    catch
+                    {
+                        // Ignore errors in accessing document range, try other methods
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore errors in TextPattern, try other methods
+            }
 
-                return string.IsNullOrEmpty(result) ? null : result;
+            // 3) Fallback to LegacyIAccessible selection text
+            try
+            {
+                if (_element.TryGetLegacyIAccessiblePattern() is { Selection: { IsSupported: true, ValueOrDefault: { Length: > 0 } selection } })
+                {
+                    // UIA maps accSelection to an array of AutomationElements.
+                    // This corresponds to VT_DISPATCH (single object) or VT_ARRAY (multiple objects) in MSAA.
+                    // Reference.cc Logic:
+                    // - VT_DISPATCH: Try accName, then accValue.
+                    // - VT_ARRAY: Try accValue of the first element.
+                    // We combine these strategies: Check Name/Value of the first element.
+
+                    var selectedItem = selection[0];
+                    var itemLegacy = selectedItem.TryGetLegacyIAccessiblePattern();
+
+                    if (itemLegacy != null)
+                    {
+                        // Try accName
+                        if (itemLegacy.Name.IsSupported && !string.IsNullOrEmpty(itemLegacy.Name.ValueOrDefault))
+                            return itemLegacy.Name.ValueOrDefault;
+
+                        // Try accValue
+                        if (itemLegacy.Value.IsSupported && !string.IsNullOrEmpty(itemLegacy.Value.ValueOrDefault))
+                            return itemLegacy.Value.ValueOrDefault;
+                    }
+                    else
+                    {
+                        // Fallback if pattern unavailable
+                        if (!string.IsNullOrEmpty(selectedItem.Name))
+                            return selectedItem.Name;
+                    }
+                }
             }
             catch
             {
                 return null;
             }
+
+            return null;
         }
 
         // BUG: For a minimized window, the captured image is buggy (but child elements are fine).
@@ -465,7 +575,7 @@ public partial class VisualElementContext
             if (rect.Width <= 0 || rect.Height <= 0)
                 throw new InvalidOperationException("Cannot capture an element with zero width or height.");
 
-            if (!TryGetWindow(_element, out var hWnd) ||
+            if (TryGetAncestorWithNativeWindowHandle(_element, out var hWnd) is null ||
                 (hWnd = PInvoke.GetAncestor((HWND)hWnd, GET_ANCESTOR_FLAGS.GA_ROOTOWNER)) == 0)
                 throw new InvalidOperationException("Cannot capture an element without a valid window handle.");
 
@@ -484,20 +594,26 @@ public partial class VisualElementContext
 
         #region Interop
 
-        private static bool TryGetWindow(AutomationElement? element, out nint hWnd)
+        /// <summary>
+        ///     Attempts to find the nearest ancestor element that has a native window handle (HWND).
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="hWnd"></param>
+        /// <returns></returns>
+        private static AutomationElement? TryGetAncestorWithNativeWindowHandle(AutomationElement? element, out nint hWnd)
         {
             while (element != null)
             {
-                if (element.FrameworkAutomationElement.NativeWindowHandle.TryGetValue(out hWnd))
+                if (element.FrameworkAutomationElement.NativeWindowHandle.TryGetValue(out hWnd) && hWnd != 0)
                 {
-                    return true;
+                    return element;
                 }
 
                 element = TreeWalker.GetParent(element);
             }
 
             hWnd = 0;
-            return false;
+            return null;
         }
 
         /// <summary>
@@ -528,21 +644,75 @@ public partial class VisualElementContext
         {
             protected override IEnumerator<IVisualElement> CreateForwardEnumerator()
             {
-                var sibling = TreeWalker.GetNextSibling(visualElement._element);
+                AutomationElement? sibling;
+                try
+                {
+                    sibling = TreeWalker.GetNextSibling(visualElement._element);
+                }
+                catch
+                {
+                    yield break;
+                }
+
                 while (sibling is not null)
                 {
-                    yield return new AutomationVisualElementImpl(sibling);
-                    sibling = TreeWalker.GetNextSibling(sibling);
+                    AutomationVisualElementImpl item;
+                    try
+                    {
+                        item = new AutomationVisualElementImpl(sibling);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
+
+                    yield return item;
+
+                    try
+                    {
+                        sibling = TreeWalker.GetNextSibling(sibling);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
                 }
             }
 
             protected override IEnumerator<IVisualElement> CreateBackwardEnumerator()
             {
-                var sibling = TreeWalker.GetPreviousSibling(visualElement._element);
+                AutomationElement? sibling;
+                try
+                {
+                    sibling = TreeWalker.GetNextSibling(visualElement._element);
+                }
+                catch
+                {
+                    yield break;
+                }
+
                 while (sibling is not null)
                 {
-                    yield return new AutomationVisualElementImpl(sibling);
-                    sibling = TreeWalker.GetPreviousSibling(sibling);
+                    AutomationVisualElementImpl item;
+                    try
+                    {
+                        item = new AutomationVisualElementImpl(sibling);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
+
+                    yield return item;
+
+                    try
+                    {
+                        sibling = TreeWalker.GetPreviousSibling(sibling);
+                    }
+                    catch
+                    {
+                        yield break;
+                    }
                 }
             }
         }

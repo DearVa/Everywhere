@@ -1,8 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.AI;
-using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.Ollama;
 using OllamaSharp;
 using TextContent = Microsoft.Extensions.AI.TextContent;
 
@@ -15,14 +13,6 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
-    public override PromptExecutionSettings GetPromptExecutionSettings(FunctionChoiceBehavior? functionChoiceBehavior = null) =>
-        new OllamaPromptExecutionSettings
-        {
-            Temperature = (float)_customAssistant.Temperature,
-            TopP = (float)_customAssistant.TopP,
-            FunctionChoiceBehavior = functionChoiceBehavior
-        };
-
     private readonly OllamaApiClient _client;
 
     /// <summary>
@@ -32,7 +22,7 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
     {
         httpClient.BaseAddress = new Uri(Endpoint, UriKind.Absolute);
         _client = new OllamaApiClient(httpClient, ModelId);
-        ChatCompletionService = new OptimizedOllamaApiClient(_client, this).AsChatCompletionService();
+        ChatCompletionService = new OptimizedOllamaApiClient(this, _client).AsChatCompletionService();
     }
 
     public override void Dispose()
@@ -40,16 +30,14 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
         _client.Dispose();
     }
 
-    private sealed partial class OptimizedOllamaApiClient(OllamaApiClient client, OllamaKernelMixin owner) : IChatClient
+    private sealed partial class OptimizedOllamaApiClient(OllamaKernelMixin owner, OllamaApiClient client) : DelegatingChatClient(client)
     {
-        private IChatClient ChatClient => client;
-
-        public async Task<ChatResponse> GetResponseAsync(
+        public override async Task<ChatResponse> GetResponseAsync(
             IEnumerable<ChatMessage> messages,
             ChatOptions? options = null,
             CancellationToken cancellationToken = default)
         {
-            var response = await ChatClient.GetResponseAsync(messages, options, cancellationToken);
+            var response = await base.GetResponseAsync(messages, options, cancellationToken);
             if (!owner.IsDeepThinkingSupported) return response;
 
             // handle reasoning in non-streaming mode, only actual response
@@ -69,14 +57,14 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
                     ]));
         }
 
-        public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
+        public override async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
             IEnumerable<ChatMessage> messages,
             ChatOptions? options = null,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (!owner.IsDeepThinkingSupported)
             {
-                await foreach (var update in ChatClient.GetStreamingResponseAsync(messages, options, cancellationToken))
+                await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken))
                 {
                     yield return update;
                 }
@@ -86,7 +74,7 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
 
             var reasoningState = 0; // 0: not started, 1: started, 2: reasoning, 3: done
             var processedContents = new List<AIContent>();
-            await foreach (var update in ChatClient.GetStreamingResponseAsync(messages, options, cancellationToken))
+            await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken))
             {
                 processedContents.Clear();
                 var hasReasoningContent = false;
@@ -156,16 +144,6 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
 
                 yield return update;
             }
-        }
-
-        public object? GetService(Type serviceType, object? serviceKey = null)
-        {
-            return ChatClient.GetService(serviceType, serviceKey);
-        }
-
-        public void Dispose()
-        {
-            client.Dispose();
         }
 
         [GeneratedRegex(@"<think>(.*?)</think>(.*)", RegexOptions.Singleline)]

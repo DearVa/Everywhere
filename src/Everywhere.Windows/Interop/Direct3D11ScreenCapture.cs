@@ -1,11 +1,10 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using Windows.Graphics;
 using Windows.Graphics.Capture;
 using Windows.Graphics.DirectX;
 using Windows.Graphics.DirectX.Direct3D11;
-using Windows.Graphics.Imaging;
 using Windows.System;
 using Windows.UI.Composition;
 using Windows.Win32;
@@ -15,6 +14,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Vortice;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -31,7 +31,9 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
 {
     private readonly DispatcherQueueController _dispatcherQueueController;
     private readonly IDCompositionDevice2 _dCompositionDevice2;
+    private readonly ID3D11Device _d3d11Device;
     private readonly IDirect3DDevice _direct3dDevice;
+    private readonly ID3D11Texture2D _stagingTexture;
     private readonly Direct3D11CaptureFramePool _framePool;
     private readonly GraphicsCaptureSession _session;
     private readonly IDCompositionVisual2 _dCompositionVisual;
@@ -46,7 +48,7 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
             {
                 apartmentType = DISPATCHERQUEUE_THREAD_APARTMENTTYPE.DQTAT_COM_STA,
                 threadType = DISPATCHERQUEUE_THREAD_TYPE.DQTYPE_THREAD_CURRENT,
-                dwSize = (uint)Marshal.SizeOf<DispatcherQueueOptions>()
+                dwSize = (uint)Unsafe.SizeOf<DispatcherQueueOptions>()
             },
             out _dispatcherQueueController).ThrowOnFailure();
 
@@ -106,8 +108,23 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
         visual.Size = new Vector2(relativeRect.Width, relativeRect.Height);
 
         // 6. Create D3D device and frame pool
-        using var device = D3D11.D3D11CreateDevice(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
-        using var dxgiDevice = device.QueryInterface<IDXGIDevice>();
+        _d3d11Device = D3D11.D3D11CreateDevice(DriverType.Hardware, DeviceCreationFlags.BgraSupport);
+        _stagingTexture = _d3d11Device.CreateTexture2D(
+            new Texture2DDescription
+            {
+                Width = (uint)relativeRect.Width,
+                Height = (uint)relativeRect.Height,
+                ArraySize = 1,
+                BindFlags = BindFlags.None,
+                Usage = ResourceUsage.Staging,
+                CPUAccessFlags = CpuAccessFlags.Read,
+                Format = Format.B8G8R8A8_UNorm,
+                MipLevels = 1,
+                SampleDescription = new SampleDescription(1, 0),
+                MiscFlags = ResourceOptionFlags.None
+            });
+
+        using var dxgiDevice = _d3d11Device.QueryInterface<IDXGIDevice>();
         Marshal.ThrowExceptionForHR(CreateDirect3D11DeviceFromDXGIDevice(dxgiDevice.NativePointer, out var pD3d11Device));
         _direct3dDevice = MarshalInterface<IDirect3DDevice>.FromAbi(pD3d11Device);
 
@@ -128,25 +145,46 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
         var tcs = new TaskCompletionSource<Bitmap>();
         await using var registration = cancellationToken.Register(() => tcs.TrySetCanceled());
 
-        _framePool.FrameArrived += async (f, o) =>
+        _framePool.FrameArrived += (f, _) =>
         {
             using var frame = f.TryGetNextFrame();
             if (frame is null) return;
 
-            using var sourceBitmap = await SoftwareBitmap.CreateCopyFromSurfaceAsync(frame.Surface);
-            using var buffer = sourceBitmap.LockBuffer(BitmapBufferAccessMode.Read);
-            using var reference = buffer.CreateReference();
-            reference.As<IMemoryBufferByteAccess>().GetBuffer(out var pBuffer, out _);
+            try
+            {
+                // Get the underlying ID3D11Texture2D from the frame's
+                var access = frame.Surface.As<IDirect3DDxgiInterfaceAccess>();
 
-            var bitmap = new Bitmap(
-                PixelFormat.Bgra8888,
-                AlphaFormat.Premul,
-                pBuffer,
-                new PixelSize(sourceBitmap.PixelWidth, sourceBitmap.PixelHeight),
-                new Vector(96d, 96d),
-                buffer.GetPlaneDescription(0).Stride
-            );
-            tcs.TrySetResult(bitmap);
+                var textureGuid = typeof(ID3D11Texture2D).GUID;
+                var pTexture = access.GetInterface(textureGuid);
+                using var sourceTexture = new ID3D11Texture2D(pTexture);
+
+                var immediateContext = _d3d11Device.ImmediateContext;
+                immediateContext.CopyResource(_stagingTexture, sourceTexture);
+                var mapBox = immediateContext.Map(_stagingTexture, 0);
+
+                try
+                {
+                    var bitmap = new Bitmap(
+                        PixelFormat.Bgra8888,
+                        AlphaFormat.Premul,
+                        mapBox.DataPointer,
+                        new PixelSize(frame.ContentSize.Width, frame.ContentSize.Height),
+                        new Vector(96d, 96d),
+                        (int)mapBox.RowPitch
+                    );
+
+                    tcs.TrySetResult(bitmap);
+                }
+                finally
+                {
+                    immediateContext.Unmap(_stagingTexture, 0);
+                }
+            }
+            catch (Exception ex)
+            {
+                tcs.TrySetException(ex);
+            }
         };
 
         _session.StartCapture();
@@ -173,7 +211,7 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
         await _dispatcherQueueController.ShutdownQueueAsync();
     }
 
-    public static async Task<Bitmap> CaptureAsync(nint sourceHWnd, PixelRect relativeRect, CancellationToken cancellationToken = default)
+    public static Task<Bitmap> CaptureAsync(nint sourceHWnd, PixelRect relativeRect, CancellationToken cancellationToken = default)
     {
         var targetHWnd = (Application.Current?.ApplicationLifetime as ClassicDesktopStyleApplicationLifetime)
             ?.Windows.FirstOrDefault()
@@ -183,15 +221,11 @@ public sealed partial class Direct3D11ScreenCapture : IAsyncDisposable
             throw new InvalidOperationException("Failed to get target window handle.");
         }
 
-        await using var capturer = new Direct3D11ScreenCapture(sourceHWnd, targetHWnd, relativeRect);
-        return await capturer.CaptureFrameAsync(cancellationToken);
-    }
-
-    [GeneratedComInterface]
-    [Guid("5b0d3235-4dba-4d44-865e-8f1d0e4fd04d")]
-    internal partial interface IMemoryBufferByteAccess
-    {
-        void GetBuffer(out nint buffer, out uint capacity);
+        return Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            await using var screenCapture = new Direct3D11ScreenCapture(sourceHWnd, targetHWnd, relativeRect);
+            return await screenCapture.CaptureFrameAsync(cancellationToken);
+        });
     }
 
     [Flags]

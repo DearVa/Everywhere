@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using System.Text.Json;
-using Anthropic.SDK.Messaging;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.AI;
@@ -10,6 +8,7 @@ using Everywhere.Chat.Plugins;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
+using Everywhere.Storage;
 using Everywhere.Utilities;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
@@ -19,14 +18,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OpenAI.Chat;
-using Serilog;
 using ZLinq;
 using ChatFunction = Everywhere.Chat.Plugins.ChatFunction;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;
 using FunctionCallContent = Microsoft.SemanticKernel.FunctionCallContent;
 using FunctionResultContent = Microsoft.SemanticKernel.FunctionResultContent;
-using ImageContent = Microsoft.SemanticKernel.ImageContent;
-using TextContent = Microsoft.SemanticKernel.TextContent;
 
 namespace Everywhere.Chat;
 
@@ -34,7 +30,9 @@ public sealed partial class ChatService(
     IChatContextManager chatContextManager,
     IChatPluginManager chatPluginManager,
     IKernelMixinFactory kernelMixinFactory,
+    IBlobStorage blobStorage,
     Settings settings,
+    PersistentState persistentState,
     ILogger<ChatService> logger
 ) : IChatService, IChatPluginUserInterface
 {
@@ -53,6 +51,7 @@ public sealed partial class ChatService(
     }
 
     private readonly ActivitySource _activitySource = new(typeof(ChatService).FullName.NotNull());
+    private readonly Stack<FunctionCallContext> _functionCallContextStack = new();
     private FunctionCallContext? _currentFunctionCallContext;
 
     public async Task SendMessageAsync(UserChatMessage message, CancellationToken cancellationToken)
@@ -71,7 +70,7 @@ public sealed partial class ChatService(
         var assistantChatMessage = new AssistantChatMessage { IsBusy = true };
         chatContext.Add(assistantChatMessage);
 
-        await Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken), cancellationToken);
+        await RunGenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
     }
 
     public async Task RetryAsync(ChatMessageNode node, CancellationToken cancellationToken)
@@ -90,7 +89,7 @@ public sealed partial class ChatService(
         var assistantChatMessage = new AssistantChatMessage { IsBusy = true };
         node.Context.CreateBranchOn(node, assistantChatMessage);
 
-        await Task.Run(() => GenerateAsync(node.Context, customAssistant, assistantChatMessage, cancellationToken), cancellationToken);
+        await RunGenerateAsync(node.Context, customAssistant, assistantChatMessage, cancellationToken);
     }
 
     public async Task EditAsync(ChatMessageNode originalNode, UserChatMessage newMessage, CancellationToken cancellationToken)
@@ -115,7 +114,7 @@ public sealed partial class ChatService(
         var assistantChatMessage = new AssistantChatMessage { IsBusy = true };
         chatContext.Add(assistantChatMessage);
 
-        await Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken), cancellationToken);
+        await RunGenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
     }
 
     private async Task ProcessUserChatMessageAsync(
@@ -127,154 +126,77 @@ public sealed partial class ChatService(
         using var activity = _activitySource.StartActivity();
         activity?.SetTag("chat.context.id", chatContext.Metadata.Id);
 
-        var attachmentTagValues = activity is null ? null : new List<object>();
-        var validVisualElements = new List<IVisualElement>();
-        foreach (var attachment in userChatMessage.Attachments.AsValueEnumerable().Take(10))
+        // All ChatVisualElementAttachment should be strongly referenced here.
+        // So we have to need to check alive status before building visual tree XML.
+        var visualElementAttachments = userChatMessage
+            .Attachments
+            .AsValueEnumerable()
+            .OfType<ChatVisualElementAttachment>()
+            .ToList();
+
+        if (visualElementAttachments.Count == 0) return;
+
+        var analyzingContextMessage = new ActionChatMessage(
+            new AuthorRole("action"),
+            LucideIconKind.TextSearch,
+            LocaleKey.ActionChatMessage_Header_AnalyzingContext)
         {
-            switch (attachment)
-            {
-                case ChatTextAttachment textAttachment:
-                {
-                    attachmentTagValues?.Add(
-                        new
-                        {
-                            type = "text",
-                            length = textAttachment.Text.Length
-                        });
-                    break;
-                }
-                case ChatFileAttachment fileAttachment:
-                {
-                    attachmentTagValues?.Add(
-                        new
-                        {
-                            type = "file",
-                            mime_type = fileAttachment.MimeType,
-                            file_size = GetFileSize(fileAttachment.FilePath)
-                        });
-                    break;
-                }
-                case ChatVisualElementAttachment visualElement:
-                {
-                    var element = visualElement.Element?.Target;
-                    if (element is not null) validVisualElements.Add(element);
+            IsBusy = true
+        };
 
-                    attachmentTagValues?.Add(
-                        new
-                        {
-                            type = "element",
-                            element_type = element?.Type.ToString() ?? "invalid",
-                        });
-
-                    break;
-                }
-            }
-        }
-
-        activity?.SetTag("attachments", JsonSerializer.Serialize(attachmentTagValues));
-
-        if (validVisualElements.Count > 0)
+        try
         {
-            var analyzingContextMessage = new ActionChatMessage(
-                new AuthorRole("action"),
-                LucideIconKind.TextSearch,
-                LocaleKey.ActionChatMessage_Header_AnalyzingContext)
-            {
-                IsBusy = true
-            };
+            chatContext.Add(analyzingContextMessage);
 
-            try
-            {
-                chatContext.Add(analyzingContextMessage);
+            // Building the visual tree XML includes the following steps:
+            // 1. Gather required parameters, such as max tokens, detail level, etc.
+            // 2. Group the visual elements and build the XML in separate tasks.
+            // 3. Populate result into ChatVisualElementAttachment.Xml
 
-                var maxTokens = customAssistant.MaxTokens.ActualValue;
-                var approximateTokenLimit = Math.Min(settings.Internal.VisualTreeTokenLimit, maxTokens / 2);
-                var detailLevel = settings.ChatWindow.VisualTreeDetailLevel;
-                var xmlBuilder = new VisualTreeXmlBuilder(
-                    validVisualElements,
-                    approximateTokenLimit,
-                    chatContext.VisualElements.Count + 1,
-                    detailLevel);
-                var renderedVisualTreePrompt = await Task.Run(
-                    () =>
+            var maxTokens = Math.Max(customAssistant.MaxTokens, 4096);
+            var approximateTokenLimit = Math.Min(persistentState.VisualTreeTokenLimit, maxTokens / 10);
+            var detailLevel = settings.ChatWindow.VisualTreeDetailLevel;
+
+            await Task.Run(
+                () =>
+                {
+                    // Build and populate the XML for visual elements.
+                    var builtVisualElements = VisualTreeBuilder.BuildAndPopulate(
+                        visualElementAttachments,
+                        approximateTokenLimit,
+                        chatContext.VisualElements.Count + 1,
+                        detailLevel,
+                        cancellationToken);
+
+                    // Adds the visual elements to the chat context for future reference.
+                    chatContext.VisualElements.AddRange(builtVisualElements);
+
+                    // Then deactivate all the references, making them weak references.
+                    foreach (var reference in userChatMessage
+                                 .Attachments
+                                 .AsValueEnumerable()
+                                 .OfType<ChatVisualElementAttachment>()
+                                 .Select(a => a.Element)
+                                 .OfType<ResilientReference<IVisualElement>>())
                     {
-                        // ReSharper disable once ExplicitCallerInfoArgument
-                        using var builderActivity = _activitySource.StartActivity("BuildVisualTreeXml");
+                        reference.IsActive = false;
+                    }
 
-                        var xml = xmlBuilder.BuildXml(cancellationToken);
-                        var builtVisualElements = xmlBuilder.BuiltVisualElements;
-                        builderActivity?.SetTag("xml.length", xml.Length);
-                        builderActivity?.SetTag("xml.detail_level", detailLevel);
-                        builderActivity?.SetTag("xml.length_limit", approximateTokenLimit);
-                        builderActivity?.SetTag("xml.built_visual_elements.count", builtVisualElements.Count);
-
-                        string focusedElementIdString;
-                        if (builtVisualElements.FirstOrDefault(kv => ReferenceEquals(kv.Value, validVisualElements[0])) is
-                            { Key: var focusedElementId, Value: not null })
-                        {
-                            focusedElementIdString = focusedElementId.ToString();
-                        }
-                        else
-                        {
-                            focusedElementIdString = "null";
-                        }
-
-                        // Adds the visual elements to the chat context for future reference.
-                        chatContext.VisualElements.AddRange(builtVisualElements);
-
-                        // Then deactivate all the references, making them weak references.
-                        foreach (var reference in userChatMessage
-                                     .Attachments
-                                     .AsValueEnumerable()
-                                     .OfType<ChatVisualElementAttachment>()
-                                     .Select(a => a.Element)
-                                     .OfType<ResilientReference<IVisualElement>>())
-                        {
-                            reference.IsActive = false;
-                        }
-
-                        return Prompts.RenderPrompt(
-                            Prompts.VisualTreePrompt,
-                            new Dictionary<string, Func<string>>
-                            {
-                                { "VisualTree", () => xml },
-                                { "FocusedElementId", () => focusedElementIdString },
-                            });
-                    },
-                    cancellationToken);
-                userChatMessage.UserPrompt = renderedVisualTreePrompt + "\n\n" + userChatMessage.UserPrompt;
-            }
-            catch (Exception e)
-            {
-                e = HandledChatException.Handle(e);
-                activity?.SetStatus(ActivityStatusCode.Error, e.Message.Trim());
-                analyzingContextMessage.ErrorMessageKey = e.GetFriendlyMessage();
-                logger.LogError(e, "Error analyzing visual tree");
-            }
-            finally
-            {
-                analyzingContextMessage.FinishedAt = DateTimeOffset.UtcNow;
-                analyzingContextMessage.IsBusy = false;
-            }
+                    // After this, only the chat context holds strong references to the visual elements.
+                },
+                cancellationToken);
         }
-
-        // Append tool use prompt if enabled.
-        // if (settings.Internal.IsToolCallEnabled)
-        // {
-        //     userChatMessage.UserPrompt += Prompts.TryUseToolUserPrompt;
-        // }
-
-        static long GetFileSize(string filePath)
+        catch (Exception e)
         {
-            try
-            {
-                var fileInfo = new FileInfo(filePath);
-                return fileInfo.Exists ? fileInfo.Length : 0;
-            }
-            catch
-            {
-                return 0;
-            }
+            e = HandledChatException.Handle(e);
+            activity?.SetStatus(ActivityStatusCode.Error, e.Message.Trim());
+            analyzingContextMessage.ErrorMessageKey = e.GetFriendlyMessage();
+            logger.LogError(e, "Error analyzing visual tree");
+        }
+        finally
+        {
+            analyzingContextMessage.FinishedAt = DateTimeOffset.UtcNow;
+            analyzingContextMessage.IsBusy = false;
         }
     }
 
@@ -285,10 +207,8 @@ public sealed partial class ChatService(
         try
         {
             var kernelMixin = kernelMixinFactory.GetOrCreate(customAssistant);
-            activity?.SetTag("llm.provider.id", customAssistant.ModelProviderTemplateId);
-            activity?.SetTag("llm.model.id", customAssistant.ModelDefinitionTemplateId);
-            activity?.SetTag("llm.model.actual_id", customAssistant.ModelId.ActualValue);
-            activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens.ActualValue);
+            activity?.SetTag("llm.model.id", customAssistant.ModelId);
+            activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens);
             return kernelMixin;
         }
         catch (Exception e)
@@ -316,16 +236,19 @@ public sealed partial class ChatService(
 
         var builder = Kernel.CreateBuilder();
 
+        builder.Services.AddSingleton(this);
         builder.Services.AddSingleton(kernelMixin.ChatCompletionService);
+        builder.Services.AddSingleton(chatContextManager);
         builder.Services.AddSingleton(chatContext);
+        builder.Services.AddSingleton(customAssistant);
         builder.Services.AddSingleton<IChatPluginUserInterface>(this);
 
-        if (kernelMixin.IsFunctionCallingSupported && settings.Internal.IsToolCallEnabled)
+        if (kernelMixin.IsFunctionCallingSupported && persistentState.IsToolCallEnabled)
         {
             var needToStartMcp = chatPluginManager.McpPlugins.AsValueEnumerable().Any(p => p is { IsEnabled: true, IsRunning: false });
             using var _ = needToStartMcp ? chatContext.SetBusyMessage(new DynamicResourceKey(LocaleKey.ChatContext_BusyMessage_StartingMcp)) : null;
 
-            var chatPluginScope = await chatPluginManager.CreateScopeAsync(chatContext, customAssistant, cancellationToken);
+            var chatPluginScope = await chatPluginManager.CreateScopeAsync(cancellationToken);
             builder.Services.AddSingleton(chatPluginScope);
             activity?.SetTag("plugins.count", chatPluginScope.Plugins.AsValueEnumerable().Count());
 
@@ -338,7 +261,36 @@ public sealed partial class ChatService(
         return builder.Build();
     }
 
-    private async Task GenerateAsync(
+    /// <summary>
+    /// Runs the GenerateAsync method in a separate task.
+    /// This will clear the function call context stack before running.
+    /// Means a fresh generation.
+    /// </summary>
+    /// <param name="chatContext"></param>
+    /// <param name="customAssistant"></param>
+    /// <param name="assistantChatMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private Task RunGenerateAsync(
+        ChatContext chatContext,
+        CustomAssistant customAssistant,
+        AssistantChatMessage assistantChatMessage,
+        CancellationToken cancellationToken)
+    {
+        // Clear the function call context stack.
+        _functionCallContextStack.Clear();
+
+        return Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken), cancellationToken);
+    }
+
+    /// <summary>
+    /// Generates a response for the given chat context and assistant chat message.
+    /// </summary>
+    /// <param name="chatContext"></param>
+    /// <param name="customAssistant"></param>
+    /// <param name="assistantChatMessage"></param>
+    /// <param name="cancellationToken"></param>
+    public async Task GenerateAsync(
         ChatContext chatContext,
         CustomAssistant customAssistant,
         AssistantChatMessage assistantChatMessage,
@@ -354,23 +306,18 @@ public sealed partial class ChatService(
             var kernelMixin = CreateKernelMixin(customAssistant);
             var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, cancellationToken);
 
-            var chatHistory = new ChatHistory();
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
-            chatContext.SystemPrompt = Prompts.RenderPrompt(customAssistant.SystemPrompt.ActualValue, chatContextManager.SystemPromptVariables);
+            chatContextManager.PopulateSystemPrompt(chatContext, customAssistant.SystemPrompt);
 
-            // Build the chat history from the chat context.
-            foreach (var chatMessage in chatContext
-                         .AsValueEnumerable()
-                         .Select(n => n.Message)
-                         .Where(m => !ReferenceEquals(m, assistantChatMessage)) // exclude the current assistant message
-                         .Where(m => m.Role.Label is "system" or "assistant" or "user" or "tool")
-                         .ToList()) // make a snapshot, otherwise async may cause thread deadlock
-            {
-                await foreach (var chatMessageContent in CreateChatMessageContentsAsync(chatMessage, cancellationToken))
-                {
-                    chatHistory.Add(chatMessageContent);
-                }
-            }
+            var chatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
+                chatContext
+                    .Items
+                    .AsValueEnumerable()
+                    .Select(n => n.Message)
+                    .Where(m => !ReferenceEquals(m, assistantChatMessage)) // exclude the current assistant message
+                    .Where(m => m.Role.Label is "system" or "assistant" or "user" or "tool")
+                    .ToList(), // make a snapshot, otherwise async may cause thread deadlock
+                cancellationToken);
 
             var toolCallCount = 0;
             while (true)
@@ -466,16 +413,14 @@ public sealed partial class ChatService(
 
         AuthorRole? authorRole = null;
         var assistantContentBuilder = new StringBuilder();
-        var functionCallContentBuilder = new BetterFunctionCallContentBuilder();
+        var functionCallContentBuilder = new FunctionCallContentBuilder();
         var promptExecutionSettings = kernelMixin.GetPromptExecutionSettings(
-            kernelMixin.IsFunctionCallingSupported && settings.Internal.IsToolCallEnabled ?
+            kernelMixin.IsFunctionCallingSupported && persistentState.IsToolCallEnabled ?
                 FunctionChoiceBehavior.Auto(autoInvoke: false) :
                 null);
 
-        activity?.SetTag("llm.provider.id", customAssistant.ModelProviderTemplateId);
-        activity?.SetTag("llm.model.id", customAssistant.ModelDefinitionTemplateId);
-        activity?.SetTag("llm.model.actual_id", customAssistant.ModelId.ActualValue);
-        activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens.ActualValue);
+        activity?.SetTag("llm.model.id", customAssistant.ModelId);
+        activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens);
 
         IDisposable? callingToolsBusyMessage = null;
 
@@ -506,13 +451,6 @@ public sealed partial class ChatService(
                             inputTokenCount = Math.Max(inputTokenCount, usageDetails.InputTokenCount ?? 0);
                             outputTokenCount = Math.Max(outputTokenCount, usageDetails.OutputTokenCount ?? 0);
                             totalTokenCount = Math.Max(totalTokenCount, usageDetails.TotalTokenCount ?? 0);
-                            break;
-                        }
-                        case Usage anthropicUsage:
-                        {
-                            inputTokenCount = Math.Max(inputTokenCount, anthropicUsage.InputTokens);
-                            outputTokenCount = Math.Max(outputTokenCount, anthropicUsage.OutputTokens);
-                            totalTokenCount = Math.Max(totalTokenCount, anthropicUsage.InputTokens + anthropicUsage.OutputTokens);
                             break;
                         }
                         case ChatTokenUsage openAIUsage:
@@ -546,6 +484,20 @@ public sealed partial class ChatService(
                             await HandleReasoningMessageAsync(reasoningContent.Text);
                             break;
                         }
+                    }
+
+                    // Handle binary content separately.
+                    if (item.InnerContent is BinaryContent { Data: not null, MimeType: not null } binaryContent &&
+                        FileUtilities.IsOfCategory(binaryContent.MimeType, FileTypeCategory.Image) &&
+                        (binaryContent.Metadata?.TryGetValue("thumbnail", out var isThumbnail) is not true || isThumbnail is false))
+                    {
+                        using var memoryStream = new MemoryStream(binaryContent.Data.Value.ToArray());
+                        var blob = await blobStorage.StorageBlobAsync(memoryStream, binaryContent.MimeType, cancellationToken);
+                        chatSpan.ImageOutput = new ChatFileAttachment(
+                            new DynamicResourceKey(string.Empty),
+                            blob.LocalPath,
+                            blob.Sha256,
+                            blob.MimeType);
                     }
 
                     bool IsReasoningContent(StreamingKernelContent content) =>
@@ -585,13 +537,17 @@ public sealed partial class ChatService(
         }
 
         // Mark the reasoning as finished if we have any reasoning output.
-        if (chatSpan.ReasoningOutput is not null && chatSpan.ReasoningFinishedAt is null)
+        if (!chatSpan.ReasoningOutput.IsNullOrEmpty() && chatSpan.ReasoningFinishedAt is null)
         {
             chatSpan.ReasoningFinishedAt = DateTimeOffset.UtcNow;
         }
 
         // Finally, add the assistant message to the chat history.
-        if (assistantContentBuilder.Length > 0) chatHistory.AddAssistantMessage(assistantContentBuilder.ToString());
+        if (assistantContentBuilder.Length > 0)
+        {
+            // Don't forget to add reasoning content metadata.
+            chatHistory.AddMessage(AuthorRole.Assistant, assistantContentBuilder.ToString(), metadata: TryCreateReasoningMetadata(chatSpan));
+        }
 
         assistantChatMessage.InputTokenCount = inputTokenCount;
         assistantChatMessage.OutputTokenCount = outputTokenCount;
@@ -687,7 +643,10 @@ public sealed partial class ChatService(
                 chatSpan.AddFunctionCall(missingFunctionMessage);
 
                 // Add call message to the chat history.
-                var missingFunctionCallMessage = new ChatMessageContent(AuthorRole.Assistant, content: null);
+                var missingFunctionCallMessage = new ChatMessageContent(
+                    AuthorRole.Assistant,
+                    content: null,
+                    metadata: TryCreateReasoningMetadata(chatSpan));
                 missingFunctionCallMessage.Items.AddRange(functionCallContentGroup);
                 chatHistory.Add(missingFunctionCallMessage);
 
@@ -709,7 +668,7 @@ public sealed partial class ChatService(
                 }
 
                 missingFunctionMessage.ErrorMessageKey = new FormattedDynamicResourceKey(
-                    LocaleKey.ChatPlugin_Common_FunctionNotFound,
+                    LocaleKey.HandledFunctionInvokingException_FunctionNotFound,
                     new DirectResourceKey(functionCallContentGroup.Key));
 
                 continue;
@@ -721,6 +680,14 @@ public sealed partial class ChatService(
             {
                 IsBusy = true,
             };
+
+            // Set the current function call context.
+            // Push the previous context to the stack, allowing nested function calls.
+            if (_currentFunctionCallContext is not null)
+            {
+                _functionCallContextStack.Push(_currentFunctionCallContext);
+            }
+
             _currentFunctionCallContext = new FunctionCallContext(
                 kernel,
                 chatContext,
@@ -731,7 +698,10 @@ public sealed partial class ChatService(
             chatSpan.AddFunctionCall(functionCallChatMessage);
 
             // Add call message to the chat history.
-            var functionCallMessage = new ChatMessageContent(AuthorRole.Assistant, content: null);
+            var functionCallMessage = new ChatMessageContent(
+                AuthorRole.Assistant,
+                content: null,
+                metadata: TryCreateReasoningMetadata(chatSpan));
             chatHistory.Add(functionCallMessage);
 
             try
@@ -782,7 +752,9 @@ public sealed partial class ChatService(
                     // Some functions may return attachments (e.g., images, audio, files).
                     // We need to add them to the function call chat message as well.
                     // This is a workaround to include additional tool call results that are not part of the standard function call results.
-                    if (await TryCreateExtraToolCallResultsContentAsync(resultContent, cancellationToken) is { } extraToolCallResultsContent)
+                    if (await ChatHistoryBuilder.TryCreateExtraToolCallResultsContentAsync(
+                            resultContent,
+                            cancellationToken) is { } extraToolCallResultsContent)
                     {
                         chatHistory.Add(extraToolCallResultsContent);
                     }
@@ -798,7 +770,16 @@ public sealed partial class ChatService(
             {
                 functionCallChatMessage.FinishedAt = DateTimeOffset.UtcNow;
                 functionCallChatMessage.IsBusy = false;
-                _currentFunctionCallContext = null;
+
+                // Restore the previous function call context.
+                if (_functionCallContextStack.Count > 0)
+                {
+                    _currentFunctionCallContext = _functionCallContextStack.Pop();
+                }
+                else
+                {
+                    _currentFunctionCallContext = null;
+                }
 
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -898,7 +879,7 @@ public sealed partial class ChatService(
         }
         catch (Exception ex)
         {
-            ex = HandledSystemException.Handle(ex, true); // treat all as expected
+            ex = HandledFunctionInvokingException.Handle(ex);
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
             logger.LogError(ex, "Error invoking function '{FunctionName}'", content.FunctionName);
 
@@ -909,181 +890,12 @@ public sealed partial class ChatService(
     }
 
     /// <summary>
-    /// Creates chat message contents from a chat message.
+    /// Creates reasoning metadata if the reasoning content is not null or empty.
     /// </summary>
-    /// <param name="chatMessage"></param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="span"></param>
     /// <returns></returns>
-    private static async IAsyncEnumerable<ChatMessageContent> CreateChatMessageContentsAsync(
-        ChatMessage chatMessage,
-        [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        switch (chatMessage)
-        {
-            case SystemChatMessage system:
-            {
-                yield return new ChatMessageContent(chatMessage.Role, system.SystemPrompt);
-                break;
-            }
-            case AssistantChatMessage assistant:
-            {
-                // ReSharper disable once ForCanBeConvertedToForeach
-                // foreach would create an enumerator object, which will cause thread lock issues.
-                for (var spanIndex = 0; spanIndex < assistant.Spans.Count; spanIndex++)
-                {
-                    var span = assistant.Spans[spanIndex];
-                    if (span.MarkdownBuilder.Length > 0)
-                    {
-                        yield return new ChatMessageContent(chatMessage.Role, span.MarkdownBuilder.ToString());
-                    }
-
-                    // ReSharper disable once ForCanBeConvertedToForeach
-                    // foreach would create an enumerator object, which will cause thread lock issues.
-                    for (var callIndex = 0; callIndex < span.FunctionCalls.Count; callIndex++)
-                    {
-                        var functionCallChatMessage = span.FunctionCalls[callIndex];
-                        await foreach (var actionChatMessageContent in CreateChatMessageContentsAsync(functionCallChatMessage, cancellationToken))
-                        {
-                            yield return actionChatMessageContent;
-                        }
-                    }
-                }
-                break;
-            }
-            case UserChatMessage user:
-            {
-                var content = new ChatMessageContent(chatMessage.Role, user.UserPrompt);
-
-                // snapshot the attachments to avoid thread issues.
-                foreach (var chatAttachment in user.Attachments.ToList())
-                {
-                    await AddAttachmentToChatMessageContentAsync(chatAttachment, content, cancellationToken);
-                }
-
-                yield return content;
-                break;
-            }
-            case FunctionCallChatMessage functionCall:
-            {
-                var functionCallMessage = new ChatMessageContent(AuthorRole.Assistant, content: null);
-                functionCallMessage.Items.AddRange(functionCall.Calls);
-                yield return functionCallMessage;
-
-                // ReSharper disable once ForCanBeConvertedToForeach
-                // foreach would create an enumerator object, which will cause thread lock issues.
-                for (var callIndex = 0; callIndex < functionCall.Calls.Count; callIndex++)
-                {
-                    var callId = functionCall.Calls[callIndex].Id;
-                    if (callId.IsNullOrEmpty())
-                    {
-                        throw new InvalidOperationException("Function call ID cannot be null or empty when creating chat message contents.");
-                    }
-
-                    var result = functionCall.Results.AsValueEnumerable().FirstOrDefault(r => r.CallId == callId);
-                    yield return result?.ToChatMessage() ?? new ChatMessageContent(
-                        AuthorRole.Tool,
-                        [
-                            new FunctionResultContent(
-                                functionCall.Calls[callIndex],
-                                $"Error: No result found for function call ID '{callId}'. " +
-                                $"This may caused by an error during function execution or user cancellation.")
-                        ]);
-
-                    if (result is not null &&
-                        await TryCreateExtraToolCallResultsContentAsync(result, cancellationToken) is { } extraToolCallResultsContent)
-                    {
-                        yield return extraToolCallResultsContent;
-                    }
-                }
-
-                break;
-            }
-            case { Role.Label: "system" or "user" or "developer" or "tool" }:
-            {
-                yield return new ChatMessageContent(chatMessage.Role, chatMessage.ToString());
-                break;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Creates extra tool call results content if there are any attachments in the function call chat message.
-    /// This is a workaround to include additional tool call results that are not part of the standard function call results. e.g. images, audio, etc.
-    /// </summary>
-    /// <param name="functionResultContent"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private static async ValueTask<ChatMessageContent?> TryCreateExtraToolCallResultsContentAsync(
-        FunctionResultContent functionResultContent,
-        CancellationToken cancellationToken)
-    {
-        if (functionResultContent.Result is not ChatAttachment chatAttachment) return null;
-
-        var content = new ChatMessageContent(AuthorRole.User, "Extra tool call results in order");
-        await AddAttachmentToChatMessageContentAsync(chatAttachment, content, cancellationToken);
-        return content;
-    }
-
-    /// <summary>
-    /// Adds attachment to the chat message content. This method supports up to 10 attachments and will load file attachments from disk.
-    /// </summary>
-    /// <param name="attachment"></param>
-    /// <param name="content"></param>
-    /// <param name="cancellationToken"></param>
-    private static async ValueTask AddAttachmentToChatMessageContentAsync(
-        ChatAttachment attachment,
-        ChatMessageContent content,
-        CancellationToken cancellationToken)
-    {
-        switch (attachment)
-        {
-            case ChatTextAttachment text:
-            {
-                content.Items.Add(new TextContent(text.Text));
-                break;
-            }
-            case ChatFileAttachment file:
-            {
-                byte[] data;
-
-                var fileInfo = new FileInfo(file.FilePath);
-                if (!fileInfo.Exists || fileInfo.Length <= 0 || fileInfo.Length > 25 * 1024 * 1024) // TODO: Configurable max file size?
-                {
-                    return;
-                }
-
-                try
-                {
-                    data = await File.ReadAllBytesAsync(file.FilePath, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    // If we fail to read the file, just skip it.
-                    // The file might be deleted or moved.
-                    // We don't want to fail the whole message because of one attachment.
-                    // Just log the error and continue.
-                    ex = HandledSystemException.Handle(ex, true); // treat all as expected
-                    Log.ForContext<ChatService>().Warning(ex, "Failed to read attachment file '{FilePath}'", file.FilePath);
-                    return;
-                }
-
-                if (FileUtilities.IsOfCategory(file.MimeType, FileTypeCategory.Audio))
-                {
-                    content.Items.Add(new AudioContent(data, file.MimeType));
-                }
-                else if (FileUtilities.IsOfCategory(file.MimeType, FileTypeCategory.Image))
-                {
-                    content.Items.Add(new ImageContent(data, file.MimeType));
-                }
-                else
-                {
-                    content.Items.Add(new BinaryContent(data, file.MimeType));
-                }
-
-                break;
-            }
-        }
-    }
+    private static Dictionary<string, object?>? TryCreateReasoningMetadata(AssistantChatMessageSpan span) =>
+        span.ReasoningOutput.IsNullOrEmpty() ? null : new Dictionary<string, object?> { { "reasoning_content", span.ReasoningOutput } };
 
     private async Task GenerateTitleAsync(
         IKernelMixin kernelMixin,

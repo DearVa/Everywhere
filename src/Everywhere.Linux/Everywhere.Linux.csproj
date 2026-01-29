@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Everywhere</AssemblyName>
+    <ApplicationTitle>Everywhere</ApplicationTitle>
+    <SelfContained>true</SelfContained>
+    <TargetFramework>$(TargetFrameworkPrefix)</TargetFramework>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationIcon>..\..\img\Everywhere.ico</ApplicationIcon>
+    <IsDeploymentTarget>true</IsDeploymentTarget>
+    <UseAppHost>true</UseAppHost>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="HotAvalonia" PrivateAssets="All" Condition=" '$(Configuration)' == 'Debug' " />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+    <PackageReference Include="Tmds.LibC" />
+    <PackageReference Include="X11.Net" />
+    <PackageReference Include="GirCore.GObject-2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Everywhere.Core\Everywhere.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\img\Everywhere.ico">
+      <Link>Everywhere.ico</Link>
+    </None>
+    <Content Include="$(WatchdogExecutable)">
+      <Link>Everywhere.Watchdog</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Import Project="..\Build.Watchdog.targets" />
+</Project>

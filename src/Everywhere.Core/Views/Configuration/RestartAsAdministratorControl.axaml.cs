@@ -1,12 +1,14 @@
-﻿using Avalonia.Controls.Primitives;
+﻿using System.Runtime.Versioning;
+using Avalonia.Controls.Primitives;
 using CommunityToolkit.Mvvm.Input;
 using Everywhere.Common;
 using Everywhere.Interop;
 using Microsoft.Extensions.Logging;
 using ShadUI;
 
-namespace Everywhere.Views.Configuration;
+namespace Everywhere.Views;
 
+[SupportedOSPlatform("windows")]
 public partial class RestartAsAdministratorControl(INativeHelper nativeHelper, ToastManager toastManager, ILogger<RestartAsAdministratorControl> logger)
     : TemplatedControl
 {

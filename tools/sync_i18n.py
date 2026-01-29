@@ -56,7 +56,7 @@ class I18nSync:
         self.model_id = config.model_id
         self.batch_size = config.batch_size
         self.i18n_path = os.path.abspath(config.i18n_path)
-        self.base_resx_path = os.path.join(self.i18n_path, "Strings.resx")
+        self.base_resx_path = os.path.join(self.i18n_path, "Strings.zh-hans.resx")
 
         # Initialize the OpenAI client
         self.client = OpenAI(
@@ -164,6 +164,7 @@ Translation Guidelines:
 7. For proper nouns, brand names, and trademarks (like "Everywhere"), DO NOT TRANSLATE - keep them as is.
 8. Ensure UI text is concise and clear for a software interface.
 9. Return ONLY a valid JSON object with the same keys and translated values. Do NOT add any explanations, comments, or markdown formatting.
+10. For headers, titles, short labels and tooltips, prefer shorter translations and title case where applicable.
 """
         try:
             response = self.client.chat.completions.create(
@@ -206,7 +207,7 @@ Translation Guidelines:
             log(f"[x] Error: Base resource file not found: {self.base_resx_path}")
             return
 
-        log("Reading base resources from Strings.resx...")
+        log(f"Reading base resources from {self.base_resx_path}...")
         base_resources_ordered = self._read_resx_ordered(self.base_resx_path)
         base_resources = dict(base_resources_ordered)
         base_resource_keys = [key for key, _ in base_resources_ordered]
@@ -219,18 +220,28 @@ Translation Guidelines:
 
         for filename in localized_files:
             file_path = os.path.join(self.i18n_path, filename)
-            match = re.match(r'Strings\.(.+)\.resx', filename)
-            if not match:
-                continue
-
-            lang_code = match.group(1)
             lang_comment = self._get_language_comment(file_path)
-            lang_name = lang_comment if lang_comment else lang_code
+            lang_name = lang_comment
+
+            if not lang_name:
+                match = re.match(r'Strings\.(.+)\.resx', filename)
+                if match:
+                    lang_name = match.group(1) # Fallback to language code from filename
+                elif filename == 'Strings.resx':
+                    lang_name = 'English'
+                else:
+                    log(f"  [x] Could not determine language code from filename: {filename}. Skipping.")
+                    continue
 
             log(f"Processing: {filename} ({lang_name})")
             existing_resources = self._read_resx(file_path)
             all_resources = existing_resources.copy()
-            missing_keys = [key for key in base_resources if key not in existing_resources]
+            
+            # Identify keys that are missing OR have empty values in the target file
+            missing_keys = [
+                key for key, val in base_resources.items()
+                if key not in existing_resources or (not existing_resources[key] and val)
+            ]
 
             if not missing_keys:
                 log("  [OK] No missing resources. Verifying order...")
@@ -238,7 +249,7 @@ Translation Guidelines:
                 log("  [OK] File order synchronized.")
                 continue
 
-            log(f"  Found {len(missing_keys)} missing resources.")
+            log(f"  Found {len(missing_keys)} missing or empty resources.")
             to_translate = {}
             for key in missing_keys:
                 if any(re.match(pattern, key) for pattern in NO_TRANSLATE_PATTERNS):
@@ -262,9 +273,7 @@ Translation Guidelines:
 
                     if translations:
                         for key, value in translations.items():
-                            if key in all_resources:
-                                log(f"  ! Warning: AI returned an already existing key '{key}'. Ignoring.")
-                            elif key not in to_translate:
+                            if key not in to_translate:
                                 log(f"  ! Warning: AI returned an unexpected key '{key}'. Ignoring.")
                             else:
                                 all_resources[key] = value

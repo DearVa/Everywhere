@@ -9,6 +9,7 @@ internal static class KnownAttributes
     public const string SettingsIntegerItem = "Everywhere.Configuration.SettingsIntegerItemAttribute";
     public const string SettingsDoubleItem = "Everywhere.Configuration.SettingsDoubleItemAttribute";
     public const string SettingsSelectionItem = "Everywhere.Configuration.SettingsSelectionItemAttribute";
+    public const string SettingsTemplatedItem = "Everywhere.Configuration.SettingsTemplatedItemAttribute";
     public const string SettingsItems = "Everywhere.Configuration.SettingsItemsAttribute";
     public const string DynamicResourceKey = "Everywhere.I18N.DynamicResourceKeyAttribute";
 }

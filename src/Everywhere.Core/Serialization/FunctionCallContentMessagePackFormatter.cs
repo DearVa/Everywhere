@@ -1,34 +1,79 @@
 ﻿using MessagePack;
-using MessagePack.Formatters;
 using Microsoft.SemanticKernel;
 
 namespace Everywhere.Serialization;
 
-public class FunctionCallContentMessagePackFormatter : IMessagePackFormatter<FunctionCallContent?>
+public class FunctionCallContentMessagePackFormatter : FunctionContentMessagePackFormatter<FunctionCallContent>
 {
-    public void Serialize(ref MessagePackWriter writer, FunctionCallContent? value, MessagePackSerializerOptions options)
+    protected override void SerializeCore(ref MessagePackWriter writer, FunctionCallContent value, MessagePackSerializerOptions options)
     {
-        if (value == null)
-        {
-            writer.WriteNil();
-            return;
-        }
+        // Use array for backward compatibility
+        writer.WriteArrayHeader(5);
 
         writer.Write(value.Id);
         writer.Write(value.PluginName);
         writer.Write(value.FunctionName);
-        writer.WriteMapHeader(value.Arguments?.Count ?? 0);
-        if (value.Arguments != null)
-        {
-            foreach (var (key, val) in value.Arguments)
-            {
-                writer.Write(key);
-                writer.Write(val?.ToString());
-            }
-        }
+        SerializeDictionary(ref writer, value.Arguments, options);
+        SerializeDictionary(ref writer, value.Metadata, options);
     }
 
-    public FunctionCallContent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    protected override FunctionCallContent DeserializeCore(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    {
+        string? id = null, pluginName = null, functionName = null;
+        KernelArguments? arguments = null;
+        Dictionary<string, object?>? metadata = null;
+
+        var count = reader.ReadArrayHeader();
+        for (var i = 0; i < count; i++)
+        {
+            switch (i)
+            {
+                case 0:
+                {
+                    id = reader.ReadString();
+                    break;
+                }
+                case 1:
+                {
+                    pluginName = reader.ReadString();
+                    break;
+                }
+                case 2:
+                {
+                    functionName = reader.ReadString();
+                    break;
+                }
+                case 3 when DeserializeDictionary(ref reader, options) is { } dictionary:
+                {
+                    arguments = new KernelArguments(dictionary);
+                    break;
+                }
+                case 4:
+                {
+                    metadata = DeserializeDictionary(ref reader, options);
+                    break;
+                }
+                default:
+                {
+                    // Skip unknown fields for forward compatibility
+                    reader.Skip();
+                    break;
+                }
+            }
+        }
+
+        if (id is null || pluginName is null || functionName is null)
+        {
+            throw new MessagePackSerializationException("FunctionCallContent required fields cannot be null.");
+        }
+
+        return new FunctionCallContent(functionName, pluginName, id, arguments)
+        {
+            Metadata = metadata
+        };
+    }
+
+    protected override FunctionCallContent LegacyDeserializeCore(ref MessagePackReader reader, MessagePackSerializerOptions options)
     {
         var id = reader.ReadString();
         var pluginName = reader.ReadString();

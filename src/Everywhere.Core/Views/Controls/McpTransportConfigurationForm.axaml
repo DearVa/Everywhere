@@ -4,10 +4,6 @@
   xmlns:plugins="clr-namespace:Everywhere.Chat.Plugins" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime" xmlns:v="using:Everywhere.Views"
   xmlns:vc="clr-namespace:Everywhere.ValueConverters">
-  <Design.PreviewWith>
-    <v:McpTransportConfigurationForm/>
-  </Design.PreviewWith>
-
   <ControlTheme
     x:Key="{x:Type v:McpTransportConfigurationForm}"
     TargetType="v:McpTransportConfigurationForm">

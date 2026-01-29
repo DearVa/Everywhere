@@ -1,7 +1,9 @@
 ﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Media;
 using ZLinq;
 
@@ -10,7 +12,7 @@ namespace Everywhere.Configuration;
 /// <summary>
 /// Represents a single settings item for View.
 /// </summary>
-public abstract class SettingsItem : AvaloniaObject
+public abstract class SettingsItem : AvaloniaObject, INotifyDataErrorInfo
 {
     public DynamicResourceKey? HeaderKey { get; set; }
 
@@ -18,9 +20,10 @@ public abstract class SettingsItem : AvaloniaObject
 
     public Classes Classes { get; } = [];
 
-    public object? StyleKey { get; set; }
+    public bool IsExperimental { get; set; }
 
-    public static readonly StyledProperty<object?> ValueProperty = AvaloniaProperty.Register<SettingsItem, object?>(nameof(Value));
+    public static readonly StyledProperty<object?> ValueProperty =
+        AvaloniaProperty.Register<SettingsItem, object?>(nameof(Value), enableDataValidation: true);
 
     public object? Value
     {
@@ -60,12 +63,48 @@ public abstract class SettingsItem : AvaloniaObject
         set => SetValue(IsExpandableProperty, value);
     }
 
+    public static readonly DirectProperty<SettingsItem, IEnumerable<SettingsItem>?> ChildrenProperty =
+        AvaloniaProperty.RegisterDirect<SettingsItem, IEnumerable<SettingsItem>?>(
+        nameof(Children),
+        o => o.Children,
+        (o, v) => o.Children = v);
+
+    public IEnumerable<SettingsItem>? Children
+    {
+        get;
+        set => SetAndRaise(ChildrenProperty, ref field, value);
+    }
+
     /// <summary>
     /// Indicates whether this settings item contains no content (but may have child items).
     /// </summary>
     public virtual bool IsEmpty => false;
 
-    public List<SettingsItem> Items { get; } = [];
+    private object? _error;
+
+    public IEnumerable GetErrors(string? propertyName) => _error is not null ? new[] { _error } : [];
+
+    public static readonly DirectProperty<SettingsItem, bool> HasErrorsProperty =
+        AvaloniaProperty.RegisterDirect<SettingsItem, bool>(nameof(HasErrors), o => o.HasErrors);
+
+    public bool HasErrors => _error is not null;
+
+    public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+    protected override void UpdateDataValidation(AvaloniaProperty property, BindingValueType state, Exception? error)
+    {
+        if (property == ValueProperty) UpdateValueError(state, error);
+    }
+
+    private void UpdateValueError(BindingValueType state, Exception? error)
+    {
+        var oldError = _error;
+        _error = state == BindingValueType.DataValidationError && error is DataValidationException { ErrorData: { } errorData } ? errorData : null;
+        if (Equals(oldError, _error)) return;
+
+        ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(null));
+        RaisePropertyChanged(HasErrorsProperty, false, true);
+    }
 }
 
 public class SettingsBooleanItem : SettingsItem
@@ -316,11 +355,10 @@ public class SettingsCustomizableItem(SettingsItem customValueItem) : SettingsIt
 }
 
 /// <summary>
-/// A settings item that holds a value of a specific type.
-/// TType is used for DataTemplate selection.
+/// A settings item that holds a value of a specific data template.
 /// </summary>
 /// <param name="dataTemplate"></param>
-public abstract class SettingsTypedItem(IDataTemplate? dataTemplate) : SettingsItem
+public abstract class SettingsTemplatedItem(IDataTemplate? dataTemplate) : SettingsItem
 {
     public IDataTemplate? DataTemplate => dataTemplate;
 
@@ -329,34 +367,34 @@ public abstract class SettingsTypedItem(IDataTemplate? dataTemplate) : SettingsI
     /// </summary>
     /// <param name="propertyType"></param>
     /// <returns></returns>
-    public static SettingsTypedItem Create(Type propertyType)
+    public static SettingsTemplatedItem Create(Type propertyType)
     {
         if (Application.Current?.Resources.TryGetResource(propertyType, null, out var resource) is not true ||
             resource is not IDataTemplate dataTemplate)
         {
-            return new EmptySettingsTypedItem();
+            return new EmptySettingsTemplatedItem();
         }
 
-        var typedItem = typeof(SettingsTypedItem<>).MakeGenericType(propertyType);
+        var typedItem = typeof(SettingsTemplatedItem<>).MakeGenericType(propertyType);
         var constructor = typedItem.GetConstructor([typeof(IDataTemplate)]);
-        return (SettingsTypedItem?)constructor?.Invoke([dataTemplate]) ?? new EmptySettingsTypedItem();
+        return (SettingsTemplatedItem?)constructor?.Invoke([dataTemplate]) ?? new EmptySettingsTemplatedItem();
     }
 }
 
 /// <summary>
 /// Stands for a SettingsTypedItem with no specific type, usually used as a placeholder.
 /// </summary>
-public sealed class EmptySettingsTypedItem() : SettingsTypedItem(null)
+public sealed class EmptySettingsTemplatedItem() : SettingsTemplatedItem(null)
 {
     public override bool IsEmpty => true;
 }
 
 /// <summary>
-/// A settings item that holds a value of a specific type.
+/// A settings item that holds a value of a specific data template.
 /// TType is used for DataTemplate selection.
 /// </summary>
 /// <typeparam name="TType"></typeparam>
-public sealed class SettingsTypedItem<TType>(IDataTemplate? dataTemplate) : SettingsTypedItem(dataTemplate);
+public sealed class SettingsTemplatedItem<TType>(IDataTemplate? dataTemplate) : SettingsTemplatedItem(dataTemplate);
 
 /// <summary>
 /// A settings item that contains a custom control.

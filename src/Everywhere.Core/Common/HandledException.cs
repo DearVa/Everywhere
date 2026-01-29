@@ -4,6 +4,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security;
 using System.Security.Authentication;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using MessagePack;
 using Microsoft.SemanticKernel;
 using OllamaSharp.Models.Exceptions;
 
@@ -43,7 +46,7 @@ public class HandledException : Exception
 
     public HandledException(
         Exception originalException,
-        DynamicResourceKey friendlyMessageKey,
+        DynamicResourceKeyBase friendlyMessageKey,
         bool isExpected = true,
         bool showDetails = true
     ) : base(null, originalException)
@@ -62,6 +65,49 @@ public class HandledException : Exception
     protected HandledException(Exception originalException) : base(originalException.Message, originalException)
     {
         FriendlyMessageKey = new DirectResourceKey(originalException.Message.Trim());
+    }
+
+    protected readonly struct NetworkExceptionAnalysis
+    {
+        public bool IsSslError { get; init; }
+        public SocketError? SocketError { get; init; }
+        public bool IsTimeout { get; init; }
+    }
+
+    protected static NetworkExceptionAnalysis AnalyzeNetworkException(Exception exception)
+    {
+        // 1. Check for SSL (AuthenticationException) in chain
+        var current = exception;
+        while (current is not null)
+        {
+            if (current is AuthenticationException)
+            {
+                return new NetworkExceptionAnalysis { IsSslError = true };
+            }
+            current = current.InnerException;
+        }
+
+        // 2. Check for SocketException (Deep search)
+        current = exception;
+        while (current is not null)
+        {
+            if (current is SocketException socketEx)
+            {
+                return new NetworkExceptionAnalysis { SocketError = socketEx.SocketErrorCode };
+            }
+            current = current.InnerException;
+        }
+
+        // 3. Check for Timeout
+        if (exception is TimeoutException ||
+            exception.InnerException is TimeoutException ||
+            (exception is TaskCanceledException && exception.InnerException is TimeoutException) ||
+            (exception is OperationCanceledException && exception.InnerException is TimeoutException))
+        {
+            return new NetworkExceptionAnalysis { IsTimeout = true };
+        }
+
+        return new NetworkExceptionAnalysis();
     }
 }
 
@@ -182,6 +228,31 @@ public enum HandledSystemExceptionType
     /// An argument is outside the range of valid values.
     /// </summary>
     ArgumentOutOfRange,
+
+    /// <summary>
+    /// The SSL connection could not be established.
+    /// </summary>
+    SSLConnectionError,
+
+    /// <summary>
+    /// The connection was refused by the server.
+    /// </summary>
+    ConnectionRefused,
+
+    /// <summary>
+    /// The host could not be found (DNS error).
+    /// </summary>
+    HostNotFound,
+
+    /// <summary>
+    /// Serialization related exception.
+    /// </summary>
+    Serialization,
+
+    /// <summary>
+    /// An error occurred while invoking a function or method.
+    /// </summary>
+    FunctionInvoking,
 }
 
 /// <summary>
@@ -206,7 +277,7 @@ public class HandledSystemException : HandledException
     public HandledSystemException(
         Exception originalException,
         HandledSystemExceptionType type,
-        DynamicResourceKey? customFriendlyMessageKey = null,
+        DynamicResourceKeyBase? customFriendlyMessageKey = null,
         bool isExpected = true
     ) : base(
         originalException,
@@ -236,6 +307,11 @@ public class HandledSystemException : HandledException
                 HandledSystemExceptionType.InvalidFormat => LocaleKey.HandledSystemException_InvalidFormat,
                 HandledSystemExceptionType.ArgumentNull => LocaleKey.HandledSystemException_ArgumentNull,
                 HandledSystemExceptionType.ArgumentOutOfRange => LocaleKey.HandledSystemException_ArgumentOutOfRange,
+                HandledSystemExceptionType.SSLConnectionError => LocaleKey.HandledSystemException_SSLConnectionError,
+                HandledSystemExceptionType.ConnectionRefused => LocaleKey.HandledSystemException_ConnectionRefused,
+                HandledSystemExceptionType.HostNotFound => LocaleKey.HandledSystemException_HostNotFound,
+                HandledSystemExceptionType.Serialization => LocaleKey.HandledSystemException_Serialization,
+                HandledSystemExceptionType.FunctionInvoking => LocaleKey.HandledSystemException_FunctionInvoking,
                 _ => LocaleKey.HandledSystemException_Unknown,
             }),
         isExpected)
@@ -259,15 +335,16 @@ public class HandledSystemException : HandledException
         var context = new ExceptionParsingContext(exception);
         new ParserChain<SpecificExceptionParser,
             ParserChain<SocketExceptionParser,
-                ParserChain<ComExceptionParser,
+                ParserChain<HttpRequestExceptionParser,
+                    ParserChain<ComExceptionParser,
 #if WINDOWS
-                    ParserChain<Win32ExceptionParser,
-                        GeneralExceptionParser
-                    >
+                        ParserChain<Win32ExceptionParser,
+                            GeneralExceptionParser
+                        >
 #else
-                    GeneralExceptionParser
+                        GeneralExceptionParser
 #endif
-                >>>().TryParse(ref context);
+                    >>>>().TryParse(ref context);
 
         return new HandledSystemException(
             originalException: exception,
@@ -322,7 +399,9 @@ public class HandledSystemException : HandledException
                     context.ExceptionType = HandledSystemExceptionType.UnauthorizedAccess;
                     break;
                 case OperationCanceledException:
-                    context.ExceptionType = HandledSystemExceptionType.OperationCancelled;
+                    context.ExceptionType = context.Exception.InnerException is TimeoutException ?
+                        HandledSystemExceptionType.Timeout :
+                        HandledSystemExceptionType.OperationCancelled;
                     break;
                 case TimeoutException:
                     context.ExceptionType = HandledSystemExceptionType.Timeout;
@@ -375,20 +454,75 @@ public class HandledSystemException : HandledException
     }
 
     /// <summary>
+    /// Parses HttpRequestException instances.
+    /// </summary>
+    private readonly struct HttpRequestExceptionParser : IExceptionParser
+    {
+        public bool TryParse(ref ExceptionParsingContext context)
+        {
+            if (context.Exception is not HttpRequestException)
+            {
+                return false;
+            }
+
+            var analysis = AnalyzeNetworkException(context.Exception);
+
+            if (analysis.IsSslError)
+            {
+                context.ExceptionType = HandledSystemExceptionType.SSLConnectionError;
+                return true;
+            }
+
+            if (analysis.SocketError.HasValue)
+            {
+                context.ErrorCode = (int)analysis.SocketError.Value;
+                context.ExceptionType = analysis.SocketError.Value switch
+                {
+                    SocketError.ConnectionRefused => HandledSystemExceptionType.ConnectionRefused,
+                    SocketError.HostNotFound or SocketError.TryAgain => HandledSystemExceptionType.HostNotFound,
+                    _ => HandledSystemExceptionType.Socket
+                };
+                return true;
+            }
+
+            if (analysis.IsTimeout)
+            {
+                context.ExceptionType = HandledSystemExceptionType.Timeout;
+                return true;
+            }
+
+            context.ExceptionType = HandledSystemExceptionType.Socket; // Fallback to general socket/network error
+            return true;
+        }
+    }
+
+    /// <summary>
     /// Parses SocketException instances.
     /// </summary>
     private readonly struct SocketExceptionParser : IExceptionParser
     {
         public bool TryParse(ref ExceptionParsingContext context)
         {
-            if (context.Exception is not SocketException socket)
+            if (context.Exception is not SocketException)
             {
                 return false;
             }
 
-            context.ExceptionType = HandledSystemExceptionType.Socket;
-            context.ErrorCode = socket.ErrorCode; // underlying Win32 error code
-            return true;
+            var analysis = AnalyzeNetworkException(context.Exception);
+
+            if (analysis.SocketError.HasValue)
+            {
+                context.ErrorCode = (int)analysis.SocketError.Value;
+                context.ExceptionType = analysis.SocketError.Value switch
+                {
+                    SocketError.ConnectionRefused => HandledSystemExceptionType.ConnectionRefused,
+                    SocketError.HostNotFound or SocketError.TryAgain => HandledSystemExceptionType.HostNotFound,
+                    _ => HandledSystemExceptionType.Socket
+                };
+                return true;
+            }
+
+            return false;
         }
     }
 
@@ -446,6 +580,7 @@ public class HandledSystemException : HandledException
                 TimeoutException => HandledSystemExceptionType.Timeout,
                 NotSupportedException => HandledSystemExceptionType.NotSupported,
                 SecurityException => HandledSystemExceptionType.Security,
+                JsonException or MessagePackSerializationException => HandledSystemExceptionType.Serialization,
                 _ => null
             };
 
@@ -538,6 +673,21 @@ public enum HandledChatExceptionType
     /// Operation was cancelled.
     /// </summary>
     OperationCancelled,
+
+    /// <summary>
+    /// The SSL connection could not be established.
+    /// </summary>
+    SSLConnectionError,
+
+    /// <summary>
+    /// The connection was refused by the server.
+    /// </summary>
+    ConnectionRefused,
+
+    /// <summary>
+    /// The host could not be found (DNS error).
+    /// </summary>
+    HostNotFound,
 }
 
 /// <summary>
@@ -575,6 +725,9 @@ public class HandledChatException(
                     HandledChatExceptionType.NetworkError => LocaleKey.HandledChatException_NetworkError,
                     HandledChatExceptionType.ServiceUnavailable => LocaleKey.HandledChatException_ServiceUnavailable,
                     HandledChatExceptionType.OperationCancelled => LocaleKey.HandledChatException_OperationCancelled,
+                    HandledChatExceptionType.SSLConnectionError => LocaleKey.HandledSystemException_SSLConnectionError,
+                    HandledChatExceptionType.ConnectionRefused => LocaleKey.HandledSystemException_ConnectionRefused,
+                    HandledChatExceptionType.HostNotFound => LocaleKey.HandledSystemException_HostNotFound,
                     _ => LocaleKey.HandledChatException_Unknown,
                 }),
             new DirectResourceKey(originalException.Message.Trim())
@@ -626,15 +779,16 @@ public class HandledChatException(
         var context = new ExceptionParsingContext(exception);
 
         // First layer: provider-specific exceptions
-        new ParserChain<ClientResultExceptionParser,
+        if (!new ParserChain<ClientResultExceptionParser,
             ParserChain<HttpRequestExceptionParser,
                 ParserChain<OllamaExceptionParser,
-                    HttpOperationExceptionParser>>>().TryParse(ref context);
-
-        // Second layer: general network/socket exceptions
-        new ParserChain<GeneralExceptionParser,
-            ParserChain<SocketExceptionParser,
-                HttpStatusCodeParser>>().TryParse(ref context);
+                    HttpOperationExceptionParser>>>().TryParse(ref context))
+        {
+            // Second layer: general network/socket exceptions
+            new ParserChain<GeneralExceptionParser,
+                ParserChain<SocketExceptionParser,
+                    HttpStatusCodeParser>>().TryParse(ref context);
+        }
 
         return new HandledChatException(
             originalException: exception,
@@ -682,12 +836,11 @@ public class HandledChatException(
             if (clientResult.Status == 0)
             {
                 context.ExceptionType = HandledChatExceptionType.EmptyResponse;
+                return true;
             }
-            else
-            {
-                context.StatusCode = (HttpStatusCode)clientResult.Status;
-            }
-            return true;
+            
+            context.StatusCode = (HttpStatusCode)clientResult.Status;
+            return false;
         }
     }
 
@@ -704,15 +857,48 @@ public class HandledChatException(
             {
                 context.StatusCode = httpRequest.StatusCode.Value;
             }
-            else
+
+            var analysis = AnalyzeNetworkException(context.Exception);
+
+            if (analysis.IsSslError)
             {
-                context.ExceptionType = httpRequest.InnerException switch
-                {
-                    TimeoutException or TaskCanceledException { InnerException: TimeoutException } => HandledChatExceptionType.Timeout,
-                    SocketException => HandledChatExceptionType.NetworkError,
-                    _ => HandledChatExceptionType.EndpointNotReachable
-                };
+                context.ExceptionType = HandledChatExceptionType.SSLConnectionError;
+                return true;
             }
+
+            if (analysis.SocketError.HasValue)
+            {
+                context.SocketError = analysis.SocketError.Value;
+                context.ExceptionType = analysis.SocketError.Value switch
+                {
+                    System.Net.Sockets.SocketError.ConnectionRefused => HandledChatExceptionType.ConnectionRefused,
+                    System.Net.Sockets.SocketError.HostNotFound or System.Net.Sockets.SocketError.TryAgain => HandledChatExceptionType.HostNotFound,
+                    _ => HandledChatExceptionType.NetworkError
+                };
+                return true;
+            }
+
+            if (analysis.IsTimeout)
+            {
+                context.ExceptionType = HandledChatExceptionType.Timeout;
+                return true;
+            }
+
+            if (httpRequest.StatusCode.HasValue)
+            {
+                // If we have a status code but no specific network error, let the chain continue to HttpStatusCodeParser
+                // But wait, if we return false, the chain continues.
+                // If we return true, the chain stops.
+                // We want to stop if we found a specific error.
+                // If we only found a status code, we want to let HttpStatusCodeParser handle it?
+                // Actually, HttpStatusCodeParser is in the second chain.
+                // If we return false here, the first chain continues to OllamaExceptionParser etc.
+                // If the first chain finishes with false, the second chain runs.
+                // So returning false is correct if we want HttpStatusCodeParser to run.
+                return false;
+            }
+
+            context.ExceptionType = HandledChatExceptionType.EndpointNotReachable;
             return true;
         }
     }
@@ -750,7 +936,7 @@ public class HandledChatException(
             }
 
             context.StatusCode = httpOperation.StatusCode;
-            return true;
+            return false;
         }
     }
 
@@ -758,23 +944,21 @@ public class HandledChatException(
     {
         public bool TryParse(ref ExceptionParsingContext context)
         {
-            var ex = context.Exception;
-            SocketException? socket = null;
-            while (ex is not null)
+            var analysis = AnalyzeNetworkException(context.Exception);
+
+            if (analysis.SocketError.HasValue)
             {
-                socket = ex as SocketException;
-                if (socket is not null) break;
-                ex = ex.InnerException;
+                context.SocketError = analysis.SocketError.Value;
+                context.ExceptionType = analysis.SocketError.Value switch
+                {
+                    System.Net.Sockets.SocketError.ConnectionRefused => HandledChatExceptionType.ConnectionRefused,
+                    System.Net.Sockets.SocketError.HostNotFound or System.Net.Sockets.SocketError.TryAgain => HandledChatExceptionType.HostNotFound,
+                    _ => HandledChatExceptionType.NetworkError
+                };
+                return true;
             }
 
-            if (socket is null)
-            {
-                return false;
-            }
-
-            context.SocketError = socket.SocketErrorCode;
-            context.ExceptionType = HandledChatExceptionType.NetworkError;
-            return true;
+            return false;
         }
     }
 
@@ -787,7 +971,9 @@ public class HandledChatException(
                 ModelDoesNotSupportToolsException => HandledChatExceptionType.FeatureNotSupport,
                 AuthenticationException => HandledChatExceptionType.InvalidApiKey,
                 UriFormatException => HandledChatExceptionType.InvalidEndpoint,
-                OperationCanceledException => HandledChatExceptionType.OperationCancelled,
+                OperationCanceledException => context.Exception.InnerException is TimeoutException
+                    ? HandledChatExceptionType.Timeout
+                    : HandledChatExceptionType.OperationCancelled,
                 _ => null
             };
             return context.ExceptionType.HasValue;
@@ -893,4 +1079,98 @@ public class HandledChatException(
             return fallback;
         }
     }
+}
+
+public enum HandledFunctionInvokingExceptionType
+{
+    /// <summary>
+    /// An unknown error occurred during function invocation.
+    /// </summary>
+    Unknown,
+
+    /// <summary>
+    /// An argument error occurred during function invocation.
+    /// </summary>
+    ArgumentError,
+
+    /// <summary>
+    /// A required argument is missing.
+    /// </summary>
+    ArgumentMissing,
+
+    /// <summary>
+    /// The specified function was not found.
+    /// </summary>
+    FunctionNotFound
+}
+
+/// <summary>
+/// Represents exceptions that occur during function invocation.
+/// </summary>
+public sealed partial class HandledFunctionInvokingException : HandledSystemException
+{
+    public HandledFunctionInvokingExceptionType SubExceptionType { get; }
+
+    private HandledFunctionInvokingException(
+        Exception originalException,
+        HandledFunctionInvokingExceptionType subType,
+        HandledSystemExceptionType type,
+        DynamicResourceKeyBase? customFriendlyMessageKey = null,
+        bool isExpected = true) : base(originalException, type, customFriendlyMessageKey, isExpected)
+    {
+        SubExceptionType = subType;
+    }
+
+    public HandledFunctionInvokingException(
+        HandledFunctionInvokingExceptionType type,
+        string name,
+        Exception? customException = null,
+        DynamicResourceKeyBase? customFriendlyMessageKey = null) : this(
+        customException ?? MakeException(type, name),
+        type,
+        HandledSystemExceptionType.FunctionInvoking,
+        customFriendlyMessageKey ?? MakeFriendlyMessageKey(type, name)) { }
+
+    private static Exception MakeException(HandledFunctionInvokingExceptionType type, string name) => type switch
+    {
+        HandledFunctionInvokingExceptionType.ArgumentError => new ArgumentException("Invalid argument provided.", name),
+        HandledFunctionInvokingExceptionType.ArgumentMissing => new ArgumentException("Missing required argument.", name),
+        HandledFunctionInvokingExceptionType.FunctionNotFound => new InvalidOperationException($"Function '{name}' not found."),
+        _ => new Exception("An unknown function invoking error occurred.")
+    };
+
+    private static DynamicResourceKeyBase? MakeFriendlyMessageKey(HandledFunctionInvokingExceptionType type, string name) => type switch
+    {
+        HandledFunctionInvokingExceptionType.ArgumentError => new FormattedDynamicResourceKey(
+            new DynamicResourceKey(LocaleKey.HandledFunctionInvokingException_ArgumentError),
+            new DirectResourceKey(name)),
+        HandledFunctionInvokingExceptionType.ArgumentMissing => new FormattedDynamicResourceKey(
+            new DynamicResourceKey(LocaleKey.HandledFunctionInvokingException_ArgumentMissing),
+            new DirectResourceKey(name)),
+        HandledFunctionInvokingExceptionType.FunctionNotFound => new FormattedDynamicResourceKey(
+            new DynamicResourceKey(LocaleKey.HandledFunctionInvokingException_FunctionNotFound),
+            new DirectResourceKey(name)),
+        _ => null, // HandledSystemException will use its own Unknown key
+    };
+
+    public static Exception Handle(Exception exception)
+    {
+        if (exception is KernelException kernelException)
+        {
+            if (MissingArgumentRegex().Match(kernelException.Message) is { Success: true } match)
+            {
+                var paramName = match.Groups[1].Value;
+                return new HandledFunctionInvokingException(
+                    HandledFunctionInvokingExceptionType.ArgumentMissing,
+                    paramName,
+                    exception);
+            }
+        }
+
+        return HandledSystemException.Handle(exception, true);
+    }
+
+    // Match `Missing argument for function parameter 'paramName'.`
+    [GeneratedRegex(@"Missing argument for function parameter '(.+?)'\.", RegexOptions.Compiled | RegexOptions.CultureInvariant)]
+    private static partial Regex MissingArgumentRegex();
 }

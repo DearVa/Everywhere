@@ -1,0 +1,66 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:Everywhere.Configuration" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:system="clr-namespace:System;assembly=System.Runtime" xmlns:v="using:Everywhere.Views">
+  <ControlTheme
+    x:Key="{x:Type v:ApiKeyComboBox}"
+    TargetType="v:ApiKeyComboBox">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ComboBox
+          MinWidth="320" MinHeight="32"
+          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource TemplatedParent}}"
+          MaxDropDownHeight="320"
+          SelectedValue="{Binding SelectedId, Mode=TwoWay, FallbackValue={x:Static system:Guid.Empty}, RelativeSource={RelativeSource TemplatedParent}}"
+          SelectedValueBinding="{Binding Id, DataType=c:ApiKey, FallbackValue={x:Static system:Guid.Empty}}">
+          <shadui:ControlAssist.Footer>
+            <Border
+              BorderBrush="{DynamicResource BorderColor}"
+              BorderThickness="0,1,0,0">
+              <StackPanel
+                Margin="4" Spacing="2">
+                <Button
+                  Padding="12,6"
+                  shadui:ButtonAssist.Icon="{LucideIconContent Plus}"
+                  BorderThickness="0"
+                  Content="{I18N {x:Static LocaleKey.ApiKeyComboBox_AddApiKey}}"
+                  CornerRadius="6">
+                  <Interaction.Behaviors>
+                    <ButtonClickEventTriggerBehavior>
+                      <ButtonClickEventTriggerBehavior.Actions>
+                        <HidePopupAction Popup="{Binding $parent[Popup]}"/>
+                        <InvokeCommandAction Command="{Binding $parent[v:ApiKeyComboBox].AddApiKeyCommand}"/>
+                      </ButtonClickEventTriggerBehavior.Actions>
+                    </ButtonClickEventTriggerBehavior>
+                  </Interaction.Behaviors>
+                </Button>
+
+                <Button
+                  Padding="12,6"
+                  shadui:ButtonAssist.Icon="{LucideIconContent Settings}"
+                  BorderThickness="0"
+                  Content="{I18N {x:Static LocaleKey.ApiKeyComboBox_ManageApiKey}}"
+                  CornerRadius="6">
+                  <Interaction.Behaviors>
+                    <ButtonClickEventTriggerBehavior>
+                      <ButtonClickEventTriggerBehavior.Actions>
+                        <HidePopupAction Popup="{Binding $parent[Popup]}"/>
+                        <InvokeCommandAction Command="{Binding $parent[v:ApiKeyComboBox].ManageApiKeyCommand}"/>
+                      </ButtonClickEventTriggerBehavior.Actions>
+                    </ButtonClickEventTriggerBehavior>
+                  </Interaction.Behaviors>
+                </Button>
+              </StackPanel>
+            </Border>
+          </shadui:ControlAssist.Footer>
+
+          <ComboBox.DataTemplates>
+            <DataTemplate x:DataType="c:ApiKey">
+              <TextBlock Text="{Binding Name}"/>
+            </DataTemplate>
+          </ComboBox.DataTemplates>
+        </ComboBox>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

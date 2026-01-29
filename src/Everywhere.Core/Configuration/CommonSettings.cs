@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Common;
 using Everywhere.Interop;
-using Everywhere.Views.Configuration;
+using Everywhere.Views;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
 using ShadUI;
@@ -63,18 +64,23 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
         }
     }
 
-    [HiddenSettingsItem]
-    public static IEnumerable<string> ThemeSource => ["System", "Dark", "Light"];
-
-    [ObservableProperty]
     [DynamicResourceKey(
         LocaleKey.CommonSettings_Theme_Header,
         LocaleKey.CommonSettings_Theme_Description)]
-    [SettingsSelectionItem(nameof(ThemeSource), I18N = true)]
-    public partial string Theme { get; set; } = ThemeSource.First();
+    public ThemeMode Theme
+    {
+        get;
+        set
+        {
+            if (!SetProperty(ref field, value)) return;
+            App.ThemeManager.SwitchTheme(value);
+        }
+    }
 
+#if WINDOWS
     [JsonIgnore]
     [HiddenSettingsItem]
+    [SupportedOSPlatform("windows")]
     public static bool IsAdministrator => NativeHelper.IsAdministrator;
 
     [JsonIgnore]
@@ -82,6 +88,7 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
         LocaleKey.CommonSettings_RestartAsAdministrator_Header,
         LocaleKey.CommonSettings_RestartAsAdministrator_Description)]
     [SettingsItem(IsVisibleBindingPath = $"!{nameof(IsAdministrator)}")]
+    [SupportedOSPlatform("windows")]
     public SettingsControl<RestartAsAdministratorControl> RestartAsAdministrator { get; } = new();
 
     [JsonIgnore]
@@ -89,6 +96,7 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
         LocaleKey.CommonSettings_IsStartupEnabled_Header,
         LocaleKey.CommonSettings_IsStartupEnabled_Description)]
     [SettingsItem(IsEnabledBindingPath = $"{nameof(IsAdministrator)} || !{nameof(IsAdministratorStartupEnabled)}")]
+    [SupportedOSPlatform("windows")]
     public bool IsStartupEnabled
     {
         get => NativeHelper.IsUserStartupEnabled || NativeHelper.IsAdministratorStartupEnabled;
@@ -127,6 +135,7 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
         LocaleKey.CommonSettings_IsAdministratorStartupEnabled_Header,
         LocaleKey.CommonSettings_IsAdministratorStartupEnabled_Description)]
     [SettingsItem(IsVisibleBindingPath = nameof(IsStartupEnabled), IsEnabledBindingPath = nameof(IsAdministrator))]
+    [SupportedOSPlatform("windows")]
     public bool IsAdministratorStartupEnabled
     {
         get => NativeHelper.IsAdministratorStartupEnabled;
@@ -151,6 +160,30 @@ public partial class CommonSettings : ObservableObject, ISettingsCategory
             OnPropertyChanged(nameof(IsStartupEnabled));
         }
     }
+#else
+    [JsonIgnore]
+    [DynamicResourceKey(
+        LocaleKey.CommonSettings_IsUserStartupEnabled_Header,
+        LocaleKey.CommonSettings_IsUserStartupEnabled_Description)]
+    public bool IsUserStartupEnabled
+    {
+        get => NativeHelper.IsUserStartupEnabled;
+        set
+        {
+            try
+            {
+                NativeHelper.IsUserStartupEnabled = value;
+                OnPropertyChanged();
+            }
+            catch (Exception ex)
+            {
+                ex = HandledSystemException.Handle(ex); // maybe blocked by UAC or antivirus, handle it gracefully
+                Logger.LogError(ex, "Failed to set user startup enabled.");
+                ShowErrorToast(ex);
+            }
+        }
+    }
+#endif
 
     [SettingsItems]
     [DynamicResourceKey(

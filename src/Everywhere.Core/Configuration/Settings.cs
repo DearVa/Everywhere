@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Everywhere.Configuration;
@@ -10,18 +11,16 @@ namespace Everywhere.Configuration;
 /// </summary>
 [Serializable]
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
-public class Settings : ObservableObject
+public partial class Settings : ObservableObject
 {
+    [ObservableProperty]
+    public partial string? Version { get; set; }
+
     public CommonSettings Common { get; set; } = new();
 
-    [HiddenSettingsItem]
     public ModelSettings Model { get; set; } = new();
 
     public ChatWindowSettings ChatWindow { get; set; } = new();
 
-    [HiddenSettingsItem]
     public PluginSettings Plugin { get; set; } = new();
-
-    [HiddenSettingsItem]
-    public InternalSettings Internal { get; set; } = new();
 }

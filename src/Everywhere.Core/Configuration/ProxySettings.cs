@@ -17,7 +17,7 @@ public partial class ProxySettings : ObservableObject
         LocaleKey.ProxySettings_Endpoint_Description)]
     [SettingsItem(IsVisibleBindingPath = nameof(IsEnabled))]
     [SettingsStringItem(Watermark = "http://127.0.0.1:7890")]
-    public partial Customizable<string> Endpoint { get; set; } = "http://127.0.0.1:7890";
+    public partial string? Endpoint { get; set; }
 
     [ObservableProperty]
     [DynamicResourceKey(

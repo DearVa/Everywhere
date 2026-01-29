@@ -1,42 +1,29 @@
 ﻿using Avalonia;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Everywhere.Interop;
 using ShadUI.Extensions;
+using ZLinq;
 
 namespace Everywhere.Mac.Interop;
 
 public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualElementContext
 {
-    public event IVisualElementContext.KeyboardFocusedElementChangedHandler? KeyboardFocusedElementChanged;
+    public IVisualElement? FocusedElement => AXUIElement.SystemWide.ElementByAttributeValue(AXAttributeConstants.FocusedUIElement);
 
-    public IVisualElement? KeyboardFocusedElement => AXUIElement.SystemWide.ElementByAttributeValue(AXAttributeConstants.FocusedUIElement);
+    public IEnumerable<IVisualElement> Screens => NSScreen.Screens.Select(screen => new NSScreenVisualElement(screen));
 
-    public IVisualElement? PointerOverElement
-    {
-        get
-        {
-            var mouseLocation = NSEvent.CurrentMouseLocation;
-            var primaryScreen = NSScreen.MainScreen;
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (primaryScreen is null) return null;
+    IVisualElement? IVisualElementContext.ElementFromPoint(PixelPoint point, ScreenSelectionMode mode) => ElementFromPoint(point, mode);
 
-            // Convert from screen coordinates (bottom-left origin) to accessibility coordinates (top-left origin)
-            var point = new CGPoint(mouseLocation.X, primaryScreen.Frame.Height - mouseLocation.Y);
-            return ElementFromPoint(new PixelPoint((int)point.X, (int)point.Y));
-        }
-    }
-
-    IVisualElement? IVisualElementContext.ElementFromPoint(PixelPoint point, PickElementMode mode) => ElementFromPoint(point, mode);
-
-    private static IVisualElement? ElementFromPoint(PixelPoint point, PickElementMode mode = PickElementMode.Element)
+    private static IVisualElement? ElementFromPoint(PixelPoint point, ScreenSelectionMode mode = ScreenSelectionMode.Element)
     {
         switch (mode)
         {
-            case PickElementMode.Element:
+            case ScreenSelectionMode.Element:
             {
                 return AXUIElement.SystemWide.ElementAtPosition(point.X, point.Y);
             }
-            case PickElementMode.Window:
+            case ScreenSelectionMode.Window:
             {
                 // Traverse up to find the containing window element
                 IVisualElement? current = AXUIElement.SystemWide.ElementAtPosition(point.X, point.Y);
@@ -46,7 +33,7 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
                 }
                 return current;
             }
-            case PickElementMode.Screen:
+            case ScreenSelectionMode.Screen:
             {
                 var screen = NSScreen.Screens.FirstOrDefault(s => s.Frame.Contains(new CGPoint(point.X, point.Y)));
                 return screen is null ? null : new NSScreenVisualElement(screen);
@@ -58,7 +45,7 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         }
     }
 
-    public IVisualElement? ElementFromPointer(PickElementMode mode = PickElementMode.Element)
+    public IVisualElement? ElementFromPointer(ScreenSelectionMode mode = ScreenSelectionMode.Element)
     {
         var point = Dispatcher.UIThread.InvokeOnDemand<PixelPoint?>(() =>
         {
@@ -66,7 +53,7 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
             var mouseLocation = NSEvent.CurrentMouseLocation;
 
             // We need to find which screen the mouse is on to correctly convert coordinates.
-            var screen = NSScreen.Screens.FirstOrDefault(s => s.Frame.Contains(mouseLocation)) ?? NSScreen.MainScreen;
+            var screen = NSScreen.Screens.AsValueEnumerable().FirstOrDefault(s => s.Frame.Contains(mouseLocation)) ?? NSScreen.MainScreen;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (screen is null) return null;
 
@@ -79,10 +66,13 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         return point is null ? null : ElementFromPoint(point.Value, mode);
     }
 
-    public Task<IVisualElement?> PickElementAsync(PickElementMode mode)
+    public Task<IVisualElement?> PickElementAsync(ScreenSelectionMode? initialMode)
     {
-        return VisualElementPicker.PickAsync(windowHelper, mode);
+        return PickerSession.PickAsync(windowHelper, initialMode);
     }
 
-    // TODO: Implement AXObserver to raise KeyboardFocusedElementChanged event.
+    public Task<Bitmap?> ScreenshotAsync(ScreenSelectionMode? initialMode)
+    {
+        return ScreenshotSession.ScreenshotAsync(windowHelper, initialMode);
+    }
 }

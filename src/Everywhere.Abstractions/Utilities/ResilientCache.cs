@@ -163,6 +163,30 @@ public class ResilientCache<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
+    /// <summary>
+    /// Adds multiple key-value pairs to the cache with a single lock acquisition.
+    /// </summary>
+    /// <param name="items"></param>
+    public void AddRange(IReadOnlyCollection<KeyValuePair<TKey, TValue>> items)
+    {
+        ArgumentNullException.ThrowIfNull(items);
+
+        lock (_lock)
+        {
+            foreach (var kvp in items)
+            {
+                if (_isActive)
+                {
+                    _strongReferences[kvp.Key] = kvp.Value;
+                }
+                else
+                {
+                    _weakReferences[kvp.Key] = new WeakReference<TValue>(kvp.Value);
+                }
+            }
+        }
+    }
+
     public bool Remove(TKey key)
     {
         lock (_lock)

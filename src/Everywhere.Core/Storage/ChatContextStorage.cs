@@ -345,9 +345,9 @@ public sealed class ChatContextStorage(
                 row.IsDeleted = false;
             }
 
-            if (node.Message is IChatMessageWithAttachments chatMessageWithAttachments)
+            if (node.Message is IHaveChatAttachments messageWithChatAttachments)
             {
-                var fileAttachments = chatMessageWithAttachments.Attachments.AsValueEnumerable().OfType<ChatFileAttachment>().ToList();
+                var fileAttachments = messageWithChatAttachments.Attachments.AsValueEnumerable().OfType<ChatFileAttachment>().ToList();
                 for (var i = 0; i < fileAttachments.Count; i++)
                 {
                     var attachment = fileAttachments[i];

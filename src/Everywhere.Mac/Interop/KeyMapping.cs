@@ -67,41 +67,42 @@ public static class KeyMapping
     /// </summary>
     public static Key ToAvaloniaKey(this ushort macKeyCode)
     {
-        return MacToAvaloniaMap.TryGetValue(macKeyCode, out var key) ? key : Key.None;
+        return MacToAvaloniaMap.TryGetValue((CGKeyCode)macKeyCode, out var key) ? key : Key.None;
     }
 
     // This is a partial mapping. You would need to extend it for full coverage.
     // Key codes can be found in macOS's <Carbon/Events.h> or online resources.
-    private static readonly Dictionary<ushort, Key> MacToAvaloniaMap = new()
+    private static readonly Dictionary<CGKeyCode, Key> MacToAvaloniaMap = new()
     {
         // Letters
-        { 0x00, Key.A }, { 0x0B, Key.B }, { 0x08, Key.C }, { 0x02, Key.D }, { 0x0E, Key.E },
-        { 0x03, Key.F }, { 0x05, Key.G }, { 0x04, Key.H }, { 0x22, Key.I }, { 0x26, Key.J },
-        { 0x28, Key.K }, { 0x25, Key.L }, { 0x2E, Key.M }, { 0x2D, Key.N }, { 0x1F, Key.O },
-        { 0x23, Key.P }, { 0x0C, Key.Q }, { 0x0F, Key.R }, { 0x01, Key.S }, { 0x11, Key.T },
-        { 0x20, Key.U }, { 0x09, Key.V }, { 0x0D, Key.W }, { 0x07, Key.X }, { 0x10, Key.Y },
-        { 0x06, Key.Z },
+        { CGKeyCode.A, Key.A }, { CGKeyCode.B, Key.B }, { CGKeyCode.C, Key.C }, { CGKeyCode.D, Key.D }, { CGKeyCode.E, Key.E },
+        { CGKeyCode.F, Key.F }, { CGKeyCode.G, Key.G }, { CGKeyCode.H, Key.H }, { CGKeyCode.I, Key.I }, { CGKeyCode.J, Key.J },
+        { CGKeyCode.K, Key.K }, { CGKeyCode.L, Key.L }, { CGKeyCode.M, Key.M }, { CGKeyCode.N, Key.N }, { CGKeyCode.O, Key.O },
+        { CGKeyCode.P, Key.P }, { CGKeyCode.Q, Key.Q }, { CGKeyCode.R, Key.R }, { CGKeyCode.S, Key.S }, { CGKeyCode.T, Key.T },
+        { CGKeyCode.U, Key.U }, { CGKeyCode.V, Key.V }, { CGKeyCode.W, Key.W }, { CGKeyCode.X, Key.X }, { CGKeyCode.Y, Key.Y },
+        { CGKeyCode.Z, Key.Z },
 
         // Numbers
-        { 0x1D, Key.D0 }, { 0x12, Key.D1 }, { 0x13, Key.D2 }, { 0x14, Key.D3 }, { 0x15, Key.D4 },
-        { 0x17, Key.D5 }, { 0x16, Key.D6 }, { 0x1A, Key.D7 }, { 0x1C, Key.D8 }, { 0x19, Key.D9 },
+        { CGKeyCode.D0, Key.D0 }, { CGKeyCode.D1, Key.D1 }, { CGKeyCode.D2, Key.D2 }, { CGKeyCode.D3, Key.D3 }, { CGKeyCode.D4, Key.D4 },
+        { CGKeyCode.D5, Key.D5 }, { CGKeyCode.D6, Key.D6 }, { CGKeyCode.D7, Key.D7 }, { CGKeyCode.D8, Key.D8 }, { CGKeyCode.D9, Key.D9 },
 
         // Numpad
-        { 0x52, Key.NumPad0 }, { 0x53, Key.NumPad1 }, { 0x54, Key.NumPad2 }, { 0x55, Key.NumPad3 },
-        { 0x56, Key.NumPad4 }, { 0x57, Key.NumPad5 }, { 0x58, Key.NumPad6 }, { 0x59, Key.NumPad7 },
-        { 0x5B, Key.NumPad8 }, { 0x5C, Key.NumPad9 },
-        { 0x45, Key.Add }, { 0x4E, Key.Subtract }, { 0x43, Key.Multiply }, { 0x4B, Key.Divide },
-        { 0x41, Key.Decimal }, { 0x4C, Key.Enter },
+        { CGKeyCode.NumPad0, Key.NumPad0 }, { CGKeyCode.NumPad1, Key.NumPad1 }, { CGKeyCode.NumPad2, Key.NumPad2 },
+        { CGKeyCode.NumPad3, Key.NumPad3 }, { CGKeyCode.NumPad4, Key.NumPad4 }, { CGKeyCode.NumPad5, Key.NumPad5 },
+        { CGKeyCode.NumPad6, Key.NumPad6 }, { CGKeyCode.NumPad7, Key.NumPad7 },
+        { CGKeyCode.NumPad8, Key.NumPad8 }, { CGKeyCode.NumPad9, Key.NumPad9 },
+        { CGKeyCode.Add, Key.Add }, { CGKeyCode.Subtract, Key.Subtract }, { CGKeyCode.Multiply, Key.Multiply },
+        { CGKeyCode.Divide, Key.Divide }, { CGKeyCode.Decimal, Key.Decimal }, { CGKeyCode.NumPadEnter, Key.Enter },
 
         // Function keys
-        { 0x7A, Key.F1 }, { 0x78, Key.F2 }, { 0x63, Key.F3 }, { 0x76, Key.F4 }, { 0x60, Key.F5 },
-        { 0x61, Key.F6 }, { 0x62, Key.F7 }, { 0x64, Key.F8 }, { 0x65, Key.F9 }, { 0x6D, Key.F10 },
-        { 0x67, Key.F11 }, { 0x6F, Key.F12 },
+        { CGKeyCode.F1, Key.F1 }, { CGKeyCode.F2, Key.F2 }, { CGKeyCode.F3, Key.F3 }, { CGKeyCode.F4, Key.F4 },
+        { CGKeyCode.F5, Key.F5 }, { CGKeyCode.F6, Key.F6 }, { CGKeyCode.F7, Key.F7 }, { CGKeyCode.F8, Key.F8 },
+        { CGKeyCode.F9, Key.F9 }, { CGKeyCode.F10, Key.F10 }, { CGKeyCode.F11, Key.F11 }, { CGKeyCode.F12, Key.F12 },
 
         // Special keys
-        { 0x35, Key.Escape }, { 0x31, Key.Space }, { 0x24, Key.Enter }, { 0x30, Key.Tab },
-        { 0x33, Key.Back }, { 0x75, Key.Delete },
-        { 0x7E, Key.Up }, { 0x7D, Key.Down }, { 0x7B, Key.Left }, { 0x7C, Key.Right },
-        { 0x73, Key.Home }, { 0x77, Key.End }, { 0x74, Key.PageUp }, { 0x79, Key.PageDown },
+        { CGKeyCode.Escape, Key.Escape }, { CGKeyCode.Space, Key.Space }, { CGKeyCode.Enter, Key.Enter },
+        { CGKeyCode.Tab, Key.Tab }, { CGKeyCode.Back, Key.Back }, { CGKeyCode.Delete, Key.Delete },
+        { CGKeyCode.Up, Key.Up }, { CGKeyCode.Down, Key.Down }, { CGKeyCode.Left, Key.Left }, { CGKeyCode.Right, Key.Right },
+        { CGKeyCode.Home, Key.Home }, { CGKeyCode.End, Key.End }, { CGKeyCode.PageUp, Key.PageUp }, { CGKeyCode.PageDown, Key.PageDown },
     };
 }

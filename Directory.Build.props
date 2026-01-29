@@ -13,59 +13,53 @@
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('win')) OR $([MSBuild]::IsOSPlatform('Windows'))">
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+        <IsWindows>true</IsWindows>
         <DefineConstants>$(DefineConstants);WINDOWS;IsWindows</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('linux')) OR $([MSBuild]::IsOSPlatform('Linux'))">
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+        <IsLinux>true</IsLinux>
         <DefineConstants>$(DefineConstants);LINUX;IsLinux</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('osx')) OR $([MSBuild]::IsOSPlatform('OSX'))">
+    <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+        <IsOSX>true</IsOSX>
+        <IsMacOS>true</IsMacOS>
         <DefineConstants>$(DefineConstants);OSX;MACOS;IsOSX;IsMacOS</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('ios'))">
-        <DefineConstants>$(DefineConstants);IOS;IsIOS</DefineConstants>
+    <PropertyGroup>
+        <_OSArchitecture>$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)</_OSArchitecture>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('android'))">
-        <DefineConstants>$(DefineConstants);ANDROID;IsAndroid</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('maccatalyst'))">
-        <DefineConstants>$(DefineConstants);MACCATALYST;IsMacCatalyst</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('browser'))">
-        <DefineConstants>$(DefineConstants);BROWSER;WASM;IsBrowser;IsWasm</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).Contains('x64')) OR $([System.String]::Copy($(RuntimeIdentifier)).Contains('win-x64'))">
+    <PropertyGroup Condition="'$(_OSArchitecture)' == 'X64'">
+        <IsX64>true</IsX64>
         <DefineConstants>$(DefineConstants);X64;IsX64</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).Contains('x86')) OR $([System.String]::Copy($(RuntimeIdentifier)).Contains('win-x86'))">
+    <PropertyGroup Condition="'$(_OSArchitecture)' == 'X86'">
+        <IsX86>true</IsX86>
         <DefineConstants>$(DefineConstants);X86;IsX86</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).Contains('arm64'))">
+    <PropertyGroup Condition="'$(_OSArchitecture)' == 'Arm64'">
+        <IsARM64>true</IsARM64>
         <DefineConstants>$(DefineConstants);ARM64;IsARM64</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).Contains('arm')) AND !$([System.String]::Copy($(RuntimeIdentifier)).Contains('arm64'))">
+    <PropertyGroup Condition="'$(_OSArchitecture)' == 'Arm'">
+        <IsARM>true</IsARM>
         <DefineConstants>$(DefineConstants);ARM;IsARM</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('ios')) OR $([System.String]::Copy($(RuntimeIdentifier)).StartsWith('android'))">
-        <DefineConstants>$(DefineConstants);MOBILE;IsMobile</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('win')) OR $([System.String]::Copy($(RuntimeIdentifier)).StartsWith('linux')) OR $([System.String]::Copy($(RuntimeIdentifier)).StartsWith('osx'))">
+    <PropertyGroup Condition="'$(IsWindows)' == 'true' OR '$(IsLinux)' == 'true' OR '$(IsOSX)' == 'true'">
+        <IsDesktop>true</IsDesktop>
         <DefineConstants>$(DefineConstants);DESKTOP;IsDesktop</DefineConstants>
     </PropertyGroup>
 
-    <PropertyGroup Condition="$([System.String]::Copy($(RuntimeIdentifier)).StartsWith('linux')) OR $([System.String]::Copy($(RuntimeIdentifier)).StartsWith('osx'))">
+    <PropertyGroup Condition="'$(IsLinux)' == 'true' OR '$(IsOSX)' == 'true'">
+        <IsUnix>true</IsUnix>
         <DefineConstants>$(DefineConstants);UNIX;IsUnix</DefineConstants>
     </PropertyGroup>
 </Project>

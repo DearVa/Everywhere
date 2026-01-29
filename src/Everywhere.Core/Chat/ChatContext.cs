@@ -35,7 +35,7 @@ public class ChatContextMetadataChangedMessage(ChatContext? context, ChatContext
 /// The current branch is derived by following each node's <see cref="ChatMessageNode.ChoiceIndex"/>.
 /// </summary>
 [MessagePackObject(AllowPrivate = true)]
-public sealed partial class ChatContext : ObservableObject, IReadOnlyList<ChatMessageNode>, IObservableList<ChatMessageNode>
+public sealed partial class ChatContext : ObservableObject, IObservableList<ChatMessageNode>
 {
     [Key(0)]
     public ChatContextMetadata Metadata { get; }
@@ -87,8 +87,6 @@ public sealed partial class ChatContext : ObservableObject, IReadOnlyList<ChatMe
     [ObservableProperty]
     public partial DynamicResourceKeyBase? BusyMessage { get; private set; }
 
-    public ChatMessageNode this[int index] => _branchNodes.Items[index];
-
     /// <summary>
     /// Backing store for MessagePack (de)serialization: nodes are persisted as a collection, and linked by Ids.
     /// </summary>
@@ -120,6 +118,7 @@ public sealed partial class ChatContext : ObservableObject, IReadOnlyList<ChatMe
     /// <param name="metadata"></param>
     /// <param name="messageNodes"></param>
     /// <param name="rootNode"></param>
+    [SerializationConstructor]
     public ChatContext(ChatContextMetadata metadata, ICollection<ChatMessageNode> messageNodes, ChatMessageNode rootNode)
     {
         Metadata = metadata;
@@ -148,10 +147,10 @@ public sealed partial class ChatContext : ObservableObject, IReadOnlyList<ChatMe
     /// <summary>
     /// Creates a new chat context with the given system prompt. A new Guid v7 ID is assigned.
     /// </summary>
-    public ChatContext(string systemPrompt)
+    public ChatContext()
     {
         Metadata = new ChatContextMetadata(Guid.CreateVersion7(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null);
-        _rootNode = ChatMessageNode.CreateRootNode(systemPrompt);
+        _rootNode = ChatMessageNode.CreateRootNode("You are a helpful assistant.");
         _rootNode.PropertyChanged += HandleNodePropertyChanged;
         _branchNodes.Add(_rootNode);
 
@@ -228,10 +227,6 @@ public sealed partial class ChatContext : ObservableObject, IReadOnlyList<ChatMe
     public IObservable<IChangeSet<ChatMessageNode>> Connect(Func<ChatMessageNode, bool>? predicate = null) => _branchNodes.Connect(predicate);
 
     public IObservable<IChangeSet<ChatMessageNode>> Preview(Func<ChatMessageNode, bool>? predicate = null) => _branchNodes.Preview(predicate);
-
-    public IEnumerator<ChatMessageNode> GetEnumerator() => _branchNodes.Items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_branchNodes.Items).GetEnumerator();
 
     private void HandleNodePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using Everywhere.Collections;
 using ZLinq;
 
 namespace Everywhere.Utilities;
@@ -66,7 +67,7 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
     {
         private readonly string _basePath;
         private readonly Type _targetType;
-        private readonly ObjectObserver _owner;
+        private readonly ObjectObserver _observer;
         private readonly WeakReference<INotifyPropertyChanged> _targetReference;
         private readonly ConcurrentDictionary<string, Observation> _observations = [];
 
@@ -77,11 +78,11 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
         private int _listItemCount;
         private bool _isDisposed;
 
-        public Observation(string basePath, INotifyPropertyChanged target, ObjectObserver owner)
+        public Observation(string basePath, INotifyPropertyChanged target, ObjectObserver observer)
         {
             _basePath = (basePath + ':').TrimStart(':');
             _targetType = target.GetType();
-            _owner = owner;
+            _observer = observer;
             _targetReference = new WeakReference<INotifyPropertyChanged>(target);
 
             target.PropertyChanged += HandleTargetPropertyChanged;
@@ -90,7 +91,7 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
                 notifyCollectionChanged.CollectionChanged += HandleTargetCollectionChanged;
             }
 
-            foreach (var propertyInfo in owner.GetPropertyInfos(target.GetType()))
+            foreach (var propertyInfo in observer.GetPropertyInfos(target.GetType()))
             {
                 object? value;
                 try
@@ -105,12 +106,25 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
                 ObserveObject(propertyInfo.Name, value);
             }
 
-            if (target is IList list)
+            switch (target)
             {
-                _listItemCount = list.Count;
-                for (var i = 0; i < list.Count; i++)
+                case IList list:
                 {
-                    ObserveObject(i.ToString(), list[i]);
+                    _listItemCount = list.Count;
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        ObserveObject(i.ToString(), list[i]);
+                    }
+                    break;
+                }
+                case IDictionary dictionary:
+                {
+                    foreach (DictionaryEntry entry in dictionary)
+                    {
+                        if (entry.Key.ToString() is not { Length: > 0} key) continue;
+                        ObserveObject(key, entry.Value);
+                    }
+                    break;
                 }
             }
         }
@@ -120,12 +134,18 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
             Dispose();
         }
 
+        /// <summary>
+        /// Handles the PropertyChanged event of the observed object.
+        /// Evaluates whether the changed property is being observed and updates the observation if necessary.
+        /// </summary>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">The event arguments containing the property name.</param>
         private void HandleTargetPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (_isDisposed) return;
             if (e.PropertyName is null) return;
             if (!_targetReference.TryGetTarget(out var target)) return;
-            if (_owner.GetPropertyInfo(_targetType, e.PropertyName) is not { } propertyInfo) return;
+            if (_observer.GetPropertyInfo(_targetType, e.PropertyName) is not { } propertyInfo) return;
 
             object? value;
             try
@@ -137,85 +157,223 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
                 value = null;
             }
 
-            _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + e.PropertyName, value));
-
+            _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + e.PropertyName, value));
             ObserveObject(e.PropertyName, value);
         }
 
+        /// <summary>
+        /// Handles the CollectionChanged event for collections (IList) and dictionaries (IDictionary).
+        /// Manages observations for items added, removed, replaced, or moved within the collection.
+        /// </summary>
+        /// <param name="sender">The collection that raised the event.</param>
+        /// <param name="e">The event arguments describing the collection change.</param>
         private void HandleTargetCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (_isDisposed) return;
+
+            if (sender is IDictionary dictionary)
+            {
+                HandleDictionaryCollectionChanged(dictionary, e);
+                return;
+            }
+
             if (sender is not IList list) return;
 
-            if (e.OldItems is not null)
-            {
-                var index = e.OldStartingIndex;
-                for (var i = 0; i < e.OldItems.Count; i++)
-                {
-                    ObserveObject((index++).ToString(), null);
-                }
-            }
-
-            if (e.NewItems is not null)
-            {
-                var index = e.NewStartingIndex;
-                foreach (var item in e.NewItems)
-                {
-                    ObserveObject((index++).ToString(), item);
-                }
-            }
-
-            Range changeRange = default;
+            // Determine the range of indices that need to be updated.
+            // Using a range ensures we correctly handle index shifts for Add/Remove/Move operations.
+            var startUpdateIndex = -1;
+            var endUpdateIndex = -1;
+            var notifyCollectionObject = false;
 
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                {
-                    // New items added, shift subsequent indices
-                    changeRange = new Range(e.NewStartingIndex, list.Count);
+                    // Items added. Indices from NewStartingIndex onwards are shifted.
+                    // We must re-observe everything from the insertion point to the end.
+                    startUpdateIndex = e.NewStartingIndex;
+                    endUpdateIndex = list.Count; 
                     break;
-                }
+
                 case NotifyCollectionChangedAction.Remove:
-                {
-                    // Items removed, notify the whole object as changed
-                    _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath.TrimEnd(':'), sender));
+                    // Items removed. Indices from OldStartingIndex onwards are shifted down.
+                    // We must re-observe from the removal point to the end.
+                    startUpdateIndex = e.OldStartingIndex;
+                    endUpdateIndex = list.Count;
+                    
+                    // Notify that the collection object itself has changed (common pattern for removals).
+                    notifyCollectionObject = true; 
                     break;
-                }
+
                 case NotifyCollectionChangedAction.Replace:
-                {
-                    // Items replaced, no index shift but need to re-observe
-                    changeRange = new Range(e.NewStartingIndex, e.NewStartingIndex + e.NewItems?.Count ?? 1);
+                    // Items replaced. Indices do not shift.
+                    // Only the range of replaced items needs to be updated.
+                    startUpdateIndex = e.NewStartingIndex;
+                    endUpdateIndex = e.NewStartingIndex + (e.NewItems?.Count ?? 0);
                     break;
-                }
+
                 case NotifyCollectionChangedAction.Move:
-                {
-                    // Items moved, re-observe old and new positions
-                    _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + e.OldStartingIndex, list[e.OldStartingIndex]));
-                    _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + e.NewStartingIndex, list[e.NewStartingIndex]));
+                    // Items moved. Indices between OldStartingIndex and NewStartingIndex are affected.
+                    // We re-observe the range spanning both the old and new positions.
+                    startUpdateIndex = Math.Min(e.OldStartingIndex, e.NewStartingIndex);
+                    // The number of items moved is usually e.NewItems.Count (or OldItems.Count).
+                    // We extend the range to cover the moved items at their destination.
+                    endUpdateIndex = Math.Max(e.OldStartingIndex, e.NewStartingIndex) + (e.NewItems?.Count ?? 0); 
                     break;
-                }
+
                 case NotifyCollectionChangedAction.Reset:
-                {
-                    // Reset clears the collection, so we need to re-observe all items
-                    for (var i = 0; i < _listItemCount; i++)
-                    {
-                        ObserveObject(i.ToString(), null);
-                    }
-
-                    // Notify the whole object as changed
-                    _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath.TrimEnd(':'), sender));
+                    // Collection reset (cleared or drastically changed).
+                    // We must re-observe the entire collection.
+                    startUpdateIndex = 0;
+                    endUpdateIndex = list.Count;
+                    notifyCollectionObject = true;
                     break;
+            }
+
+            // Cleanup observations for indices that no longer exist (e.g., list shrank).
+            // _listItemCount tracks the previous size of the list.
+            if (_listItemCount > list.Count)
+            {
+                for (var i = list.Count; i < _listItemCount; i++)
+                {
+                    ObserveObject(i.ToString(), null);
                 }
             }
 
-            _listItemCount = list.Count;
-
-            // Notify changes in the affected range
-            for (var i = changeRange.Start.Value; i < changeRange.End.Value; i++)
+            // Update observations for the affected range and notify listeners.
+            if (startUpdateIndex != -1)
             {
-                if (i < 0 || i >= list.Count) continue; // Skip out of bounds indices
-                _owner._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + i, list[i]));
+                for (var i = startUpdateIndex; i < endUpdateIndex; i++)
+                {
+                    // Ensure we don't go out of bounds if logic above was loose.
+                    if (i >= list.Count) break;
+
+                    var val = list[i];
+                    
+                    // Re-observe: Updates the internal tracking and attaches handlers to the new item.
+                    ObserveObject(i.ToString(), val);
+                    
+                    // Notify: The value at this index path has changed.
+                    _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + i, val));
+                }
             }
+            
+            // If the operation implies a change to the collection object itself (like Remove or Reset),
+            // notify the listener about the collection path.
+            if (notifyCollectionObject)
+            {
+                _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath.TrimEnd(':'), sender));
+            }
+
+            // Update the cached item count for the next event.
+            _listItemCount = list.Count;
+        }
+
+        /// <summary>
+        /// Handles CollectionChanged events specifically for IDictionary targets.
+        /// Dictionaries use keys as paths, so index shifting is not a concern.
+        /// </summary>
+        /// <param name="dictionary">The dictionary that changed.</param>
+        /// <param name="e">The event arguments.</param>
+        private void HandleDictionaryCollectionChanged(IDictionary dictionary, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Reset)
+            {
+                // On Reset, we need to reconcile the current observations with the new state of the dictionary.
+                
+                // 1. Identify properties that are part of the object structure (not dictionary entries) to preserve them.
+                var properties = _observer.GetPropertyInfos(_targetType).Select(p => p.Name).ToHashSet();
+                
+                // 2. Remove observations for keys that are no longer in the dictionary (and aren't properties).
+                // We iterate a copy of keys to safely modify the collection.
+                foreach (var key in _observations.Keys.ToArray())
+                {
+                    if (!properties.Contains(key))
+                    {
+                        // Effectively un-observe by passing null.
+                        ObserveObject(key, null);
+                    }
+                }
+
+                // 3. Observe all current entries in the dictionary.
+                foreach (DictionaryEntry entry in dictionary)
+                {
+                    if (entry.Key.ToString() is { Length: > 0 } key)
+                    {
+                        ObserveObject(key, entry.Value);
+                    }
+                }
+
+                // 4. Notify that the dictionary object itself has changed.
+                _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath.TrimEnd(':'), dictionary));
+                return;
+            }
+
+            // Handle Removed items
+            if (e.OldItems is not null)
+            {
+                foreach (var item in e.OldItems)
+                {
+                    if (GetKeyFromItem(item) is { } key)
+                    {
+                        var keyString = key.ToString()!;
+                        ObserveObject(keyString, null); // Stop observing
+                        _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + keyString, null)); // Notify removal
+                    }
+                }
+            }
+
+            // Handle Added/New items
+            if (e.NewItems is not null)
+            {
+                foreach (var item in e.NewItems)
+                {
+                    if (GetKeyFromItem(item) is { } key)
+                    {
+                        var value = GetValueFromItem(item);
+                        var keyString = key.ToString()!;
+                        ObserveObject(keyString, value); // Start observing
+                        _observer._handler.Invoke(new ObjectObserverChangedEventArgs(_basePath + keyString, value)); // Notify addition
+                    }
+                }
+            }
+        }
+
+        private static object? GetKeyFromItem(object item)
+        {
+            switch (item)
+            {
+                case IKeyValuePair kvp:
+                    return kvp.Key;
+                case DictionaryEntry de:
+                    return de.Key;
+            }
+
+            var type = item.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                return type.GetProperty("Key")?.GetValue(item);
+            }
+
+            return null;
+        }
+
+        private static object? GetValueFromItem(object item)
+        {
+            switch (item)
+            {
+                case IKeyValuePair kvp:
+                    return kvp.Value;
+                case DictionaryEntry de:
+                    return de.Value;
+            }
+
+            var type = item.GetType();
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+            {
+                return type.GetProperty("Value")?.GetValue(item);
+            }
+
+            return null;
         }
 
         private void ObserveObject(string path, object? target)
@@ -229,13 +387,13 @@ public class ObjectObserver(ObjectObserverChangedEventHandler handler) : IDispos
             {
                 _observations.AddOrUpdate(
                     path,
-                    _ => new Observation(_basePath + path, notifyPropertyChanged, _owner),
+                    _ => new Observation(_basePath + path, notifyPropertyChanged, _observer),
                     (_, o) =>
                     {
                         if (o._targetReference.TryGetTarget(out var t) && Equals(t, notifyPropertyChanged)) return o;
 
                         o.Dispose();
-                        return new Observation(_basePath + path, notifyPropertyChanged, _owner);
+                        return new Observation(_basePath + path, notifyPropertyChanged, _observer);
                     });
             }
         }

@@ -9,7 +9,7 @@
     <Setter Property="HorizontalAlignment" Value="Left"/>
     <Setter Property="Background" Value="#00000000"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="CornerRadius" Value="{DynamicResource XlCornerRadius}"/>
     <Setter Property="Padding" Value="4,2"/>
 
     <Setter Property="Template">
@@ -17,6 +17,7 @@
         <StackPanel Spacing="4">
           <Border
             HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+            shadui:Timeline.Anchor="{Binding $self.Bounds, Converter={x:Static shadui:TimelineConverters.HalfRect}}"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
@@ -29,33 +30,26 @@
               </Transitions>
             </Border.Transitions>
 
-            <Border.Styles>
-              <Style Selector="ToggleButton:checked /template/ Border#RootBorder">
-                <Setter Property="Background" Value="{DynamicResource SecondaryColor}"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource SecondaryColor}"/>
-              </Style>
-
-              <Style Selector="ToggleButton#PART_ToggleButton">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="MinHeight" Value="0"/>
-              </Style>
-            </Border.Styles>
-
             <ToggleButton
-              x:Name="PART_ToggleButton"
+              x:Name="PART_ToggleButton" Classes="Ghost"
+              MinHeight="0"
               Padding="{TemplateBinding Padding}"
               CornerRadius="{TemplateBinding CornerRadius}"
               IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}">
               <StackPanel
-                Orientation="Horizontal" Spacing="4">
+                Orientation="Horizontal" Spacing="6">
                 <LucideIcon
+                  Foreground="{DynamicResource ForegroundLeadColor}"
                   Kind="{TemplateBinding Icon}"
-                  Size="14"/>
-                <ContentPresenter Content="{TemplateBinding Header}"/>
+                  Size="{DynamicResource FontSizeL}"/>
+                <ContentPresenter
+                  Content="{TemplateBinding Header}"
+                  FontSize="{DynamicResource FontSizeM}"
+                  Foreground="{DynamicResource ForegroundLeadColor}"/>
 
                 <shadui:Loading
-                  Width="14" Height="14"
+                  Width="{DynamicResource FontSizeM}"
+                  Height="{DynamicResource FontSizeM}"
                   VerticalAlignment="Center" IsHitTestVisible="False"
                   IsVisible="{TemplateBinding IsBusy}"/>
                 <TextBlock
@@ -78,7 +72,7 @@
                   Margin="2,0,0,0" VerticalAlignment="Center"
                   Foreground="{DynamicResource ErrorColor}"
                   IsHitTestVisible="False" Kind="X"
-                  Size="14">
+                  Size="{DynamicResource FontSizeM}">
                   <LucideIcon.IsVisible>
                     <MultiBinding Converter="{x:Static BoolConverters.And}">
                       <TemplateBinding Property="IsError"/>
@@ -94,8 +88,6 @@
 
           <Border
             x:Name="ContentBorder" Margin="4,0"
-            BorderBrush="{DynamicResource PrimaryColor}"
-            BorderThickness="3,0,0,0" CornerRadius="3"
             IsVisible="{TemplateBinding IsEffectivelyExpanded}"
             Opacity="0.5" RenderTransform="translateY(-16px)">
             <Border.Transitions>
@@ -109,9 +101,7 @@
               </Transitions>
             </Border.Transitions>
 
-            <ContentPresenter
-              Margin="4,0,0,0"
-              Content="{TemplateBinding Content}"/>
+            <ContentPresenter Content="{TemplateBinding Content}"/>
           </Border>
 
           <Border
@@ -132,9 +122,9 @@
       </ControlTemplate>
     </Setter>
 
-    <Style Selector="^:pointerover">
-      <Setter Property="Background" Value="{DynamicResource GhostColor}"/>
-    </Style>
+    <!-- <Style Selector="^:pointerover"> -->
+    <!--   <Setter Property="Background" Value="{DynamicResource GhostColor}"/> -->
+    <!-- </Style> -->
 
     <Style Selector="^:expanded">
       <Style Selector="^ /template/ Border#ContentBorder">

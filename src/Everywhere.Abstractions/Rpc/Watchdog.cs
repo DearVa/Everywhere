@@ -13,7 +13,7 @@ public abstract partial class WatchdogCommand;
 public abstract class ProcessCommand : WatchdogCommand
 {
     [Key(0)]
-    public required long ProcessId { get; set; }
+    public required long ProcessId { get; init; }
 }
 
 /// <summary>
@@ -26,4 +26,8 @@ public partial class RegisterSubprocessCommand : ProcessCommand;
 /// Unregister a watched subprocess.
 /// </summary>
 [MessagePackObject]
-public partial class UnregisterSubprocessCommand : ProcessCommand;
+public partial class UnregisterSubprocessCommand : ProcessCommand
+{
+    [Key(1)]
+    public bool KillIfRunning { get; init; }
+}

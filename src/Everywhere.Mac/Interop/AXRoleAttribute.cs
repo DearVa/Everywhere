@@ -63,3 +63,42 @@ public enum AXRoleAttribute
     AXWindow,
     AXWebArea
 }
+
+public enum AXSubroleAttribute
+{
+    AXUnknown,
+    AXCloseButton,
+    AXMinimizeButton,
+    AXZoomButton,
+    AXToolbarButton,
+    AXSecureTextField,
+    AXTableRow,
+    AXOutlineRow,
+    AXStandardWindow,
+    AXDialog,
+    AXSystemDialog,
+    AXFloatingWindow,
+    AXSystemFloatingWindow,
+    AXIncrementArrow,
+    AXDecrementArrow,
+    AXSortButton,
+    AXSearchField,
+    AXApplicationDockItem,
+    AXDocumentDockItem,
+    AXFolderDockItem,
+    AXMinimizedWindowDockItem,
+    AXURLDockItem,
+    AXDockExtraDockItem,
+    AXTrashDockItem,
+    AXProcessSwitcherList,
+    AXTabButton,
+    AXContentList,
+    AXDefinitionList,
+    AXDescriptionList,
+    AXToggle,
+    AXSwitch,
+    AXCollectionList,
+    AXRatingIndicator,
+    AXTimeline,
+    AXUserInterface
+}

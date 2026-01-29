@@ -36,14 +36,14 @@ public sealed class ChatPluginDisplaySink : IReadOnlyList<ChatPluginDisplayBlock
         return groupBlock.DisplaySink;
     }
 
-    public void AppendText(string text, string? fontFamily = null)
+    public void AppendText(string text, string? className = null)
     {
-        _itemsSource.Add(new ChatPluginTextDisplayBlock(text));
+        _itemsSource.Add(new ChatPluginTextDisplayBlock(text, className));
     }
 
-    public void AppendDynamicResourceKey(DynamicResourceKeyBase resourceKey)
+    public void AppendDynamicResourceKey(DynamicResourceKeyBase resourceKey, string? className = null)
     {
-        _itemsSource.Add(new ChatPluginDynamicResourceKeyDisplayBlock(resourceKey));
+        _itemsSource.Add(new ChatPluginDynamicResourceKeyDisplayBlock(resourceKey, className));
     }
 
     public ObservableStringBuilder AppendMarkdown()

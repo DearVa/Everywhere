@@ -1,10 +1,71 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Interactivity;
 using Everywhere.Interop;
+using Everywhere.Views;
+using ObjCRuntime;
 
 namespace Everywhere.Mac.Interop;
 
 public class WindowHelper : IWindowHelper
 {
+    private int OpenedWindowCount
+    {
+        get;
+        set
+        {
+            value = Math.Max(0, value);
+            if (value == field) return;
+
+            // changing activation policy
+            if (field == 0)
+            {
+                // first window opened
+                AppDelegate.IsVisibleInDock = true;
+            }
+            else if (value == 0)
+            {
+                // last window closed
+                AppDelegate.IsVisibleInDock = false;
+            }
+
+            field = value;
+        }
+    }
+
+    private bool IsChatWindowCloaked
+    {
+        set
+        {
+            if (value == field) return;
+            field = value;
+            if (value) OpenedWindowCount--;
+            else OpenedWindowCount++;
+        }
+    }
+
+    public WindowHelper()
+    {
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            OpenedWindowCount = desktop.Windows.Count;
+        }
+
+        Window.WindowOpenedEvent.AddClassHandler<Window>(HandleWindowOpened, handledEventsToo: true);
+        Window.WindowClosedEvent.AddClassHandler<Window>(HandleWindowClosed, handledEventsToo: true);
+    }
+
+    private void HandleWindowOpened(Window window, RoutedEventArgs args)
+    {
+        if (window is TransientWindow) OpenedWindowCount++;
+    }
+
+    private void HandleWindowClosed(Window window, RoutedEventArgs args)
+    {
+        if (window is TransientWindow) OpenedWindowCount--;
+    }
+
     /// <summary>
     /// Sets whether the window can become the key window (i.e., receive keyboard focus).
     /// </summary>
@@ -12,27 +73,8 @@ public class WindowHelper : IWindowHelper
     /// <param name="focusable">True to allow focus, false to prevent it.</param>
     public void SetFocusable(Window window, bool focusable)
     {
-        if (GetNativeWindow(window) is not { } nativeWindow) return;
-
-        // On macOS, the equivalent of a non-focusable window is often a panel that doesn't activate.
-        // We can achieve this by modifying the window's style mask.
-        // However, a simpler and less intrusive way is to prevent it from becoming the key window.
-        // This requires subclassing NSWindow, which is complex with Avalonia.
-        // A pragmatic approach is to set its level to one for utility windows, which often don't take focus.
-        // The most direct way is to use a private API or subclass, but for now, we can try setting the window level.
-        // A more robust solution might involve changing the CollectionBehavior.
-        if (focusable)
-        {
-            // Restore default behavior. This is hard without knowing the original state.
-            // For now, we assume it's a normal window.
-            nativeWindow.Level = NSWindowLevel.Normal;
-        }
-        else
-        {
-            // Setting a high window level prevents it from becoming the main or key window.
-            // This is similar to WS_EX_NOACTIVATE.
-            nativeWindow.Level = NSWindowLevel.Floating;
-        }
+        // We need to NonactivatingPanel, but only NSPanel supports that.
+        // So we cannot implement currently.
     }
 
     /// <summary>
@@ -46,6 +88,15 @@ public class WindowHelper : IWindowHelper
 
         // This is the direct equivalent of WS_EX_TRANSPARENT on Windows.
         nativeWindow.IgnoresMouseEvents = !visible;
+
+        // Special handling to ensure it remains interactive in full screen mode.
+        nativeWindow.CollectionBehavior |=
+            NSWindowCollectionBehavior.CanJoinAllSpaces |
+            NSWindowCollectionBehavior.FullScreenAuxiliary;
+        nativeWindow.CollectionBehavior &=
+            ~(NSWindowCollectionBehavior.FullScreenPrimary |
+                NSWindowCollectionBehavior.Managed);
+        nativeWindow.Level = NSWindowLevel.ScreenSaver;
     }
 
     /// <summary>
@@ -77,11 +128,27 @@ public class WindowHelper : IWindowHelper
     {
         if (GetNativeWindow(window) is not { } nativeWindow) return;
 
+        if (window is ChatWindow)
+        {
+            // For ChatWindow, we might want to ensure it can appear on all spaces and in full screen mode.
+            nativeWindow.CollectionBehavior =
+                NSWindowCollectionBehavior.CanJoinAllSpaces |
+                NSWindowCollectionBehavior.FullScreenAuxiliary;
+
+            // Chat window will not be closed, so hide/show is treated as close/open for counting purposes.
+            IsChatWindowCloaked = cloaked;
+        }
+
         if (cloaked)
         {
             // Hide the window and ensure it's not in the window cycle (Cmd+Tab).
             nativeWindow.CollectionBehavior |= NSWindowCollectionBehavior.IgnoresCycle;
+
+            // Animate the hiding to avoid flicker
+            NSAnimationContext.BeginGrouping();
+            NSAnimationContext.CurrentContext.Duration = 0;
             window.Hide();
+            NSAnimationContext.EndGrouping();
         }
         else
         {
@@ -89,7 +156,11 @@ public class WindowHelper : IWindowHelper
             window.Show();
             nativeWindow.CollectionBehavior &= ~NSWindowCollectionBehavior.IgnoresCycle;
             nativeWindow.MakeKeyAndOrderFront(null);
+
+            // Make sure it gets an input focus.
+#pragma warning disable CA1422
             NSApplication.SharedApplication.ActivateIgnoringOtherApps(true);
+#pragma warning restore CA1422
         }
     }
 
@@ -123,8 +194,6 @@ public class WindowHelper : IWindowHelper
     /// </summary>
     private static NSWindow? GetNativeWindow(Window window)
     {
-        return window.TryGetPlatformHandle()?.Handle is { } handle
-            ? ObjCRuntime.Runtime.GetNSObject<NSWindow>(handle)
-            : null;
+        return window.TryGetPlatformHandle()?.Handle is { } handle ? Runtime.GetNSObject<NSWindow>(handle) : null;
     }
 }

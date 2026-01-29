@@ -1,0 +1,140 @@
+﻿name: (macOS) Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - runtime: osx-x64
+            asset_name: macOS-x64
+          - runtime: osx-arm64
+            asset_name: macOS-arm64
+
+    steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '26.2'
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+        lfs: true
+
+    - name: Verify Tag (Manual Trigger)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
+        if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          echo "Error: Current commit is not tagged with a valid version (vX.X.X)."
+          echo "Current tag: $TAG"
+          exit 1
+        fi
+        echo "Found valid tag: $TAG"
+        echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+        echo "GITHUB_REF=refs/tags/$TAG" >> $GITHUB_ENV
+
+    - name: Get version from tag
+      if: github.event_name != 'workflow_dispatch'
+      id: get_version
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Import Code Signing Certificate
+      env:
+        P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+        P12_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+      run: |
+        # Create a temporary keychain
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+        security create-keychain -p "" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "" $KEYCHAIN_PATH
+
+        # Decode the P12 file
+        CERT_PATH=$RUNNER_TEMP/certificate.p12
+        echo "$P12_BASE64" | base64 --decode -o $CERT_PATH
+
+        # Download Apple Worldwide Developer Relations Certification Authority
+        curl -fLo $RUNNER_TEMP/AppleRootCA-G2.cer https://www.apple.com/certificateauthority/AppleRootCA-G2.cer
+        curl -fLo $RUNNER_TEMP/AppleRootCA-G3.cer https://www.apple.com/certificateauthority/AppleRootCA-G3.cer
+        curl -fLo $RUNNER_TEMP/DeveloperIDG2CA.cer https://www.apple.com/certificateauthority/DeveloperIDG2CA.cer
+
+        # Import the P12 and the Intermediate Certificate
+        security import $CERT_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security import $RUNNER_TEMP/AppleRootCA-G2.cer -k $KEYCHAIN_PATH -T /usr/bin/codesign -T /usr/bin/productbuild || echo "AppleRootCA-G2 import failed or already exists"
+        security import $RUNNER_TEMP/AppleRootCA-G3.cer -k $KEYCHAIN_PATH -T /usr/bin/codesign -T /usr/bin/productbuild || echo "AppleRootCA-G3 import failed or already exists"
+        security import $RUNNER_TEMP/DeveloperIDG2CA.cer -k $KEYCHAIN_PATH -T /usr/bin/codesign -T /usr/bin/productbuild || echo "DeveloperIDG2CA import failed or already exists"
+        security list-keychain -d user -s $KEYCHAIN_PATH
+
+    - name: Install Workloads
+      run: dotnet workload restore src/Everywhere.Mac/Everywhere.Mac.csproj
+
+    - name: Restore
+      run: dotnet restore Everywhere.Mac.slnf -r ${{ matrix.runtime }} /p:RuntimeIdentifier=${{ matrix.runtime }}
+
+    - name: Publish
+      env:
+        CODE_SIGN_KEY: ${{ secrets.CODE_SIGN_KEY }}
+        PACKAGE_SIGNING_KEY: ${{ secrets.PACKAGE_SIGNING_KEY }}
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      run: |
+        dotnet publish src/Everywhere.Mac/Everywhere.Mac.csproj \
+          -c Release \
+          -r ${{ matrix.runtime }} \
+          /p:RuntimeIdentifier=${{ matrix.runtime }} \
+          /p:CodesignKey="$CODE_SIGN_KEY" \
+          /p:PackageSigningKey="$PACKAGE_SIGNING_KEY" \
+          /p:Version=${{ env.VERSION }} \
+          /p:SentryDsn="$SENTRY_DSN" \
+          /p:IsPublish="true" \
+          -o ./publish \
+          --no-restore
+
+    - name: Notarize App
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_PWD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      run: |
+        # Find the generated PKG file in the publish output directory
+        PKG_PATH=$(find ./publish -name "Everywhere-*.pkg" | head -n 1)
+        
+        if [ -z "$PKG_PATH" ]; then
+          echo "Error: .pkg file not found in ./publish!"
+          exit 1
+        fi
+
+        echo "Found package: $PKG_PATH"
+        
+        echo "Notarizing..."
+        xcrun notarytool submit "$PKG_PATH" \
+          --apple-id "$APPLE_ID" \
+          --team-id "$APPLE_TEAM_ID" \
+          --password "$APPLE_PWD" \
+          --wait
+
+        echo "Stapling..."
+        xcrun stapler staple "$PKG_PATH"
+        
+        # Move to a known location for upload
+        mkdir -p ./release_assets
+        mv "$PKG_PATH" ./release_assets/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.pkg
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ./release_assets/*.pkg

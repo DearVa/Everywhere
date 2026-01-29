@@ -21,7 +21,7 @@ public sealed class GoogleKernelMixin : KernelMixinBase
     {
         var service = new GoogleAIGeminiChatCompletionService(
             ModelId,
-            ApiKey ?? string.Empty,
+            EnsureApiKey(),
             httpClient: httpClient,
             loggerFactory: loggerFactory,
             customEndpoint: new Uri(Endpoint, UriKind.Absolute));
@@ -33,7 +33,7 @@ public sealed class GoogleKernelMixin : KernelMixinBase
     {
         double? temperature = _customAssistant.Temperature.IsCustomValueSet ? _customAssistant.Temperature.ActualValue : null;
         double? topP = _customAssistant.TopP.IsCustomValueSet ? _customAssistant.TopP.ActualValue : null;
-        int? maxTokens = _customAssistant.MaxTokens.IsCustomValueSet ? _customAssistant.MaxTokens.ActualValue : null;
+        int? maxTokens = _customAssistant.MaxTokens <= 0 ? null : _customAssistant.MaxTokens;
 
         // Convert FunctionChoiceBehavior to GeminiToolCallBehavior
         GeminiToolCallBehavior? toolCallBehavior = null;

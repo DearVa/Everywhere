@@ -1,39 +1,35 @@
 ﻿using System.Buffers;
-using ZLinq;
+using System.Text;
 
 namespace Everywhere.Utilities;
-
-using System.IO;
-using System.Text;
 
 /// <summary>
 /// Provides functionality to detect the encoding of a text stream.
 /// It prioritizes BOM detection and then uses heuristics and statistical analysis
-/// to guess the encoding for non-BOM files, with support for UTF-8, GBK, and Big5.
+/// to guess the encoding for non-BOM files.
 /// </summary>
 public static class EncodingDetector
 {
-    // Pre-created encoding instances for performance.
-    // Using a provider is necessary for .NET Core/.NET 5+ to support legacy encodings.
     private static readonly Encoding Gbk;
     private static readonly Encoding Big5;
+    private static readonly Encoding ShiftJis;
+    private static readonly Encoding Gb18030;
+    private static readonly Encoding Windows1252;
 
     static EncodingDetector()
     {
-        // Register the CodePagesEncodingProvider to get access to GBK, Big5, etc.
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         Gbk = Encoding.GetEncoding("GBK");
         Big5 = Encoding.GetEncoding("Big5");
+        ShiftJis = Encoding.GetEncoding("shift_jis");
+        Gb18030 = Encoding.GetEncoding("GB18030");
+        Windows1252 = Encoding.GetEncoding(1252);
     }
 
     /// <summary>
     /// Tries to detect the encoding of a stream by reading its initial bytes.
     /// Returns null if the stream is likely binary or the encoding cannot be determined.
     /// </summary>
-    /// <param name="stream">The stream to analyze. Must be readable and seekable.</param>
-    /// <param name="bufferSize">The number of bytes to read for detection. Default is 4096.</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>The detected Encoding, or null if it's binary or undetermined.</returns>
     public static async Task<Encoding?> DetectEncodingAsync(Stream stream, int bufferSize = 4096, CancellationToken cancellationToken = default)
     {
         if (!stream.CanRead) throw new ArgumentException("Stream must be readable.", nameof(stream));
@@ -46,32 +42,18 @@ public static class EncodingDetector
 
         try
         {
-            var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, bufferSize), cancellationToken);
+            // ReadAtLeastAsync ensures we fill the buffer if possible, reducing partial read issues.
+            var bytesRead = await stream.ReadAtLeastAsync(buffer.AsMemory(0, bufferSize), bufferSize, throwOnEndOfStream: false, cancellationToken: cancellationToken);
 
-            if (bytesRead == 0)
-            {
-                // An empty file can be treated as UTF-8 by default.
-                return new UTF8Encoding(false);
-            }
+            if (bytesRead == 0) return new UTF8Encoding(false);
 
             var span = buffer.AsSpan(0, bytesRead);
 
-            // 1. Check for Byte Order Marks (BOM) - The most reliable method.
             var bomEncoding = DetectBom(span);
-            if (bomEncoding != null)
-            {
-                return bomEncoding;
-            }
+            if (bomEncoding != null) return bomEncoding;
 
-            // 2. Heuristic: Check for null bytes to detect binary files.
-            // Text files (other than UTF-16/32, which BOM would have caught) rarely contain null bytes.
-            if (IsLikelyBinary(span))
-            {
-                return null;
-            }
+            return IsLikelyBinary(span) ? null : DetectEncodingWithoutBom(span);
 
-            // 3. Heuristic analysis for non-BOM encodings (UTF-8, GBK, Big5).
-            return DetectEncodingWithoutBom(span);
         }
         finally
         {
@@ -82,147 +64,214 @@ public static class EncodingDetector
 
     private static Encoding? DetectBom(ReadOnlySpan<byte> buffer)
     {
-        // Byte Order Marks (BOMs) for various encodings.
-        Span<byte> utf8Bom = [0xEF, 0xBB, 0xBF];
-        if (buffer.StartsWith(utf8Bom)) return Encoding.UTF8;
-        Span<byte> utf16LeBom = [0xFF, 0xFE];
-        if (buffer.StartsWith(utf16LeBom)) return Encoding.Unicode;
-        Span<byte> utf16BeBom = [0xFE, 0xFF];
-        if (buffer.StartsWith(utf16BeBom)) return Encoding.BigEndianUnicode;
-        Span<byte> utf32LeBom = [0xFF, 0xFE, 0x00, 0x00];
-        if (buffer.StartsWith(utf32LeBom)) return Encoding.UTF32;
-        Span<byte> utf32BeBom = [0x00, 0x00, 0xFE, 0xFF];
-        if (buffer.StartsWith(utf32BeBom)) return new UTF32Encoding(true, true);
+        if (buffer.StartsWith(new byte[] { 0xEF, 0xBB, 0xBF })) return Encoding.UTF8;
+        if (buffer.StartsWith(new byte[] { 0xFF, 0xFE, 0x00, 0x00 })) return Encoding.UTF32;
+        if (buffer.StartsWith(new byte[] { 0x00, 0x00, 0xFE, 0xFF })) return new UTF32Encoding(true, true);
+        if (buffer.StartsWith(new byte[] { 0xFF, 0xFE })) return Encoding.Unicode;
+        if (buffer.StartsWith(new byte[] { 0xFE, 0xFF })) return Encoding.BigEndianUnicode;
+        if (buffer.StartsWith(new byte[] { 0x84, 0x31, 0x95, 0x33 })) return Gb18030;
         return null;
     }
 
     private static bool IsLikelyBinary(ReadOnlySpan<byte> buffer)
     {
-        const double nullByteThreshold = 0.1; // 10% threshold for null bytes.
-        var nullCount = buffer.AsValueEnumerable().Count(b => b == 0x00);
-        return (double)nullCount / buffer.Length > nullByteThreshold;
+        // Check for null bytes and other common control characters that rarely appear in text.
+        // 0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F are control chars.
+        // 0x09 (TAB), 0x0A (LF), 0x0D (CR) are common text chars.
+        
+        const double threshold = 0.1;
+        var checkLen = Math.Min(buffer.Length, 1000);
+        var suspiciousCount = 0;
+        
+        for (var i = 0; i < checkLen; i++)
+        {
+            var b = buffer[i];
+            if (b == 0x00 || 
+               b < 0x20 && b != 0x09 && b != 0x0A && b != 0x0D)
+            {
+                suspiciousCount++;
+            }
+        }
+        return (double)suspiciousCount / checkLen > threshold;
     }
 
-    private static Encoding? DetectEncodingWithoutBom(ReadOnlySpan<byte> buffer)
+    private static Encoding DetectEncodingWithoutBom(ReadOnlySpan<byte> buffer)
     {
-        // Confidence scores for each encoding.
-        // A score of 0 means the encoding is considered invalid for the given buffer.
-        var utf8Confidence = 1;
-        var gbkConfidence = 1;
-        var big5Confidence = 1;
+        // State variables for parallel detection
+        
+        // UTF-8
+        var utf8Invalid = false;
+        var utf8HasMultibyte = false;
+        var utf8Need = 0;
 
-        // Minimum confidence score required to make a decision.
-        const int minConfidence = 10;
+        // GB18030 (covers GBK)
+        var gb18030Invalid = false;
+        long gb18030Score = 0;
+        var gb18030State = 0; // 0: Start, 1: 2nd byte, 2: 3rd byte, 3: 4th byte
+        var gb18030Has4Byte = false;
 
-        var i = 0;
-        while (i < buffer.Length)
+        // Big5
+        var big5Invalid = false;
+        long big5Score = 0;
+        var big5State = 0; // 0: Start, 1: 2nd byte
+
+        // Shift-JIS
+        var sjisInvalid = false;
+        long sjisScore = 0;
+        var sjisState = 0; // 0: Start, 1: 2nd byte
+
+        foreach (byte b in buffer)
         {
-            var b1 = buffer[i];
-
-            // Single-byte ASCII characters are valid in all these encodings.
-            if (b1 < 0x80)
+            // --- UTF-8 Logic ---
+            if (!utf8Invalid)
             {
-                i++;
-                continue;
-            }
-
-            // --- UTF-8 Validation ---
-            if (utf8Confidence > 0)
-            {
-                if ((b1 & 0xE0) == 0xC0) // 2-byte sequence
+                if (utf8Need == 0)
                 {
-                    if (i + 1 < buffer.Length && (buffer[i + 1] & 0xC0) == 0x80)
-                    {
-                        utf8Confidence++;
-                    }
-                    else utf8Confidence = 0;
-                }
-                else if ((b1 & 0xF0) == 0xE0) // 3-byte sequence
-                {
-                    if (i + 2 < buffer.Length && (buffer[i + 1] & 0xC0) == 0x80 && (buffer[i + 2] & 0xC0) == 0x80)
-                    {
-                        utf8Confidence++;
-                    }
-                    else utf8Confidence = 0;
-                }
-                else if ((b1 & 0xF8) == 0xF0) // 4-byte sequence
-                {
-                    if (i + 3 < buffer.Length && (buffer[i + 1] & 0xC0) == 0x80 && (buffer[i + 2] & 0xC0) == 0x80 && (buffer[i + 3] & 0xC0) == 0x80)
-                    {
-                        utf8Confidence++;
-                    }
-                    else utf8Confidence = 0;
+                    if (b < 0x80) { /* ASCII */ }
+                    else if ((b & 0xE0) == 0xC0) { utf8Need = 1; utf8HasMultibyte = true; }
+                    else if ((b & 0xF0) == 0xE0) { utf8Need = 2; utf8HasMultibyte = true; }
+                    else if ((b & 0xF8) == 0xF0) { utf8Need = 3; utf8HasMultibyte = true; }
+                    else utf8Invalid = true;
                 }
                 else
                 {
-                    // Invalid start of a multi-byte sequence.
-                    utf8Confidence = 0;
+                    if ((b & 0xC0) == 0x80) utf8Need--;
+                    else utf8Invalid = true;
                 }
             }
 
-            // --- Multi-byte (GBK, Big5) Validation ---
-            if (i + 1 < buffer.Length)
+            // --- GB18030 Logic ---
+            if (!gb18030Invalid)
             {
-                var b2 = buffer[i + 1];
-
-                // GBK: 0x81-FE, 0x40-FE (excluding 0x7F)
-                if (gbkConfidence > 0)
+                switch (gb18030State)
                 {
-                    if (b1 is >= 0x81 and <= 0xFE && b2 is >= 0x40 and <= 0xFE && b2 != 0x7F)
-                    {
-                        gbkConfidence++;
-                    }
-                    else
-                    {
-                        // This is not a valid GBK 2-byte sequence start, but it might be a single byte.
-                        // A more robust check would require a state machine, but for now, we don't invalidate.
-                        // We only increment confidence on positive matches.
-                    }
+                    case 0: // Expect 1st
+                        switch (b)
+                        {
+                            case >= 0x81 and <= 0xFE:
+                                gb18030State = 1;
+                                break;
+                            case >= 0x80:
+                                gb18030Invalid = true; // High ASCII unused in start
+                                break;
+                        }
+                        break;
+                    case 1: // Expect 2nd
+                        switch (b)
+                        {
+                            case >= 0x40 and <= 0xFE when b != 0x7F:
+                                gb18030Score++; // Valid 2-byte sequence
+                                gb18030State = 0;
+                                break;
+                            case >= 0x30 and <= 0x39:
+                                gb18030State = 2; // Possible 4-byte sequence
+                                break;
+                            default:
+                                gb18030Invalid = true;
+                                break;
+                        }
+                        break;
+                    case 2: // Expect 3rd
+                        if (b is >= 0x81 and <= 0xFE) gb18030State = 3;
+                        else gb18030Invalid = true;
+                        break;
+                    case 3: // Expect 4th
+                        if (b is >= 0x30 and <= 0x39)
+                        {
+                            gb18030Score++;
+                            gb18030Has4Byte = true;
+                            gb18030State = 0;
+                        }
+                        else gb18030Invalid = true;
+                        break;
                 }
-
-                // Big5: 0x81-FE, 0x40-7E or 0xA1-FE
-                if (big5Confidence > 0)
-                {
-                    if (b1 >= 0x81 && b1 <= 0xFE && ((b2 >= 0x40 && b2 <= 0x7E) || (b2 >= 0xA1 && b2 <= 0xFE)))
-                    {
-                        big5Confidence++;
-                    }
-                }
-                i += 2; // Move past the 2-byte character.
             }
-            else
+
+            // --- Big5 Logic ---
+            if (!big5Invalid)
             {
-                // Incomplete multi-byte character at the end of the buffer.
-                i++;
+                if (big5State == 0)
+                {
+                    switch (b)
+                    {
+                        case >= 0x81 and <= 0xFE:
+                            big5State = 1;
+                            break;
+                        case >= 0x80:
+                            big5Invalid = true;
+                            break;
+                    }
+                }
+                else // State 1
+                {
+                    if (b is >= 0x40 and <= 0x7E || b is >= 0xA1 and <= 0xFE)
+                    {
+                        big5Score++;
+                        big5State = 0;
+                    }
+                    else big5Invalid = true;
+                }
+            }
+
+            // --- Shift-JIS Logic ---
+            if (!sjisInvalid)
+            {
+                if (sjisState == 0)
+                {
+                    switch (b)
+                    {
+                        case >= 0xA1 and <= 0xDF:
+                            // Half-width Katakana, valid 1-byte
+                            sjisScore++;
+                            break;
+                        case >= 0x81 and <= 0x9F:
+                        case >= 0xE0 and <= 0xFC:
+                            sjisState = 1;
+                            break;
+                        case >= 0x80:
+                            sjisInvalid = true;
+                            break;
+                    }
+                }
+                else // State 1
+                {
+                    if (b is >= 0x40 and <= 0x7E or >= 0x80 and <= 0xFC)
+                    {
+                        sjisScore++;
+                        sjisState = 0;
+                    }
+                    else sjisInvalid = true;
+                }
             }
         }
 
         // --- Decision Logic ---
-        // If UTF-8 is valid and has some multi-byte chars, it's a strong candidate.
-        if (utf8Confidence > gbkConfidence && utf8Confidence > big5Confidence && utf8Confidence > minConfidence)
+
+        // 1. UTF-8 (Strict)
+        // If strictly valid and contains multibyte chars, or is just ASCII, it's UTF-8.
+        if (!utf8Invalid && (utf8HasMultibyte || (gb18030Score == 0 && big5Score == 0 && sjisScore == 0)))
         {
-            return new UTF8Encoding(false);
+             return new UTF8Encoding(false);
         }
 
-        // If GBK is the clear winner.
-        if (gbkConfidence > utf8Confidence && gbkConfidence > big5Confidence && gbkConfidence > minConfidence)
-        {
-            return Gbk;
-        }
+        // Candidates map for Multi-byte
+        var candidates = new List<(Encoding Encoding, long Score)>();
 
-        // If Big5 is the clear winner.
-        if (big5Confidence > utf8Confidence && big5Confidence > gbkConfidence && big5Confidence > minConfidence)
-        {
-            return Big5;
-        }
+        if (!gb18030Invalid) candidates.Add((Gb18030, gb18030Score));
+        if (!big5Invalid) candidates.Add((Big5, big5Score));
+        if (!sjisInvalid) candidates.Add((ShiftJis, sjisScore));
+        
+        if (candidates.Count == 0) return Windows1252;
 
-        // If UTF-8 is valid but had low confidence (e.g., mostly ASCII), it's still the best default guess.
-        if (utf8Confidence > 0 && gbkConfidence <= 1 && big5Confidence <= 1)
-        {
-            return new UTF8Encoding(false);
-        }
+        // Priority Logic:
+        // If GB18030 has 4-byte sequence, it wins immediately.
+        if (!gb18030Invalid && gb18030Has4Byte) return Gb18030;
 
-        // If no encoding stands out, we cannot determine the encoding reliably.
-        return null;
+        // Sort by score
+        candidates.Sort((a, b) => b.Score.CompareTo(a.Score));
+
+        // If score is 0, it means we only found ASCII or truncated sequences?
+        return candidates[0].Score == 0 ? Windows1252 : candidates[0].Encoding;
+
     }
 }

@@ -1,18 +1,26 @@
 ﻿<UserControl
   x:Class="Everywhere.Views.Pages.ChatPluginPage" xmlns="https://github.com/avaloniaui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:be="clr-namespace:Everywhere.Behaviors"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:behaviors="clr-namespace:Everywhere.Behaviors"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:p="clr-namespace:Everywhere.Chat.Plugins"
-  xmlns:permissions="clr-namespace:Everywhere.Chat.Permissions" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
-  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters"
-  xmlns:vm="clr-namespace:Everywhere.ViewModels" d:DesignHeight="450"
-  d:DesignWidth="800" x:DataType="vm:ChatPluginPageViewModel"
-  mc:Ignorable="d">
+  xmlns:pages="clr-namespace:Everywhere.Views.Pages" xmlns:permissions="clr-namespace:Everywhere.Chat.Permissions"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
+  xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
+  d:DesignHeight="450" d:DesignWidth="800"
+  x:DataType="vm:ChatPluginPageViewModel" mc:Ignorable="d">
+  <UserControl.Resources>
+    <vc:LogLevelToBrushConverter
+      x:Key="LogLevelToBrushConverter"
+      CriticalBrush="{DynamicResource ErrorColor}"
+      DefaultBrush="{DynamicResource ForegroundColor}"
+      ErrorBrush="{DynamicResource ErrorColor}"
+      WarningBrush="{DynamicResource WarningColor}"/>
+  </UserControl.Resources>
+
   <UserControl.Styles>
     <Style Selector="ListBox.PluginListBox">
-      <Style Selector="^ &gt; Border">
-        <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
-      </Style>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="BorderThickness" Value="0"/>
       <Style Selector="^ ListBoxItem">
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -20,38 +28,43 @@
       <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
       <Setter Property="ItemTemplate">
         <DataTemplate DataType="p:ChatPlugin">
-          <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-            <LucideIcon
-              Grid.Column="0" Margin="0,0,12,0"
-              Kind="{Binding Icon}"/>
-            <StackPanel Grid.Column="1">
-              <TextBlock
-                Classes="p" IsHitTestVisible="False"
-                Text="{Binding HeaderKey^}"
-                TextTrimming="CharacterEllipsis"/>
-              <TextBlock
-                Classes="Muted" IsHitTestVisible="False"
-                IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                MaxLines="2"
-                Text="{Binding DescriptionKey^}"
-                TextTrimming="CharacterEllipsis"/>
-            </StackPanel>
-            <Border
-              Grid.Column="2" Width="8"
-              Height="8" Background="Gray"
-              CornerRadius="8"
-              IsVisible="{Binding !(p:McpChatPlugin).IsRunning, FallbackValue=false}"
-              ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_PluginStatus_NotRunning_ToolTip}}"/>
-            <Border
-              Grid.Column="2" Width="8"
-              Height="8" Background="Green"
-              CornerRadius="8"
-              IsVisible="{Binding (p:McpChatPlugin).IsRunning, FallbackValue=false}"
-              ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_PluginStatus_Running_ToolTip}}"/>
-            <CheckBox
-              Grid.Column="3" Margin="16,0,0,0"
+          <DockPanel>
+            <ToggleSwitch
+              DockPanel.Dock="Right" Margin="8,0,4,0"
               IsChecked="{Binding IsEnabled}"/>
-          </Grid>
+
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <LucideIcon
+                Grid.Column="0" Margin="0,0,10,0"
+                Kind="{Binding Icon}"/>
+              <StackPanel
+                Grid.Column="1" VerticalAlignment="Center"
+                Spacing="4">
+                <TextBlock
+                  Classes="p" IsHitTestVisible="False"
+                  Text="{Binding HeaderKey^}"
+                  TextTrimming="CharacterEllipsis"/>
+                <TextBlock
+                  Classes="Muted" IsHitTestVisible="False"
+                  IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                  MaxLines="2"
+                  Text="{Binding DescriptionKey^}"
+                  TextTrimming="CharacterEllipsis"/>
+              </StackPanel>
+              <Border
+                Grid.Column="2" Width="8"
+                Height="8" Background="Gray"
+                CornerRadius="8"
+                IsVisible="{Binding !(p:McpChatPlugin).IsRunning, FallbackValue=false}"
+                ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_PluginStatus_NotRunning_ToolTip}}"/>
+              <Border
+                Grid.Column="2" Width="8"
+                Height="8" Background="Green"
+                CornerRadius="8"
+                IsVisible="{Binding (p:McpChatPlugin).IsRunning, FallbackValue=false}"
+                ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_PluginStatus_Running_ToolTip}}"/>
+            </Grid>
+          </DockPanel>
         </DataTemplate>
       </Setter>
     </Style>
@@ -96,344 +109,348 @@
     </Style>
   </UserControl.Styles>
 
-  <Grid RowDefinitions="Auto,*">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition
-        Width="*" MinWidth="370"/>
-      <ColumnDefinition Width="5"/>
-      <ColumnDefinition Width="3*"/>
-    </Grid.ColumnDefinitions>
-    <TabControl
-      Grid.Row="0" Grid.RowSpan="2"
-      Grid.Column="0" ClipToBounds="False">
-      <TabControl.Template>
-        <ControlTemplate TargetType="TabControl">
-          <Border
-            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-            VerticalAlignment="{TemplateBinding VerticalAlignment}"
-            Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            CornerRadius="{TemplateBinding CornerRadius}">
-            <Grid
-              RowDefinitions="Auto,*" RowSpacing="8">
-              <DockPanel
-                Grid.Row="0" MinWidth="340"
-                HorizontalSpacing="8" LastChildFill="True">
-                <LayoutTransformControl
-                  Name="LayoutTransform"
-                  DockPanel.Dock="{TemplateBinding TabStripPlacement}"
-                  HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
-                  <Border
-                    Padding="2,4,2,0" HorizontalAlignment="Left"
-                    Background="{DynamicResource TabItemsBackgroundColor}"
-                    CornerRadius="{DynamicResource LgCornerRadius}">
-                    <ItemsPresenter
-                      Name="PART_ItemsPresenter"
-                      ItemsPanel="{TemplateBinding ItemsPanel}"/>
-                  </Border>
-                </LayoutTransformControl>
-              </DockPanel>
+  <shadui:NavigationView
+    MaxWidth="1600"
+    PageTransition="{x:Null}"
+    PaneWidth="440" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+    SelectedItem="{Binding SelectedPlugin, Mode=TwoWay}">
+    <shadui:NavigationView.PaneHeader>
+      <DockPanel Margin="0,0,0,8">
+        <TextBlock
+          Classes="h4" DockPanel.Dock="Left"
+          VerticalAlignment="Center"
+          Text="{I18N {x:Static LocaleKey.ChatPluginPage_Title}}"/>
 
-              <ContentPresenter
-                Name="PART_SelectedContentHost" Grid.Row="1"
-                Margin="0,4,0,0"
-                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                Content="{TemplateBinding SelectedContent}"
-                ContentTemplate="{TemplateBinding SelectedContentTemplate}"/>
-            </Grid>
-          </Border>
-        </ControlTemplate>
-      </TabControl.Template>
+        <shadui:ButtonGroup
+          HorizontalAlignment="Right" VerticalAlignment="Center"
+          IsVisible="{Binding #McpTabItem.IsSelected}"
+          Orientation="Horizontal">
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Plus}"
+            Command="{Binding AddMcpPluginCommand}"
+            Content="{I18N {x:Static LocaleKey.ChatPluginPage_AddMcpPluginButton_Content}}"/>
 
-      <TabItem>
-        <TabItem.Header>
-          <StackPanel
-            Orientation="Horizontal" Spacing="4">
+          <Button
+            Classes="Secondary"
+            Command="{Binding ImportMcpPluginCommand}"
+            ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_ImportMcpPluginButton_ToolTip}}">
             <LucideIcon
-              Kind="Box" Size="14"/>
-            <TextBlock Text="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_BuiltIn_Header}}"/>
-          </StackPanel>
-        </TabItem.Header>
+              Kind="Import"
+              Size="{DynamicResource FontSizeL}"/>
+          </Button>
+        </shadui:ButtonGroup>
+      </DockPanel>
+    </shadui:NavigationView.PaneHeader>
 
-        <ListBox
-          Classes="PluginListBox"
-          ItemsSource="{Binding Manager.BuiltInPlugins}"
-          SelectedItem="{Binding SelectedPlugin}"/>
-      </TabItem>
+    <shadui:NavigationView.PaneContent>
+      <TabControl>
+        <TabControl.Template>
+          <ControlTemplate TargetType="TabControl">
+            <Border
+              HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+              VerticalAlignment="{TemplateBinding VerticalAlignment}"
+              Background="{TemplateBinding Background}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              CornerRadius="{TemplateBinding CornerRadius}">
+              <Grid
+                RowDefinitions="Auto,*" RowSpacing="8">
+                <DockPanel
+                  Grid.Row="0" MinWidth="340"
+                  HorizontalSpacing="8" LastChildFill="True">
+                  <LayoutTransformControl
+                    Name="LayoutTransform"
+                    DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                    <Border
+                      Padding="2,4,2,0" HorizontalAlignment="Left"
+                      Background="{DynamicResource CardBackgroundColor}"
+                      CornerRadius="{DynamicResource LgCornerRadius}">
+                      <ItemsPresenter
+                        Name="PART_ItemsPresenter"
+                        ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                    </Border>
+                  </LayoutTransformControl>
+                </DockPanel>
 
-      <TabItem x:Name="McpTabItem">
-        <TabItem.Header>
-          <StackPanel
-            Orientation="Horizontal" Spacing="4">
-            <Image
-              Width="14" Height="14"
-              Source="{StaticResource McpDrawingImage}"/>
-            <TextBlock Text="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_MCP_Header}}"/>
-          </StackPanel>
-        </TabItem.Header>
-        <Panel>
+                <ContentPresenter
+                  Name="PART_SelectedContentHost" Grid.Row="1"
+                  Margin="0,4,0,0"
+                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                  Content="{TemplateBinding SelectedContent}"
+                  ContentTemplate="{TemplateBinding SelectedContentTemplate}"/>
+              </Grid>
+            </Border>
+          </ControlTemplate>
+        </TabControl.Template>
+
+        <TabItem>
+          <TabItem.Header>
+            <StackPanel
+              Orientation="Horizontal" Spacing="4">
+              <LucideIcon
+                Kind="Box" Size="14"/>
+              <TextBlock Text="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_BuiltIn_Header}}"/>
+            </StackPanel>
+          </TabItem.Header>
+
+          <ListBox
+            Classes="PluginListBox"
+            ItemsSource="{Binding Manager.BuiltInPlugins}"
+            SelectedItem="{Binding SelectedBuiltInPlugin}"/>
+        </TabItem>
+
+        <TabItem x:Name="McpTabItem">
+          <TabItem.Header>
+            <StackPanel
+              Orientation="Horizontal" Spacing="4">
+              <PathIcon
+                Width="{DynamicResource FontSizeM}"
+                Height="{DynamicResource FontSizeM}"
+                Data="{StaticResource McpIconGeometry}"
+                Foreground="{Binding #McpTabItem.Foreground}"/>
+              <TextBlock Text="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_MCP_Header}}"/>
+            </StackPanel>
+          </TabItem.Header>
+
           <ListBox
             Classes="PluginListBox"
             ItemsSource="{Binding Manager.McpPlugins}"
-            SelectedItem="{Binding SelectedPlugin}"/>
+            SelectedItem="{Binding SelectedMcpPlugin}"/>
+        </TabItem>
+      </TabControl>
+    </shadui:NavigationView.PaneContent>
 
-          <StackPanel
-            Margin="0,0,24,24" HorizontalAlignment="Right"
-            VerticalAlignment="Bottom" Orientation="Vertical"
-            Spacing="10">
-            <StackPanel.Styles>
-              <Style Selector="Button.Rounded">
-                <Setter Property="Padding" Value="12"/>
-                <Style Selector="^ /template/ LucideIcon">
-                  <Setter Property="Size" Value="{DynamicResource FontSizeM}"/>
-                </Style>
-              </Style>
-            </StackPanel.Styles>
-            <Button
-              Classes="Primary Rounded" DockPanel.Dock="Right"
-              MinHeight="36"
-              Command="{Binding AddMcpPluginCommand}"
-              Content="{LucideIconContent Plus}"
-              IsVisible="{Binding #McpTabItem.IsSelected}"/>
-          </StackPanel>
-        </Panel>
-      </TabItem>
-    </TabControl>
+    <shadui:NavigationView.Header>
+      <!--  To fix header height changing issue  -->
+      <Border Height="36">
+        <shadui:ButtonGroup
+          HorizontalAlignment="Right" VerticalAlignment="Center"
+          IsVisible="{Binding SelectedMcpPlugin, Converter={x:Static ObjectConverters.IsNotNull}}"
+          Orientation="Horizontal">
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Kind=Play}"
+            shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
+            Command="{Binding StartMcpPluginCommand}"
+            CommandParameter="{Binding SelectedMcpPlugin}"
+            Content="{I18N {x:Static LocaleKey.ChatPluginPage_StartMcpPluginButton_Content}}"
+            Foreground="{DynamicResource SuccessColor}"
+            IsVisible="{Binding !SelectedMcpPlugin.IsRunning, FallbackValue=false}"/>
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Kind=Square}"
+            shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
+            Command="{Binding StopMcpPluginCommand}"
+            CommandParameter="{Binding SelectedMcpPlugin}"
+            Content="{I18N {x:Static LocaleKey.ChatPluginPage_StopMcpPluginButton_Content}}"
+            Foreground="{DynamicResource WarningColor}"
+            IsVisible="{Binding SelectedMcpPlugin.IsRunning, FallbackValue=false}"/>
 
-    <GridSplitter
-      Grid.Row="0" Grid.RowSpan="2"
-      Grid.Column="1" VerticalAlignment="Stretch"
-      Background="Transparent"/>
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Kind=SquarePen}"
+            Command="{Binding EditMcpPluginCommand}"
+            CommandParameter="{Binding SelectedMcpPlugin}"
+            Content="{I18N {x:Static LocaleKey.ChatPluginPage_EditMcpPluginButton_Content}}"/>
 
-    <TextBlock
-      Classes="h4" Grid.Row="0"
-      Grid.RowSpan="2" Grid.Column="2"
-      HorizontalAlignment="Center" VerticalAlignment="Center"
-      IsVisible="{Binding SelectedPlugin, Converter={x:Static ObjectConverters.IsNull}}"
-      Text="{I18N {x:Static LocaleKey.ChatPluginPage_SelectToViewDetails}}"/>
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Kind=Trash2}"
+            Command="{Binding RemoveMcpPluginCommand}"
+            CommandParameter="{Binding SelectedMcpPlugin}"
+            Content="{I18N {x:Static LocaleKey.ChatPluginPage_RemoveMcpPluginButton_Content}}"
+            Foreground="{DynamicResource DestructiveColor}"/>
+        </shadui:ButtonGroup>
+      </Border>
+    </shadui:NavigationView.Header>
 
-    <Grid
-      Grid.Row="0" Grid.Column="2"
-      Margin="0,0,0,8" ColumnDefinitions="Auto,*,Auto">
-      <Image
-        Grid.Column="0" Width="64"
-        Height="64" Margin="0,0,16,0"
-        md:AsyncImageLoader.SizeToContent="Manual"
-        md:AsyncImageLoader.Source="{Binding SelectedPlugin.BeautifulIcon, FallbackValue={x:Null}}"
-        IsVisible="{Binding SelectedPlugin.BeautifulIcon, FallbackValue=false, Converter={x:Static ObjectConverters.IsNotNull}}"
-        Stretch="Uniform"/>
-      <LucideIcon
-        Grid.Column="0" Margin="0,0,16,0"
-        IsVisible="{Binding SelectedPlugin.BeautifulIcon, FallbackValue=false, Converter={x:Static ObjectConverters.IsNull}}"
-        Kind="{Binding SelectedPlugin.Icon, FallbackValue=Hammer}"
-        Size="64"/>
+    <shadui:NavigationView.ContentTemplate>
+      <DataTemplate DataType="p:ChatPlugin">
+        <DockPanel
+          Margin="0,12,0,0" VerticalSpacing="16">
+          <Grid
+            DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto">
+            <Image
+              Grid.Column="0" Width="64"
+              Height="64" Margin="0,0,16,0"
+              md:AsyncImageLoader.SizeToContent="Manual"
+              md:AsyncImageLoader.Source="{Binding BeautifulIcon, FallbackValue={x:Null}}"
+              IsVisible="{Binding BeautifulIcon, FallbackValue=false, Converter={x:Static ObjectConverters.IsNotNull}}"
+              Stretch="Uniform"/>
+            <LucideIcon
+              Grid.Column="0" Margin="0,0,16,0"
+              IsVisible="{Binding BeautifulIcon, FallbackValue=false, Converter={x:Static ObjectConverters.IsNull}}"
+              Kind="{Binding Icon, FallbackValue=Hammer}"
+              Size="64"/>
 
-      <StackPanel
-        Grid.Column="1" Orientation="Vertical">
-        <TextBlock
-          Classes="h2"
-          Text="{Binding SelectedPlugin.HeaderKey^, FallbackValue={x:Null}}"
-          TextTrimming="CharacterEllipsis"
-          ToolTip.Tip="{Binding $self.Text}"/>
+            <StackPanel
+              Grid.Column="1" Orientation="Vertical">
+              <TextBlock
+                Classes="h2"
+                Text="{Binding HeaderKey^, FallbackValue={x:Null}}"
+                TextTrimming="CharacterEllipsis"/>
 
-        <ScrollViewer
-          MaxHeight="42" HorizontalScrollBarVisibility="Disabled">
-          <TextBlock
-            Text="{Binding SelectedPlugin.DescriptionKey^, FallbackValue={x:Null}}"
-            TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
-            ToolTip.Tip="{Binding $self.Text}"/>
-        </ScrollViewer>
-      </StackPanel>
-
-      <StackPanel
-        Grid.Column="2" VerticalAlignment="Bottom"
-        IsVisible="{Binding SelectedMcpPlugin, Converter={x:Static ObjectConverters.IsNotNull}}"
-        Orientation="Horizontal">
-        <Button
-          Classes="Outline Secondary"
-          shadui:ButtonAssist.HoverBackground="{DynamicResource SuccessColor20}"
-          shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
-          Background="{DynamicResource SuccessColor60}"
-          BorderThickness="1,1,0,1"
-          Command="{Binding StartMcpPluginCommand}"
-          CommandParameter="{Binding SelectedMcpPlugin}"
-          Content="{LucideIconContent Kind=Play}"
-          CornerRadius="6,0,0,6"
-          IsVisible="{Binding !SelectedMcpPlugin.IsRunning, FallbackValue=false}"/>
-        <Button
-          Classes="Outline Secondary"
-          shadui:ButtonAssist.HoverBackground="{DynamicResource WarningColor20}"
-          shadui:ButtonAssist.ShowProgress="{Binding IsBusy}"
-          Background="{DynamicResource WarningColor60}"
-          BorderThickness="1,1,0,1"
-          Command="{Binding StopMcpPluginCommand}"
-          CommandParameter="{Binding SelectedMcpPlugin}"
-          Content="{LucideIconContent Kind=Square}"
-          CornerRadius="6,0,0,6"
-          IsVisible="{Binding SelectedMcpPlugin.IsRunning, FallbackValue=false}"/>
-
-        <Button
-          Classes="Outline Secondary" BorderThickness="1,1,0,1"
-          Command="{Binding EditMcpPluginCommand}"
-          CommandParameter="{Binding SelectedMcpPlugin}"
-          Content="{LucideIconContent Kind=SquarePen}"
-          CornerRadius="0"/>
-
-        <Button
-          Classes="Outline Destructive"
-          Command="{Binding RemoveMcpPluginCommand}"
-          CommandParameter="{Binding SelectedMcpPlugin}"
-          CornerRadius="0,6,6,0">
-          <LucideIcon Kind="Trash2"/>
-        </Button>
-      </StackPanel>
-    </Grid>
-
-    <TabControl
-      Grid.Row="1" Grid.Column="2"
-      ClipToBounds="False"
-      IsVisible="{Binding SelectedPlugin, Converter={x:Static ObjectConverters.IsNotNull}}"
-      SelectedIndex="{Binding PluginDetailsTabSelectedIndex, Mode=TwoWay}">
-      <TabItem
-        Header="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_Settings_Header}}"
-        IsVisible="{Binding !!SelectedPlugin.SettingsItems.Count, FallbackValue=false}">
-        <ScrollViewer
-          CornerRadius="8" HorizontalScrollBarVisibility="Disabled">
-          <v:SettingsItemsControl ItemsSource="{Binding SelectedPlugin.SettingsItems, FallbackValue={x:Null}}"/>
-        </ScrollViewer>
-      </TabItem>
-
-      <TabItem Header="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_Functions_Header}}">
-        <Border
-          Background="{DynamicResource CardBackgroundColor}"
-          BorderBrush="{DynamicResource BorderColor}"
-          BorderThickness="1" CornerRadius="8">
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl
-              Classes="FunctionItemsControl" Padding="12,8"
-              ItemsSource="{Binding SelectedPlugin.Functions, FallbackValue={x:Null}}">
-              <ItemsControl.DataTemplates>
-                <DataTemplate DataType="p:ChatFunction">
-                  <Grid
-                    ColumnDefinitions="Auto,Auto,*" RowDefinitions="Auto,Auto,Auto">
-                    <CheckBox
-                      Grid.Row="0" Grid.RowSpan="3"
-                      Grid.Column="0" Margin="4,0,12,0"
-                      IsChecked="{Binding IsEnabled}"/>
-
-                    <LucideIcon
-                      Grid.Row="0" Grid.RowSpan="2"
-                      Grid.Column="1" Margin="0,0,12,0"
-                      VerticalAlignment="Center"
-                      IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNotNull}}"
-                      Kind="{Binding Icon}"
-                      Size="22"/>
-
-                    <TextBlock
-                      Classes="p" Grid.Row="0"
-                      Grid.Column="2" Margin="0,-4,0,0"
-                      Text="{Binding HeaderKey^}"
-                      TextWrapping="Wrap"/>
-                    <TextBlock
-                      Classes="Muted" Grid.Row="1"
-                      Grid.Column="2" Margin="0,0,0,4"
-                      Text="{Binding DescriptionKey^}"
-                      TextWrapping="Wrap"/>
-
-                    <ItemsControl
-                      Classes="ChatFunctionPermissions" Grid.Row="2"
-                      Grid.Column="2" Margin="0,0,0,4"
-                      ItemsSource="{Binding Permissions, Converter={x:Static vc:ChatFunctionPermissionsConverters.ToList}}"/>
-                  </Grid>
-                </DataTemplate>
-              </ItemsControl.DataTemplates>
-            </ItemsControl>
-          </ScrollViewer>
-        </Border>
-      </TabItem>
-
-      <TabItem Header="{I18N {x:Static LocaleKey.ChatPluginPage_TabItem_Logs_Header}}">
-        <Border
-          Background="{DynamicResource CardBackgroundColor}"
-          BorderBrush="{DynamicResource BorderColor}"
-          BorderThickness="1" ClipToBounds="True"
-          CornerRadius="8">
-          <DockPanel LastChildFill="True">
-            <Border
-              DockPanel.Dock="Top"
-              Background="{DynamicResource BorderColor}">
-              <StackPanel Orientation="Horizontal">
-                <Button
-                  Classes="Ghost" Width="32"
-                  Padding="0"
-                  Command="{Binding CopyLogsCommand}"
-                  CommandParameter="{Binding SelectedMcpPlugin}"
-                  Content="{LucideIconContent Copy, Size=16}"
-                  ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_CopyLogsButton_ToolTip}}"/>
-                <ToggleSwitch
-                  x:Name="ShowTimestampToggle" VerticalAlignment="Center"/>
+              <ScrollViewer
+                MaxHeight="80" HorizontalScrollBarVisibility="Disabled">
                 <TextBlock
-                  Margin="8,0,0,0" VerticalAlignment="Center"
-                  Text="{I18N {x:Static LocaleKey.ChatPluginPage_ShowTimestampTextBlock_Text}}"/>
-              </StackPanel>
-            </Border>
+                  Text="{Binding DescriptionKey^, FallbackValue={x:Null}}"
+                  TextTrimming="CharacterEllipsis" TextWrapping="Wrap"/>
+              </ScrollViewer>
+            </StackPanel>
+          </Grid>
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-              <Interaction.Behaviors>
-                <be:AutoScrollBehavior/>
-              </Interaction.Behaviors>
+          <TabControl ItemsSource="{Binding $parent[pages:ChatPluginPage].ViewModel.ContentTabItems}">
+            <TabControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ChatPluginPageViewModel+IContentTabItem">
+                <TextBlock Text="{Binding Header^}"/>
+              </DataTemplate>
+            </TabControl.ItemTemplate>
 
-              <ItemsControl
-                Grid.IsSharedSizeScope="True"
-                IsVisible="{Binding SelectedMcpPlugin, Converter={x:Static ObjectConverters.IsNotNull}}"
-                ItemsSource="{Binding SelectedMcpPlugin.LogEntries, FallbackValue={x:Null}}">
-                <ItemsControl.Styles>
-                  <Style Selector="ContentPresenter:pointerover">
-                    <Setter Property="Background" Value="{DynamicResource SecondaryColor50}"/>
-                  </Style>
-                </ItemsControl.Styles>
+            <TabControl.DataTemplates>
+              <DataTemplate x:DataType="vm:ChatPluginPageViewModel+SettingsTabItem">
+                <ScrollViewer
+                  CornerRadius="8" HorizontalScrollBarVisibility="Disabled">
+                  <v:SettingsItemsControl ItemsSource="{Binding SettingsItems, FallbackValue={x:Null}}"/>
+                </ScrollViewer>
+              </DataTemplate>
 
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="p:McpChatPlugin+LogEntry">
-                    <Grid
-                      Margin="8,2" Background="Transparent"
-                      ColumnSpacing="4">
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition
-                          Width="Auto" SharedSizeGroup="Timestamp"/>
-                        <ColumnDefinition Width="*"/>
-                      </Grid.ColumnDefinitions>
+              <DataTemplate x:DataType="vm:ChatPluginPageViewModel+FunctionsTabItem">
+                <Border
+                  Background="{DynamicResource CardBackgroundColor}"
+                  BorderBrush="{DynamicResource BorderColor}"
+                  BorderThickness="1" CornerRadius="8">
+                  <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl
+                      Classes="FunctionItemsControl" Padding="12,8"
+                      ItemsSource="{Binding Plugin.Functions, FallbackValue={x:Null}}">
+                      <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="p:ChatFunction">
+                          <Grid
+                            ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+                            <LucideIcon
+                              Grid.Row="0" Grid.RowSpan="2"
+                              Grid.Column="0" Margin="0,0,12,0"
+                              VerticalAlignment="Center"
+                              IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Kind="{Binding Icon}"
+                              Size="22"/>
 
-                      <TextBlock.Foreground>
-                        <Binding Path="Level">
-                          <Binding.Converter>
-                            <vc:LogLevelToBrushConverter
-                              CriticalBrush="{DynamicResource ErrorColor}"
-                              DefaultBrush="{DynamicResource ForegroundColor}"
-                              ErrorBrush="{DynamicResource ErrorColor}"
-                              WarningBrush="{DynamicResource WarningColor}"/>
-                          </Binding.Converter>
-                        </Binding>
-                      </TextBlock.Foreground>
+                            <StackPanel
+                              Grid.Row="0" Grid.Column="1"
+                              Margin="0,-4,0,0" Orientation="Horizontal"
+                              Spacing="6">
+                              <TextBlock
+                                Classes="p" VerticalAlignment="Center"
+                                Text="{Binding HeaderKey^}"
+                                TextWrapping="Wrap"/>
+                              <shadui:Badge
+                                HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Background="{DynamicResource WarningColor}"
+                                Content="{I18N {x:Static LocaleKey.ExperimentalBadge_Content}}"
+                                IsVisible="{Binding IsExperimental}"
+                                ToolTip.Tip="{I18N {x:Static LocaleKey.ExperimentalBadge_ToolTip}}"/>
+                            </StackPanel>
 
-                      <TextBlock
-                        Classes="Muted" Grid.Column="0"
-                        IsVisible="{Binding #ShowTimestampToggle.IsChecked}"
-                        Text="{Binding Timestamp, StringFormat='[{0:yyyy-MM-dd HH:mm:ss}]'}"/>
-                      <SelectableTextBlock
-                        Grid.Column="1"
-                        Text="{Binding Message}"
-                        TextWrapping="Wrap"/>
-                    </Grid>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
-          </DockPanel>
-        </Border>
-      </TabItem>
-    </TabControl>
-  </Grid>
+                            <TextBlock
+                              Classes="Muted" Grid.Row="1"
+                              Grid.Column="1" Margin="0,0,0,4"
+                              Text="{Binding DescriptionKey^}"
+                              TextWrapping="Wrap"/>
+
+                            <ItemsControl
+                              Classes="ChatFunctionPermissions" Grid.Row="2"
+                              Grid.Column="1" Margin="0,0,0,4"
+                              ItemsSource="{Binding Permissions, Converter={x:Static vc:ChatFunctionPermissionsConverters.ToList}}"/>
+
+                            <ToggleSwitch
+                              Grid.Row="0" Grid.RowSpan="3"
+                              Grid.Column="2" Margin="16,0"
+                              IsChecked="{Binding IsEnabled}"/>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                  </ScrollViewer>
+                </Border>
+              </DataTemplate>
+
+              <DataTemplate x:DataType="vm:ChatPluginPageViewModel+LogsTabItem">
+                <Border
+                  Background="{DynamicResource CardBackgroundColor}"
+                  BorderBrush="{DynamicResource BorderColor}"
+                  BorderThickness="1" ClipToBounds="True"
+                  CornerRadius="8">
+                  <DockPanel LastChildFill="True">
+                    <Border
+                      DockPanel.Dock="Top"
+                      Background="{DynamicResource BorderColor}">
+                      <StackPanel Orientation="Horizontal">
+                        <Button
+                          Classes="Ghost" Width="32"
+                          Padding="0"
+                          Command="{Binding $parent[pages:ChatPluginPage].ViewModel.CopyLogsCommand}"
+                          CommandParameter="{Binding}"
+                          Content="{LucideIconContent Copy, Size=16}"
+                          ToolTip.Tip="{I18N {x:Static LocaleKey.ChatPluginPage_CopyLogsButton_ToolTip}}"/>
+                        <ToggleSwitch
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding ShowTimestamp}"/>
+                        <TextBlock
+                          Margin="8,0,0,0" VerticalAlignment="Center"
+                          Text="{I18N {x:Static LocaleKey.ChatPluginPage_ShowTimestampTextBlock_Text}}"/>
+                      </StackPanel>
+                    </Border>
+
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                      <Interaction.Behaviors>
+                        <behaviors:AutoScrollBehavior/>
+                      </Interaction.Behaviors>
+
+                      <ItemsControl
+                        Grid.IsSharedSizeScope="True"
+                        ItemsSource="{Binding LogEntries, FallbackValue={x:Null}}">
+                        <ItemsControl.Styles>
+                          <Style Selector="ContentPresenter:pointerover">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryColor50}"/>
+                          </Style>
+                        </ItemsControl.Styles>
+
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate x:DataType="p:McpChatPlugin+LogEntry">
+                            <Grid
+                              Margin="8,2" Background="Transparent"
+                              ColumnSpacing="4">
+                              <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                  Width="Auto" SharedSizeGroup="Timestamp"/>
+                                <ColumnDefinition Width="*"/>
+                              </Grid.ColumnDefinitions>
+
+                              <TextBlock
+                                Classes="Muted" Grid.Column="0"
+                                Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
+                                IsVisible="{ReflectionBinding DataContext.ShowTimestamp, RelativeSource={RelativeSource FindAncestor, AncestorType=ItemsControl}, FallbackValue={x:Null}}"
+                                Text="{Binding Timestamp, StringFormat='[{0:yyyy-MM-dd HH:mm:ss}]'}"/>
+                              <SelectableTextBlock
+                                Grid.Column="1"
+                                Foreground="{Binding Level, Converter={StaticResource LogLevelToBrushConverter}}"
+                                Text="{Binding Message}"
+                                TextWrapping="Wrap"/>
+                            </Grid>
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                    </ScrollViewer>
+                  </DockPanel>
+                </Border>
+              </DataTemplate>
+            </TabControl.DataTemplates>
+          </TabControl>
+        </DockPanel>
+      </DataTemplate>
+    </shadui:NavigationView.ContentTemplate>
+  </shadui:NavigationView>
 </UserControl>

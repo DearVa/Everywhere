@@ -29,17 +29,18 @@ public interface IChatPluginDisplaySink
     /// Appends plain text to the display sink.
     /// </summary>
     /// <param name="text"></param>
-    /// <param name="fontFamily"></param>
-    void AppendText(string text, string? fontFamily = null);
+    /// <param name="className"></param>
+    void AppendText(string text, string? className = null);
 
     /// <summary>
     /// Appends a dynamic resource key to the display sink.
     /// </summary>
     /// <param name="resourceKey"></param>
-    void AppendDynamicResourceKey(DynamicResourceKeyBase resourceKey);
+    /// <param name="className"></param>
+    void AppendDynamicResourceKey(DynamicResourceKeyBase resourceKey, string? className = null);
 
     /// <summary>
-    /// Appends a markdown builder to the display sink. The caller can use the returned builder to build markdown content.
+    /// Appends a Markdown builder to the display sink. The caller can use the returned builder to build markdown content.
     /// </summary>
     /// <returns></returns>
     ObservableStringBuilder AppendMarkdown();

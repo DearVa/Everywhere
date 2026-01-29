@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.Pipes;
+using System.Text;
 using Everywhere.Rpc;
 using MessagePack;
 
@@ -12,6 +13,9 @@ public static class Program
 
     public static async Task Main(string[] args)
     {
+        // Ensure we use UTF-8 for all I/O to avoid encoding issues (e.g. ??? in output)
+        Console.OutputEncoding = Encoding.UTF8;
+
         if (args.Length == 0)
         {
             await Console.Error.WriteLineAsync("No arguments provided. Exiting.");
@@ -70,6 +74,7 @@ public static class Program
         switch (command)
         {
             case RegisterSubprocessCommand registerCmd:
+            {
                 try
                 {
                     var process = Process.GetProcessById((int)registerCmd.ProcessId);
@@ -81,13 +86,21 @@ public static class Program
                     Console.WriteLine($"Process with ID {registerCmd.ProcessId} not found.");
                 }
                 break;
-
+            }
             case UnregisterSubprocessCommand unregisterCmd:
+            {
                 if (MonitoredProcesses.TryRemove(unregisterCmd.ProcessId, out var p))
                 {
-                    Console.WriteLine($"Unregistered process '{p.ProcessName}' (ID: {p.Id}).");
+                    Console.WriteLine($"Unregistered process '{p.ProcessName}' (ID: {p.Id}, KillIfRunning: {unregisterCmd.KillIfRunning}).");
+
+                    if (unregisterCmd.KillIfRunning && !p.HasExited)
+                    {
+                        Console.WriteLine($"Killing process '{p.ProcessName}' (ID: {p.Id}).");
+                        TerminateProcessTree(p.Id);
+                    }
                 }
                 break;
+            }
         }
     }
 
@@ -98,12 +111,11 @@ public static class Program
         {
             try
             {
-                if (!pair.Value.HasExited)
-                {
-                    Console.WriteLine($"Killing process '{pair.Value.ProcessName}' (ID: {pair.Key}).");
-                    TerminateProcessTree(pair.Value.Id);
-                    pair.Value.Dispose();
-                }
+                if (pair.Value.HasExited) continue;
+
+                Console.WriteLine($"Killing process '{pair.Value.ProcessName}' (ID: {pair.Key}).");
+                TerminateProcessTree(pair.Value.Id);
+                pair.Value.Dispose();
             }
             catch (Exception ex)
             {
@@ -117,25 +129,128 @@ public static class Program
     private static void TerminateProcessTree(int pid)
     {
 #if WINDOWS
-        // Use taskkill to terminate the process tree on Windows
-        // /T: terminate child processes, /F: force termination
-        Process.Start(
-            new ProcessStartInfo
-            {
-                FileName = "taskkill",
-                Arguments = $"/PID {pid} /T /F",
-                CreateNoWindow = true,
-                UseShellExecute = false,
-            })?.WaitForExit();
+            // Use taskkill to terminate the process tree on Windows
+            // /T: terminate child processes, /F: force termination
+            Process.Start(
+                new ProcessStartInfo
+                {
+                    FileName = "taskkill",
+                    Arguments = $"/PID {pid} /T /F",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                })?.WaitForExit();
+#elif LINUX || MACOS
+        TerminateUnixProcessTree(pid);
 #else
-        // Use kill with negative PID to terminate the process group on Unix-like systems
-        Process.Start(new ProcessStartInfo
-        {
-            FileName = "/bin/sh",
-            Arguments = $"-c \"kill -9 -$(ps -o pgid= -p {pid} | tr -d ' ')\"",
-            CreateNoWindow = true,
-            UseShellExecute = false
-        })?.WaitForExit();
+        #error Unsupported platform
 #endif
+    }
+
+    private static void TerminateUnixProcessTree(int pid)
+    {
+        try
+        {
+            // 1. Try to find all children using ps
+            var processMap = GetUnixProcessMap();
+            var processesToKill = new HashSet<int> { pid };
+            var queue = new Queue<int>();
+            queue.Enqueue(pid);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (!processMap.TryGetValue(current, out var children)) continue;
+                foreach (var child in children.Where(child => processesToKill.Add(child)))
+                {
+                    queue.Enqueue(child);
+                }
+            }
+            Console.WriteLine($"Terminating process tree for PID {pid}: {string.Join(", ", processesToKill)}");
+
+            // 2. Kill them all
+            foreach (var p in processesToKill)
+            {
+                try
+                {
+                    Process.GetProcessById(p).Kill();
+                }
+                catch (Exception)
+                {
+                    // Fallback to kill command
+                    Console.Error.WriteLine($"Failed to terminate process with ID {p}, falling back to 'kill -9'.");
+                    Process.Start(
+                        new ProcessStartInfo
+                        {
+                            FileName = "kill",
+                            Arguments = $"-9 {p}",
+                            CreateNoWindow = true,
+                            UseShellExecute = false
+                        })?.WaitForExit();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to terminate process tree for {pid}: {ex.Message}");
+            // Fallback to PGID kill if the above failed catastrophically
+            try
+            {
+                Process.Start(
+                    new ProcessStartInfo
+                    {
+                        FileName = "/bin/sh",
+                        Arguments = $"-c \"kill -9 -$(ps -o pgid= -p {pid} | tr -d ' ')\"",
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    })?.WaitForExit();
+            }
+            catch (Exception ex2)
+            {
+                Console.Error.WriteLine($"Failed to terminate process group for {pid}: {ex2.Message}");
+            }
+        }
+    }
+
+    private static Dictionary<int, List<int>> GetUnixProcessMap()
+    {
+        var map = new Dictionary<int, List<int>>();
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "ps",
+                Arguments = "-A -o ppid,pid",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using var proc = Process.Start(psi);
+            if (proc != null)
+            {
+                while (!proc.StandardOutput.EndOfStream)
+                {
+                    var line = proc.StandardOutput.ReadLine();
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var parts = line.Trim().Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2 && int.TryParse(parts[0], out var ppid) && int.TryParse(parts[1], out var childPid))
+                    {
+                        if (!map.TryGetValue(ppid, out var list))
+                        {
+                            list = new List<int>();
+                            map[ppid] = list;
+                        }
+                        list.Add(childPid);
+                    }
+                }
+                proc.WaitForExit();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Failed to get process map: {ex.Message}");
+        }
+        return map;
     }
 }

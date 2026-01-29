@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using Avalonia.Controls;
+using MessagePack;
 
 namespace Everywhere.Common;
 
@@ -7,15 +8,26 @@ namespace Everywhere.Common;
 /// Represents the placement of a window (position, size and state).
 /// </summary>
 [Serializable]
-public struct WindowPlacement(int x, int y, int width, int height, WindowState windowState) : IEquatable<WindowPlacement>
+[MessagePackObject]
+public partial struct WindowPlacement(PixelPoint position, int width, int height, WindowState windowState) : IEquatable<WindowPlacement>
 {
-    public int X { get; set; } = x;
-    public int Y { get; set; } = y;
+    [Key(0)]
+    public int X { get; set; } = position.X;
+
+    [Key(1)]
+    public int Y { get; set; } = position.Y;
+
+    [Key(2)]
     public int Width { get; set; } = width;
+
+    [Key(3)]
     public int Height { get; set; } = height;
+
+    [Key(4)]
     public WindowState WindowState { get; set; } = windowState;
 
     [JsonIgnore]
+    [IgnoreMember]
     public PixelPoint Position => new(X, Y);
 
     public bool Equals(WindowPlacement other) =>

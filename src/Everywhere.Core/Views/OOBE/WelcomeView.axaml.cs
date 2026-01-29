@@ -1,10 +1,31 @@
-﻿namespace Everywhere.Views;
+﻿using Avalonia.Interactivity;
+using CommunityToolkit.Mvvm.Messaging;
 
-public partial class WelcomeView : ReactiveUserControl<WelcomeViewModel>
+namespace Everywhere.Views;
+
+public partial class WelcomeView : ReactiveUserControl<WelcomeViewModel>, IRecipient<ShowConfettiEffectMessage>
 {
     public WelcomeView()
     {
         InitializeComponent();
-        ViewModel.ApiKeyValidated += () => ConfettiEffect.Start();
+    }
+
+    public void Receive(ShowConfettiEffectMessage message)
+    {
+        ConfettiEffect?.Start();
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+
+        StrongReferenceMessenger.Default.Register(this);
+    }
+
+    protected override void OnUnloaded(RoutedEventArgs e)
+    {
+        base.OnUnloaded(e);
+
+        StrongReferenceMessenger.Default.Unregister<ShowConfettiEffectMessage>(this);
     }
 }

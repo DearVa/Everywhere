@@ -2,10 +2,20 @@
   x:Class="Everywhere.Views.Pages.SettingsCategoryPage" xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:p="clr-namespace:Everywhere.Views.Pages"
   xmlns:v="clr-namespace:Everywhere.Views">
-  <ScrollViewer
-    HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-    <v:SettingsItemsControl
-      Margin="0,0,12,0" HorizontalAlignment="Stretch"
-      ItemsSource="{Binding $parent[p:SettingsCategoryPage].Items}"/>
-  </ScrollViewer>
+  <DockPanel
+    MaxWidth="1080" LastChildFill="True">
+    <Border DockPanel.Dock="Top">
+      <TextBlock
+        Classes="h4" Margin="0,0,0,8"
+        VerticalAlignment="Center" ClipToBounds="False"
+        Text="{Binding $parent[p:SettingsCategoryPage].Title^}"/>
+    </Border>
+
+    <ScrollViewer
+      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <v:SettingsItemsControl
+        Margin="0,0,12,0" HorizontalAlignment="Stretch"
+        ItemsSource="{Binding $parent[p:SettingsCategoryPage].Items}"/>
+    </ScrollViewer>
+  </DockPanel>
 </UserControl>

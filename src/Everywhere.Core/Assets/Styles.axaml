@@ -1,5 +1,21 @@
 ﻿<Styles
-  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia">
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="{x:Static ThemeVariant.Light}">
+          <grammars:ThemeName x:Key="ColorTheme">LightPlus</grammars:ThemeName>
+          <Color x:Key="SystemBaseHighColor">#08080B</Color>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="{x:Static ThemeVariant.Dark}">
+          <grammars:ThemeName x:Key="ColorTheme">DarkPlus</grammars:ThemeName>
+          <Color x:Key="SystemBaseHighColor">#E5E5E5</Color>
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
   <!--  ListBox  -->
   <Style Selector=":is(ListBox).Draggable">
     <Setter Property="ItemsPanel">
@@ -36,5 +52,28 @@
 
   <Style Selector=":is(ListBox).draggableVirtualizing &gt; :is(ListBoxItem):pressed">
     <Setter Property="ZIndex" Value="1"/>
+  </Style>
+
+  <!--  Markdown  -->
+  <Style Selector="md|MarkdownRenderer">
+    <Setter Property="CodeBlockColorTheme" Value="{DynamicResource ColorTheme}"/>
+
+    <Style Selector="^ InlineUIContainer.Code">
+      <Style Selector="^ md|MarkdownTextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource QuoteColor}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeM}"/>
+      </Style>
+    </Style>
+
+    <Style Selector="^ Border.QuoteBlock">
+      <Setter Property="BorderBrush" Value="{DynamicResource QuoteColor}"/>
+    </Style>
+
+    <Style Selector="^ md|CodeBlock">
+      <Style Selector="^ /template/ StackPanel">
+        <Setter Property="Spacing" Value="0"/>
+        <Setter Property="Margin" Value="0,0,0,4"/>
+      </Style>
+    </Style>
   </Style>
 </Styles>

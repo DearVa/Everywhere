@@ -3,60 +3,65 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
   xmlns:v="clr-namespace:Everywhere.Views" xmlns:vm="clr-namespace:Everywhere.ViewModels"
   x:DataType="vm:MainViewModel" x:TypeArguments="vm:MainViewModel">
-  <Grid ColumnDefinitions="Auto,*">
-    <shadui:Sidebar
-      x:Name="Sidebar" Grid.Column="0"
-      Width="220" MinWidth="68"
-      Padding="8" ExpandPaneWidth="220"
-      Expanded="{Binding Settings.Internal.IsMainViewSidebarExpanded}"
-      IsVisible="{Binding !!#NavigationItemsControl.ItemCount}"
-      SelectedSidebarItem="{Binding SelectedPage, Mode=TwoWay}">
-      <shadui:Sidebar.Header>
-        <Border
-          Width="48" Height="48"
-          Margin="2,0,2,3" Padding="6"
-          HorizontalAlignment="Left" VerticalAlignment="Center"
-          Background="{DynamicResource CardBackgroundColor}"
-          CornerRadius="{DynamicResource 3XlCornerRadius}">
-          <ToggleButton
-            CornerRadius="{DynamicResource FullCornerRadius}"
-            Cursor="Hand"
-            IsChecked="{Binding Settings.Internal.IsMainViewSidebarExpanded, Mode=TwoWay}"
-            Theme="{DynamicResource SideTogglerTheme}">
-            <LucideIcon
-              Foreground="{DynamicResource ForegroundColor}"
-              Kind="PanelLeft" Size="18"/>
-          </ToggleButton>
-        </Border>
-      </shadui:Sidebar.Header>
 
-      <ItemsControl
-        Name="NavigationItemsControl" Padding="6"
-        VerticalAlignment="Top"
-        Background="{DynamicResource CardBackgroundColor}"
-        BorderThickness="0"
-        CornerRadius="{DynamicResource 3XlCornerRadius}"
-        ItemsSource="{Binding Pages}">
-        <ItemsControl.Styles>
-          <Style Selector="shadui|SidebarItem">
-            <Setter Property="CornerRadius" Value="{DynamicResource FullCornerRadius}"/>
-          </Style>
-        </ItemsControl.Styles>
-      </ItemsControl>
-    </shadui:Sidebar>
+  <v:ReactiveUserControl.Styles>
+    <Style Selector="DockPanel#RootPanel">
+      <Style Selector="^ &gt; TransitioningContentControl">
+        <Setter Property="Margin" Value="0,14,16,16"/>
+      </Style>
+    </Style>
+    <Style Selector="DockPanel#RootPanel.narrow">
+      <Style Selector="^ &gt; shadui|NavigationBar">
+        <Setter Property="DockPanel.Dock" Value="Bottom"/>
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="Margin" Value="0,8"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+      </Style>
+      <Style Selector="^ &gt; TransitioningContentControl">
+        <Setter Property="Margin" Value="16,14,16,0"/>
+      </Style>
+    </Style>
+  </v:ReactiveUserControl.Styles>
 
-    <DockPanel
-      Grid.Column="1" LastChildFill="True">
-      <Border DockPanel.Dock="Top">
-        <TextBlock
-          Classes="h3" Margin="4,12,16,0"
-          VerticalAlignment="Center" ClipToBounds="False"
-          Text="{Binding #Sidebar.((v:IMainViewPage)CurrentRoute).Title^, FallbackValue={x:Null}}"/>
-      </Border>
+  <DockPanel x:Name="RootPanel">
+    <Interaction.Behaviors>
+      <AdaptiveBehavior SourceControl="{Binding $parent[TopLevel]}">
+        <AdaptiveClassSetter
+          MinWidth="0" MaxWidth="700"
+          ClassName="narrow" MaxWidthOperator="LessThan"
+          MinWidthOperator="GreaterThanOrEqual"/>
+        <AdaptiveClassSetter
+          MinWidth="700" MaxWidth="Infinity"
+          ClassName="wide" MaxWidthOperator="LessThan"
+          MinWidthOperator="GreaterThanOrEqual"/>
+      </AdaptiveBehavior>
+    </Interaction.Behaviors>
 
-      <TransitioningContentControl
-        Margin="0,24,16,24" ClipToBounds="False"
-        Content="{Binding #Sidebar.CurrentRoute, FallbackValue={x:Null}}"/>
-    </DockPanel>
-  </Grid>
+    <shadui:NavigationBar
+      Margin="12,8" ExpandedSize="220"
+      IsExpanded="{Binding PersistentState.IsMainViewSidebarExpanded}"
+      ItemsSource="{Binding Pages}"
+      SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+      ZIndex="1">
+      <Interaction.Behaviors>
+        <shadui:ImplicitCompositionAnimationBehavior>
+          <shadui:CompositionAnimation
+            Easing="{StaticResource SoftEaseOutBack}"
+            Target="Offset" Duration="0:0:0.4"/>
+        </shadui:ImplicitCompositionAnimationBehavior>
+      </Interaction.Behaviors>
+    </shadui:NavigationBar>
+
+    <TransitioningContentControl
+      x:Name="TransitioningContentControl" ClipToBounds="False"
+      Content="{Binding SelectedPage.Route, FallbackValue={x:Null}}">
+      <TransitioningContentControl.PageTransition>
+        <shadui:BetterPageSlide
+          FadeDuration="0:0:0.4" FadeEasing="CubicEaseInOut"
+          Orientation="Vertical" SlideDuration="0:0:0.6"
+          SlideEasing="{StaticResource PageSlideEase}"/>
+      </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
+  </DockPanel>
 </v:ReactiveUserControl>

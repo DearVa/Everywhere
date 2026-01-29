@@ -9,7 +9,9 @@ body:
       label: 请确认以下事项
       options:
         - label: 我已经查找过相关的 Issue
-          required: false
+          required: true
+        - label: 我已知晓使用非官方支持 API（如中转、代理）造成的问题不会被受理
+          required: true
   - type: textarea
     id: description
     attributes:
@@ -22,7 +24,7 @@ body:
     attributes:
       label: 应用版本
       description: 输入你正在使用的版本
-      placeholder: 例如 1.0.0-alpha.1
+      placeholder: 例如 0.5.5
     validations:
       required: true
   - type: input

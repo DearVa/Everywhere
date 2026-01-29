@@ -4,32 +4,39 @@
   xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
   xmlns:vm="clr-namespace:Everywhere.ViewModels" x:DataType="vm:CustomAssistantPageViewModel"
   ClipToBounds="False">
-  <Grid
-    RowDefinitions="Auto,*" RowSpacing="8">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition
-        Width="*" MinWidth="250"/>
-      <ColumnDefinition Width="5"/>
-      <ColumnDefinition Width="3*"/>
-    </Grid.ColumnDefinitions>
+  <shadui:NavigationView
+    MaxWidth="1600"
+    PageTransition="{x:Null}"
+    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+    SelectedItem="{Binding SelectedCustomAssistant, Mode=TwoWay}">
+    <shadui:NavigationView.PaneHeader>
+      <DockPanel Margin="0,0,0,8">
+        <TextBlock
+          Classes="h4" DockPanel.Dock="Left"
+          VerticalAlignment="Center"
+          Text="{I18N {x:Static LocaleKey.CustomAssistantPage_Title}}"/>
 
-    <Panel
-      Grid.Row="0" Grid.RowSpan="2"
-      Grid.Column="0">
+        <Button
+          Classes="Secondary" HorizontalAlignment="Right"
+          VerticalAlignment="Center"
+          shadui:ButtonAssist.Icon="{LucideIconContent Plus}"
+          Command="{Binding CreateNewCustomAssistantCommand}"
+          Content="{I18N {x:Static LocaleKey.CustomAssistantPage_CreateNewCustomAssistantButton_Content}}"
+          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip}}"/>
+      </DockPanel>
+    </shadui:NavigationView.PaneHeader>
+
+    <shadui:NavigationView.PaneContent>
       <ListBox
-        Classes="Draggable"
+        Classes="Draggable" Padding="0"
+        BorderThickness="0"
         ItemsSource="{Binding CustomAssistants}"
         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
         SelectedItem="{Binding SelectedCustomAssistant, Mode=TwoWay}">
-        <ListBox.Styles>
-          <Style Selector="Border">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
-          </Style>
-        </ListBox.Styles>
         <ListBox.DataTemplates>
           <DataTemplate DataType="ai:CustomAssistant">
             <DockPanel
-              HorizontalSpacing="12" LastChildFill="True">
+              HorizontalSpacing="10" LastChildFill="True">
               <v:IconPresenter
                 DockPanel.Dock="Left" Width="40"
                 Height="40"
@@ -49,7 +56,6 @@
                 <TextBlock
                   Classes="Muted"
                   IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                  MaxLines="2"
                   Text="{Binding Description}"
                   TextTrimming="CharacterEllipsis"
                   ToolTip.Tip="{Binding $self.Text}"/>
@@ -58,67 +64,50 @@
           </DataTemplate>
         </ListBox.DataTemplates>
       </ListBox>
+    </shadui:NavigationView.PaneContent>
 
+    <shadui:NavigationView.Header>
       <StackPanel
-        Margin="0,0,24,24" HorizontalAlignment="Right"
-        VerticalAlignment="Bottom" Orientation="Vertical"
-        Spacing="10">
-        <StackPanel.Styles>
-          <Style Selector="Button.Rounded">
-            <Setter Property="Padding" Value="12"/>
-            <Style Selector="^ /template/ LucideIcon">
-              <Setter Property="Size" Value="{DynamicResource FontSizeM}"/>
-            </Style>
-          </Style>
-        </StackPanel.Styles>
+        Margin="0,0,12,8" HorizontalAlignment="Right"
+        Orientation="Horizontal" Spacing="6">
         <Button
-          Classes="Secondary Rounded"
-          Command="{Binding DuplicateCustomAssistantCommand}"
-          Content="{LucideIconContent Copy}"
-          IsVisible="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip}}"/>
+          Classes="Secondary" VerticalAlignment="Center"
+          shadui:ButtonAssist.Icon="{LucideIconContent Unplug}"
+          shadui:ButtonAssist.ShowProgress="{Binding CheckConnectivityCommand.IsRunning}"
+          Command="{Binding CheckConnectivityCommand}"
+          Content="{I18N {x:Static LocaleKey.CustomAssistantPage_CheckConnectivityButton_Content}}"
+          IsEnabled="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
+          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_CheckConnectivityButton_ToolTip}}"/>
 
-        <Button
-          Classes="Primary Rounded"
-          Command="{Binding CreateNewCustomAssistantCommand}"
-          Content="{LucideIconContent Plus}"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip}}"/>
+        <shadui:ButtonGroup
+          VerticalAlignment="Center" Orientation="Horizontal">
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Copy}"
+            Command="{Binding DuplicateCustomAssistantCommand}"
+            Content="{I18N {x:Static LocaleKey.CustomAssistantPage_DuplicateCustomAssistantButton_Content}}"
+            IsEnabled="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
+            ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_DuplicateCustomAssistantButton_ToolTip}}"/>
+          <Button
+            Classes="Secondary"
+            shadui:ButtonAssist.Icon="{LucideIconContent Trash2}"
+            Command="{Binding DeleteCustomAssistantCommand}"
+            Content="{I18N {x:Static LocaleKey.CustomAssistantPage_DeleteCustomAssistantButton_Content}}"
+            Foreground="{DynamicResource DestructiveColor}"
+            IsEnabled="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
+            ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_DeleteCustomAssistantButton_ToolTip}}"/>
+        </shadui:ButtonGroup>
       </StackPanel>
-    </Panel>
+    </shadui:NavigationView.Header>
 
-    <GridSplitter
-      Grid.Row="0" Grid.RowSpan="2"
-      Grid.Column="1" VerticalAlignment="Stretch"
-      Background="Transparent"/>
-
-    <StackPanel
-      Grid.Row="0" Grid.Column="2"
-      Margin="0,-50,12,0" HorizontalAlignment="Right"
-      Orientation="Horizontal" Spacing="8">
-      <Button
-        Classes="Primary" Height="34"
-        VerticalAlignment="Center"
-        shadui:ButtonAssist.Icon="{LucideIconContent Unplug}"
-        shadui:ButtonAssist.ShowProgress="{Binding CheckConnectivityCommand.IsRunning}"
-        Command="{Binding CheckConnectivityCommand}"
-        Content="{I18N {x:Static LocaleKey.CustomAssistantPage_CheckConnectivityButton_Content}}"
-        IsVisible="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
-        ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_CheckConnectivityButton_ToolTip}}"/>
-      <Button
-        Classes="Destructive" VerticalAlignment="Center"
-        shadui:ButtonAssist.Icon="{LucideIconContent Trash2}"
-        Command="{Binding DeleteCustomAssistantCommand}"
-        Content="{I18N {x:Static LocaleKey.CustomAssistantPage_DeleteCustomAssistantButton_Content}}"
-        IsVisible="{Binding SelectedCustomAssistant, Converter={x:Static ObjectConverters.IsNotNull}}"
-        ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantPage_DeleteCustomAssistantButton_ToolTip}}"/>
-    </StackPanel>
-
-    <ScrollViewer
-      Grid.Row="1" Grid.Column="2"
-      Margin="0,-8,0,0" HorizontalScrollBarVisibility="Disabled">
-      <v:SettingsItemsControl
-        Margin="0,0,12,0"
-        ItemsSource="{Binding SelectedCustomAssistant.SettingsItems, FallbackValue={x:Null}}"/>
-    </ScrollViewer>
-  </Grid>
+    <shadui:NavigationView.ContentTemplate>
+      <DataTemplate DataType="ai:CustomAssistant">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <v:SettingsItemsControl
+            Margin="0,0,12,0"
+            ItemsSource="{Binding SettingsItems, FallbackValue={x:Null}}"/>
+        </ScrollViewer>
+      </DataTemplate>
+    </shadui:NavigationView.ContentTemplate>
+  </shadui:NavigationView>
 </UserControl>

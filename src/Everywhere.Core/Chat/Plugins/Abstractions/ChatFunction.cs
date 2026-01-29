@@ -28,6 +28,8 @@ public abstract partial class ChatFunction : ObservableObject
     [ObservableProperty]
     public partial bool IsEnabled { get; set; } = true;
 
+    public bool IsExperimental { get; set; }
+
     public abstract KernelFunction KernelFunction { get; }
 
     /// <summary>
@@ -51,7 +53,7 @@ public sealed class NativeChatFunction : ChatFunction
     private readonly DynamicResourceKey? _descriptionKey;
     private readonly IFriendlyFunctionCallContentRenderer? _renderer;
 
-    public NativeChatFunction(Delegate method, ChatFunctionPermissions permissions, LucideIconKind? icon = null)
+    public NativeChatFunction(Delegate method, ChatFunctionPermissions permissions, LucideIconKind? icon = null, bool isExperimental = false)
     {
         if (method.Method.GetCustomAttributes<DynamicResourceKeyAttribute>(false).FirstOrDefault() is
             { HeaderKey: { Length: > 0 } headerKey } attribute)
@@ -74,6 +76,7 @@ public sealed class NativeChatFunction : ChatFunction
         Icon = icon;
         Permissions = permissions;
         KernelFunction = KernelFunctionFactory.CreateFromMethod(method);
+        IsExperimental = isExperimental;
 
         if (method.Method.GetCustomAttributes<FriendlyFunctionCallContentRendererAttribute>(false).FirstOrDefault() is
             { RendererType: { } rendererType })

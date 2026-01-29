@@ -13,10 +13,18 @@ jobs:
     # Using ubuntu is generally faster for GitHub-hosted runners
     runs-on: ubuntu-latest
     steps:
+      - name: Disable Git LFS
+        run: |
+          git lfs uninstall || true
+          git config --global --unset filter.lfs.clean || true
+          git config --global --unset filter.lfs.smudge || true
+          git config --global --unset filter.lfs.process || true
+          git config --global --unset filter.lfs.required || true
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          lfs: true
+          lfs: false  # Disable LFS for bandwidth saving
 
       - name: Set up Python
         uses: actions/setup-python@v5

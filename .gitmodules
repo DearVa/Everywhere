@@ -10,3 +10,9 @@
 [submodule "3rd/EverythingNetCore"]
 	path = 3rd/EverythingNetCore
 	url = https://github.com/Sylinko/EverythingNetCore
+[submodule "3rd/semantic-kernel"]
+	path = 3rd/semantic-kernel
+	url = https://github.com/microsoft/semantic-kernel
+[submodule "3rd/anthropic-sdk-csharp"]
+	path = 3rd/anthropic-sdk-csharp
+	url = https://github.com/anthropics/anthropic-sdk-csharp

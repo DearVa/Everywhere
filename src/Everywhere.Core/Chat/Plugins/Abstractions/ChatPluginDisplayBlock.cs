@@ -87,20 +87,23 @@ public sealed partial class ChatPluginContainerDisplayBlock : ChatPluginDisplayB
 }
 
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-public sealed partial class ChatPluginTextDisplayBlock(string text, string? fontFamily = null) : ChatPluginDisplayBlock
+public sealed partial class ChatPluginTextDisplayBlock(string text, string? className = null) : ChatPluginDisplayBlock
 {
     [Key(0)]
     public string Text { get; } = text;
 
     [Key(1)]
-    public string? FontFamily { get; } = fontFamily;
+    public string? ClassName { get; } = className;
 }
 
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-public sealed partial class ChatPluginDynamicResourceKeyDisplayBlock(DynamicResourceKeyBase key) : ChatPluginDisplayBlock
+public sealed partial class ChatPluginDynamicResourceKeyDisplayBlock(DynamicResourceKeyBase key, string? className = null) : ChatPluginDisplayBlock
 {
     [Key(0)]
     public DynamicResourceKeyBase Key { get; } = key;
+
+    [Key(1)]
+    public string? ClassName { get; } = className;
 }
 
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]

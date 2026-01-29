@@ -1,9 +1,7 @@
 ﻿using System.Reactive.Disposables;
 using Avalonia.Input;
-using CoreFoundation;
 using Everywhere.Interop;
-using Everywhere.Utilities;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Everywhere.Mac.Interop;
 
@@ -14,78 +12,20 @@ namespace Everywhere.Mac.Interop;
 // ReSharper disable once InconsistentNaming
 public sealed class CGEventShortcutListener : IShortcutListener, IDisposable
 {
-    private readonly AutoResetEvent _readySignal = new(false);
     private readonly Dictionary<KeyboardShortcut, List<Action>> _keyboardHandlers = new();
     private readonly Dictionary<MouseShortcut, List<Action>> _mouseHandlers = new();
     private readonly Lock _syncLock = new();
-    private readonly ILogger<CGEventShortcutListener> _logger;
 
-    private CFMachPort? _eventTap;
-    private CFRunLoopSource? _runLoopSource;
     private KeyboardShortcutScopeImpl? _currentCaptureScope;
+    private bool _needToSwallowModifierKey;
 
-    public CGEventShortcutListener(ILogger<CGEventShortcutListener> logger)
+    public CGEventShortcutListener()
     {
-        _logger = logger;
-
-        // It's crucial to check for permissions before attempting to create the tap.
-        if (!PermissionHelper.IsAccessibilityTrusted())
-        {
-            logger.LogWarning("Accessibility permissions are not granted.");
-            return;
-        }
-
-        var workerThread = new Thread(RunLoopThread)
-        {
-            Name = "CGEventShortcutListenerThread",
-            IsBackground = true
-        };
-        workerThread.Start();
-        _readySignal.WaitOne();
+        CGEventListener.Default.EventReceived += HandleEvent;
     }
 
-    private void RunLoopThread()
+    private void HandleEvent(CGEventType type, CGEvent cgEvent, ref nint cgEventRef)
     {
-        using var pool = new NSAutoreleasePool();
-        using var tap = CreateTap();
-        _eventTap = tap;
-        _runLoopSource = tap.CreateRunLoopSource();
-        CFRunLoop.Current.AddSource(_runLoopSource, CFRunLoop.ModeDefault);
-        _readySignal.Set();
-        CFRunLoop.Current.Run();
-    }
-
-    private CFMachPort CreateTap()
-    {
-        const CGEventMask mask =
-            CGEventMask.KeyDown | CGEventMask.KeyUp | CGEventMask.FlagsChanged |
-            CGEventMask.LeftMouseDown | CGEventMask.LeftMouseUp |
-            CGEventMask.RightMouseDown | CGEventMask.RightMouseUp |
-            CGEventMask.OtherMouseDown | CGEventMask.OtherMouseUp;
-
-        var tap = CGEvent.CreateTap(
-            CGEventTapLocation.HID,
-            CGEventTapPlacement.HeadInsert,
-            CGEventTapOptions.Default,
-            mask,
-            HandleEvent,
-            IntPtr.Zero);
-
-        return tap ?? throw new InvalidOperationException("CGEvent tap creation failed.");
-    }
-
-    private nint HandleEvent(nint proxy, CGEventType type, nint cgEventRef, nint userData)
-    {
-        // Early exit if the event tap is not initialized
-        if (_eventTap is null) return cgEventRef;
-
-        if (type is CGEventType.TapDisabledByTimeout or CGEventType.TapDisabledByUserInput)
-        {
-            CGEvent.TapEnable(_eventTap);
-            return cgEventRef;
-        }
-
-        var cgEvent = CoreFoundationInterop.CGEventFromHandle(cgEventRef);
         switch (type)
         {
             case CGEventType.KeyDown:
@@ -106,11 +46,7 @@ public sealed class CGEventShortcutListener : IShortcutListener, IDisposable
                 // HandleMouse(type, nsEvent);
                 break;
         }
-
-        return cgEventRef;
     }
-
-    private bool _needToSwallowModifierKey;
 
     private void HandleKeyDown(CGEvent cgEvent, ref nint cgEventRef)
     {
@@ -146,7 +82,10 @@ public sealed class CGEventShortcutListener : IShortcutListener, IDisposable
                 catch (Exception ex)
                 {
                     // Swallow exceptions from handlers to avoid crashing the event loop.
-                    _logger.LogError(ex, "Exception occurred while handling keyboard shortcut {Shortcut}.", shortcut);
+                    Log.ForContext<CGEventShortcutListener>().Error(
+                        ex,
+                        "Exception occurred while handling keyboard shortcut {Shortcut}.",
+                        shortcut);
                 }
             }
 
@@ -231,18 +170,6 @@ public sealed class CGEventShortcutListener : IShortcutListener, IDisposable
         return scope;
     }
 
-    public void Dispose()
-    {
-        if (_runLoopSource != null)
-        {
-            CFRunLoop.Current.RemoveSource(_runLoopSource, CFRunLoop.ModeDefault);
-            _runLoopSource.Dispose();
-            _runLoopSource = null;
-        }
-
-        DisposeCollector.DisposeToDefault(ref _eventTap);
-    }
-
     /// <summary>
     /// Implementation of IKeyboardShortcutScope for capturing keyboard shortcuts.
     /// This class is intended to be used internally by CGEventShortcutListener.
@@ -276,5 +203,11 @@ public sealed class CGEventShortcutListener : IShortcutListener, IDisposable
             if (owner._currentCaptureScope == this) owner._currentCaptureScope = null;
             IsDisposed = true;
         }
+    }
+
+    public void Dispose()
+    {
+        _currentCaptureScope?.Dispose();
+        CGEventListener.Default.EventReceived -= HandleEvent;
     }
 }

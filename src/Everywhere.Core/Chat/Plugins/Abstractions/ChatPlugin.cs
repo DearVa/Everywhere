@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
-using Everywhere.AI;
 using Everywhere.Chat.Permissions;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -70,8 +69,8 @@ public abstract partial class ChatPlugin : KernelPlugin, IDisposable
             .BindEx(out _functionsConnection);
     }
 
-    public virtual IEnumerable<ChatFunction> SnapshotFunctions(ChatContext chatContext, CustomAssistant customAssistant) =>
-        _functionsSource.Items.Where(f => f.IsEnabled);
+    public IReadOnlyList<ChatFunction> GetEnabledFunctions() =>
+        _functionsSource.Items.AsValueEnumerable().Where(f => f.IsEnabled).ToList();
 
     public override IEnumerator<KernelFunction> GetEnumerator() =>
         _functionsSource.Items.Where(f => f.IsEnabled).Select(f => f.KernelFunction).GetEnumerator();
@@ -98,6 +97,8 @@ public abstract partial class ChatPlugin : KernelPlugin, IDisposable
 public abstract class BuiltInChatPlugin(string name) : ChatPlugin(name)
 {
     public override sealed string Key => $"builtin.{Name}";
+
+    public virtual bool IsDefaultEnabled => false;
 }
 
 /// <summary>
@@ -122,7 +123,7 @@ public sealed partial class McpChatPlugin : ChatPlugin, ILogger
     /// <summary>
     /// Gets or sets the unique identifier of this MCP plugin.
     /// </summary>
-    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public Guid Id { get; set; }
 
     public override string Key => $"mcp.{Id}";
 
@@ -166,15 +167,16 @@ public sealed partial class McpChatPlugin : ChatPlugin, ILogger
     /// Chat kernel plugin implemented with MCP.
     /// </summary>
     /// <param name="mcpTransportConfiguration"></param>
-    public McpChatPlugin(McpTransportConfiguration mcpTransportConfiguration) : this(mcpTransportConfiguration, Guid.CreateVersion7()) { }
+    public McpChatPlugin(McpTransportConfiguration mcpTransportConfiguration) : this(Guid.CreateVersion7(), mcpTransportConfiguration) { }
 
     /// <summary>
     /// Chat kernel plugin implemented with MCP.
     /// </summary>
-    /// <param name="mcpTransportConfiguration"></param>
     /// <param name="id">use GUID to avoid name conflicts</param>
-    public McpChatPlugin(McpTransportConfiguration mcpTransportConfiguration, Guid id) : base(id.ToString("N"))
+    /// <param name="mcpTransportConfiguration"></param>
+    public McpChatPlugin(Guid id, McpTransportConfiguration mcpTransportConfiguration) : base(id.ToString("N"))
     {
+        Id = id;
         TransportConfiguration = mcpTransportConfiguration;
 
         LogEntries = _logEntriesSource

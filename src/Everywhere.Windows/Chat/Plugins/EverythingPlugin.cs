@@ -16,10 +16,10 @@ namespace Everywhere.Windows.Chat.Plugins;
 /// </summary>
 public class EverythingPlugin : BuiltInChatPlugin
 {
-    public override DynamicResourceKeyBase HeaderKey { get; } = new DynamicResourceKey(LocaleKey.NativeChatPlugin_Everything_Header);
-    public override DynamicResourceKeyBase DescriptionKey { get; } = new DynamicResourceKey(LocaleKey.NativeChatPlugin_Everything_Description);
+    public override DynamicResourceKeyBase HeaderKey { get; } = new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_Everything_Header);
+    public override DynamicResourceKeyBase DescriptionKey { get; } = new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_Everything_Description);
     public override LucideIconKind? Icon => LucideIconKind.Search;
-    public override string BeautifulIcon => "avares://Everywhere.Windows/Assets/Icons/Everything.svg";
+    public override string BeautifulIcon => "avares://Everywhere/Assets/Icons/Everything.svg";
 
     private readonly INativeHelper _nativeHelper;
     private readonly IWatchdogManager _watchdogManager;
@@ -55,7 +55,7 @@ public class EverythingPlugin : BuiltInChatPlugin
 
     [KernelFunction("search_files")]
     [Description("Search files using Everything search engine.")]
-    [DynamicResourceKey(LocaleKey.NativeChatPlugin_Everything_SearchFiles_Header)]
+    [DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_Everything_SearchFiles_Header)]
     private async Task<string> SearchFilesAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [Description("Standard search pattern in Everything search engine.")] string searchPattern,
@@ -80,7 +80,7 @@ public class EverythingPlugin : BuiltInChatPlugin
                         .Select(CreateFileRecord);
                     userInterface.DisplaySink.AppendDynamicResourceKey(
                         new FormattedDynamicResourceKey(
-                            LocaleKey.NativeChatPlugin_Everything_SearchFiles_DetailMessage,
+                            LocaleKey.Windows_BuiltInChatPlugin_Everything_SearchFiles_DetailMessage,
                             new DirectResourceKey(everything.Count.ToString())));
                     return new FileRecords(results, everything.Count).ToString();
                 },

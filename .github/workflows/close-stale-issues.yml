@@ -13,9 +13,9 @@ jobs:
           stale-pr-message: 'This PR is stale because it has been open 90 days with no activity. Remove stale label or comment or this will be closed in 14 days.'
           close-issue-message: 'This issue was closed because it has been stalled for 7 days with no activity.'
           close-pr-message: 'This PR was closed because it has been stalled for 14 days with no activity.'
+          close-issue-reason: 'completed'
           days-before-stale: 30
           days-before-close: 7
-          days-before-pr-stale: 90
-          days-before-pr-close: 14
-          exempt-issue-labels: 'triage'
-          exempt-pr-labels: 'triage'
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          any-of-issue-labels: 'question'

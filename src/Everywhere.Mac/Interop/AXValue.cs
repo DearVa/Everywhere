@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CoreFoundation;
 using ObjCRuntime;
@@ -41,11 +42,11 @@ public partial class AXValue : NSObject
 
         var buffer = Marshal.AllocHGlobal(Type switch
         {
-            AXValueType.CGPoint => Marshal.SizeOf<CGPoint>(),
-            AXValueType.CGSize => Marshal.SizeOf<CGSize>(),
-            AXValueType.CGRect => Marshal.SizeOf<CGRect>(),
-            AXValueType.CFRange => Marshal.SizeOf<CFRange>(),
-            AXValueType.AXError => Marshal.SizeOf<AXError>(),
+            AXValueType.CGPoint => Unsafe.SizeOf<CGPoint>(),
+            AXValueType.CGSize => Unsafe.SizeOf<CGSize>(),
+            AXValueType.CGRect => Unsafe.SizeOf<CGRect>(),
+            AXValueType.CFRange => Unsafe.SizeOf<CFRange>(),
+            AXValueType.AXError => Unsafe.SizeOf<AXError>(),
             _ => 0
         });
         try

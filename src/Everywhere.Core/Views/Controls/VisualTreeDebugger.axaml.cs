@@ -111,7 +111,7 @@ public partial class VisualTreeDebugger : UserControl
         try
         {
             _rootElements.Clear();
-            if (await _visualElementContext.PickElementAsync(ElementPickMode.Element) is { } element)
+            if (await _visualElementContext.PickElementAsync(ScreenSelectionMode.Element) is { } element)
             {
                 _rootElements.Add(element);
             }
@@ -143,7 +143,7 @@ public partial class VisualTreeDebugger : UserControl
         try
         {
             var tokenLimit = int.Parse(TokenLimitTextBox.Text ?? "8000");
-            var xmlBuilder = new VisualTreeXmlBuilder(
+            var builder = new VisualTreeBuilder(
                 VisualTreeView.SelectedItems.AsValueEnumerable().OfType<IVisualElement>().ToList(),
                 tokenLimit,
                 0,
@@ -158,7 +158,7 @@ public partial class VisualTreeDebugger : UserControl
 
                 try
                 {
-                    return xmlBuilder.BuildXml(CancellationToken.None);
+                    return builder.Build(CancellationToken.None);
                 }
                 finally
                 {
@@ -167,7 +167,7 @@ public partial class VisualTreeDebugger : UserControl
                 }
             });
 #else
-            var xml = await Task.Run(() => xmlBuilder.BuildXml(CancellationToken.None));
+            var xml = await Task.Run(() => builder.Build(CancellationToken.None));
 #endif
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             var filename = $"visual_tree_{timestamp}.xml";

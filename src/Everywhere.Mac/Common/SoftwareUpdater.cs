@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -12,7 +11,9 @@ using Everywhere.Extensions;
 using Everywhere.I18N;
 using Everywhere.Interop;
 using Microsoft.Extensions.Logging;
+
 #if !DEBUG
+using System.Text.RegularExpressions;
 using Everywhere.Utilities;
 #endif
 
@@ -26,8 +27,6 @@ public sealed partial class SoftwareUpdater(
 {
     private const string CustomUpdateServiceBaseUrl = "https://ghproxy.sylinko.com";
     private const string ApiUrl = $"{CustomUpdateServiceBaseUrl}/api?product=everywhere";
-
-    private static string DownloadUrlBase => $"{CustomUpdateServiceBaseUrl}/download?product=everywhere&os={GetOsString()}";
 
     private readonly HttpClient _httpClient = new()
     {
@@ -52,11 +51,9 @@ public sealed partial class SoftwareUpdater(
 
     [ObservableProperty] public partial Version? LatestVersion { get; private set; }
 
-    private static string GetOsString()
-    {
-        // Align with the naming convention: Everywhere-macOS-x64-vX.X.X.zip
-        return RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "macOS-arm64" : "macOS-x64";
-    }
+    private static string OsIdentifier => RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "osx-arm64" : "osx-x64";
+
+    private static string OsString => RuntimeInformation.ProcessArchitecture == Architecture.Arm64 ? "macOS-arm64" : "macOS-x64";
 
     public void RunAutomaticCheckInBackground(TimeSpan interval, CancellationToken cancellationToken = default)
     {
@@ -108,21 +105,19 @@ public sealed partial class SoftwareUpdater(
 
             var assets = root.GetProperty("assets").Deserialize(JsonSerializerContext.Default.ListAssetMetadata);
 
-            var osString = GetOsString();
-            // Match files like: Everywhere-macOS-x64-v0.5.1.zip
+            // Match files like: Everywhere-macOS-x64-v0.5.1.pkg
             var assetMetadata = assets?.FirstOrDefault(a =>
-                a.Name.Contains(osString, StringComparison.OrdinalIgnoreCase) &&
-                (a.Name.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase) || a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                a.Name.Contains(OsString, StringComparison.OrdinalIgnoreCase) &&
+                a.Name.EndsWith(".pkg", StringComparison.OrdinalIgnoreCase)
             );
 
             if (assetMetadata is not null)
             {
-                var extension = Path.GetExtension(assetMetadata.Name).TrimStart('.');
                 _latestAsset = new Asset(
                     assetMetadata.Name,
                     assetMetadata.Digest,
                     assetMetadata.Size,
-                    $"{DownloadUrlBase}&type={extension}"
+                    $"{CustomUpdateServiceBaseUrl}/download?product=everywhere&os={OsIdentifier}&type=pkg"
                 );
             }
 
@@ -167,14 +162,13 @@ public sealed partial class SoftwareUpdater(
                 try
                 {
                     var assetPath = await DownloadAssetAsync(asset, progress, cancellationToken);
-
-                    if (assetPath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                    if (assetPath.EndsWith(".pkg", StringComparison.OrdinalIgnoreCase))
                     {
-                        await UpdateViaZipAsync(assetPath, cancellationToken);
-                    }
-                    else if (assetPath.EndsWith(".dmg", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Process.Start(new ProcessStartInfo("open", assetPath));
+                        var psi = new ProcessStartInfo("open")
+                        {
+                            ArgumentList = { assetPath }
+                        };
+                        Process.Start(psi);
                         Environment.Exit(0);
                     }
                 }
@@ -183,7 +177,7 @@ public sealed partial class SoftwareUpdater(
                 {
                     activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
 
-                    ex = new HandledException(ex, LocaleKey.SoftwareUpdater_PerformUpdate_FailedToast_Message);
+                    ex = new HandledException(ex, new DynamicResourceKey(LocaleKey.SoftwareUpdater_PerformUpdate_FailedToast_Message));
                     logger.LogError(ex, "Failed to perform update.");
                     throw;
                 }
@@ -197,93 +191,7 @@ public sealed partial class SoftwareUpdater(
         await _updateTask;
     }
 
-    private async static Task UpdateViaZipAsync(string zipPath, CancellationToken cancellationToken)
-    {
-        var baseDir = AppContext.BaseDirectory;
-        var currentAppPath = baseDir;
-
-        // Walk up until we find the .app bundle
-        while (!string.IsNullOrEmpty(currentAppPath) && !currentAppPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase))
-        {
-            currentAppPath = Path.GetDirectoryName(currentAppPath);
-        }
-
-        // Safety checks
-        if (string.IsNullOrEmpty(currentAppPath) ||
-            !Directory.Exists(currentAppPath) ||
-            currentAppPath == "/" ||
-            !currentAppPath.StartsWith("/"))
-        {
-            throw new InvalidOperationException($"Could not locate valid current .app bundle. Path detected: {currentAppPath}");
-        }
-
-        var tempDir = Path.Combine(Path.GetTempPath(), "EverywhereUpdate_" + Path.GetRandomFileName());
-        var scriptPath = Path.Combine(Path.GetTempPath(), "update.sh");
-        var backupPath = currentAppPath + ".old";
-
-        // Combined script: Wait -> Unzip -> Backup -> Swap -> Relaunch -> Cleanup
-        var scriptContent =
-            $"""
-             #!/bin/bash
-             PID={Environment.ProcessId}
-             ZIP_PATH="{zipPath}"
-             TARGET_APP="{currentAppPath}"
-             BACKUP_APP="{backupPath}"
-             TEMP_DIR="{tempDir}"
-
-             # 1. Wait for app to exit
-             while kill -0 $PID 2>/dev/null; do
-                 sleep 0.5
-             done
-
-             # 2. Unzip to temp dir
-             mkdir -p "$TEMP_DIR"
-             /usr/bin/unzip -q "$ZIP_PATH" -d "$TEMP_DIR"
-             if [ $? -ne 0 ]; then
-                 rm -rf "$TEMP_DIR"
-                 exit 1
-             fi
-
-             # 3. Find .app bundle (handle root or one-level deep folder structure)
-             NEW_APP=$(find "$TEMP_DIR" -maxdepth 2 -name "*.app" | head -n 1)
-
-             if [ -z "$NEW_APP" ]; then
-                 rm -rf "$TEMP_DIR"
-                 exit 1
-             fi
-
-             # 4. Backup current app
-             mv "$TARGET_APP" "$BACKUP_APP"
-             if [ $? -ne 0 ]; then
-                 rm -rf "$TEMP_DIR"
-                 exit 1
-             fi
-
-             # 5. Move new app in place
-             mv "$NEW_APP" "$TARGET_APP"
-             if [ $? -ne 0 ]; then
-                 # Restore backup if move fails
-                 mv "$BACKUP_APP" "$TARGET_APP"
-                 rm -rf "$TEMP_DIR"
-                 exit 1
-             fi
-
-             # 6. Relaunch
-             open "$TARGET_APP"
-
-             # 7. Cleanup
-             rm -rf "$BACKUP_APP"
-             rm -rf "$TEMP_DIR"
-             rm -- "$0"
-             """;
-
-        await File.WriteAllTextAsync(scriptPath, scriptContent, cancellationToken);
-        File.SetUnixFileMode(scriptPath, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
-
-        Process.Start(new ProcessStartInfo(scriptPath) { UseShellExecute = false, CreateNoWindow = true });
-        Environment.Exit(0);
-    }
-
+#if !DEBUG
     private async Task CleanupOldUpdatesAsync()
     {
         await Task.Run(() =>
@@ -299,7 +207,6 @@ public sealed partial class SoftwareUpdater(
                     var match = VersionRegex().Match(fileName);
 
                     if (!match.Success || !Version.TryParse(match.Groups["version"].Value, out var fileVersion)) continue;
-
                     if (fileVersion > CurrentVersion) continue;
 
                     try
@@ -319,6 +226,7 @@ public sealed partial class SoftwareUpdater(
             }
         });
     }
+#endif
 
     private async Task<string> DownloadAssetAsync(Asset asset, IProgress<double> progress, CancellationToken cancellationToken = default)
     {
@@ -403,6 +311,8 @@ public sealed partial class SoftwareUpdater(
     [JsonSerializable(typeof(List<AssetMetadata>))]
     private partial class JsonSerializerContext : System.Text.Json.Serialization.JsonSerializerContext;
 
-    [GeneratedRegex(@"-v(?<version>\d+\.\d+\.\d+(\.\d+)?)\.(dmg|zip)$", RegexOptions.IgnoreCase | RegexOptions.Compiled, "zh-CN")]
+#if !DEBUG
+    [GeneratedRegex(@"-v(?<version>\d+\.\d+\.\d+(\.\d+)?)\.pkg$", RegexOptions.IgnoreCase | RegexOptions.Compiled, "zh-CN")]
     private static partial Regex VersionRegex();
+#endif
 }

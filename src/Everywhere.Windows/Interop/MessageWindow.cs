@@ -3,7 +3,6 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Everywhere.Extensions;
-using Everywhere.Utilities;
 using ZLinq;
 
 namespace Everywhere.Windows.Interop;

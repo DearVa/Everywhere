@@ -1,7 +1,9 @@
-﻿using System.Text.Json;
+﻿using System.ComponentModel;
+using System.Runtime.Versioning;
+using System.Text.Json;
 using Everywhere.Common;
 using Everywhere.Initialization;
-using Everywhere.Views.Configuration;
+using Everywhere.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,16 +13,39 @@ namespace Everywhere.Configuration;
 
 public static class SettingsExtensions
 {
+#if WINDOWS
+    [SupportedOSPlatform("windows")]
+#endif
     public static IServiceCollection AddSettings(this IServiceCollection services) => services
         .AddKeyedSingleton<IConfiguration>(
             typeof(Settings),
             (xx, _) =>
             {
-                IConfiguration configuration;
+                // Forward compatibility: use FallbackGuidConverter to handle invalid GUIDs and set them to Guid.Empty
+                TypeDescriptor.AddAttributes(typeof(Guid), new TypeConverterAttribute(typeof(FallbackGuidConverter)));
+
                 var settingsJsonPath = Path.Combine(
                     xx.GetRequiredService<IRuntimeConstantProvider>().Get<string>(RuntimeConstantType.WritableDataPath),
                     "settings.json");
                 var loggerFactory = xx.GetRequiredService<ILoggerFactory>();
+
+                // Run Migrations
+                try
+                {
+                    var migrations = typeof(SettingsExtensions).Assembly.GetTypes()
+                        .Where(t => typeof(SettingsMigration).IsAssignableFrom(t) && !t.IsAbstract)
+                        .Select(Activator.CreateInstance)
+                        .Cast<SettingsMigration>();
+
+                    var migrator = new SettingsMigrator(settingsJsonPath, migrations, loggerFactory.CreateLogger<SettingsMigrator>());
+                    migrator.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    loggerFactory.CreateLogger("SettingsMigration").LogError(ex, "Error running settings migrations");
+                }
+
+                IConfiguration configuration;
                 try
                 {
                     configuration = WritableJsonConfigurationFabric.Create(settingsJsonPath, loggerFactory: loggerFactory);
@@ -40,7 +65,13 @@ public static class SettingsExtensions
             return settings;
         })
         .AddTransient<SoftwareUpdateControl>()
+#if WINDOWS
         .AddTransient<RestartAsAdministratorControl>()
+#endif
         .AddTransient<DebugFeaturesControl>()
+        .AddSingleton<KeyValueStorage>()
+        .AddSingleton<IKeyValueStorage>(sp => sp.GetRequiredService<KeyValueStorage>())
+        .AddTransient<IAsyncInitializer>(sp => sp.GetRequiredService<KeyValueStorage>())
+        .AddSingleton<PersistentState>()
         .AddTransient<IAsyncInitializer, SettingsInitializer>();
 }

@@ -12,5 +12,6 @@ public interface IWatchdogManager
     /// Unregisters a subprocess from the Watchdog.
     /// </summary>
     /// <param name="processId">The id of process to stop monitoring.</param>
-    Task UnregisterProcessAsync(int processId);
+    /// <param name="killIfRunning"></param>
+    Task UnregisterProcessAsync(int processId, bool killIfRunning = true);
 }

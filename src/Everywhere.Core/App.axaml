@@ -7,28 +7,37 @@
     <shadui:ShadTheme/>
     <StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml"/>
     <StyleInclude Source="avares://Everywhere.Core/Assets/Styles.axaml"/>
+    <StyleInclude Source="avares://Everywhere.Core/Assets/AvaloniaEditStyles.axaml"/>
   </Application.Styles>
 
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <LocaleManager/>
+        <ResourceInclude Source="avares://ShadUI/Utilities/Easings.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Assets/Resources.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Assets/DataTemplates.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ApiKeyComboBox.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/CustomAssistantInformationForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/DebugFeaturesControl.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ModelProviderConfiguratorSelector.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/RestartAsAdministratorControl.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/SoftwareUpdateControl.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatInputBox.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatInputArea.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatActionBubble.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatAttachmentItemsControl.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatPluginDisplayBlockPresenter.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ConsentDecisionCard.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/CreateApiKeyForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/IconEditor.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/IconPresenter.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ManageApiKeyForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/McpTransportConfigurationForm.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/McpImportForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/SettingsItemsControl.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/TextDifferenceEditor.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/TextDifferenceSummaryView.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/VisualElementPicker/VisualElementPickerToolTip.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/ScreenSelection/ScreenSelectionToolTip.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
@@ -36,10 +45,18 @@
   <TrayIcon.Icons>
     <TrayIcons>
       <TrayIcon
-        Clicked="HandleOpenMainWindowMenuItemClicked" Icon="avares://Everywhere.Core/Assets/Everywhere.ico"
+        Clicked="HandleTrayIconClicked" MacOSProperties.IsTemplateIcon="True"
         ToolTipText="Everywhere">
+        <TrayIcon.Icon>
+          <OnPlatform
+            x:TypeArguments="WindowIcon" Default="avares://Everywhere.Core/Assets/Everywhere.ico"
+            macOS="avares://Everywhere.Core/Assets/Everywhere-macOS.png"/>
+        </TrayIcon.Icon>
         <TrayIcon.Menu>
           <NativeMenu>
+            <NativeMenuItem
+              Click="HandleOpenChatWindowMenuItemClicked"
+              Header="{I18N {x:Static LocaleKey.Application_TrayIcon_Menu_OpenChatWindow}}"/>
             <NativeMenuItem
               Click="HandleOpenMainWindowMenuItemClicked"
               Header="{I18N {x:Static LocaleKey.Application_TrayIcon_Menu_OpenMainWindow}}"/>

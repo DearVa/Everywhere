@@ -15,8 +15,9 @@ public interface IChatContextManager : INotifyPropertyChanged
 
     /// <summary>
     /// Gets or sets the current chat context metadata. Setting this will load the corresponding chat context and change Current.
+    /// Although this property cannot be null, the Binding may set it to null to indicate no selection.
     /// </summary>
-    ChatContextMetadata CurrentMetadata { get; set; }
+    ChatContextMetadata? CurrentMetadata { get; set; }
 
     /// <summary>
     /// Gets recent chat context history, grouped by date. 10 ChatContext maximum.
@@ -37,11 +38,6 @@ public interface IChatContextManager : INotifyPropertyChanged
     /// Command to load more chat context history.
     /// </summary>
     IRelayCommand<int> LoadMoreHistoryCommand { get; }
-
-    /// <summary>
-    /// Gets system prompt variables that can be used in system prompts.
-    /// </summary>
-    IReadOnlyDictionary<string, Func<string>> SystemPromptVariables { get; }
 
     /// <summary>
     /// Creates a new chat context and sets it as current.
@@ -65,4 +61,19 @@ public interface IChatContextManager : INotifyPropertyChanged
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ChatContext?> LoadChatContextAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get and ensures the working directory for the given chat context.
+    /// </summary>
+    /// <returns>
+    /// Usually a temporary directory path like C:\Users\[UserName]\AppData\Roaming\Everywhere\plugins\2025-12-30
+    /// </returns>
+    string EnsureWorkingDirectory(ChatContext chatContext);
+
+    /// <summary>
+    /// Populates the system prompt for the given chat context.
+    /// </summary>
+    /// <param name="chatContext"></param>
+    /// <param name="systemPrompt"></param>
+    void PopulateSystemPrompt(ChatContext chatContext, string? systemPrompt);
 }

@@ -48,7 +48,7 @@ public partial class ChangeLogView : ReactiveUserControl<ChangeLogViewModel>
         }
     }
 
-    private void HandleMarkdownRendererInlineHyperlinkClick(object? sender, InlineHyperlinkClickedEventArgs e)
+    private void HandleMarkdownRendererLinkClick(object? sender, LinkClickedEventArgs e)
     {
         if (e.HRef is not { IsAbsoluteUri: true, Scheme: "https" or "http" } href) return;
 

@@ -33,8 +33,8 @@ public unsafe class ShortcutListener : IShortcutListener
     };
 
     // Hooks (created on demand)
-    private static LowLevelKeyboardHook? _keyboardHook;
-    private static LowLevelMouseHook? _mouseHook;
+    private static IDisposable? _keyboardHookSubscription;
+    private static IDisposable? _mouseHookSubscription;
 
     // Inject sentinel to ignore self-injected events
     private const nuint InjectExtra = 0x0d000721;
@@ -147,10 +147,10 @@ public unsafe class ShortcutListener : IShortcutListener
             }
 
             // Dispose hooks
-            _keyboardHook?.Dispose();
-            _keyboardHook = null;
-            _mouseHook?.Dispose();
-            _mouseHook = null;
+            _keyboardHookSubscription?.Dispose();
+            _keyboardHookSubscription = null;
+            _mouseHookSubscription?.Dispose();
+            _mouseHookSubscription = null;
         }
     }
 
@@ -176,8 +176,8 @@ public unsafe class ShortcutListener : IShortcutListener
 
     private static void EnsureKeyboardHook()
     {
-        if (_keyboardHook is not null) return;
-        _keyboardHook = new LowLevelKeyboardHook(KeyboardHookProc);
+        if (_keyboardHookSubscription is not null) return;
+        _keyboardHookSubscription = LowLevelHook.CreateKeyboardHook(KeyboardHookProc);
     }
 
     private static void KeyboardHookProc(WINDOW_MESSAGE msg, ref KBDLLHOOKSTRUCT hookStruct, ref bool blockNext)
@@ -278,8 +278,8 @@ public unsafe class ShortcutListener : IShortcutListener
 
     private static void EnsureMouseHook()
     {
-        if (_mouseHook is not null) return;
-        _mouseHook = new LowLevelMouseHook(MouseHookProc);
+        if (_mouseHookSubscription is not null) return;
+        _mouseHookSubscription = LowLevelHook.CreateMouseHook(MouseHookProc);
     }
 
     private static void MouseHookProc(WINDOW_MESSAGE msg, ref MSLLHOOKSTRUCT hookStruct, ref bool blockNext)
@@ -354,10 +354,10 @@ public unsafe class ShortcutListener : IShortcutListener
             if (!HookKbHandlers.TryGetValue(sig, out var list)) return;
             list.Remove(handler);
             if (list.Count == 0) HookKbHandlers.Remove(sig);
-            if (HookKbHandlers.Count == 0 && _keyboardHook is not null)
+            if (HookKbHandlers.Count == 0 && _keyboardHookSubscription is not null)
             {
-                _keyboardHook.Dispose();
-                _keyboardHook = null;
+                _keyboardHookSubscription.Dispose();
+                _keyboardHookSubscription = null;
             }
         }
     }
@@ -371,10 +371,10 @@ public unsafe class ShortcutListener : IShortcutListener
                 list.Remove(reg);
                 reg.CancelTimer();
             }
-            if (MouseRegs.Values.Sum(l => l.Count) == 0 && _mouseHook is not null)
+            if (MouseRegs.Values.Sum(l => l.Count) == 0 && _mouseHookSubscription is not null)
             {
-                _mouseHook.Dispose();
-                _mouseHook = null;
+                _mouseHookSubscription.Dispose();
+                _mouseHookSubscription = null;
             }
         }
     }
@@ -474,13 +474,13 @@ public unsafe class ShortcutListener : IShortcutListener
 
         public event IKeyboardShortcutScope.ShortcutFinishedHandler? ShortcutFinished;
 
-        private readonly LowLevelKeyboardHook _hook;
+        private readonly IDisposable _hookSubscription;
 
         private KeyModifiers _pressedKeyModifiers = KeyModifiers.None;
 
         public KeyboardShortcutScopeImpl()
         {
-            _hook = new LowLevelKeyboardHook(KeyboardHookCallback);
+            _hookSubscription = LowLevelHook.CreateKeyboardHook(KeyboardHookCallback);
         }
 
         private void KeyboardHookCallback(WINDOW_MESSAGE msg, ref KBDLLHOOKSTRUCT hookStruct, ref bool blockNext)
@@ -542,7 +542,7 @@ public unsafe class ShortcutListener : IShortcutListener
             if (IsDisposed) return;
             IsDisposed = true;
 
-            _hook.Dispose();
+            _hookSubscription.Dispose();
         }
     }
 }

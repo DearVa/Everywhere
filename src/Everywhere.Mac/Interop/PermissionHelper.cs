@@ -1,9 +1,13 @@
-﻿namespace Everywhere.Mac.Interop;
+﻿using System.Runtime.InteropServices;
+using Everywhere.I18N;
+using Everywhere.Interop;
+
+namespace Everywhere.Mac.Interop;
 
 /// <summary>
 /// Helper class for managing macOS Accessibility permissions required for global event listening.
 /// </summary>
-public static class PermissionHelper
+public static partial class PermissionHelper
 {
     // Key for the options dictionary.
     private static readonly NSString AxTrustedCheckOptionPrompt = new("AXTrustedCheckOptionPrompt");
@@ -11,33 +15,28 @@ public static class PermissionHelper
     /// <summary>
     /// Checks if the application has been granted Accessibility access.
     /// </summary>
-    public static bool IsAccessibilityTrusted()
+    public static void EnsureAccessibilityTrusted()
     {
         // For sandboxed apps, this will always be false.
         // For non-sandboxed apps, it checks the system settings.
-        return AXIsProcessTrustedWithOptions(new NSDictionary(AxTrustedCheckOptionPrompt, NSNumber.FromBoolean(false)));
+        var isTrusted = AXIsProcessTrustedWithOptions(new NSDictionary(AxTrustedCheckOptionPrompt, NSNumber.FromBoolean(true)));
+        if (isTrusted) return;
+
+        NativeMessageBox.Show(
+            LocaleResolver.Common_Info,
+            LocaleResolver.MacOS_PermissionHelper_PleaseGrantAccessibilityPermission);
+        Environment.Exit(0);
     }
 
     /// <summary>
-    /// Requests Accessibility access by showing the system prompt.
-    /// This will open System Settings and guide the user.
+    /// Requests screen recording permission by attempting to capture a minimal portion of the screen.
+    /// https://stackoverflow.com/questions/59337022/enabling-screen-recording-api-in-catalina-kcgwindowname
     /// </summary>
-    public static void RequestAccessibilityAccess()
+    public static void RequestForScreenRecordingPermission()
     {
-        AXIsProcessTrustedWithOptions(new NSDictionary(AxTrustedCheckOptionPrompt, NSNumber.FromBoolean(true)));
-    }
-
-    /// <summary>
-    /// Requests Screen Recording access by showing the system prompt.
-    /// This will open System Settings and guide the user.
-    /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
-    public static void RequestScreenRecordingAccess()
-    {
-        // There is no official API to request Screen Recording access.
-        // A common workaround is to attempt to capture the screen, which will trigger the prompt.
-        // However, this requires additional implementation and is not included here.
-        throw new NotImplementedException("Screen Recording access request is not implemented.");
+#pragma warning disable CA1422
+        using var _ = CGImage.ScreenImage(0, new CGRect(0, 0, 1, 1), CGWindowListOption.OnScreenOnly, CGWindowImageOption.Default);
+#pragma warning restore CA1422
     }
 
     // ReSharper disable once InconsistentNaming
@@ -47,6 +46,7 @@ public static class PermissionHelper
     }
 
     // C# binding for the C function AXIsProcessTrustedWithOptions.
-    [System.Runtime.InteropServices.DllImport("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")]
-    private static extern bool AXIsProcessTrustedWithOptions(nint options);
+    [LibraryImport("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AXIsProcessTrustedWithOptions(nint options);
 }

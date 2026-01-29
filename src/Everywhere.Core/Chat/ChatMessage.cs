@@ -1,16 +1,12 @@
-﻿using System.Collections.Immutable;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Text;
 using System.Text.Json.Serialization;
-using Avalonia.Controls.Documents;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
-using Everywhere.Serialization;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
 using MessagePack;
@@ -36,7 +32,7 @@ public abstract partial class ChatMessage : ObservableObject
     public partial bool IsBusy { get; set; }
 }
 
-public interface IChatMessageWithAttachments
+public interface IHaveChatAttachments
 {
     IEnumerable<ChatAttachment> Attachments { get; }
 }
@@ -54,7 +50,11 @@ public partial class SystemChatMessage(string systemPrompt) : ChatMessage
 }
 
 [MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
-public sealed partial class AssistantChatMessage : ChatMessage, IDisposable
+public sealed partial class AssistantChatMessage :
+    ChatMessage,
+    IHaveChatAttachments,
+    IReadOnlyList<AssistantChatMessageSpan>,
+    IDisposable
 {
     public override AuthorRole Role => AuthorRole.Assistant;
 
@@ -125,6 +125,15 @@ public sealed partial class AssistantChatMessage : ChatMessage, IDisposable
     [ObservableProperty]
     public partial double TotalTokenCount { get; set; }
 
+    [IgnoreMember]
+    public IEnumerable<ChatAttachment> Attachments => _spansSource.Items.SelectMany(s => s.Attachments);
+
+    [IgnoreMember]
+    public int Count => _spansSource.Items.Count;
+
+    [IgnoreMember]
+    public AssistantChatMessageSpan this[int index] => _spansSource.Items[index];
+
     /// <summary>
     /// The private source for function calls.
     /// </summary>
@@ -154,6 +163,11 @@ public sealed partial class AssistantChatMessage : ChatMessage, IDisposable
         _spansSource.Add(span);
     }
 
+    public IEnumerator<AssistantChatMessageSpan> GetEnumerator()
+    {
+        return _spansSource.Items.GetEnumerator();
+    }
+
     public override string ToString()
     {
         var builder = new StringBuilder();
@@ -163,6 +177,11 @@ public sealed partial class AssistantChatMessage : ChatMessage, IDisposable
         }
 
         return builder.TrimEnd().ToString();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return ((IEnumerable)_spansSource.Items).GetEnumerator();
     }
 
     public void Dispose()
@@ -177,13 +196,13 @@ public sealed partial class AssistantChatMessage : ChatMessage, IDisposable
 /// A span can contain markdown content and associated function calls.
 /// </summary>
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-public sealed partial class AssistantChatMessageSpan : ObservableObject, IDisposable
+public sealed partial class AssistantChatMessageSpan : ObservableObject, IHaveChatAttachments, IDisposable
 {
     [IgnoreMember]
     public ObservableStringBuilder MarkdownBuilder { get; }
 
     [Key(0)]
-    private string Content
+    public string Content
     {
         get => MarkdownBuilder.ToString();
         init => MarkdownBuilder.Append(value);
@@ -244,6 +263,36 @@ public sealed partial class AssistantChatMessageSpan : ObservableObject, IDispos
     [JsonIgnore]
     public double ReasoningElapsedSeconds => Math.Max((ReasoningFinishedAt.GetValueOrDefault() - CreatedAt).TotalSeconds, 0);
 
+    /// <summary>
+    /// Additional metadata associated with this message span. e.g. thoughtSignature for Gemini
+    /// </summary>
+    [Key(6)]
+    public Dictionary<string, object?> Metadata { get; set; } = new();
+
+    [Key(7)]
+    [ObservableProperty]
+    public partial ChatFileAttachment? ImageOutput { get; set; }
+
+    [IgnoreMember]
+    public IEnumerable<ChatAttachment> Attachments
+    {
+        get
+        {
+            foreach (var functionCallChatMessage in _functionCallsSource.Items)
+            {
+                foreach (var attachment in functionCallChatMessage.Attachments)
+                {
+                    yield return attachment;
+                }
+            }
+
+            if (ImageOutput is not null)
+            {
+                yield return ImageOutput;
+            }
+        }
+    }
+
     [IgnoreMember] private readonly SourceList<FunctionCallChatMessage> _functionCallsSource = new();
     [IgnoreMember] private readonly IDisposable _functionCallsConnection;
 
@@ -295,35 +344,25 @@ public sealed partial class AssistantChatMessageSpan : ObservableObject, IDispos
 }
 
 [MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
-public partial class UserChatMessage(string userPrompt, IEnumerable<ChatAttachment> attachments) : ChatMessage, IChatMessageWithAttachments
+public partial class UserChatMessage(string content, IEnumerable<ChatAttachment> attachments) : ChatMessage, IHaveChatAttachments
 {
     public override AuthorRole Role => AuthorRole.User;
 
     /// <summary>
     /// The actual prompt that sends to the LLM.
+    /// Including attachments converted prompts that are invisible to the user.
     /// </summary>
     [Key(0)]
-    public string UserPrompt { get; set; } = userPrompt;
+    [ObservableProperty]
+    public partial string Content { get; set; } = content;
 
     [Key(1)]
     public IEnumerable<ChatAttachment> Attachments { get; set; } = attachments;
 
-    /// <summary>
-    /// The inlines that display in the chat message.
-    /// </summary>
-    public InlineCollection Inlines { get; } = new();
-
-    [Key(2)]
-    private IEnumerable<MessagePackInline> MessagePackInlines
-    {
-        get => Dispatcher.UIThread.InvokeOnDemand(() => Inlines.Select(MessagePackInline.FromInline).ToImmutableArray());
-        set => Dispatcher.UIThread.InvokeOnDemand(() => Inlines.Reset(value.Select(i => i.ToInline())));
-    }
-
     [Key(3)]
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
-    public override string ToString() => UserPrompt;
+    public override string ToString() => Content;
 }
 
 /// <summary>
@@ -380,7 +419,7 @@ public partial class ActionChatMessage : ChatMessage
 /// Represents a function call action message in the chat.
 /// </summary>
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-public sealed partial class FunctionCallChatMessage : ChatMessage, IChatMessageWithAttachments, IDisposable
+public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAttachments, IDisposable
 {
     [Key(0)]
     public override AuthorRole Role => AuthorRole.Tool;

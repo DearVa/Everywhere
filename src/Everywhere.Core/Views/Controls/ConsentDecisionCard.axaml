@@ -21,67 +21,56 @@
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
             CornerRadius="{TemplateBinding CornerRadius}">
-            <ExperimentalAcrylicBorder
-              Name="PART_AcrylicBorder"
-              CornerRadius="{TemplateBinding CornerRadius}"
-              IsVisible="False">
-              <ExperimentalAcrylicBorder.Material>
-                <ExperimentalAcrylicMaterial
-                  FallbackColor="#15000000" MaterialOpacity="0.4"
-                  TintColor="Black" TintOpacity="0.2"/>
-              </ExperimentalAcrylicBorder.Material>
+            <Grid
+              Margin="{TemplateBinding Padding}"
+              RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
 
-              <Grid
-                Margin="{TemplateBinding Padding}"
-                RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
+              <ContentPresenter
+                Grid.Row="0" HorizontalAlignment="Center"
+                Content="{TemplateBinding Header}"
+                IsVisible="{TemplateBinding Header, Converter={x:Static ObjectConverters.IsNotNull}}"
+                TextAlignment="Center" TextWrapping="Wrap"/>
 
-                <ContentPresenter
-                  Grid.Row="0" HorizontalAlignment="Center"
-                  Content="{TemplateBinding Header}"
-                  IsVisible="{TemplateBinding Header, Converter={x:Static ObjectConverters.IsNotNull}}"
-                  TextAlignment="Center" TextWrapping="Wrap"/>
+              <ScrollViewer
+                Grid.Row="1"
+                HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
+                VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                <v:ChatPluginDisplayBlockPresenter Content="{TemplateBinding Content}"/>
+              </ScrollViewer>
 
-                <ScrollViewer
-                  Grid.Row="1"
-                  HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
-                  IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}"
-                  VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                  <v:ChatPluginDisplayBlockPresenter Content="{TemplateBinding Content}"/>
-                </ScrollViewer>
+              <StackPanel
+                Grid.Row="2" Spacing="4">
+                <StackPanel.Styles>
+                  <Style Selector="Button.Ghost">
+                    <Setter Property="shadui:ButtonAssist.HoverBackground" Value="{DynamicResource DestructiveColor75}"/>
+                  </Style>
+                </StackPanel.Styles>
 
-                <StackPanel
-                  Grid.Row="2" Spacing="4">
-                  <StackPanel.Styles>
-                    <Style Selector="Button.Ghost">
-                      <Setter Property="shadui:ButtonAssist.HoverBackground" Value="{DynamicResource DestructiveColor75}"/>
-                    </Style>
-                  </StackPanel.Styles>
-
-                  <Button
-                    Classes="Primary"
-                    Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    CommandParameter="{x:Static permissions:ConsentDecision.AllowOnce}"
-                    Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowOnce}}"/>
-                  <Button
-                    Classes="Secondary"
-                    Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    CommandParameter="{x:Static permissions:ConsentDecision.Deny}"
-                    Content="{I18N {x:Static LocaleKey.ConsentDecision_Deny}}"/>
-                  <Button
-                    Classes="Secondary"
-                    Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    CommandParameter="{x:Static permissions:ConsentDecision.AllowSession}"
-                    Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowSession}}"
-                    IsVisible="{TemplateBinding CanRemember}"/>
-                  <Button
-                    Classes="Ghost Compact"
-                    Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    CommandParameter="{x:Static permissions:ConsentDecision.AlwaysAllow}"
-                    Content="{I18N {x:Static LocaleKey.ConsentDecision_AlwaysAllow}}"
-                    IsVisible="{TemplateBinding CanRemember}"/>
-                </StackPanel>
-              </Grid>
-            </ExperimentalAcrylicBorder>
+                <Button
+                  Classes="Primary"
+                  Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:Static permissions:ConsentDecision.AllowOnce}"
+                  Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowOnce}}"/>
+                <Button
+                  Classes="Secondary"
+                  Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:Static permissions:ConsentDecision.Deny}"
+                  Content="{I18N {x:Static LocaleKey.ConsentDecision_Deny}}"/>
+                <Button
+                  Classes="Secondary"
+                  Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:Static permissions:ConsentDecision.AllowSession}"
+                  Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowSession}}"
+                  IsVisible="{TemplateBinding CanRemember}"/>
+                <Button
+                  Classes="Ghost Compact"
+                  Command="{Binding SelectConsentCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:Static permissions:ConsentDecision.AlwaysAllow}"
+                  Content="{I18N {x:Static LocaleKey.ConsentDecision_AlwaysAllow}}"
+                  IsVisible="{TemplateBinding CanRemember}"/>
+              </StackPanel>
+            </Grid>
           </Border>
         </ControlTemplate>
       </Setter.Value>

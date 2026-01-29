@@ -1,15 +1,15 @@
 <ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:configuration="clr-namespace:Everywhere.Views.Configuration" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI">
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views">
 
   <ControlTheme
-    x:Key="{x:Type configuration:DebugFeaturesControl}"
-    TargetType="configuration:DebugFeaturesControl">
+    x:Key="{x:Type v:DebugFeaturesControl}"
+    TargetType="v:DebugFeaturesControl">
 
     <Setter Property="Template">
       <ControlTemplate>
-        <StackPanel
-          Orientation="Horizontal" Spacing="8">
+        <shadui:ButtonGroup
+          VerticalAlignment="Center" Orientation="Horizontal">
           <Button
             Classes="Outline"
             shadui:ButtonAssist.Icon="{LucideIconContent FileJson2}"
@@ -24,8 +24,16 @@
             Classes="Outline"
             shadui:ButtonAssist.Icon="{LucideIconContent Bug}"
             Command="{Binding CreateDumpCommand, RelativeSource={RelativeSource TemplatedParent}}"
-            Content="{I18N {x:Static LocaleKey.DebugFeaturesControl_CreateDumpButton_Content}}"/>
-        </StackPanel>
+            Content="{I18N {x:Static LocaleKey.DebugFeaturesControl_CreateDumpButton_Content}}">
+            <Button.IsVisible>
+              <OnPlatform x:TypeArguments="x:Boolean">
+                <OnPlatform.macOS>False</OnPlatform.macOS>
+                <OnPlatform.Windows>True</OnPlatform.Windows>
+                <OnPlatform.Linux>True</OnPlatform.Linux>
+              </OnPlatform>
+            </Button.IsVisible>
+          </Button>
+        </shadui:ButtonGroup>
       </ControlTemplate>
     </Setter>
   </ControlTheme>

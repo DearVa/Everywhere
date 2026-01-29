@@ -34,11 +34,10 @@
           BeforeTargets="BeforeResolveReferences"
           Inputs="$(WatchdogProject)"
           Outputs="$(WatchdogExecutable)">
-
     <Message Text="Watchdog executable is out-of-date. Building..." Importance="high"/>
 
     <MSBuild Projects="$(WatchdogProject)"
              Targets="Publish"
-             Properties="PublishDir=$(WatchdogOutDir);" />
+             Properties="PublishDir=$(WatchdogOutDir);TargetFramework=$(TargetFrameworkPrefix)" />
   </Target>
 </Project>

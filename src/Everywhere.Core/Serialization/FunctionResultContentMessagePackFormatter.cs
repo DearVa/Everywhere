@@ -1,19 +1,15 @@
 ﻿using Everywhere.Chat;
 using MessagePack;
-using MessagePack.Formatters;
 using Microsoft.SemanticKernel;
 
 namespace Everywhere.Serialization;
 
-public class FunctionResultContentMessagePackFormatter : IMessagePackFormatter<FunctionResultContent?>
+public class FunctionResultContentMessagePackFormatter : FunctionContentMessagePackFormatter<FunctionResultContent>
 {
-    public void Serialize(ref MessagePackWriter writer, FunctionResultContent? value, MessagePackSerializerOptions options)
+    protected override void SerializeCore(ref MessagePackWriter writer, FunctionResultContent value, MessagePackSerializerOptions options)
     {
-        if (value == null)
-        {
-            writer.WriteNil();
-            return;
-        }
+        // Use array for backward compatibility
+        writer.WriteArrayHeader(5);
 
         writer.Write(value.CallId);
         writer.Write(value.PluginName);
@@ -36,9 +32,81 @@ public class FunctionResultContentMessagePackFormatter : IMessagePackFormatter<F
                 break;
             }
         }
+
+        SerializeDictionary(ref writer, value.Metadata, options);
     }
 
-    public FunctionResultContent Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    protected override FunctionResultContent DeserializeCore(ref MessagePackReader reader, MessagePackSerializerOptions options)
+    {
+        string? callId = null, pluginName = null, functionName = null;
+        object? result = null;
+        Dictionary<string, object?>? metadata = null;
+
+        var count = reader.ReadArrayHeader();
+        for (var i = 0; i < count; i++)
+        {
+            switch (i)
+            {
+                case 0:
+                    callId = reader.ReadString();
+                    break;
+                case 1:
+                    pluginName = reader.ReadString();
+                    break;
+                case 2:
+                    functionName = reader.ReadString();
+                    break;
+                case 3:
+                {
+                    if (reader.ReadArrayHeader() != 2)
+                    {
+                        throw new MessagePackSerializationException("FunctionResultContent result array header must be 2.");
+                    }
+
+                    var valueType = reader.ReadInt32();
+                    switch (valueType)
+                    {
+                        case 0:
+                        {
+                            result = reader.ReadString();
+                            break;
+                        }
+                        case 1:
+                        {
+                            var formatter = options.Resolver.GetFormatterWithVerify<ChatAttachment>();
+                            result = formatter.Deserialize(ref reader, options);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+                case 4:
+                {
+                    metadata = DeserializeDictionary(ref reader, options);
+                    break;
+                }
+                default:
+                {
+                    // Skip unknown fields for forward compatibility
+                    reader.Skip();
+                    break;
+                }
+            }
+        }
+
+        if (callId is null || pluginName is null || functionName is null)
+        {
+            throw new MessagePackSerializationException("FunctionResultContent required fields cannot be null.");
+        }
+
+        return new FunctionResultContent(functionName, pluginName, callId, result)
+        {
+            Metadata = metadata
+        };
+    }
+
+    protected override FunctionResultContent LegacyDeserializeCore(ref MessagePackReader reader, MessagePackSerializerOptions options)
     {
         var callId = reader.ReadString();
         var pluginName = reader.ReadString();

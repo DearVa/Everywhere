@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -30,11 +32,13 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         }
     }
 
-    public ChatContextMetadata CurrentMetadata
+    public ChatContextMetadata? CurrentMetadata
     {
         get => Current.Metadata;
         set
         {
+            if (value is null) return;
+
             if (value.Id == Guid.Empty)
                 throw new ArgumentException("The provided chat context does not have a valid ID.", nameof(value));
 
@@ -50,7 +54,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
 
             Task.Run(async () =>
             {
-                _current = await LoadChatContextAsync(value.Id, false);
+                _current = await LoadChatContextAsync(value.Id, false, CancellationToken.None);
                 if (_current is null)
                 {
                     CreateNew();
@@ -96,16 +100,6 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
     public IReadOnlyList<ChatContextHistory> AllHistory => ApplyHistory(_allHistory, int.MaxValue);
 
     IRelayCommand<int> IChatContextManager.LoadMoreHistoryCommand => LoadMoreHistoryCommand;
-
-    public IReadOnlyDictionary<string, Func<string>> SystemPromptVariables =>
-        ImmutableDictionary.CreateRange(
-            new KeyValuePair<string, Func<string>>[]
-            {
-                new("Time", () => DateTime.Now.ToString("F")),
-                new("OS", () => Environment.OSVersion.ToString()),
-                new("SystemLanguage", () => _settings.Common.Language.ToEnglishName()),
-                new("WorkingDirectory", () => _runtimeConstantProvider.EnsureWritableDataFolderPath($"plugins/{DateTime.Now:yyyy-MM-dd}"))
-            });
 
     [field: AllowNull, MaybeNull]
     public IRelayCommand CreateNewCommand => field ??= new RelayCommand(CreateNew, () => !IsEmptyContext(_current));
@@ -167,6 +161,8 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         );
 
         WeakReferenceMessenger.Default.Register(this);
+
+        Task.Run(CleanupUnusedWorkingDirectories);
     }
 
     /// <summary>
@@ -193,6 +189,36 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         Dispatcher.UIThread.InvokeOnDemand(CreateNewCommand.NotifyCanExecuteChanged);
     }
 
+    /// <summary>
+    /// Delete all directories in _runtimeConstantProvider.EnsureWritableDataFolderPath($"plugins") that named with date (yyyy-MM-dd)
+    /// </summary>
+    private void CleanupUnusedWorkingDirectories()
+    {
+        var regex = WorkingDirectoryRegex();
+        var pluginsDir = _runtimeConstantProvider.EnsureWritableDataFolderPath("plugins");
+        foreach (var dir in Directory.GetDirectories(pluginsDir))
+        {
+            var dirName = Path.GetFileName(dir);
+            if (!regex.IsMatch(dirName)) continue;
+
+            if (!DateTime.TryParseExact(dirName, "yyyy-MM-dd", null, DateTimeStyles.None, out var dirDate))
+                continue;
+
+            // If the directory is 3 days later and is empty, delete it
+            if ((DateTime.Now - dirDate).TotalDays > 3 && !Directory.EnumerateFileSystemEntries(dir).Any())
+            {
+                try
+                {
+                    Directory.Delete(dir); // do not use recursive delete
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to delete unused working directory: {Directory}", dir);
+                }
+            }
+        }
+    }
+
     [RelayCommand]
     private async Task UpdateRecentHistoryAsync()
     {
@@ -204,7 +230,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
                 _metadataMap[_current.Metadata.Id] = _current.Metadata;
             }
 
-            await LoadMetadataAsync(9, null);
+            await LoadMetadataAsync(9, null).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -223,7 +249,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
                 .OrderByDescending(c => c.DateModified)
                 .Select(c => c.Id)
                 .LastOrDefault();
-            await LoadMetadataAsync(count, lastId == Guid.Empty ? null : lastId);
+            await LoadMetadataAsync(count, lastId == Guid.Empty ? null : lastId).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -245,12 +271,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
             _metadataMap.Remove(_current!.Metadata.Id);
         }
 
-        var renderedSystemPrompt = Prompts.RenderPrompt(
-            _settings.Model.SelectedCustomAssistant?.SystemPrompt ?? Prompts.DefaultSystemPrompt,
-            SystemPromptVariables
-        );
-
-        _current = new ChatContext(renderedSystemPrompt)
+        _current = new ChatContext
         {
             Metadata =
             {
@@ -275,17 +296,18 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
     private bool CanRemove => _metadataMap.Count > 1 || !IsEmptyContext(_current);
 
     [RelayCommand(CanExecute = nameof(CanRemove))]
-    private async Task RemoveAsync(ChatContextMetadata metadata)
+    private async Task RemoveAsync(ChatContextMetadata metadata, CancellationToken cancellationToken)
     {
         if (!_metadataMap.Remove(metadata.Id)) return;
 
         // delete in background
-        Task.Run(() => _chatContextStorage.DeleteChatContextAsync(metadata.Id)).Detach(_logger.ToExceptionHandler());
+        Task.Run(() => _chatContextStorage.DeleteChatContextAsync(metadata.Id, cancellationToken), cancellationToken)
+            .Detach(_logger.ToExceptionHandler());
 
         // If the current chat context is being removed, we need to set a new current context
         if (metadata.Id == _current?.Metadata.Id)
         {
-            await LoadRecentAsCurrentAsync();
+            await LoadRecentAsCurrentAsync(cancellationToken).ConfigureAwait(false);
         }
 
         OnPropertyChanged(nameof(AllHistory));
@@ -293,26 +315,28 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         RemoveCommand.NotifyCanExecuteChanged();
     }
 
-    [RelayCommand]
-    private async Task RemoveSelectedAsync()
+    public bool CanRemoveSelected => LoadedMetadata.AsValueEnumerable().Any(m => m.IsSelected);
+
+    [RelayCommand(CanExecute = nameof(CanRemoveSelected))]
+    private async Task RemoveSelectedAsync(CancellationToken cancellationToken)
     {
         foreach (var metadata in LoadedMetadata.AsValueEnumerable().Where(m => m.IsSelected).ToList())
         {
-            await RemoveAsync(metadata);
+            await RemoveAsync(metadata, cancellationToken).ConfigureAwait(false);
         }
     }
 
     /// <summary>
     /// Loads the most recently modified chat context as current.
     /// </summary>
-    private async Task LoadRecentAsCurrentAsync()
+    private async Task LoadRecentAsCurrentAsync(CancellationToken cancellationToken)
     {
         _current = null;
 
         if (LoadedMetadata.OrderByDescending(c => c.DateModified).FirstOrDefault() is { } historyItem)
         {
             // Switch to the most recently modified chat context
-            _current = await LoadChatContextAsync(historyItem.Id, false);
+            _current = await LoadChatContextAsync(historyItem.Id, false, cancellationToken).ConfigureAwait(false);
         }
 
         if (_current is null)
@@ -327,17 +351,35 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         }
     }
 
-    public Task<ChatContext?> LoadChatContextAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default) => 
-        metadata.Id == _current?.Metadata.Id ? Task.FromResult<ChatContext?>(_current) : LoadChatContextAsync(metadata.Id, deleteIfFailed: false);
+    public Task<ChatContext?> LoadChatContextAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default) =>
+        metadata.Id == _current?.Metadata.Id ? Task.FromResult<ChatContext?>(_current) : LoadChatContextAsync(metadata.Id, false, cancellationToken);
 
-    private async Task<ChatContext?> LoadChatContextAsync(Guid id, bool deleteIfFailed)
+    public string EnsureWorkingDirectory(ChatContext chatContext) =>
+        _runtimeConstantProvider.EnsureWritableDataFolderPath($"plugins/{chatContext.Metadata.DateCreated:yyyy-MM-dd}");
+
+    public void PopulateSystemPrompt(ChatContext chatContext, string? systemPrompt)
+    {
+        var variables =
+            ImmutableDictionary.CreateRange(
+                new KeyValuePair<string, Func<string>>[]
+                {
+                    new("Time", () => DateTime.Now.ToString("F")),
+                    new("OS", () => Environment.OSVersion.ToString()),
+                    new("SystemLanguage", () => LocaleManager.CurrentLocale.ToEnglishName()),
+                    new("WorkingDirectory", () => EnsureWorkingDirectory(chatContext))
+                });
+        if (systemPrompt.IsNullOrWhiteSpace()) systemPrompt = Prompts.DefaultSystemPrompt;
+        chatContext.SystemPrompt = Prompts.RenderPrompt(systemPrompt, variables);
+    }
+
+    private async Task<ChatContext?> LoadChatContextAsync(Guid id, bool deleteIfFailed, CancellationToken cancellationToken)
     {
         try
         {
-            var chatContext = await _chatContextStorage.GetChatContextAsync(id).ConfigureAwait(false);
+            var chatContext = await _chatContextStorage.GetChatContextAsync(id, cancellationToken).ConfigureAwait(false);
             if (IsEmptyContext(chatContext))
             {
-                await _chatContextStorage.DeleteChatContextAsync(id).ConfigureAwait(false);
+                await _chatContextStorage.DeleteChatContextAsync(id, cancellationToken).ConfigureAwait(false);
                 return null;
             }
 
@@ -345,6 +387,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         }
         catch (Exception ex)
         {
+            ex = HandledSystemException.Handle(ex);
             _logger.LogError(ex, "Failed to load chat context {ChatContextId}", id);
 
             await Dispatcher.UIThread.InvokeOnDemandAsync(() =>
@@ -359,7 +402,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
                     .ShowError();
             });
 
-            if (deleteIfFailed) await _chatContextStorage.DeleteChatContextAsync(id).ConfigureAwait(false);
+            if (deleteIfFailed) await _chatContextStorage.DeleteChatContextAsync(id, cancellationToken).ConfigureAwait(false);
 
             return null;
         }
@@ -508,6 +551,9 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
     public Task InitializeAsync() => LoadMetadataAsync(9, null);
 
     private static bool IsEmptyContext([NotNullWhen(true)] ChatContext? chatContext) => chatContext is { Count: 1 };
+
+    [GeneratedRegex(@"^\d{4}-\d{2}-\d{2}$")]
+    private static partial Regex WorkingDirectoryRegex();
 }
 
 public static class ChatContextManagerExtension

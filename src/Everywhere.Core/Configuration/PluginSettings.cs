@@ -44,9 +44,10 @@ public partial class PluginSettings : ObservableObject
 /// <summary>
 /// MCP Plugin record for serialization/IConfiguration purposes.
 /// </summary>
+[Serializable]
 public partial class McpChatPluginEntity : ObservableObject
 {
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
     [ObservableProperty]
     public partial StdioMcpTransportConfiguration? Stdio { get; set; }
@@ -72,6 +73,6 @@ public partial class McpChatPluginEntity : ObservableObject
             return null;
         }
 
-        return new McpChatPlugin(transportConfiguration, Id);
+        return new McpChatPlugin(Id, transportConfiguration);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -60,7 +61,8 @@ public partial class CustomAssistantPageViewModel(IKernelMixinFactory kernelMixi
                 background: RandomAssistantIconBackgrounds[Random.Shared.Next(RandomAssistantIconBackgrounds.Length)])
             {
                 Kind = LucideIconKind.Bot
-            }
+            },
+            ConfiguratorType = ModelProviderConfiguratorType.PresetBased
         };
         settings.Model.CustomAssistants.Add(newAssistant);
         SelectedCustomAssistant = newAssistant;
@@ -71,10 +73,13 @@ public partial class CustomAssistantPageViewModel(IKernelMixinFactory kernelMixi
     {
         if (SelectedCustomAssistant is not { } customAssistant) return;
 
-        var temp = JsonSerializer.Serialize(customAssistant, CustomAssistantJsonSerializerContext.Default.CustomAssistant);
-        var duplicatedAssistant = JsonSerializer.Deserialize(
-            temp,
-            CustomAssistantJsonSerializerContext.Default.CustomAssistant).NotNull();
+        var options = new JsonSerializerOptions
+        {
+            NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
+            IgnoreReadOnlyProperties = true
+        };
+        var json = JsonSerializer.Serialize(customAssistant, options);
+        var duplicatedAssistant = JsonSerializer.Deserialize<CustomAssistant>(json, options).NotNull();
 
         duplicatedAssistant.Id = Guid.CreateVersion7();
         duplicatedAssistant.Name += " - " + LocaleResolver.Common_Copy;
@@ -86,6 +91,7 @@ public partial class CustomAssistantPageViewModel(IKernelMixinFactory kernelMixi
     private async Task CheckConnectivityAsync(CancellationToken cancellationToken)
     {
         if (SelectedCustomAssistant is not { } customAssistant) return;
+        if (!customAssistant.Configurator.Validate()) return;
 
         try
         {
@@ -101,7 +107,7 @@ public partial class CustomAssistantPageViewModel(IKernelMixinFactory kernelMixi
             Log.Logger.ForContext<CustomAssistantPageViewModel>().Error(
                 ex,
                 "Failed to check connectivity key for endpoint {ProviderId} and model {ModelId}",
-                customAssistant.Endpoint.ActualValue,
+                customAssistant.Endpoint,
                 customAssistant.ModelId);
             ToastManager
                 .CreateToast(LocaleResolver.CustomAssistantPageViewModel_CheckConnectivity_FailedToast_Title)

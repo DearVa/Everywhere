@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Reflection;
+using System.Text;
 using DynamicData;
-using Everywhere.AI;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Initialization;
@@ -24,6 +24,7 @@ public class ChatPluginManager : IChatPluginManager
 
     public ReadOnlyObservableCollection<McpChatPlugin> McpPlugins { get; }
 
+    private readonly IRuntimeConstantProvider _runtimeConstantProvider;
     private readonly IWatchdogManager _watchdogManager;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
@@ -32,16 +33,18 @@ public class ChatPluginManager : IChatPluginManager
     private readonly CompositeDisposable _disposables = new();
     private readonly SourceList<BuiltInChatPlugin> _builtInPluginsSource = new();
     private readonly SourceList<McpChatPlugin> _mcpPluginsSource = new();
-    private readonly ConcurrentDictionary<Guid, RunningMcpClient> _runningMcpClients = [];
+    private readonly ConcurrentDictionary<Guid, McpClient> _runningMcpClients = [];
 
     public ChatPluginManager(
         IEnumerable<BuiltInChatPlugin> builtInPlugins,
+        IRuntimeConstantProvider runtimeConstantProvider,
         IWatchdogManager watchdogManager,
         IHttpClientFactory httpClientFactory,
         ILoggerFactory loggerFactory,
         Settings settings)
     {
         _builtInPluginsSource.AddRange(builtInPlugins);
+        _runtimeConstantProvider = runtimeConstantProvider;
         _watchdogManager = watchdogManager;
         _httpClientFactory = httpClientFactory;
         _loggerFactory = loggerFactory;
@@ -54,7 +57,7 @@ public class ChatPluginManager : IChatPluginManager
         var isEnabledRecords = settings.Plugin.IsEnabledRecords;
         foreach (var plugin in _builtInPluginsSource.Items.AsValueEnumerable().OfType<ChatPlugin>().Concat(_mcpPluginsSource.Items))
         {
-            plugin.IsEnabled = GetIsEnabled(plugin.Key, false);
+            plugin.IsEnabled = GetIsEnabled(plugin.Key, plugin is BuiltInChatPlugin { IsDefaultEnabled: true });
             foreach (var function in plugin.Functions)
             {
                 function.IsEnabled = GetIsEnabled($"{plugin.Key}.{function.KernelFunction.Name}", true);
@@ -165,7 +168,7 @@ public class ChatPluginManager : IChatPluginManager
     {
         if (_runningMcpClients.TryRemove(mcpChatPlugin.Id, out var runningClient))
         {
-            await runningClient.Client.DisposeAsync();
+            await runningClient.DisposeAsync();
             mcpChatPlugin.IsRunning = false;
         }
     }
@@ -207,12 +210,18 @@ public class ChatPluginManager : IChatPluginManager
                         .Select(x => x.Value)
                         .Where(x => !x.IsNullOrWhiteSpace())
                         .ToList(),
-                    WorkingDirectory = stdio.WorkingDirectory,
-                    EnvironmentVariables = stdio.EnvironmentVariables
-                        .AsValueEnumerable()
-                        .Where(kv => !kv.Key.IsNullOrWhiteSpace())
-                        .DistinctBy(kv => kv.Key)
-                        .ToDictionary(kv => kv.Key, kv => kv.Value),
+                    WorkingDirectory = EnsureWorkingDirectory(stdio.WorkingDirectory),
+                    EnvironmentVariables = EnsureLatestPath(
+                        stdio.EnvironmentVariables
+                            .AsValueEnumerable()
+                            .Where(kv => !kv.Key.IsNullOrWhiteSpace())
+                            .DistinctBy(
+                                kv => kv.Key,
+                                OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal)
+                            .ToDictionary(
+                                kv => kv.Key,
+                                kv => kv.Value,
+                                OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal)),
                 },
                 loggerFactory),
             HttpMcpTransportConfiguration sse => new HttpClientTransport(
@@ -242,7 +251,7 @@ public class ChatPluginManager : IChatPluginManager
             cancellationToken);
 
         // Store the running client.
-        _runningMcpClients[mcpChatPlugin.Id] = new RunningMcpClient(mcpChatPlugin, client);
+        _runningMcpClients[mcpChatPlugin.Id] = client;
         mcpChatPlugin.IsRunning = true;
 
         var processId = -1;
@@ -289,16 +298,38 @@ public class ChatPluginManager : IChatPluginManager
                 .EnumerateToolsAsync(cancellationToken: cancellationToken)
                 .Select(t => new McpChatFunction(t))
                 .ToListAsync(cancellationToken));
+
+        string EnsureWorkingDirectory(string? workingDirectory)
+        {
+            if (Directory.Exists(workingDirectory)) return workingDirectory;
+
+            // If not exists, fall back to Everywhere\cache\plugins\mcp\<plugin-id>
+            var fallbackDir = _runtimeConstantProvider.EnsureWritableDataFolderPath(
+                Path.Combine("plugins", "mcp", mcpChatPlugin.Id.ToString("N")));
+            return fallbackDir;
+        }
+
+        Dictionary<string, string?> EnsureLatestPath(Dictionary<string, string?> environmentVariables)
+        {
+            var latestPath = EnvironmentVariableUtilities.GetLatestPathVariable();
+            if (latestPath.IsNullOrEmpty()) return environmentVariables;
+
+            // Put our latest PATH at the front.
+            var pathBuilder = new StringBuilder(latestPath);
+
+            // Append existing PATH variable if any.
+            if (environmentVariables.TryGetValue("PATH", out var existingPath) && !existingPath.IsNullOrEmpty())
+            {
+                pathBuilder.Append(Path.PathSeparator).Append(existingPath);
+            }
+
+            environmentVariables["PATH"] = pathBuilder.ToString();
+            return environmentVariables;
+        }
     }
 
-    public async Task<IChatPluginScope> CreateScopeAsync(
-        ChatContext chatContext,
-        CustomAssistant customAssistant,
-        CancellationToken cancellationToken)
+    public async Task<IChatPluginScope> CreateScopeAsync(CancellationToken cancellationToken)
     {
-        // Ensure that functions in the scope do not have the same name.
-        var functionNames = new HashSet<string>();
-
         var builtInPlugins = _builtInPluginsSource.Items.AsValueEnumerable().Where(p => p.IsEnabled).ToList();
 
         // Activate MCP plugins.
@@ -321,18 +352,21 @@ public class ChatPluginManager : IChatPluginManager
             mcpPlugins.Add(mcpPlugin);
         }
 
+        // Ensure that functions in the scope do not have the same name.
+        var functionNames = new HashSet<string>();
+
         return new ChatPluginScope(
             builtInPlugins
                 .AsValueEnumerable()
                 .Cast<ChatPlugin>()
                 .Concat(mcpPlugins)
-                .Select(p => new ChatPluginSnapshot(p, chatContext, customAssistant, functionNames))
+                .Select(p => new ChatPluginSnapshot(p, functionNames))
                 .ToList());
     }
 
     private class ChatPluginScope(List<ChatPluginSnapshot> pluginSnapshots) : IChatPluginScope
     {
-        public IEnumerable<ChatPlugin> Plugins => pluginSnapshots;
+        public IReadOnlyList<ChatPlugin> Plugins => pluginSnapshots;
 
         public bool TryGetPluginAndFunction(
             string functionName,
@@ -364,13 +398,6 @@ public class ChatPluginManager : IChatPluginManager
         }
     }
 
-    /// <summary>
-    /// Represents a running MCP client along with its configuration and process ID.
-    /// </summary>
-    /// <param name="Plugin"></param>
-    /// <param name="Client"></param>
-    private readonly record struct RunningMcpClient(McpChatPlugin Plugin, McpClient Client);
-
     private class ChatPluginSnapshot : ChatPlugin
     {
         public override string Key => _originalChatPlugin.Key;
@@ -383,15 +410,13 @@ public class ChatPluginManager : IChatPluginManager
 
         public ChatPluginSnapshot(
             ChatPlugin originalChatPlugin,
-            ChatContext chatContext,
-            CustomAssistant customAssistant,
             HashSet<string> functionNames) : base(originalChatPlugin.Name)
         {
             _originalChatPlugin = originalChatPlugin;
             AllowedPermissions = originalChatPlugin.AllowedPermissions.ActualValue;
             _functionsSource.AddRange(
                 originalChatPlugin
-                    .SnapshotFunctions(chatContext, customAssistant)
+                    .GetEnabledFunctions()
                     .Select(EnsureUniqueFunctionName));
 
             ChatFunction EnsureUniqueFunctionName(ChatFunction function)

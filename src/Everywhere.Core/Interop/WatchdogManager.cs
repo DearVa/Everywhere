@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO.Pipes;
+using System.Text;
 using Everywhere.Common;
 using Everywhere.Rpc;
 using MessagePack;
@@ -66,6 +67,8 @@ public class WatchdogManager : IWatchdogManager, IAsyncInitializer
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
             });
         if (_watchdogProcess is null)
         {
@@ -86,6 +89,7 @@ public class WatchdogManager : IWatchdogManager, IAsyncInitializer
                 if (!string.IsNullOrEmpty(e.Data))
                 {
                     watchdogLogger.LogDebug("{Message}", e.Data);
+                    Debug.WriteLine($"[Watchdog] {e.Data}");
                 }
             };
             _watchdogProcess.ErrorDataReceived += (_, e) =>
@@ -93,6 +97,7 @@ public class WatchdogManager : IWatchdogManager, IAsyncInitializer
                 if (!string.IsNullOrEmpty(e.Data))
                 {
                     watchdogLogger.LogError("{Message}", e.Data);
+                    Debug.WriteLine($"[Watchdog] [Error] {e.Data}");
                 }
             };
             _watchdogProcess.BeginOutputReadLine();
@@ -117,11 +122,13 @@ public class WatchdogManager : IWatchdogManager, IAsyncInitializer
     /// Unregisters a subprocess from the Watchdog.
     /// </summary>
     /// <param name="processId">The id of process to stop monitoring.</param>
-    public Task UnregisterProcessAsync(int processId)
+    /// <param name="killIfRunning"></param>
+    public Task UnregisterProcessAsync(int processId, bool killIfRunning = true)
     {
         var command = new UnregisterSubprocessCommand
         {
-            ProcessId = processId
+            ProcessId = processId,
+            KillIfRunning = killIfRunning
         };
         return SendCommandAsync(command);
     }

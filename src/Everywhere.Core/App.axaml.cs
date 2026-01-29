@@ -4,39 +4,79 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.Messaging;
+using Everywhere.AttachedProperties;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
+using Everywhere.Utilities;
 using Everywhere.Views;
 using LiveMarkdown.Avalonia;
-using MsBox.Avalonia.Enums;
 using Serilog;
+using ShadUI;
 using Window = Avalonia.Controls.Window;
 
 namespace Everywhere;
 
-public class App : Application
+public class App : Application, IRecipient<ApplicationCommand>
 {
+    public static string Version => typeof(TransientWindow).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
+
+    public static ThemeManager ThemeManager => _themeManager ?? throw new InvalidOperationException("ThemeManager is not initialized.");
+
+    private static ThemeManager? _themeManager;
+
     public TopLevel TopLevel { get; } = new Window();
 
+    private readonly DebounceExecutor<App, DispatcherTimerImpl> _trayIconClickedDebounce;
+
     private TransientWindow? _mainWindow, _debugWindow;
+    private int _trayIconClickCount;
+
+    public App()
+    {
+        _trayIconClickedDebounce = new DebounceExecutor<App, DispatcherTimerImpl>(
+            () => this,
+            app =>
+            {
+                if (app._trayIconClickCount >= 2)
+                {
+                    app.HandleOpenMainWindowMenuItemClicked(app, EventArgs.Empty);
+                }
+                else
+                {
+                    app.HandleOpenChatWindowMenuItemClicked(app, EventArgs.Empty);
+                }
+
+                app._trayIconClickCount = 0;
+            },
+            TimeSpan.FromMilliseconds(300)
+        );
+    }
 
     public override void Initialize()
     {
+        AvaloniaXamlLoader.Load(this);
+
+        // After this, ThemeChanged event from the system can be received
+        _themeManager = new ThemeManager(this);
+
+        // Register to receive application commands
+        // e.g. ShowMainWindow
+        WeakReferenceMessenger.Default.Register(this);
+
         Dispatcher.UIThread.UnhandledException += (_, e) =>
         {
             Log.Logger.Error(e.Exception, "UI Thread Unhandled Exception");
 
-            NativeMessageBox.ShowAsync(
+            NativeMessageBox.Show(
                 "Unexpected Error",
                 $"An unexpected error occurred:\n{e.Exception.Message}\n\nPlease check the logs for more details.",
-                ButtonEnum.Ok,
-                Icon.Error).WaitOnDispatcherFrame();
+                NativeMessageBoxButtons.Ok,
+                NativeMessageBoxIcon.Error);
 
             e.Handled = true;
         };
-
-        AvaloniaXamlLoader.Load(this);
 
         MarkdownNode.Register<MathInlineNode>();
         MarkdownNode.Register<MathBlockNode>();
@@ -55,11 +95,11 @@ public class App : Application
         {
             Log.Logger.Fatal(ex, "Failed to initialize application");
 
-            NativeMessageBox.ShowAsync(
+            NativeMessageBox.Show(
                 "Initialization Error",
                 $"An error occurred during application initialization:\n{ex.Message}\n\nPlease check the logs for more details.",
-                ButtonEnum.Ok,
-                Icon.Error).WaitOnDispatcherFrame();
+                NativeMessageBoxButtons.Ok,
+                NativeMessageBoxIcon.Error);
         }
 
         Log.ForContext<App>().Information("Application started");
@@ -104,10 +144,33 @@ public class App : Application
         }
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var settings = ServiceLocator.Resolve<Settings>();
-        if (settings.Internal.PreviousLaunchVersion == version) return;
+        var persistentState = ServiceLocator.Resolve<PersistentState>();
+        if (persistentState.PreviousLaunchVersion == version) return;
 
         ShowWindow<MainView>(ref _mainWindow);
+    }
+
+    private void HandleTrayIconClicked(object? sender, EventArgs e)
+    {
+        _trayIconClickCount++;
+        if (_trayIconClickCount >= 2)
+        {
+            // Double click detected, open main window immediately.
+            HandleOpenMainWindowMenuItemClicked(this, EventArgs.Empty);
+            _trayIconClickCount = 0;
+            _trayIconClickedDebounce.Cancel();
+        }
+        else
+        {
+            // Start or reset the debounce timer for single click.
+            _trayIconClickedDebounce.Trigger();
+        }
+    }
+
+    private void HandleOpenChatWindowMenuItemClicked(object? sender, EventArgs e)
+    {
+        var chatWindow = ServiceLocator.Resolve<ChatWindow>();
+        chatWindow.ViewModel.ShowAsync(null).Detach(IExceptionHandler.DangerouslyIgnoreAllException);
     }
 
     private void HandleOpenMainWindowMenuItemClicked(object? sender, EventArgs e)
@@ -133,11 +196,13 @@ public class App : Application
             _isShowWindowBusy = true;
             if (window is { IsVisible: true })
             {
-                var topmost = window.Topmost;
-                window.Topmost = false;
-                window.Activate();
-                window.Topmost = true;
-                window.Topmost = topmost;
+                if (window.WindowState is WindowState.Minimized)
+                {
+                    window.WindowState = WindowState.Normal;
+                }
+
+                var windowHelper = ServiceLocator.Resolve<IWindowHelper>();
+                windowHelper.SetCloaked(window, false);
             }
             else
             {
@@ -146,6 +211,7 @@ public class App : Application
                 content.To<ISetLogicalParent>().SetParent(null);
                 window = new TransientWindow
                 {
+                    [SaveWindowPlacementAssist.KeyProperty] = typeof(TContent).FullName,
                     Content = content
                 };
                 window.Show();
@@ -160,5 +226,13 @@ public class App : Application
     private void HandleExitMenuItemClicked(object? sender, EventArgs e)
     {
         Environment.Exit(0);
+    }
+
+    public void Receive(ApplicationCommand command)
+    {
+        if (command is ShowWindowCommand { Name: nameof(MainView) })
+        {
+            Dispatcher.UIThread.Invoke(() => ShowWindow<MainView>(ref _mainWindow));
+        }
     }
 }

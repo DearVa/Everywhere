@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Everywhere.Configuration;
 using Lucide.Avalonia;
 
@@ -32,9 +31,9 @@ public partial class SettingsCategoryPage : UserControl, IMainViewPage
 
 public class SettingsCategoryPageFactory(Settings settings) : IMainViewPageFactory
 {
-    public IEnumerable<IMainViewPage> CreatePages() => typeof(Settings)
-        .GetProperties(BindingFlags.Instance | BindingFlags.Public)
-        .Where(p => p.PropertyType.IsAssignableTo(typeof(ISettingsCategory)))
-        .Where(p => p.GetCustomAttribute<HiddenSettingsItemAttribute>() is null)
-        .Select((p, i) => new SettingsCategoryPage(i, p.GetValue(settings).NotNull<ISettingsCategory>()));
+    public IEnumerable<IMainViewPage> CreatePages() =>
+    [
+        new SettingsCategoryPage(0, settings.Common),
+        new SettingsCategoryPage(0, settings.ChatWindow),
+    ];
 }

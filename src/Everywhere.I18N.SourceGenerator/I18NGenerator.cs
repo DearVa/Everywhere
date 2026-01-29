@@ -183,7 +183,7 @@ public class I18NSourceGenerator : IIncrementalGenerator
               /// <summary>
               ///     Provides strongly-typed keys for localized strings.
               /// </summary>
-              public static class LocaleKey
+              partial class LocaleKey
               {
               """);
 

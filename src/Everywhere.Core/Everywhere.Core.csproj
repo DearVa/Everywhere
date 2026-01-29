@@ -2,6 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Everywhere</RootNamespace>
     <IsDeploymentTarget>true</IsDeploymentTarget>
+    <NoWarn>$(NoWarn);SCME0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,36 +10,35 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Anthropic.SDK"/>
     <PackageReference Include="Avalonia"/>
-    <PackageReference Include="Avalonia.Themes.Fluent"/>
     <PackageReference Include="Avalonia.Fonts.Inter"/>
     <PackageReference Include="Avalonia.Diagnostics">
       <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Avalonia.AvaloniaEdit"/>
+    <PackageReference Include="AvaloniaEdit.TextMate"/>
     <PackageReference Include="FuzzySharp"/>
+    <PackageReference Include="GnomeStack.Os.Secrets"/>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api"/>
     <PackageReference Include="LiveMarkdown.Avalonia"/>
     <PackageReference Include="LiveMarkdown.Avalonia.Math"/>
-    <PackageReference Include="MessageBox.Avalonia"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite"/>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.AI"/>
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI"/>
     <PackageReference Include="Microsoft.Extensions.Configuration"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.Extensions.Logging"/>
-    <PackageReference Include="Microsoft.SemanticKernel"/>
     <PackageReference Include="Microsoft.SemanticKernel.Abstractions"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama"/>
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI"/>
-    <PackageReference Include="Sylinko.SemanticKernel.Connectors.Google"/>
-    <PackageReference Include="Sylinko.SemanticKernel.Plugins.Web"/>
+    <PackageReference Include="Microsoft.SemanticKernel.Core"/>
     <PackageReference Include="ModelContextProtocol"/>
     <PackageReference Include="Nito.AsyncEx"/>
+    <PackageReference Include="OllamaSharp"/>
     <PackageReference Include="OpenTelemetry"/>
     <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
     <PackageReference Include="PuppeteerSharp"/>
@@ -51,12 +51,13 @@
     <PackageReference Include="Serilog.Sinks.File"/>
     <PackageReference Include="System.Drawing.Common"/>
     <PackageReference Include="Tavily"/>
-    <PackageReference Include="Xaml.Behaviors.Avalonia"/>
-    <PackageReference Include="Xaml.Behaviors.Interactivity"/>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\3rd\anthropic-sdk-csharp-patch\src\Anthropic\Anthropic.csproj" />
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Connectors.Google\Connectors.Google.csproj" />
+    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Plugins.Web\Plugins.Web.csproj" />
     <ProjectReference Include="..\..\3rd\shad-ui\src\ShadUI\ShadUI.csproj"/>
     <ProjectReference Include="..\..\3rd\WritableJsonConfiguration\src\WritableJsonConfiguration\WritableJsonConfiguration.csproj"/>
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj"/>
@@ -73,6 +74,12 @@
     </AvaloniaResource>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IsMacOS)' == 'true'">
+    <AvaloniaResource Include="..\..\img\Everywhere-macOS.png">
+      <Link>Assets\Everywhere-macOS.png</Link>
+    </AvaloniaResource>
+  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedResource Remove="I18N\*.resx"/>
     <AdditionalFiles Include="I18N\*.resx"/>
@@ -84,10 +91,23 @@
     </AvaloniaResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Views\VisualElementPicker\VisualElementPickerToolTip.axaml.cs">
-      <DependentUpon>ElementPickerToolTip.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
+  <Target Name="GenerateTelemetryConstants" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <SentryDsn Condition="'$(SentryDsn)' == ''"/>
+      <GeneratedTelemetryFile>$(IntermediateOutputPath)TelemetryConstants.g.cs</GeneratedTelemetryFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <TelemetryCode Include="// &lt;auto-generated /&gt;" />
+      <TelemetryCode Include="namespace Everywhere.Common%3B" />
+      <TelemetryCode Include="partial class Entrance" />
+      <TelemetryCode Include="{" />
+      <TelemetryCode Include="%20%20%20%20private const string SentryDsn = &quot;$(SentryDsn)&quot;%3B" />
+      <TelemetryCode Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(GeneratedTelemetryFile)" Lines="@(TelemetryCode)" Overwrite="true" />
+    <ItemGroup>
+      <Compile Include="$(GeneratedTelemetryFile)" />
+    </ItemGroup>
+  </Target>
+
 </Project>

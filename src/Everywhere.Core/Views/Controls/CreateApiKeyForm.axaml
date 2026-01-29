@@ -1,0 +1,34 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="using:Everywhere.Views">
+  <ControlTheme
+    x:Key="{x:Type v:CreateApiKeyForm}"
+    TargetType="v:CreateApiKeyForm">
+    <Setter Property="MinWidth" Value="320"/>
+    <Setter Property="MaxWidth" Value="640"/>
+    <Setter Property="Width" Value="640"/>
+    <Setter Property="Template">
+      <ControlTemplate TargetType="v:CreateApiKeyForm">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="8">
+            <TextBox
+              Classes="Clearable"
+              shadui:ControlAssist.Label="{I18N {x:Static LocaleKey.CreateApiKeyForm_NameTextBox_Label}}"
+              MaxLines="2"
+              Text="{Binding ApiKey.Name, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}"
+              TextWrapping="Wrap">
+              <Interaction.Behaviors>
+                <FocusOnAttachedBehavior/>
+              </Interaction.Behaviors>
+            </TextBox>
+            <TextBox
+              shadui:ControlAssist.Label="{I18N {x:Static LocaleKey.CreateApiKeyForm_SecretKeyTextBox_Label}}"
+              MaxLines="5"
+              Text="{Binding ApiKey.SecretKey, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=LostFocus}"
+              TextWrapping="Wrap"/>
+          </StackPanel>
+        </ScrollViewer>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

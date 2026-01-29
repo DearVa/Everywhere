@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:at="clr-namespace:Everywhere.AttachedProperties" xmlns:c="clr-namespace:Everywhere.Configuration"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="using:Everywhere.Views">
+  xmlns:c="clr-namespace:Everywhere.Configuration" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:v="using:Everywhere.Views">
   <Design.PreviewWith>
     <v:SettingsItemsControl/>
   </Design.PreviewWith>
@@ -9,9 +9,6 @@
   <ControlTheme
     x:Key="{x:Type v:SettingsItemsControl}"
     TargetType="v:SettingsItemsControl">
-
-    <Setter Property="CornerRadius" Value="{DynamicResource XlCornerRadius}"/>
-
     <Setter Property="Template">
       <ControlTemplate>
         <ItemsPresenter
@@ -36,23 +33,19 @@
     <Setter Property="ItemTemplate">
       <DataTemplate DataType="c:SettingsItem">
         <Expander
-          Classes="LeftIcon"
-          at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
-          Background="Transparent"
-          BorderBrush="{Binding $parent[v:SettingsItemsControl].BorderBrush}"
-          BorderThickness="{Binding $parent[v:SettingsItemsControl].BorderThickness}"
+          Classes="LeftIcon" Padding="16"
+          shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
           Classes.NotExpandable="{Binding !IsExpandable}"
-          CornerRadius="{Binding $parent[v:SettingsItemsControl].CornerRadius}"
           IsEnabled="{Binding IsEnabled}"
           IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
           <Expander.Styles>
             <Style Selector="ContentControl#PART_SettingsItemContentControl">
-              <Setter Property="at:BindingAssist.DataTemplates">
+              <Setter Property="shadui:BindingAssist.DataTemplates">
                 <DataTemplates>
                   <DataTemplate DataType="c:SettingsBooleanItem">
                     <ToggleSwitch
                       Margin="0,0,4,0"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       IsChecked="{Binding Value, Mode=TwoWay}"
                       IsThreeState="{Binding IsNullable}"/>
                   </DataTemplate>
@@ -61,10 +54,11 @@
                     <TextBox
                       MinWidth="320" MinHeight="32"
                       HorizontalAlignment="Left"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       shadui:ControlAssist.Height="{Binding Height}"
                       AcceptsReturn="{Binding IsMultiline}"
                       MaxLength="{Binding MaxLength}"
+                      MaxLines="6"
                       PasswordChar="{Binding PasswordChar}"
                       Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       TextWrapping="{Binding TextWrapping}"
@@ -74,7 +68,7 @@
                   <DataTemplate DataType="c:SettingsIntegerItem">
                     <StackPanel
                       HorizontalAlignment="Left"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       Orientation="Horizontal" Spacing="8">
                       <Slider
                         Width="320" VerticalAlignment="Center"
@@ -95,7 +89,7 @@
                   <DataTemplate DataType="c:SettingsDoubleItem">
                     <StackPanel
                       HorizontalAlignment="Left"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       Orientation="Horizontal" Spacing="8">
                       <Slider
                         Width="320" VerticalAlignment="Center"
@@ -115,7 +109,7 @@
                   <DataTemplate DataType="c:SettingsCustomizableItem">
                     <DockPanel
                       HorizontalAlignment="Left"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       HorizontalSpacing="8" LastChildFill="True">
                       <Button
                         Classes="Ghost" DockPanel.Dock="Right"
@@ -123,8 +117,8 @@
                         Command="{Binding ResetCommand}"
                         ToolTip.Tip="{I18N {x:Static LocaleKey.SettingsPage_Reset_Button_ToolTip}}">
                         <LucideIcon
-                          Width="18" Height="18"
-                          Kind="RotateCcw" Size="18"/>
+                          Kind="RotateCcw"
+                          Size="{DynamicResource FontSizeL}"/>
                       </Button>
 
                       <ContentControl
@@ -138,7 +132,7 @@
                     <ComboBox
                       MinWidth="320" MinHeight="32"
                       HorizontalAlignment="Left"
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       ItemsSource="{Binding ItemsSource}"
                       SelectedItem="{Binding SelectedItem, Mode=TwoWay}">
                       <ComboBox.ItemTemplate>
@@ -151,16 +145,16 @@
                     </ComboBox>
                   </DataTemplate>
 
-                  <DataTemplate DataType="c:SettingsTypedItem">
+                  <DataTemplate DataType="c:SettingsTemplatedItem">
                     <ContentControl
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       Content="{Binding}"
                       ContentTemplate="{Binding DataTemplate}"/>
                   </DataTemplate>
 
                   <DataTemplate DataType="c:SettingsControlItem">
                     <ContentControl
-                      at:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
+                      shadui:BindingAssist.Classes="{Binding Classes, Mode=OneTime}"
                       Content="{Binding Control}"/>
                   </DataTemplate>
                 </DataTemplates>
@@ -169,26 +163,66 @@
           </Expander.Styles>
 
           <Expander.Header>
-            <StackPanel>
-              <TextBlock
-                Classes="p" Margin="0,-8,0,0"
-                IsHitTestVisible="False"
-                Text="{Binding HeaderKey^, FallbackValue={x:Null}}"
-                TextWrapping="Wrap"/>
-              <TextBlock
-                Classes="Muted" IsHitTestVisible="False"
-                Text="{Binding DescriptionKey^, FallbackValue={x:Null}}"
-                TextWrapping="Wrap"/>
+            <DockPanel
+              HorizontalSpacing="32" VerticalSpacing="8">
+              <DockPanel.Styles>
+                <Style Selector="ContentControl.right">
+                  <Setter Property="DockPanel.Dock" Value="Right"/>
+                </Style>
+                <Style Selector="ContentControl.bottom">
+                  <Setter Property="DockPanel.Dock" Value="Bottom"/>
+                </Style>
+              </DockPanel.Styles>
+
               <ContentControl
-                x:Name="PART_SettingsItemContentControl" Margin="0,8,0,0"
+                x:Name="PART_SettingsItemContentControl" VerticalAlignment="Center"
                 Content="{Binding}"
-                IsVisible="{Binding !IsEmpty}"/>
-            </StackPanel>
+                IsVisible="{Binding !IsEmpty}">
+                <Interaction.Behaviors>
+                  <shadui:AdaptiveRatioBehavior
+                    DenominatorControl="{Binding $parent[DockPanel]}"
+                    NumeratorControl="{Binding #PART_SettingsItemContentControl}"
+                    NumeratorControlMode="DesiredSize">
+                    <AdaptiveClassSetter
+                      MinWidth="0" MaxWidth="0.5"
+                      ClassName="right" MaxWidthOperator="LessThan"
+                      MinWidthOperator="GreaterThanOrEqual"/>
+                    <AdaptiveClassSetter
+                      MinWidth="0.5" MaxWidth="Infinity"
+                      ClassName="bottom" MaxWidthOperator="LessThan"
+                      MinWidthOperator="GreaterThanOrEqual"/>
+                  </shadui:AdaptiveRatioBehavior>
+                </Interaction.Behaviors>
+              </ContentControl>
+
+              <StackPanel
+                VerticalAlignment="Center" Spacing="4">
+                <StackPanel
+                  Orientation="Horizontal" Spacing="6">
+                  <TextBlock
+                    VerticalAlignment="Center" IsHitTestVisible="False"
+                    IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Text="{Binding HeaderKey^, FallbackValue={x:Null}}"
+                    TextWrapping="Wrap"/>
+                  <shadui:Badge
+                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Background="{DynamicResource WarningColor}"
+                    Content="{I18N {x:Static LocaleKey.ExperimentalBadge_Content}}"
+                    IsVisible="{Binding IsExperimental}"
+                    ToolTip.Tip="{I18N {x:Static LocaleKey.ExperimentalBadge_ToolTip}}"/>
+                </StackPanel>
+                <TextBlock
+                  Classes="Muted Small" IsHitTestVisible="False"
+                  IsVisible="{Binding $self.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                  Text="{Binding DescriptionKey^, FallbackValue={x:Null}}"
+                  TextWrapping="Wrap"/>
+              </StackPanel>
+            </DockPanel>
           </Expander.Header>
 
           <v:SettingsItemsControl
             HorizontalAlignment="Stretch"
-            ItemsSource="{Binding Items}"/>
+            ItemsSource="{Binding Children}"/>
         </Expander>
       </DataTemplate>
     </Setter>

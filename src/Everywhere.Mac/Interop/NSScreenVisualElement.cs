@@ -83,7 +83,9 @@ public class NSScreenVisualElement(NSScreen screen) : IVisualElement
         var bounds = BoundingRectangle;
         var rect = new CGRect(bounds.X, bounds.Y, bounds.Width, bounds.Height);
 
+#pragma warning disable CA1422
         using var cgImage = CGImage.ScreenImage(0, rect);
+#pragma warning restore CA1422
 
         if (cgImage is null)
         {

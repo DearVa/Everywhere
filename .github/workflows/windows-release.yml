@@ -1,0 +1,170 @@
+﻿name: (Windows) Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: Enable long paths in git
+      run: git config --global core.longpaths true
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+        lfs: true
+
+    - name: Verify Tag (Manual Trigger)
+      if: github.event_name == 'workflow_dispatch'
+      shell: pwsh
+      run: |
+        $tag = git describe --exact-match --tags HEAD 2>$null
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Error: Current commit is not tagged."
+          exit 1
+        }
+        if ($tag -notmatch '^v\d+\.\d+\.\d+') {
+          Write-Error "Error: Current commit tag '$tag' does not match vX.X.X format."
+          exit 1
+        }
+        Write-Host "Found valid tag: $tag"
+        echo "VERSION=$($tag -replace '^v','')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "GITHUB_REF=refs/tags/$tag" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+    
+    - name: Get version from tag
+      if: github.event_name != 'workflow_dispatch'
+      id: get_version
+      shell: pwsh
+      run: |
+        $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+    - name: Extract Release Notes from CHANGELOG.md
+      id: get_release_notes
+      shell: pwsh
+      run: |
+        $changelog = Get-Content -Path CHANGELOG.md -Raw
+        $version = "${{ env.VERSION }}"
+        # Use regex to match the content from the current version's header
+        # to the next version's header or the end of the file.
+        # (?s) makes . match newlines, (?m) makes ^ match the start of a line.
+        $pattern = "(?sm)(^##\s+\[v$([regex]::Escape($version))\].*?)(?=^##\s+\[v|\z)"
+        $match = [regex]::Match($changelog, $pattern)
+        
+        if (-not $match.Success) {
+          Write-Error "Could not find release notes for v${version} in CHANGELOG.md"
+          exit 1
+        }
+        
+        # Remove the first line (the version header)
+        $releaseBody = $match.Value.Split([System.Environment]::NewLine, 2)[1].Trim()
+        
+        # Set the multi-line output for the step
+        $delimiter = "EOF_$(Get-Random)"
+        echo "body<<$delimiter" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo $releaseBody | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo "$delimiter" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4.3.1
+      with:
+        global-json-file: ${{ github.workspace }}/global.json
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install SimplySignDesktop
+      shell: pwsh
+      run: |
+        $msiPath = "tools/sign_windows/SimplySignDesktop-9.3.3.71-64-bit-en.msi"
+        if (-not (Test-Path $msiPath)) {
+            Write-Error "MSI file not found at: $msiPath"
+            exit 1
+        }
+
+        $absMsiPath = Convert-Path $msiPath
+        $logPath = "$PWD\install.log"
+
+        Write-Host "Installing SimplySignDesktop from $absMsiPath..."
+        # Use /qn for completely silent installation (no UI) and ALLUSERS=1 to force machine-wide install
+        $process = Start-Process msiexec -ArgumentList "/i `"$absMsiPath`" /qn /norestart ALLUSERS=1 /l*v `"$logPath`"" -Wait -PassThru
+        
+        if ($process.ExitCode -ne 0) {
+            Write-Host "SimplySignDesktop installation failed with exit code $($process.ExitCode)"
+            if (Test-Path $logPath) {
+                Write-Host "----------------------------------------------------------------"
+                Write-Host "Install Log Content:"
+                Write-Host "----------------------------------------------------------------"
+                Get-Content $logPath
+                Write-Host "----------------------------------------------------------------"
+            } else {
+                Write-Host "Log file not found at $logPath"
+            }
+            exit $process.ExitCode
+        }
+        Write-Host "SimplySignDesktop installed successfully."
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Restore
+      shell: pwsh
+      run: |
+        dotnet restore Everywhere.Windows.slnf -r win-x64
+
+    - name: Publish Everywhere.Windows
+      shell: pwsh
+      env:
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+      run: |
+        dotnet publish src/Everywhere.Windows/Everywhere.Windows.csproj -c Release --self-contained true -p:Version="$env:VERSION" -p:SentryDsn="$env:SENTRY_DSN" -o ./publish --no-restore
+
+    - name: Login and Sign
+      shell: pwsh
+      env:
+        SIGN_USERNAME: ${{ secrets.CERTUM_USERNAME }}
+        SIGN_OTP_TOKEN: ${{ secrets.CERTUM_OTP_TOKEN }}
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyotp
+        python -u tools/sign_windows/sign.py ./publish
+
+    - name: Install Inno Setup
+      shell: pwsh
+      run: |
+        choco install innosetup
+
+    - name: Compile .ISS to .EXE Installer
+      shell: pwsh
+      run: |
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "tools/installer.iss" /O+
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "Inno Setup compilation failed with exit code $LASTEXITCODE"
+          exit $LASTEXITCODE
+        }
+
+    - name: Create release zip
+      shell: pwsh
+      run: |
+        Compress-Archive -Path ./publish/* -DestinationPath ./Everywhere-Windows-x64-v$env:VERSION.zip
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Everywhere v${{env.VERSION}}
+        body: ${{ steps.get_release_notes.outputs.body }}
+        draft: false
+        prerelease: false
+        files: |
+          ./Everywhere-Windows-x64-v${{env.VERSION}}.zip
+          ./Everywhere-Windows-x64-Setup-v${{env.VERSION}}.exe

@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,6 +6,7 @@ using System.Reactive.Disposables;
 using System.Text;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -31,9 +32,12 @@ public sealed partial class ChatWindowViewModel :
     BusyViewModelBase,
     IRecipient<ChatPluginConsentRequest>,
     IRecipient<ChatContextMetadataChangedMessage>,
+    IRecipient<ApplicationCommand>,
+    IObserver<TextSelectionData>,
     IDisposable
 {
     public Settings Settings { get; }
+    public PersistentState PersistentState { get; }
 
     public bool IsOpened
     {
@@ -107,16 +111,19 @@ public sealed partial class ChatWindowViewModel :
 
     public bool CanEdit => IsNotBusy && EditingUserMessageNode is null;
 
+    public static int ChatInputAreaTextMaxLength => 100_000;
+
     /// <summary>
     /// The text in the chat input box.
     /// </summary>
-    public string? ChatInputBoxText
+    public string? ChatInputAreaText
     {
         get;
         set
         {
+            value = value.SafeSubstring(0, ChatInputAreaTextMaxLength);
             if (!SetProperty(ref field, value)) return;
-            if (EditingUserMessageNode is null) Settings.Internal.ChatInputBoxText = value;
+            if (EditingUserMessageNode is null) PersistentState.ChatInputAreaText = value;
         }
     }
 
@@ -140,6 +147,7 @@ public sealed partial class ChatWindowViewModel :
 
     public ChatWindowViewModel(
         Settings settings,
+        PersistentState persistentState,
         IChatContextManager chatContextManager,
         IChatService chatService,
         IVisualElementContext visualElementContext,
@@ -148,6 +156,7 @@ public sealed partial class ChatWindowViewModel :
         ILogger<ChatWindowViewModel> logger)
     {
         Settings = settings;
+        PersistentState = persistentState;
         ChatContextManager = chatContextManager;
         ChatContextManager.PropertyChanged += HandleChatContextManagerPropertyChanged;
 
@@ -158,7 +167,7 @@ public sealed partial class ChatWindowViewModel :
         _logger = logger;
 
         // Load the saved input box text
-        ChatInputBoxText = Settings.Internal.ChatInputBoxText;
+        ChatInputAreaText = PersistentState.ChatInputAreaText;
 
         ChatAttachments = _chatAttachmentsSource
             .Connect()
@@ -239,6 +248,11 @@ public sealed partial class ChatWindowViewModel :
 
         try
         {
+            if (Settings.ChatWindow.AlwaysStartNewChat && ChatContextManager.CreateNewCommand.CanExecute(null))
+            {
+                ChatContextManager.CreateNewCommand.Execute(null);
+            }
+
             IsOpened = true;
 
             // Avoid adding duplicate attachments
@@ -248,7 +262,7 @@ public sealed partial class ChatWindowViewModel :
             {
                 _chatAttachmentsSource.Edit(list =>
                 {
-                    if (list is [ChatVisualElementAttachment { IsFocusedElement: true }, ..])
+                    if (list is [ChatVisualElementAttachment { IsPrimary: true }, ..])
                     {
                         list.RemoveAt(0);
                     }
@@ -265,14 +279,8 @@ public sealed partial class ChatWindowViewModel :
             {
                 _chatAttachmentsSource.Edit(list =>
                 {
-                    if (list is [ChatVisualElementAttachment { IsFocusedElement: true }, ..])
-                    {
-                        list[0] = attachment.With(a => a.IsFocusedElement = true);
-                    }
-                    else
-                    {
-                        list.Insert(0, attachment.With(a => a.IsFocusedElement = true));
-                    }
+                    list.RemoveWhere(a => a is ChatVisualElementAttachment { IsPrimary: true });
+                    list.Insert(0, attachment.With(a => a.IsPrimary = true));
                 });
             }
         }
@@ -283,16 +291,16 @@ public sealed partial class ChatWindowViewModel :
     }
 
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
-    private Task PickElementAsync(ElementPickMode mode) => ExecuteBusyTaskAsync(
+    private Task PickElementAsync() => ExecuteBusyTaskAsync(
         async cancellationToken =>
         {
-            if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) return;
+            if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
 
             // Hide the chat window to avoid picking itself
             var chatWindow = ServiceLocator.Resolve<ChatWindow>();
             var windowHelper = ServiceLocator.Resolve<IWindowHelper>();
             windowHelper.SetCloaked(chatWindow, true);
-            var element = await _visualElementContext.PickElementAsync(mode);
+            var element = await _visualElementContext.PickElementAsync(null);
             windowHelper.SetCloaked(chatWindow, false);
 
             if (element is null) return;
@@ -302,10 +310,28 @@ public sealed partial class ChatWindowViewModel :
         _logger.ToExceptionHandler());
 
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
+    private Task ScreenshotAsync() => ExecuteBusyTaskAsync(
+        async cancellationToken =>
+        {
+            if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
+
+            // Hide the chat window to avoid picking itself
+            var chatWindow = ServiceLocator.Resolve<ChatWindow>();
+            var windowHelper = ServiceLocator.Resolve<IWindowHelper>();
+            windowHelper.SetCloaked(chatWindow, true);
+            var bitmap = await _visualElementContext.ScreenshotAsync(null);
+            windowHelper.SetCloaked(chatWindow, false);
+
+            if (bitmap is null) return;
+            _chatAttachmentsSource.Add(await Task.Run(() => CreateFromBitmapAsync(bitmap, cancellationToken), cancellationToken));
+        },
+        _logger.ToExceptionHandler());
+
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
     private Task AddClipboardAsync() => ExecuteBusyTaskAsync(
         async cancellationToken =>
         {
-            if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) return;
+            if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
 
             var formats = await Clipboard.GetDataFormatsAsync();
             if (formats.Count == 0)
@@ -323,31 +349,16 @@ public sealed partial class ChatWindowViewModel :
                     {
                         var uri = storageItem.Path;
                         if (!uri.IsFile) break;
-                        await AddFileUncheckAsync(uri.AbsolutePath, cancellationToken);
-                        if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) break;
+                        await AddFileUncheckAsync(uri.LocalPath, "from clipboard, temporary filepath", cancellationToken);
+                        if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) break;
                     }
                 }
             }
-            else if (Settings.Model.SelectedCustomAssistant?.IsImageInputSupported.ActualValue is true &&
+            else if (Settings.Model.SelectedCustomAssistant?.IsImageInputSupported is true &&
                      formats.Contains(DataFormat.Bitmap) &&
                      await Clipboard.TryGetBitmapAsync() is { } bitmap)
             {
-                await Task.Run(
-                    async () =>
-                    {
-                        using var memoryStream = new MemoryStream();
-                        bitmap.Save(memoryStream, 100);
-
-                        var blob = await _blobStorage.StorageBlobAsync(memoryStream, "image/png", cancellationToken);
-
-                        var attachment = new ChatFileAttachment(
-                            new DynamicResourceKey(string.Empty),
-                            blob.LocalPath,
-                            blob.Sha256,
-                            blob.MimeType);
-                        _chatAttachmentsSource.Add(attachment);
-                    },
-                    cancellationToken);
+                _chatAttachmentsSource.Add(await Task.Run(() => CreateFromBitmapAsync(bitmap, cancellationToken), cancellationToken));
             }
 
             // TODO: add as text attachment when text is too long
@@ -364,7 +375,7 @@ public sealed partial class ChatWindowViewModel :
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
     private async Task AddFileAsync()
     {
-        if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) return;
+        if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
 
         IReadOnlyList<IStorageFile> files;
         IsPickingFiles = true;
@@ -376,7 +387,7 @@ public sealed partial class ChatWindowViewModel :
                     AllowMultiple = true,
                     FileTypeFilter =
                     [
-                        new FilePickerFileType(LocaleResolver.ChatWindowViewModel_AddFile_FilePickerFileType_SupportedFiles)
+                        new FilePickerFileType(LocaleResolver.FilePickerFileType_SupportedFiles)
                         {
                             Patterns = FileUtilities.GetFileExtensionsByCategory(FileTypeCategory.Image)
                                 .AsValueEnumerable()
@@ -400,7 +411,7 @@ public sealed partial class ChatWindowViewModel :
                                 .Select(x => '*' + x)
                                 .ToList()
                         },
-                        new FilePickerFileType(LocaleResolver.ChatWindowViewModel_FilePickerFileType_AllFiles)
+                        new FilePickerFileType(LocaleResolver.FilePickerFileType_AllFiles)
                         {
                             Patterns = ["*"]
                         }
@@ -419,21 +430,26 @@ public sealed partial class ChatWindowViewModel :
             return;
         }
 
-        await AddFileUncheckAsync(filePath, _cancellationTokenSource.Token);
+        await AddFileUncheckAsync(filePath, cancellationToken: _cancellationTokenSource.Token);
     }
 
     /// <summary>
     /// Add a file to the chat attachments without checking the attachment count limit.
     /// </summary>
     /// <param name="filePath"></param>
+    /// <param name="description"></param>
     /// <param name="cancellationToken"></param>
-    private async ValueTask AddFileUncheckAsync(string filePath, CancellationToken cancellationToken = default)
+    private async ValueTask AddFileUncheckAsync(string filePath, string? description = null, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(filePath)) return;
 
         try
         {
-            _chatAttachmentsSource.Add(await ChatFileAttachment.CreateAsync(filePath, cancellationToken: cancellationToken));
+            _chatAttachmentsSource.Add(
+                await ChatFileAttachment.CreateAsync(
+                    filePath,
+                    description: description,
+                    cancellationToken: cancellationToken));
         }
         catch (Exception ex)
         {
@@ -456,16 +472,16 @@ public sealed partial class ChatWindowViewModel :
     /// <param name="filePath">The file path to add.</param>
     public async Task AddFileFromDragDropAsync(string filePath)
     {
-        if (_chatAttachmentsSource.Count >= Settings.Internal.MaxChatAttachmentCount) return;
+        if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
 
-        await AddFileUncheckAsync(filePath, _cancellationTokenSource.Token);
+        await AddFileUncheckAsync(filePath, "from drag&drop", _cancellationTokenSource.Token);
     }
 
     private static ChatVisualElementAttachment CreateFromVisualElement(IVisualElement element)
     {
         DynamicResourceKey headerKey;
         var elementTypeKey = new DynamicResourceKey($"VisualElementType_{element.Type}");
-        if (element.ProcessId != 0)
+        if (element.ProcessId > 0)
         {
             using var process = Process.GetProcessById(element.ProcessId);
             headerKey = new FormattedDynamicResourceKey("{0} - {1}", new DirectResourceKey(process.ProcessName), elementTypeKey);
@@ -480,7 +496,7 @@ public sealed partial class ChatWindowViewModel :
             element.Type switch
             {
                 VisualElementType.Label => LucideIconKind.Type,
-                VisualElementType.TextEdit => LucideIconKind.TextCursorInput,
+                VisualElementType.TextEdit => LucideIconKind.TextInitial,
                 VisualElementType.Document => LucideIconKind.FileText,
                 VisualElementType.Image => LucideIconKind.Image,
                 VisualElementType.CheckBox => LucideIconKind.SquareCheck,
@@ -508,6 +524,19 @@ public sealed partial class ChatWindowViewModel :
             element);
     }
 
+    private async Task<ChatFileAttachment> CreateFromBitmapAsync(Bitmap bitmap, CancellationToken cancellationToken)
+    {
+        using var memoryStream = new MemoryStream();
+        bitmap.Save(memoryStream, 100);
+
+        var blob = await _blobStorage.StorageBlobAsync(memoryStream, "image/png", cancellationToken);
+        return new ChatFileAttachment(
+            new DynamicResourceKey(string.Empty),
+            blob.LocalPath,
+            blob.Sha256,
+            blob.MimeType);
+    }
+
     [RelayCommand]
     private void RemoveAttachment(ChatAttachment attachment)
     {
@@ -528,10 +557,7 @@ public sealed partial class ChatWindowViewModel :
                 list.Clear();
             });
 
-            var userMessage = new UserChatMessage(message, attachments)
-            {
-                Inlines = { message }
-            };
+            var userMessage = new UserChatMessage(message, attachments);
 
             if (EditingUserMessageNode is not { } originalNode)
             {
@@ -551,7 +577,7 @@ public sealed partial class ChatWindowViewModel :
         if (userChatMessageNode is not { Message: UserChatMessage userChatMessage }) return;
 
         EditingUserMessageNode = userChatMessageNode;
-        ChatInputBoxText = userChatMessage.Inlines.Text;
+        ChatInputAreaText = userChatMessage.Content;
         _chatAttachmentsSource.Edit(list =>
         {
             _chatAttachmentsBeforeEditing = list.ToList();
@@ -576,7 +602,7 @@ public sealed partial class ChatWindowViewModel :
             }
         });
 
-        ChatInputBoxText = Settings.Internal.ChatInputBoxText;
+        ChatInputAreaText = PersistentState.ChatInputAreaText;
     }
 
     [RelayCommand(CanExecute = nameof(IsNotBusy))]
@@ -594,19 +620,13 @@ public sealed partial class ChatWindowViewModel :
     [RelayCommand]
     private Task CopyAsync(ChatMessage chatMessage)
     {
-        string? text;
-        if (chatMessage is UserChatMessage userChatMessage)
-        {
-            var isShiftPressed = _nativeHelper.GetKeyState(KeyModifiers.Shift);
-            if (isShiftPressed) text = userChatMessage.UserPrompt; // Get full text with attachments info
-            else text = userChatMessage.Inlines.Text; // Get only the message text
-        }
-        else
-        {
-            text = chatMessage.ToString();
-        }
+        return Clipboard.SetTextAsync(chatMessage.ToString());
+    }
 
-        return Clipboard.SetTextAsync(text);
+    [RelayCommand]
+    private void OpenSettings()
+    {
+        WeakReferenceMessenger.Default.Send<ApplicationCommand>(new ShowWindowCommand(nameof(MainView)));
     }
 
     [RelayCommand]
@@ -650,7 +670,7 @@ public sealed partial class ChatWindowViewModel :
                         {
                             Patterns = ["*.md"]
                         },
-                        new FilePickerFileType(LocaleResolver.ChatWindowViewModel_FilePickerFileType_AllFiles)
+                        new FilePickerFileType(LocaleResolver.FilePickerFileType_AllFiles)
                         {
                             Patterns = ["*"]
                         }
@@ -688,7 +708,7 @@ public sealed partial class ChatWindowViewModel :
                 {
                     markdownBuilder.AppendLine($"## 👤 {LocaleResolver.ChatWindowViewModel_ExportMarkdown_UserRole}");
                     markdownBuilder.AppendLine();
-                    markdownBuilder.AppendLine(user.Inlines.Text);
+                    markdownBuilder.AppendLine(user.Content);
 
                     if (user.Attachments.Any())
                     {
@@ -800,6 +820,7 @@ public sealed partial class ChatWindowViewModel :
         base.OnIsBusyChanged();
 
         PickElementCommand.NotifyCanExecuteChanged();
+        ScreenshotCommand.NotifyCanExecuteChanged();
         AddClipboardCommand.NotifyCanExecuteChanged();
         AddFileCommand.NotifyCanExecuteChanged();
         SendMessageCommand.NotifyCanExecuteChanged();
@@ -837,5 +858,38 @@ public sealed partial class ChatWindowViewModel :
                     });
             }
         });
+    }
+
+    #region IObserver<TextSelectionData> Implementation
+
+    void IObserver<TextSelectionData>.OnCompleted() { }
+
+    void IObserver<TextSelectionData>.OnError(Exception error) { }
+
+    void IObserver<TextSelectionData>.OnNext(TextSelectionData data)
+    {
+        Console.WriteLine(data);
+
+        if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
+        if (data.Element?.ProcessId == Environment.ProcessId) return; // Ignore selections from this app
+
+        _chatAttachmentsSource.Edit(list =>
+        {
+            // Remove existing text selection attachment
+            list.RemoveWhere(a => a is ChatTextSelectionAttachment);
+
+            // Insert the new attachment at the beginning if it has text
+            if (!data.Text.IsNullOrEmpty()) list.Insert(0, new ChatTextSelectionAttachment(data.Text, data.Element));
+        });
+    }
+
+    #endregion
+
+    public void Receive(ApplicationCommand command)
+    {
+        if (command is ShowWindowCommand { Name: nameof(ChatWindowViewModel) })
+        {
+            Dispatcher.UIThread.Invoke(() => IsOpened = true);
+        }
     }
 }

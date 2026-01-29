@@ -1,18 +1,34 @@
 ﻿<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:ai="clr-namespace:Everywhere.AI" xmlns:c="clr-namespace:Everywhere.Configuration"
+  xmlns:aai="clr-namespace:Everywhere.AI;assembly=Everywhere.Abstractions" xmlns:c="clr-namespace:Everywhere.Configuration"
   xmlns:common="clr-namespace:Everywhere.Common" xmlns:interop="clr-namespace:Everywhere.Interop"
   xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:plugins="clr-namespace:Everywhere.Chat.Plugins"
-  xmlns:v="clr-namespace:Everywhere.Views">
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views">
   <DataTemplate
-    x:Key="{x:Type ai:ModelProviderTemplate}"
-    x:DataType="ai:ModelProviderTemplate">
+    x:Key="{x:Type aai:ModelProviderTemplate}"
+    x:DataType="aai:ModelProviderTemplate">
     <StackPanel
-      Margin="4" Orientation="Horizontal"
-      Spacing="8">
-      <Image
-        Width="20" Height="20"
-        md:AsyncImageLoader.Source="{Binding IconUrl, FallbackValue={x:Null}}"/>
+      Orientation="Horizontal" Spacing="8">
+      <shadui:ThemeToggleBlock>
+        <shadui:ThemeToggleBlock.DarkContent>
+          <ControlTemplate>
+            <Image
+              Width="{DynamicResource FontSizeXl}"
+              Height="{DynamicResource FontSizeXl}"
+              md:AsyncImageLoader.SizeToContent="Manual"
+              md:AsyncImageLoader.Source="{Binding DarkIconUrl, FallbackValue={x:Null}}"/>
+          </ControlTemplate>
+        </shadui:ThemeToggleBlock.DarkContent>
+        <shadui:ThemeToggleBlock.LightContent>
+          <ControlTemplate>
+            <Image
+              Width="{DynamicResource FontSizeXl}"
+              Height="{DynamicResource FontSizeXl}"
+              md:AsyncImageLoader.SizeToContent="Manual"
+              md:AsyncImageLoader.Source="{Binding LightIconUrl, FallbackValue={x:Null}}"/>
+          </ControlTemplate>
+        </shadui:ThemeToggleBlock.LightContent>
+      </shadui:ThemeToggleBlock>
 
       <TextBlock
         VerticalAlignment="Center"
@@ -21,18 +37,19 @@
   </DataTemplate>
 
   <DataTemplate
-    x:Key="{x:Type ai:ModelDefinitionTemplate}"
-    x:DataType="ai:ModelDefinitionTemplate">
+    x:Key="{x:Type aai:ModelDefinitionTemplate}"
+    x:DataType="aai:ModelDefinitionTemplate">
     <TextBlock Text="{Binding DisplayName, FallbackValue={x:Null}}"/>
   </DataTemplate>
 
   <DataTemplate x:Key="{x:Type interop:KeyboardShortcut}">
     <DataTemplate.DataType>
       <x:Type
-        x:TypeArguments="interop:KeyboardShortcut" TypeName="c:SettingsTypedItem"/>
+        x:TypeArguments="interop:KeyboardShortcut" TypeName="c:SettingsTemplatedItem"/>
     </DataTemplate.DataType>
+
     <v:KeyboardShortcutInputBox
-      MinWidth="160" MinHeight="32"
+      MinWidth="320" MinHeight="32"
       HorizontalAlignment="Left"
       Shortcut="{Binding Value, Mode=TwoWay}"/>
   </DataTemplate>
@@ -40,7 +57,7 @@
   <DataTemplate x:Key="{x:Type common:ColoredIcon}">
     <DataTemplate.DataType>
       <x:Type
-        x:TypeArguments="common:ColoredIcon" TypeName="c:SettingsTypedItem"/>
+        x:TypeArguments="common:ColoredIcon" TypeName="c:SettingsTemplatedItem"/>
     </DataTemplate.DataType>
 
     <Button

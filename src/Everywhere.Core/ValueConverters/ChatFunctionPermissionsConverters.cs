@@ -76,7 +76,7 @@ public static class ChatFunctionPermissionsConverters
             else
                 color = none;
             
-            return new SolidColorBrush(color); // Fallback to gray if no known permissions are set
+            return new SolidColorBrush(color, opacity: 0.6); // Fallback to gray if no known permissions are set
         }
     }
 }

@@ -22,6 +22,6 @@ body:
     attributes:
       label: App Version
       description: Enter the version you are using
-      placeholder: E.g. 1.0.0-alpha.1
+      placeholder: E.g. 0.5.5
     validations:
       required: true

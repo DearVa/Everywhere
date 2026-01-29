@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
 using DynamicData;
+using Everywhere.Chat;
 using Everywhere.Chat.Permissions;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
 using Everywhere.Extensions;
 using Everywhere.I18N;
+using Everywhere.Interop;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
@@ -15,13 +18,13 @@ namespace Everywhere.Windows.Chat.Plugins;
 
 public class PowerShellPlugin : BuiltInChatPlugin
 {
-    public override DynamicResourceKeyBase HeaderKey { get; } = new DynamicResourceKey(LocaleKey.NativeChatPlugin_Shell_Header);
+    public override DynamicResourceKeyBase HeaderKey { get; } = new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_PowerShell_Header);
 
-    public override DynamicResourceKeyBase DescriptionKey { get; } = new DynamicResourceKey(LocaleKey.NativeChatPlugin_Shell_Description);
+    public override DynamicResourceKeyBase DescriptionKey { get; } = new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_PowerShell_Description);
 
     public override LucideIconKind? Icon => LucideIconKind.SquareTerminal;
 
-    public override string BeautifulIcon => "avares://Everywhere.Windows/Assets/Icons/PowerShell.svg";
+    public override string BeautifulIcon => "avares://Everywhere/Assets/Icons/PowerShell.svg";
 
     private readonly ILogger<PowerShellPlugin> _logger;
 
@@ -37,9 +40,11 @@ public class PowerShellPlugin : BuiltInChatPlugin
 
     [KernelFunction("execute_script")]
     [Description("Execute PowerShell script and obtain its output.")]
-    [DynamicResourceKey(LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_Header)]
+    [DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_Header)]
     private async Task<string> ExecuteScriptAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
+        [FromKernelServices] IChatContextManager chatContextManager,
+        [FromKernelServices] ChatContext chatContext,
         [Description("A concise description for user, explaining what you are doing")] string description,
         [Description("Single or multi-line")] string script,
         CancellationToken cancellationToken)
@@ -73,14 +78,14 @@ public class PowerShellPlugin : BuiltInChatPlugin
 
         var consent = await userInterface.RequestConsentAsync(
             consentKey,
-            new DynamicResourceKey(LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header),
+            new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ScriptConsent_Header),
             detailBlock,
             cancellationToken);
         if (!consent)
         {
             throw new HandledException(
                 new UnauthorizedAccessException("User denied consent for PowerShell script execution."),
-                new DynamicResourceKey(LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_DenyMessage),
+                new DynamicResourceKey(LocaleKey.Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_DenyMessage),
                 showDetails: false);
         }
 
@@ -93,9 +98,16 @@ public class PowerShellPlugin : BuiltInChatPlugin
             RedirectStandardError = true,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8,
+            StandardInputEncoding = new UTF8Encoding(false), // remove BOM header
             UseShellExecute = false,
             CreateNoWindow = true,
+            WorkingDirectory = chatContextManager.EnsureWorkingDirectory(chatContext),
         };
+
+        // Ensure the latest PATH variable is used
+        if (EnvironmentVariableUtilities.GetLatestPathVariable() is { Length: > 0 } latestPath) psi.EnvironmentVariables["Path"] = latestPath;
 
         string result;
         using (var process = Process.Start(psi))
@@ -143,13 +155,13 @@ public class PowerShellPlugin : BuiltInChatPlugin
                 throw new HandledException(
                     new SystemException($"PowerShell script execution failed: {errorOutput}"),
                     new FormattedDynamicResourceKey(
-                        LocaleKey.NativeChatPlugin_PowerShell_ExecuteScript_ErrorMessage,
-                        new DirectResourceKey(errorOutput)),
+                        LocaleKey.Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage,
+                        new DirectResourceKey(errorOutput.Trim())),
                     showDetails: false);
             }
         }
 
-        userInterface.DisplaySink.AppendCodeBlock(result, "log");
+        userInterface.DisplaySink.AppendCodeBlock(result.Trim(), "log");
         return result;
     }
 }

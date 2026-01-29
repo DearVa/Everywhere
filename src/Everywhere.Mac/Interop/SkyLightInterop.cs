@@ -48,7 +48,18 @@ internal static partial class SkyLightInterop
                 if (windowArrayPtr == 0)
                     return null;
 
-                var windowArray = CFArray.ArrayFromHandle<CGImage>(windowArrayPtr);
+                // CFArray.ArrayFromHandle returns a managed array of content (CGImage objects)
+                // but does not release the CFArrayRef itself. We must release it to avoid a memory leak.
+                CGImage?[]? windowArray;
+                try
+                {
+                    windowArray = CFArray.ArrayFromHandle<CGImage>(windowArrayPtr);
+                }
+                finally
+                {
+                    CFInterop.CFRelease(windowArrayPtr);
+                }
+                
                 return windowArray?[0];
             }
         }

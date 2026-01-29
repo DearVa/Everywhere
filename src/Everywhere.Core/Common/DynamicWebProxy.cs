@@ -55,7 +55,7 @@ public sealed class DynamicWebProxy : IWebProxy
         }
         else
         {
-            var addressToUse = settings.Endpoint.ActualValue.Trim();
+            var addressToUse = settings.Endpoint?.Trim();
             if (string.IsNullOrWhiteSpace(addressToUse))
             {
                 throw new HandledException(

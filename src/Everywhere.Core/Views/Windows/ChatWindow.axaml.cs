@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
+using Everywhere.AttachedProperties;
 using Everywhere.Chat;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -14,6 +15,7 @@ using Everywhere.Utilities;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using ShadUI;
 
 namespace Everywhere.Views;
@@ -33,10 +35,19 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         private set => SetAndRaise(IsOpenedProperty, ref field, value);
     }
 
-    public static readonly StyledProperty<bool> IsWindowPinnedProperty =
-        AvaloniaProperty.Register<ChatWindow, bool>(nameof(IsWindowPinned));
+    /// <summary>
+    /// Defines the <see cref="IsWindowPinned"/> property.
+    /// </summary>
+    public static readonly StyledProperty<bool?> IsWindowPinnedProperty =
+        AvaloniaProperty.Register<ChatWindow, bool?>(nameof(IsWindowPinned));
 
-    public bool IsWindowPinned
+    /// <summary>
+    /// Gets or sets a value indicating whether the window is pinned.
+    /// true: pinned and on top
+    /// null: pinned but not on top
+    /// false: not pinned, on top. hidden when unfocused
+    /// </summary>
+    public bool? IsWindowPinned
     {
         get => GetValue(IsWindowPinnedProperty);
         set => SetValue(IsWindowPinnedProperty, value);
@@ -47,26 +58,39 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
     private readonly ILauncher _launcher;
     private readonly IWindowHelper _windowHelper;
     private readonly Settings _settings;
+    private readonly PersistentState _persistentState;
+
+    /// <summary>
+    /// Indicates whether the window has been resized by the user.
+    /// </summary>
+    private bool _isUserResized;
+
+    /// <summary>
+    /// Indicates whether the window can be closed.
+    /// </summary>
+    private bool _canCloseWindow;
 
     public ChatWindow(
         ILauncher launcher,
         IWindowHelper windowHelper,
-        Settings settings)
+        Settings settings,
+        PersistentState persistentState)
     {
         _launcher = launcher;
         _windowHelper = windowHelper;
         _settings = settings;
+        _persistentState = persistentState;
 
         InitializeComponent();
         AddHandler(KeyDownEvent, HandleKeyDown, RoutingStrategies.Tunnel, true);
 
         ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
-        ChatInputBox.TextChanged += HandleChatInputBoxTextChanged;
-        ChatInputBox.PastingFromClipboard += HandleChatInputBoxPastingFromClipboard;
-        
+        ChatInputArea.TextChanged += HandleChatInputAreaTextChanged;
+        ChatInputArea.PastingFromClipboard += HandleChatInputAreaPastingFromClipboard;
+
         SetupDragDropHandlers();
     }
-    
+
     private void SetupDragDropHandlers()
     {
         DragDrop.SetAllowDrop(this, true);
@@ -84,9 +108,13 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         EnsureInitialized();
         ApplyStyling();
         ApplyTemplate();
+
         _windowHelper.SetCloaked(this, true);
-        ShowActivated = true;
         Topmost = true;
+
+        // Setup window placement saving after initialization
+        this[SaveWindowPlacementAssist.KeyProperty] = nameof(ChatWindow);
+        _isUserResized = SizeToContent != SizeToContent.WidthAndHeight;
     }
 
     private void HandleKeyDown(object? sender, KeyEventArgs e)
@@ -107,6 +135,16 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
                 e.Handled = true;
                 break;
             }
+            case { Key: Key.H, KeyModifiers: KeyModifiers.Control }:
+            {
+                var newValue = !ViewModel.IsViewingHistory;
+                if (ViewModel.SwitchViewingHistoryCommand.CanExecute(newValue))
+                {
+                    ViewModel.SwitchViewingHistoryCommand.Execute(newValue);
+                    e.Handled = true;
+                }
+                break;
+            }
         }
     }
 
@@ -120,37 +158,28 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         }
         else if (change.Property == IsWindowPinnedProperty)
         {
-            var value = change.NewValue is true;
-            _settings.Internal.IsChatWindowPinned = value;
-            ShowInTaskbar = value;
+            var value = change.NewValue as bool?;
+            _persistentState.IsChatWindowPinned = value;
+            ShowInTaskbar = value is true or null;
+            Topmost = value is not null; // false: topmost, null: normal, true: topmost
             _windowHelper.SetCloaked(this, false); // Uncloak when pinned state changes to ensure visibility
         }
     }
-
-    /// <summary>
-    /// Indicates whether the window has been resized by the user.
-    /// </summary>
-    private bool _isUserResized;
 
     protected override void OnResized(WindowResizedEventArgs e)
     {
         base.OnResized(e);
 
-        if (e.Reason == WindowResizeReason.User)
+        if (e.Reason != WindowResizeReason.User) return;
+
+        if (e.ClientSize.NearlyEquals(new Size(MinWidth, MinHeight)))
         {
-            if (e.ClientSize.NearlyEquals(new Size(MinWidth, MinHeight)))
-            {
-                _isUserResized = false;
-                SizeToContent = SizeToContent.WidthAndHeight;
-            }
-            else
-            {
-                _isUserResized = true;
-            }
+            _isUserResized = false;
+            SizeToContent = SizeToContent.WidthAndHeight;
         }
-        else if (!_isUserResized)
+        else
         {
-            ClampToScreen();
+            _isUserResized = true;
         }
     }
 
@@ -208,7 +237,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
     {
         base.OnLostFocus(e);
 
-        if (!ViewModel.IsPickingFiles && !IsActive && !IsWindowPinned && !_windowHelper.AnyModelDialogOpened(this))
+        if (!ViewModel.IsPickingFiles && !IsActive && IsWindowPinned is false && !_windowHelper.AnyModelDialogOpened(this))
         {
             IsOpened = false;
         }
@@ -219,21 +248,6 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         return new NoneAutomationPeer(this); // Disable automation peer to avoid being detected by self
     }
 
-    private void ClampToScreen()
-    {
-        var position = Position;
-        var actualSize = Bounds.Size.To(s => new PixelSize((int)(s.Width * DesktopScaling), (int)(s.Height * DesktopScaling)));
-        var screenBounds = Screens.ScreenFromPoint(position)?.Bounds ?? Screens.Primary?.Bounds ?? Screens.All[0].Bounds;
-        Position = ClampToArea(position, actualSize, screenBounds);
-    }
-
-    private static PixelPoint ClampToArea(PixelPoint pos, PixelSize size, PixelRect area)
-    {
-        var x = Math.Max(area.X, Math.Min(pos.X, area.X + area.Width - size.Width));
-        var y = Math.Max(area.Y, Math.Min(pos.Y, area.Y + area.Height - size.Height));
-        return new PixelPoint(x, y);
-    }
-    
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
@@ -252,7 +266,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
             {
                 case ChatWindowPinMode.RememberLast:
                 {
-                    IsWindowPinned = _settings.Internal.IsChatWindowPinned;
+                    IsWindowPinned = _persistentState.IsChatWindowPinned;
                     break;
                 }
                 case ChatWindowPinMode.AlwaysPinned:
@@ -268,9 +282,9 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
                 }
             }
 
-            ShowInTaskbar = IsWindowPinned;
+            ShowInTaskbar = IsWindowPinned is true or null;
             _windowHelper.SetCloaked(this, false);
-            ChatInputBox.Focus();
+            ChatInputArea.Focus();
         }
         else
         {
@@ -279,7 +293,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         }
     }
 
-    private void HandleChatInputBoxTextChanged(object? sender, TextChangedEventArgs e)
+    private void HandleChatInputAreaTextChanged(object? sender, TextChangedEventArgs e)
     {
         if (_settings.ChatWindow.WindowPinMode == ChatWindowPinMode.PinOnInput)
         {
@@ -292,7 +306,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void HandleChatInputBoxPastingFromClipboard(object? sender, RoutedEventArgs e)
+    private void HandleChatInputAreaPastingFromClipboard(object? sender, RoutedEventArgs e)
     {
         if (!ViewModel.AddClipboardCommand.CanExecute(null)) return;
 
@@ -305,6 +319,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         // otherwise, Windows will say "Everywhere is preventing shutdown"
         if (e.CloseReason is WindowCloseReason.ApplicationShutdown or WindowCloseReason.OSShutdown)
         {
+            _canCloseWindow = true;
             base.OnClosing(e);
             return;
         }
@@ -320,11 +335,12 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
     {
         base.OnClosed(e);
 
-        ServiceLocator.Resolve<ILogger<ChatWindow>>().LogError("Chat window was closed unexpectedly. This should not happen.");
+        if (!_canCloseWindow)
+            Log.ForContext<ChatWindow>().Error("Chat window was closed unexpectedly. This should not happen.");
     }
 
     [RelayCommand]
-    private Task LaunchInlineHyperlink(InlineHyperlinkClickedEventArgs e)
+    private Task LaunchLink(LinkClickedEventArgs e)
     {
         // currently we only support http(s) links for safety reasons
         return e.HRef is not { Scheme: "http" or "https" } uri ? Task.CompletedTask : _launcher.LaunchUriAsync(uri);
@@ -395,7 +411,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
 
                 if (hasSupportedFile)
                 {
-                    if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount)
+                    if (ViewModel.ChatAttachments.Count >= _persistentState.MaxChatAttachmentCount)
                     {
                         e.DragEffects = DragDropEffects.None;
                         DragDropOverlay.IsVisible = false;
@@ -466,7 +482,7 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
                             .LogError(ex, "Failed to add dropped file: {FilePath}", localPath);
                     }
 
-                    if (ViewModel.ChatAttachments.Count >= _settings.Internal.MaxChatAttachmentCount) break;
+                    if (ViewModel.ChatAttachments.Count >= _persistentState.MaxChatAttachmentCount) break;
                 }
             }
 
@@ -477,10 +493,10 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
                 var text = e.DataTransfer.TryGetText();
                 if (string.IsNullOrWhiteSpace(text)) return;
 
-                var currentText = _settings.Internal.ChatInputBoxText ?? string.Empty;
-                var caretIndex = ChatInputBox.CaretIndex;
-                _settings.Internal.ChatInputBoxText = currentText.Insert(caretIndex, text);
-                ChatInputBox.CaretIndex = caretIndex + text.Length;
+                var currentText = _persistentState.ChatInputAreaText ?? string.Empty;
+                var caretIndex = ChatInputArea.CaretIndex;
+                _persistentState.ChatInputAreaText = currentText.Insert(caretIndex, text);
+                ChatInputArea.CaretIndex = caretIndex + text.Length;
             }
         }
     }

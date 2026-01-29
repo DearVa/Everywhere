@@ -32,6 +32,11 @@ public class SettingsItemAttribute : Attribute
     /// Sets custom classes to apply to the settings item in the UI.
     /// </summary>
     public string[]? Classes { get; set; }
+
+    /// <summary>
+    /// Marks this settings item as experimental.
+    /// </summary>
+    public bool IsExperimental { get; set; }
 }
 
 [AttributeUsage(AttributeTargets.Property)]
@@ -81,6 +86,26 @@ public class SettingsSelectionItemAttribute(string itemsSourceBindingPath) : Att
     /// An optional key to use for the DataTemplate to display each item.
     /// </summary>
     public object? DataTemplateKey { get; set; }
+}
+
+/// <summary>
+/// Indicates this Property is a single item that should use a DataTemplate for display
+/// </summary>
+[AttributeUsage(AttributeTargets.Property)]
+public class SettingsTemplatedItemAttribute : Attribute
+{
+    /// <summary>
+    /// An optional key to use for the DataTemplate to display the item.
+    /// If null, typeof the property will be used as the key.
+    /// </summary>
+    public object? DataTemplateKey { get; set; }
+
+    public SettingsTemplatedItemAttribute() { }
+
+    public SettingsTemplatedItemAttribute(object dataTemplateKey)
+    {
+        DataTemplateKey = dataTemplateKey;
+    }
 }
 
 /// <summary>

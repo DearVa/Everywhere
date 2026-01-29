@@ -29,6 +29,15 @@ public enum VisualElementType
     Slider,
     ScrollBar,
     ProgressBar,
+    Spinner,
+
+    ToolBar,
+    StatusBar,
+
+    Header,
+    HeaderItem,
+
+    Splitter,
 
     /// <summary>
     /// The most generic container element, its parent and children can be any type.
@@ -197,8 +206,16 @@ public interface IVisualElement
     /// </summary>
     PixelRect BoundingRectangle { get; }
 
+    /// <summary>
+    /// Gets the process ID of the application that owns this visual element.
+    /// If the element does not belong to any process, return -1.
+    /// </summary>
     int ProcessId { get; }
 
+    /// <summary>
+    /// Gets the native window handle (HWND of the RootWindow on Windows, WindowNumber on macOS, XID on Linux) of the visual element.
+    /// If element is a Screen, return -1.
+    /// </summary>
     nint NativeWindowHandle { get; }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Avalonia.Input;
+﻿using System.Runtime.Versioning;
+using Avalonia.Input;
 
 namespace Everywhere.Interop;
 
@@ -12,6 +13,7 @@ public interface INativeHelper
     /// <summary>
     /// Check if the current user is an administrator (aka UAC on Windows).
     /// </summary>
+    [SupportedOSPlatform("windows")]
     bool IsAdministrator { get; }
 
     /// <summary>
@@ -24,11 +26,13 @@ public interface INativeHelper
     /// This can only be set if the current user is an administrator.
     /// </summary>
     /// <exception cref="UnauthorizedAccessException">Thrown if the current user is not an administrator.</exception>
+    [SupportedOSPlatform("windows")]
     bool IsAdministratorStartupEnabled { get; set; }
 
     /// <summary>
     /// Restart the application as administrator (aka UAC on Windows).
     /// </summary>
+    [SupportedOSPlatform("windows")]
     void RestartAsAdministrator();
 
     /// <summary>

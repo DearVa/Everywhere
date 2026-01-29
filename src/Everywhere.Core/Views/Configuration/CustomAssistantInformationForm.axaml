@@ -1,0 +1,58 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views">
+
+  <ControlTheme
+    x:Key="{x:Type v:CustomAssistantInformationForm}"
+    TargetType="v:CustomAssistantInformationForm">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <DockPanel
+          Width="{Binding $parent[DockPanel].Bounds.Width}"
+          HorizontalSpacing="16">
+          <Button
+            DockPanel.Dock="Left" Padding="0"
+            VerticalAlignment="Top"
+            CornerRadius="{DynamicResource FullCornerRadius}"
+            ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistantInformationForm_IconButton_ToolTip}}">
+            <v:IconPresenter
+              Width="72" Height="72"
+              FontSize="{DynamicResource FontSize4Xl}"
+              Icon="{Binding CustomAssistant.Icon, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
+              IconSize="{DynamicResource FontSize4Xl}"
+              LineHeight="{DynamicResource LineHeight4Xl}"/>
+
+            <Button.Flyout>
+              <Flyout>
+                <v:IconEditor
+                  Width="360" Height="500"
+                  Icon="{Binding CustomAssistant.Icon, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"/>
+              </Flyout>
+            </Button.Flyout>
+          </Button>
+
+          <StackPanel Spacing="8">
+            <TextBox
+              MinWidth="160"
+              shadui:ControlAssist.Label="{I18N {x:Static LocaleKey.CustomAssistant_Name_Header}}"
+              MaxLength="32"
+              Text="{Binding CustomAssistant.Name, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}"
+              ToolTip.Placement="Bottom"
+              ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_Name_Description}}"
+              Watermark="{I18N {x:Static LocaleKey.CustomAssistant_Name_Description}}"/>
+
+            <TextBox
+              HorizontalAlignment="Stretch"
+              shadui:ControlAssist.Label="{I18N {x:Static LocaleKey.CustomAssistant_Description_Header}}"
+              AcceptsReturn="True" MaxLength="4096"
+              MaxLines="4" MinLines="2"
+              Text="{Binding CustomAssistant.Description, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}"
+              TextWrapping="Wrap" ToolTip.Placement="Bottom"
+              ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_Description_Description}}"
+              Watermark="{I18N {x:Static LocaleKey.CustomAssistant_Description_Description}}"/>
+          </StackPanel>
+        </DockPanel>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

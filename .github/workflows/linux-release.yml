@@ -1,0 +1,77 @@
+﻿name: (Linux) Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    strategy:
+      matrix:
+        include:
+          - runtime: linux-x64
+            runner: ubuntu-latest
+            asset_name: Linux-x64
+          - runtime: linux-arm64
+            runner: ubuntu-24.04-arm
+            asset_name: Linux-arm64
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+        lfs: true
+
+    - name: Verify Tag (Manual Trigger)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        TAG=$(git describe --exact-match --tags HEAD 2>/dev/null || echo "")
+        if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+          echo "Error: Current commit is not tagged with a valid version (vX.X.X)."
+          echo "Current tag: $TAG"
+          exit 1
+        fi
+        echo "Found valid tag: $TAG"
+        echo "VERSION=${TAG#v}" >> $GITHUB_ENV
+        echo "GITHUB_REF=refs/tags/$TAG" >> $GITHUB_ENV
+
+    - name: Get version from tag
+      if: github.event_name != 'workflow_dispatch'
+      id: get_version
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore src/Everywhere.Linux/Everywhere.Linux.csproj -r ${{ matrix.runtime }}
+
+    - name: Publish
+      run: |
+        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }} -p:SentryDsn=${{ secrets.SENTRY_DSN }}
+
+    - name: Build Deb Package
+      run: |
+        chmod +x ./src/Everywhere.Linux/packaging_deb.sh
+        ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+
+    - name: Build AppImage
+      run: |
+        chmod +x build-appimage.sh
+        ./build-appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
+
+    - name: Upload Release Assets
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
+          Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage

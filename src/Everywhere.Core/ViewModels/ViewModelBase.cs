@@ -39,8 +39,17 @@ public abstract class ReactiveViewModelBase : ObservableValidator
 
     protected IStorageProvider StorageProvider { get; private set; } = ServiceLocator.Resolve<IStorageProvider>();
 
+    /// <summary>
+    /// Invoked when the view's <see cref="Control.Loaded"/> event is raised.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     protected internal virtual Task ViewLoaded(CancellationToken cancellationToken) => Task.CompletedTask;
 
+    /// <summary>
+    /// Invoked when the view's <see cref="Control.Unloaded"/> event is raised.
+    /// </summary>
+    /// <returns></returns>
     protected internal virtual Task ViewUnloaded() => Task.CompletedTask;
 
     protected virtual IExceptionHandler? LifetimeExceptionHandler => null;
