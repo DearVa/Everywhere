@@ -1,0 +1,59 @@
+﻿name: (Linux) Manually Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    strategy:
+      matrix:
+        include:
+          - runtime: linux-x64
+            runner: ubuntu-latest
+            asset_name: Linux-x64
+          - runtime: linux-arm64
+            runner: ubuntu-24.04-arm
+            asset_name: Linux-arm64
+
+    runs-on: ${{ matrix.runner }}
+    env:
+      VERSION: build-${{ github.run_number }}-${{ github.sha }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        submodules: true
+        lfs: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore
+      run: dotnet restore src/Everywhere.Linux/Everywhere.Linux.csproj -r ${{ matrix.runtime }}
+
+    - name: Publish
+      run: |
+        dotnet publish src/Everywhere.Linux/Everywhere.Linux.csproj -c Release -r ${{ matrix.runtime }} -o ./publish -p:Version=${{ env.VERSION }} -p:SentryDsn=${{ secrets.SENTRY_DSN }}
+
+    - name: Build Deb Package
+      run: |
+        chmod +x ./src/Everywhere.Linux/packaging_deb.sh
+        ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+
+    - name: Build AppImage
+      run: |
+        chmod +x build-appimage.sh
+        ./build-appimage.sh ${{ matrix.runtime }} ${{ matrix.asset_name }} ./publish false ${{ env.VERSION }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        # 定义上传的产物名称，将包含平台、构建类型和版本信息
+        name: Everywhere-Linux-${{ matrix.asset_name }}-Build-${{ env.VERSION }}
+        # 指定需要上传的文件路径
+        path: |
+          Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.deb
+          Releases/Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.AppImage
