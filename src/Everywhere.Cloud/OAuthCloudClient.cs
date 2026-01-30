@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
 using Duende.IdentityModel.OidcClient.Browser;
 using GnomeStack.Os.Secrets;
@@ -16,16 +17,66 @@ public sealed partial class OAuthCloudClient(ILauncher launcher) : ObservableObj
     private const string ServiceName = "com.sylinko.everywhere";
     private const string RefreshTokenKey = "auth_refresh_token";
 
-    // TODO: Move these to configuration
-    private const string Authority = "https://demo.duendesoftware.com";
-    private const string ClientId = "interactive.public";
-    private const string RedirectUri = "http://127.0.0.1:49152/callback";
+    // Configuration
+    private const string ClientId = "2594ff9a1589fa4817fc5156ffaeee13";
+    private const string Authority = "https://localhost:3000";
+    private const string PolicyAuthority = $"{Authority}/api/auth";
+    // private const string AuthorizeEndpoint = $"{Authority}/api/auth/oauth2/authorize";
+    // private const string TokenEndpoint = $"{Authority}/api/auth/oauth2/token";
+    // private const string UserInfoEndpoint = $"{Authority}/api/auth/oauth2/userinfo";
+    // private const string RevokeEndpoint = $"{Authority}/api/auth/oauth2/revoke";
+    // private const string EndSessionEndpoint = $"{Authority}/api/auth/oauth2/end-session";
+    private const string RequestRedirectUri = $"{Authority}/oauth2/device-callback?redirect=sylinko-everywhere://callback";
+    private const string ResponseRedirectUri = "sylinko-everywhere://callback";
     private const string Scope = "openid profile email offline_access";
 
     private OidcClient? _oidcClient;
 
     [ObservableProperty]
     public partial UserProfile? CurrentUser { get; set; }
+
+    public async Task<bool> TrySilentLoginAsync()
+    {
+        try
+        {
+            var refreshToken = OsSecretVault.GetSecret(ServiceName, RefreshTokenKey);
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return false;
+            }
+
+            // Silent refresh using the stored refresh token
+            var result = await EnsureOidcClient().RefreshTokenAsync(refreshToken);
+            if (result.IsError)
+            {
+                Trace.WriteLine($"Silent login failed: {result.Error}");
+                return false;
+            }
+
+            // Rotate refresh token if a new one was issued
+            if (!string.IsNullOrEmpty(result.RefreshToken) && result.RefreshToken != refreshToken)
+            {
+                await SecureStoreAsync(RefreshTokenKey, result.RefreshToken);
+            }
+
+            // Fetch user info using the new access token
+            var userInfo = await _oidcClient.GetUserInfoAsync(result.AccessToken);
+            if (!userInfo.IsError)
+            {
+                UpdateUserProfile(
+                    new ClaimsPrincipal(new ClaimsIdentity(userInfo.Claims)),
+                    result.AccessToken);
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"Silent login exception: {ex}");
+            return false;
+        }
+    }
 
     public async Task<bool> LoginAsync()
     {
@@ -136,12 +187,18 @@ public sealed partial class OAuthCloudClient(ILauncher launcher) : ObservableObj
     {
         return _oidcClient ??= new OidcClient(new OidcClientOptions
         {
-            Authority = Authority,
+            Authority =Authority,
             ClientId = ClientId,
+            RedirectUri = RequestRedirectUri,
             Scope = Scope,
-            RedirectUri = RedirectUri,
             Browser = new SystemBrowser(launcher),
-            Policy = new Policy { RequireAccessTokenHash = false }
+            Policy = new Policy()
+            {
+                Discovery = new DiscoveryPolicy()
+                {
+                    Authority = PolicyAuthority
+                }
+            }
         });
     }
 
@@ -150,12 +207,13 @@ public sealed partial class OAuthCloudClient(ILauncher launcher) : ObservableObj
         var name = user.FindFirst("name")?.Value ?? user.FindFirst("sub")?.Value ?? "Unknown";
         var picture = user.FindFirst("picture")?.Value;
 
-        // TODO: Map custom claims for points/plan if available in ID Token or UserInfo
-        var plan = "Free";
-        long points = 0;
-        long remaining = 0;
-
-        CurrentUser = new UserProfile(name, picture, plan, points, remaining);
+        CurrentUser = new UserProfile
+        {
+            Name = name,
+            Email = user.FindFirst("email")?.Value ?? "",
+            AvatarUrl = picture,
+            AccessToken = accessToken
+        };
     }
 
     private Task SecureStoreAsync(string key, string value)
@@ -209,7 +267,7 @@ public sealed partial class OAuthCloudClient(ILauncher launcher) : ObservableObj
         private static string ExtractRedirectUriPrefix(string startUrl)
         {
             // We use the configured global RedirectUri
-            return RedirectUri.EndsWith('/') ? RedirectUri : RedirectUri + "/";
+            return RequestRedirectUri.EndsWith('/') ? RequestRedirectUri : RequestRedirectUri + "/";
         }
     }
 
