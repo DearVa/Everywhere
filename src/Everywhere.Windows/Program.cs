@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using Everywhere.AI;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
+using Everywhere.Cloud;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Extensions;
@@ -18,6 +19,7 @@ using Everywhere.Windows.Configuration;
 using Everywhere.Windows.Interop;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Serilog;
 using Serilog.Extensions.Logging;
 
@@ -44,6 +46,8 @@ public static class Program
 
         await Entrance.InitializeAsync(args);
 
+        RegisterUrlProtocol();
+
         ServiceLocator.Build(x => x
 
                 #region Basic
@@ -63,6 +67,7 @@ public static class Program
                 .AddAvaloniaBasicServices()
                 .AddViewsAndViewModels()
                 .AddDatabaseAndStorage()
+                .AddCloudClient()
 
                 #endregion
 
@@ -136,6 +141,27 @@ public static class Program
                 dwFlags = 0,
             };
             PInvoke.LoadUserProfile((HANDLE)token, &profileInfo);
+        }
+    }
+
+    /// <summary>
+    /// Register the "sylinko-everywhere" protocol handler in Registry
+    /// </summary>
+    private static void RegisterUrlProtocol()
+    {
+        try
+        {
+            using var registry = Registry.CurrentUser.CreateSubKey($@"Software\Classes\{UrlProtocolCallbackCommand.Scheme}");
+            registry.SetValue(null, "URL: Sylinko Everywhere Protocol");
+            registry.SetValue("URL Protocol", string.Empty);
+
+            using var commandKey = registry.CreateSubKey(@"shell\open\command");
+            var exePath = Environment.ProcessPath;
+            if (exePath is not null) commandKey.SetValue(null, $"\"{exePath}\" \"%1\"");
+        }
+        catch (Exception ex)
+        {
+            Log.ForContext(typeof(Program)).Error(ex, "Failed to register URL protocol");
         }
     }
 }

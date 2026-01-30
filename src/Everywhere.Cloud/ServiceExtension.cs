@@ -9,14 +9,7 @@ public static class ServiceExtension
     {
         public IServiceCollection AddCloudClient()
         {
-            services.AddSingleton(new OidcClient(new OidcClientOptions
-            {
-                Authority = "https://sy.com",
-
-                ClientId = "interactive.public",
-                Scope = "openid profile api",
-                RedirectUri = "sylinko-everywhere://callback"
-            }));
+            services.AddSingleton<ICloudClient, HttpCloudClient>();
             return services;
         }
     }
