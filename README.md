@@ -238,9 +238,13 @@ Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for more inform
 
 Third-Party Licenses: See [ThirdPartyNotices.txt](ThirdPartyNotices.txt) for details.
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FDearVa%2FEverywhere.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FDearVa%2FEverywhere?ref=badge_large)
+
 ## 💖 Sponsor
 
 [![302.ai](https://raw.githubusercontent.com/DearVa/Everywhere/refs/heads/main/img/Sponsors/302-ai-en.jpg)](https://share.302.ai/5rzmPr)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FDearVa%2FEverywhere.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FDearVa%2FEverywhere?ref=badge_shield)
 
 [302.AI](https://share.302.ai/5rzmPr) is a pay-as-you-go enterprise AI resource hub that offers the latest and most comprehensive AI models and APIs on the market, along with a variety of ready-to-use online AI applications.
 
