@@ -1,22 +1,47 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Everywhere.Cloud;
 
 /// <summary>
 /// Represents the user's profile information.
 /// </summary>
-/// <param name="Nickname">The user's display name.</param>
-/// <param name="AvatarUrl">The URL of the user's avatar image.</param>
-/// <param name="PlanType">The type of the subscription plan (e.g., Free, Pro).</param>
-/// <param name="TotalPoints">The user's total accumulated points.</param>
-/// <param name="RemainingPoints">The user's currently available points.</param>
-public record UserProfile(
-    string Nickname,
-    string? AvatarUrl,
-    string PlanType,
-    long TotalPoints,
-    long RemainingPoints
-);
+public partial class UserProfile : ObservableObject
+{
+    [ObservableProperty]
+    [JsonPropertyName("name")]
+    public required partial string Name { get; set; }
+
+    [ObservableProperty]
+    [JsonPropertyName("email")]
+    public required partial string Email { get; set; }
+
+    [ObservableProperty]
+    [JsonPropertyName("picture")]
+    public partial string? AvatarUrl { get; set; }
+
+    [ObservableProperty]
+    public partial SubscriptionPlan SubscriptionPlan { get; set; }
+
+    [ObservableProperty]
+    public partial long UsedTokens { get; set; } = 15000;
+
+    [ObservableProperty]
+    public partial long TotalTokens { get; set; } = 50000;
+
+    [ObservableProperty]
+    public partial string QuotaResetInfo { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial bool CanUpgradePlan { get; set; } = true;
+
+    public ObservableCollection<string> PlanFeatures { get; } = [];
+
+    [ObservableProperty]
+    public partial string? AccessToken { get; set; }
+}
 
 /// <summary>
 /// Interface for cloud client operations, handling authentication and user profile management.
@@ -29,6 +54,13 @@ public interface ICloudClient : INotifyPropertyChanged
     /// This property raises <see cref="INotifyPropertyChanged.PropertyChanged"/> when updated.
     /// </summary>
     UserProfile? CurrentUser { get; }
+
+    /// <summary>
+    /// Attempts silent login using stored credentials (refresh tokens).
+    /// This should be called at app startup to restore the user's session without browser interaction.
+    /// </summary>
+    /// <returns>A task returning true if silent login was successful, otherwise false.</returns>
+    Task<bool> TrySilentLoginAsync();
 
     /// <summary>
     /// Initiates the OAuth 2.0 (PKCE) login flow.

@@ -2139,4 +2139,37 @@
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>读取屏幕上窗口或元素的视觉树。</value>
     </data>
+    <data name="UserProfile_NotLoggedIn" xml:space="preserve">
+        <value>未登录</value>
+    </data>
+    <data name="UserProfile_LoginPrompt" xml:space="preserve">
+        <value>登录以使用云端功能</value>
+    </data>
+    <data name="UserProfile_CloudDescription" xml:space="preserve">
+        <value>同步数据、使用 AI 模型等</value>
+    </data>
+    <data name="UserProfile_Login" xml:space="preserve">
+        <value>登录</value>
+    </data>
+    <data name="UserProfile_LoginToCloud" xml:space="preserve">
+        <value>登录到 Everywhere Cloud</value>
+    </data>
+    <data name="UserProfile_Logout" xml:space="preserve">
+        <value>退出登录</value>
+    </data>
+    <data name="UserProfile_TokenQuota" xml:space="preserve">
+        <value>Token 配额</value>
+    </data>
+    <data name="UserProfile_ManageSubscription" xml:space="preserve">
+        <value>管理订阅</value>
+    </data>
+    <data name="UserProfile_UpgradePlan" xml:space="preserve">
+        <value>升级计划</value>
+    </data>
+    <data name="UserProfile_HelpCenter" xml:space="preserve">
+        <value>帮助中心</value>
+    </data>
+    <data name="UserProfile_Feedback" xml:space="preserve">
+        <value>反馈</value>
+    </data>
 </root>

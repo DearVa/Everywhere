@@ -5,6 +5,7 @@ using Everywhere.Configuration;
 using Everywhere.Database;
 using Everywhere.Storage;
 using Everywhere.Views;
+using Everywhere.Views.Controls;
 using Everywhere.Views.Pages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +41,8 @@ public static class ServiceExtension
                 .AddSingleton<IMainViewPage, ChatPluginPage>()
                 .AddSingleton<AboutPageViewModel>()
                 .AddSingleton<IMainViewPage, AboutPage>()
+                .AddSingleton<UserProfileFlyoutViewModel>()
+                .AddTransient<UserProfileFlyoutContent>()
                 .AddTransient<WelcomeViewModel>()
                 .AddTransient<WelcomeView>()
                 .AddTransient<ChangeLogViewModel>()

@@ -1,0 +1,208 @@
+<UserControl
+  x:Class="Everywhere.Views.Controls.UserProfileFlyoutContent" xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
+  Width="280" x:DataType="vm:UserProfileFlyoutViewModel">
+  <Panel>
+    <!--  Logged Out State  -->
+    <StackPanel
+      IsVisible="{Binding CloudClient.CurrentUser, Converter={x:Static ObjectConverters.IsNull}}"
+      Spacing="16">
+      <!--  App Logo and Branding  -->
+      <StackPanel
+        HorizontalAlignment="Center" Spacing="12">
+        <Image
+          Width="56" Height="56"
+          HorizontalAlignment="Center"
+          Source="avares://Everywhere.Core/Assets/Everywhere.png"/>
+        <StackPanel
+          HorizontalAlignment="Center" Spacing="4">
+          <TextBlock
+            HorizontalAlignment="Center" Classes="Small"
+            FontWeight="SemiBold">
+            <TextBlock.Text>
+              <I18N Key="{x:Static LocaleKey.UserProfile_LoginToCloud}"/>
+            </TextBlock.Text>
+          </TextBlock>
+          <TextBlock
+            HorizontalAlignment="Center" Classes="Caption Muted"
+            TextAlignment="Center">
+            <TextBlock.Text>
+              <I18N Key="{x:Static LocaleKey.UserProfile_CloudDescription}"/>
+            </TextBlock.Text>
+          </TextBlock>
+        </StackPanel>
+      </StackPanel>
+
+      <Button
+        Classes="Primary" HorizontalAlignment="Stretch"
+        shadui:ButtonAssist.Icon="{LucideIconContent LogIn}"
+        Command="{Binding LoginCommand}">
+        <Button.Content>
+          <I18N Key="{x:Static LocaleKey.UserProfile_Login}"/>
+        </Button.Content>
+      </Button>
+    </StackPanel>
+
+    <!--  Logged In State  -->
+    <StackPanel
+      IsVisible="{Binding CloudClient.CurrentUser, Converter={x:Static ObjectConverters.IsNotNull}}"
+      Spacing="16">
+      <!--  User Info Header  -->
+      <StackPanel
+        HorizontalAlignment="Center" Spacing="8">
+        <shadui:Avatar
+          Width="56" Height="56"
+          HorizontalAlignment="Center"
+          CornerRadius="{DynamicResource FullCornerRadius}"
+          Fallback="{Binding CloudClient.CurrentUser.Name, FallbackValue=?}"
+          Source="{Binding CloudClient.CurrentUser.AvatarUrl, FallbackValue={x:Null}}"/>
+        <StackPanel
+          HorizontalAlignment="Center" Spacing="2">
+          <TextBlock
+            HorizontalAlignment="Center" Classes="Small"
+            FontWeight="SemiBold"
+            Text="{Binding CloudClient.CurrentUser.Name, FallbackValue={x:Null}}"
+            TextTrimming="CharacterEllipsis"/>
+          <TextBlock
+            HorizontalAlignment="Center" Classes="Caption Muted"
+            Text="{Binding CloudClient.CurrentUser.Email, FallbackValue={x:Null}}"
+            TextTrimming="CharacterEllipsis"/>
+          <shadui:Badge
+            Classes="Secondary" Margin="0,4,0,0"
+            HorizontalAlignment="Center"
+            Content="{Binding CloudClient.CurrentUser.SubscriptionPlan, FallbackValue={x:Null}, Converter={x:Static vc:DynamicResourceKeyConverter.Shared}}"/>
+        </StackPanel>
+      </StackPanel>
+
+      <!--  Quota Display  -->
+      <Border
+        Padding="12"
+        Background="{DynamicResource MutedBackgroundColor}"
+        CornerRadius="{DynamicResource MdCornerRadius}">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto">
+            <TextBlock
+              Classes="Caption" Grid.Column="0">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.UserProfile_TokenQuota}"/>
+              </TextBlock.Text>
+            </TextBlock>
+            <TextBlock
+              Classes="Caption Muted" Grid.Column="1">
+              <Run Text="{Binding CloudClient.CurrentUser.UsedTokens, StringFormat={}{0:N0}, FallbackValue=0}"/>
+              <Run Text="/"/>
+              <Run Text="{Binding CloudClient.CurrentUser.TotalTokens, StringFormat={}{0:N0}, FallbackValue=0}"/>
+            </TextBlock>
+          </Grid>
+          <ProgressBar
+            Height="6"
+            Maximum="{Binding CloudClient.CurrentUser.TotalTokens, FallbackValue=1}"
+            Value="{Binding CloudClient.CurrentUser.UsedTokens, FallbackValue=0}"/>
+          <TextBlock
+            Classes="Caption Muted"
+            IsVisible="{Binding CloudClient.CurrentUser.QuotaResetInfo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            Text="{Binding CloudClient.CurrentUser.QuotaResetInfo, FallbackValue={x:Null}}"/>
+        </StackPanel>
+      </Border>
+
+      <Separator/>
+
+      <!--  Quick Actions  -->
+      <StackPanel Spacing="2">
+        <Button
+          Classes="Ghost" HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Left"
+          Command="{Binding ManageSubscriptionCommand}">
+          <StackPanel
+            Orientation="Horizontal" Spacing="8">
+            <LucideIcon
+              Foreground="{DynamicResource MutedForegroundColor}"
+              Kind="CreditCard" Size="16"/>
+            <TextBlock
+              Classes="Small" VerticalAlignment="Center">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.UserProfile_ManageSubscription}"/>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Button
+          Classes="Ghost" HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Left"
+          Command="{Binding UpgradePlanCommand}"
+          IsVisible="{Binding CloudClient.CurrentUser.CanUpgradePlan, FallbackValue=False}">
+          <StackPanel
+            Orientation="Horizontal" Spacing="8">
+            <LucideIcon
+              Foreground="{DynamicResource MutedForegroundColor}"
+              Kind="Sparkles" Size="16"/>
+            <TextBlock
+              Classes="Small" VerticalAlignment="Center">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.UserProfile_UpgradePlan}"/>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Button
+          Classes="Ghost" HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Left"
+          Command="{Binding OpenHelpCenterCommand}">
+          <StackPanel
+            Orientation="Horizontal" Spacing="8">
+            <LucideIcon
+              Foreground="{DynamicResource MutedForegroundColor}"
+              Kind="HandHelping" Size="16"/>
+            <TextBlock
+              Classes="Small" VerticalAlignment="Center">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.UserProfile_HelpCenter}"/>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Button
+          Classes="Ghost" HorizontalAlignment="Stretch"
+          HorizontalContentAlignment="Left"
+          Command="{Binding OpenFeedbackCommand}">
+          <StackPanel
+            Orientation="Horizontal" Spacing="8">
+            <LucideIcon
+              Foreground="{DynamicResource MutedForegroundColor}"
+              Kind="MessageSquare" Size="16"/>
+            <TextBlock
+              Classes="Small" VerticalAlignment="Center">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.UserProfile_Feedback}"/>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Button>
+      </StackPanel>
+
+      <!--  Logout Button  -->
+      <Button
+        Classes="Ghost" HorizontalAlignment="Stretch"
+        HorizontalContentAlignment="Left"
+        Command="{Binding LogoutCommand}">
+        <StackPanel
+          Orientation="Horizontal" Spacing="8">
+          <LucideIcon
+            Foreground="{DynamicResource DestructiveForegroundColor}"
+            Kind="LogOut" Size="16"/>
+          <TextBlock
+            Classes="Small" VerticalAlignment="Center"
+            Foreground="{DynamicResource DestructiveForegroundColor}">
+            <TextBlock.Text>
+              <I18N Key="{x:Static LocaleKey.UserProfile_Logout}"/>
+            </TextBlock.Text>
+          </TextBlock>
+        </StackPanel>
+      </Button>
+    </StackPanel>
+  </Panel>
+</UserControl>

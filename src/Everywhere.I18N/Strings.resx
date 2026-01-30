@@ -2138,4 +2138,37 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>Read the visual tree of a window or element on screen.</value>
     </data>
+    <data name="UserProfile_NotLoggedIn" xml:space="preserve">
+        <value>Not logged in</value>
+    </data>
+    <data name="UserProfile_LoginPrompt" xml:space="preserve">
+        <value>Login to access cloud features</value>
+    </data>
+    <data name="UserProfile_CloudDescription" xml:space="preserve">
+        <value>Sync your data, access AI models, and more</value>
+    </data>
+    <data name="UserProfile_Login" xml:space="preserve">
+        <value>Login</value>
+    </data>
+    <data name="UserProfile_LoginToCloud" xml:space="preserve">
+        <value>Login to Everywhere Cloud</value>
+    </data>
+    <data name="UserProfile_Logout" xml:space="preserve">
+        <value>Logout</value>
+    </data>
+    <data name="UserProfile_TokenQuota" xml:space="preserve">
+        <value>Token Quota</value>
+    </data>
+    <data name="UserProfile_ManageSubscription" xml:space="preserve">
+        <value>Manage Subscription</value>
+    </data>
+    <data name="UserProfile_UpgradePlan" xml:space="preserve">
+        <value>Upgrade Plan</value>
+    </data>
+    <data name="UserProfile_HelpCenter" xml:space="preserve">
+        <value>Help Center</value>
+    </data>
+    <data name="UserProfile_Feedback" xml:space="preserve">
+        <value>Feedback</value>
+    </data>
 </root>
