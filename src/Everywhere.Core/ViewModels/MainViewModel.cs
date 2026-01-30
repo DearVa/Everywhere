@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
+using Everywhere.Cloud;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
@@ -13,84 +14,55 @@ using ShadUI;
 
 namespace Everywhere.ViewModels;
 
-public interface INavigationItem
-{
-    DynamicResourceKeyBase TitleKey { get; }
-
-    object Content { get; }
-}
-
-public record NavigationItem(DynamicResourceKeyBase TitleKey, object Content) : INavigationItem;
-
 public sealed partial class MainViewModel : ReactiveViewModelBase, IDisposable
 {
-    public ReadOnlyObservableCollection<NavigationBarItem> Pages { get; }
+    [ObservableProperty] public partial NavigationBarItem? CurrentItem { get; set; }
 
-    public NavigationBarItem? SelectedPage
-    {
-        get;
-        set
-        {
-            if (!SetProperty(ref field, value)) return;
-            if (value is not null) Navigate(new ShadNavigationItem(value));
-        }
-    }
+    public ReadOnlyObservableCollection<NavigationBarItem> Items { get; }
 
-    public ReadOnlyObservableCollection<INavigationItem> NavigationItems { get; }
-
-    [ObservableProperty] public partial INavigationItem? CurrentNavigationItem { get; private set; }
+    public ICloudClient CloudClient { get; }
 
     /// <summary>
     /// Use public property for MVVM binding
     /// </summary>
     public PersistentState PersistentState { get; }
 
-    private readonly SourceList<NavigationBarItem> _pagesSource = new();
-    private readonly SourceList<INavigationItem> _navigationItemsSource = new();
+    private readonly SourceList<NavigationBarItem> _itemsSource = new();
     private readonly CompositeDisposable _disposables = new(2);
 
     private readonly IServiceProvider _serviceProvider;
     private readonly Settings _settings;
 
-    public MainViewModel(IServiceProvider serviceProvider, Settings settings, PersistentState persistentState)
+    public MainViewModel(
+        ICloudClient cloudClient,
+        IServiceProvider serviceProvider,
+        Settings settings,
+        PersistentState persistentState)
     {
-        PersistentState = persistentState;
+        CloudClient = cloudClient;
+
         _serviceProvider = serviceProvider;
         _settings = settings;
+        PersistentState = persistentState;
 
-        Pages = _pagesSource
-            .Connect()
-            .ObserveOnDispatcher()
-            .BindEx(_disposables);
-
-        NavigationItems = _navigationItemsSource
+        Items = _itemsSource
             .Connect()
             .ObserveOnDispatcher()
             .BindEx(_disposables);
     }
 
-    public void Navigate(INavigationItem navigationItem)
+    protected internal override async Task ViewLoaded(CancellationToken cancellationToken)
     {
-        _navigationItemsSource.Edit(items =>
+        if (_itemsSource.Count > 0)
         {
-            if (!items.Contains(navigationItem))
-            {
-                items.Add(navigationItem);
-                if (items.Count > 10)
-                {
-                    items.RemoveAt(0);
-                }
-            }
+            await base.ViewLoaded(cancellationToken);
+            return;
+        }
 
-            CurrentNavigationItem ??= navigationItem;
-        });
-    }
+        // Try to restore user session with silent login (fire and forget)
+        _ = CloudClient.TrySilentLoginAsync();
 
-    protected internal override Task ViewLoaded(CancellationToken cancellationToken)
-    {
-        if (_pagesSource.Count > 0) return base.ViewLoaded(cancellationToken);
-
-        _pagesSource.AddRange(
+        _itemsSource.AddRange(
             _serviceProvider
                 .GetServices<IMainViewPageFactory>()
                 .SelectMany(f => f.CreatePages())
@@ -103,11 +75,11 @@ public sealed partial class MainViewModel : ReactiveViewModelBase, IDisposable
                     Icon = new LucideIcon { Kind = p.Icon, Size = 20 },
                     [!NavigationBarItem.ToolTipProperty] = p.Title.ToBinding()
                 }));
-        SelectedPage = _pagesSource.Items.FirstOrDefault();
+        CurrentItem = _itemsSource.Items.FirstOrDefault();
 
         ShowOobeDialogOnDemand();
 
-        return base.ViewLoaded(cancellationToken);
+        await base.ViewLoaded(cancellationToken);
     }
 
     /// <summary>
@@ -152,31 +124,5 @@ public sealed partial class MainViewModel : ReactiveViewModelBase, IDisposable
     public void Dispose()
     {
         _disposables.Dispose();
-    }
-
-    /// <summary>
-    /// A navigation item that wraps a ShadUI NavigationBarItem.
-    /// </summary>
-    private sealed class ShadNavigationItem : INavigationItem
-    {
-        public DynamicResourceKeyBase TitleKey { get; }
-
-        public object Content { get; }
-
-        private readonly NavigationBarItem _navigationBarItem;
-
-        public ShadNavigationItem(NavigationBarItem navigationBarItem)
-        {
-            _navigationBarItem = navigationBarItem;
-            var mainViewPage = navigationBarItem.Route.NotNull<IMainViewPage>();
-            TitleKey = mainViewPage.Title;
-            Content = mainViewPage;
-        }
-
-        public override bool Equals(object? obj) =>
-            obj is ShadNavigationItem other && other._navigationBarItem == _navigationBarItem ||
-            obj is NavigationBarItem item && item == _navigationBarItem;
-
-        public override int GetHashCode() => _navigationBarItem.GetHashCode();
     }
 }
