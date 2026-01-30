@@ -115,9 +115,9 @@ public class EssentialPlugin : BuiltInChatPlugin
         userInterface.DisplaySink.AppendDynamicResourceKey(
             new FormattedDynamicResourceKey(
                 LocaleKey.BuiltInChatPlugin_Essential_RunSubagent_TokenCount,
-                new DirectResourceKey(assistantChatMessage.InputTokenCount),
-                new DirectResourceKey(assistantChatMessage.OutputTokenCount),
-                new DirectResourceKey(assistantChatMessage.TotalTokenCount)),
+                new DirectResourceKey(assistantChatMessage.UsageDetails.InputTokenCount),
+                new DirectResourceKey(assistantChatMessage.UsageDetails.OutputTokenCount),
+                new DirectResourceKey(assistantChatMessage.UsageDetails.TotalTokenCount)),
             "Small Muted");
         return result ?? string.Empty;
     }

@@ -152,18 +152,6 @@ public sealed partial class AssistantChatMessage :
     [IgnoreMember]
     public ReadOnlyObservableCollection<AssistantChatMessageSpan> Spans { get; }
 
-    [Key(6)]
-    [ObservableProperty]
-    public partial long InputTokenCount { get; set; }
-
-    [Key(7)]
-    [ObservableProperty]
-    public partial long OutputTokenCount { get; set; }
-
-    [Key(8)]
-    [ObservableProperty]
-    public partial double TotalTokenCount { get; set; }
-
     [Key(9)]
     [ObservableProperty]
     public partial MetadataDictionary? Metadata { get; set; }
@@ -182,6 +170,10 @@ public sealed partial class AssistantChatMessage :
             });
         }
     }
+
+    [Key(11)]
+    [ObservableProperty]
+    public partial ChatUsageDetails UsageDetails { get; private set; } = new();
 
     [IgnoreMember]
     public IEnumerable<ChatAttachment> Attachments => _spansSource.Items.OfType<IHaveChatAttachments>().SelectMany(s => s.Attachments);

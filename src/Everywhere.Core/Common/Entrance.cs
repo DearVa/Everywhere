@@ -161,14 +161,14 @@ public static partial class Entrance
 
     private static void InitializeTelemetry()
     {
-        if (string.IsNullOrEmpty(SentryDsn)) return;
+        //if (string.IsNullOrEmpty(SentryDsn)) return;
 
         var sentry = SentrySdk.Init(o =>
         {
-            o.Dsn = SentryDsn;
+            o.Dsn = "https://267d4b1bb52cae42820f2569329232f8@o4510145762689024.ingest.us.sentry.io/4510145814069248";
             o.AutoSessionTracking = true;
             o.IsGlobalModeEnabled = true;
-            o.Experimental.EnableLogs = true;
+            o.EnableLogs = true;
 #if DEBUG
             o.TracesSampleRate = 1.0;
             o.Environment = "debug";
