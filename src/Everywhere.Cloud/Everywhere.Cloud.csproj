@@ -6,9 +6,5 @@
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj" />
     <ProjectReference Include="..\Everywhere.Core\Everywhere.Core.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Duende.IdentityModel.OidcClient" />
-  </ItemGroup>
   
 </Project>
