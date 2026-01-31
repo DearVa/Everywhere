@@ -1,4 +1,5 @@
 using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Avalonia.Media.Imaging;
 using MaaFramework.Binding;
@@ -13,27 +14,25 @@ namespace Everywhere.Interop;
 public sealed class MaaOcrService : IOcrService, IDisposable
 {
     private const string OcrDownloadUrl = "https://download.maafw.xyz/MaaCommonAssets/OCR/ppocr_v5/ppocr_v5-zh_cn.zip";
+    private const string OcrZipSha256 = "c98af2a094b75986dd73b1f362a30e9eaeeffa1cf28a8a9fea80e6ccc8538baf";
     private static readonly string[] OcrRequiredFiles = ["det.onnx", "keys.txt", "rec.onnx"];
 
-    private readonly string _bundleDir;
-    private readonly string _ocrDir;
+    private readonly string _bundleDir = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Everywhere", "MaaBundle");
+    private readonly string _ocrDir = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "Everywhere", "MaaBundle", "model", "ocr");
     private readonly SemaphoreSlim _initLock = new(1, 1);
 
     private MaaResource? _resource;
     private bool _isInitialized;
     private bool _disposed;
 
-    public MaaOcrService()
+    public async ValueTask<bool> EnsureModelAsync(IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
-        _bundleDir = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Everywhere", "MaaBundle");
-        _ocrDir = Path.Combine(_bundleDir, "model", "ocr");
-    }
-
-    public async Task<bool> EnsureModelAsync(IProgress<double>? progress = null, CancellationToken cancellationToken = default)
-    {
-        await _initLock.WaitAsync(cancellationToken);
+        if (_isInitialized) return true;
+        await _initLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             if (_isInitialized) return true;
@@ -79,6 +78,14 @@ public sealed class MaaOcrService : IOcrService, IDisposable
         return await Task.Run(() => PerformOcrInternal(imageData), cancellationToken);
     }
 
+    private static string ComputeSha256(string filePath)
+    {
+        using var sha256 = SHA256.Create();
+        using var stream = File.OpenRead(filePath);
+        var hash = sha256.ComputeHash(stream);
+        return Convert.ToHexString(hash).ToLowerInvariant();
+    }
+
     private bool CheckOcrFilesExist()
     {
         if (!Directory.Exists(_ocrDir)) return false;
@@ -107,7 +114,8 @@ public sealed class MaaOcrService : IOcrService, IDisposable
     private async Task<bool> DownloadAndExtractOcrAsync(IProgress<double>? progress, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(_ocrDir);
-        var modelDir = Path.GetDirectoryName(_ocrDir)!;
+        var modelDir = Path.GetDirectoryName(_ocrDir);
+        ArgumentNullException.ThrowIfNull(modelDir);
         Directory.CreateDirectory(modelDir);
         var zipFile = Path.Combine(modelDir, "ppocr_v5-zh_cn.zip");
 
@@ -123,7 +131,10 @@ public sealed class MaaOcrService : IOcrService, IDisposable
             await using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
             await using (var fileStream = new FileStream(zipFile, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
             {
-                var buffer = new byte[65536];
+                if (totalBytes > 0)
+                    fileStream.SetLength(totalBytes);
+
+                var buffer = new byte[81920];
                 long downloadedBytes = 0;
                 int bytesRead;
 
@@ -136,6 +147,12 @@ public sealed class MaaOcrService : IOcrService, IDisposable
                         progress?.Report((double)downloadedBytes / totalBytes * 0.9);
                 }
             }
+            var computedSha256 = ComputeSha256(zipFile);
+            if (computedSha256 != OcrZipSha256)
+            {
+                File.Delete(zipFile);
+                return false;
+            }
 
             ZipFile.ExtractToDirectory(zipFile, _ocrDir, true);
 
@@ -144,7 +161,7 @@ public sealed class MaaOcrService : IOcrService, IDisposable
                 var targetPath = Path.Combine(_ocrDir, requiredFile);
                 if (File.Exists(targetPath)) continue;
 
-                var foundFiles = Directory.GetFiles(_ocrDir, requiredFile, SearchOption.AllDirectories);
+                var foundFiles = Directory.GetFiles(_ocrDir, requiredFile, SearchOption.TopDirectoryOnly);
                 if (foundFiles.Length > 0)
                     File.Move(foundFiles[0], targetPath);
             }

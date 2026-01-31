@@ -32,7 +32,7 @@ public interface IOcrService
     /// <param name="progress">Optional progress callback (0.0 - 1.0).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>True if model is ready, false if download failed.</returns>
-    Task<bool> EnsureModelAsync(IProgress<double>? progress = null, CancellationToken cancellationToken = default);
+    ValueTask<bool> EnsureModelAsync(IProgress<double>? progress = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Performs OCR on the given image.
