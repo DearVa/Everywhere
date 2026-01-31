@@ -2066,4 +2066,7 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Araç çağrılırken hata oluştu.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Derin Düşünme</value>
+    </data>
 </root>

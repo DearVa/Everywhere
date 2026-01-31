@@ -81,4 +81,10 @@ public interface IChatPluginDisplaySink
     /// <param name="code"></param>
     /// <param name="language"></param>
     void AppendCodeBlock(string code, string? language = null);
+
+    /// <summary>
+    /// Appends chat context information to the display sink. Used for subagents that need to display a subconversation.
+    /// </summary>
+    /// <param name="chatContext"></param>
+    void AppendChatContext(ChatContext chatContext);
 }

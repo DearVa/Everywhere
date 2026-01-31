@@ -2069,4 +2069,7 @@
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>ツールの呼び出し中にエラーが発生しました。</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>深い思考</value>
+    </data>
 </root>

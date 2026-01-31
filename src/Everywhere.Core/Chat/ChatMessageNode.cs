@@ -55,6 +55,13 @@ public sealed partial class ChatMessageNode : ObservableObject, IDisposable
         _childrenCountChangedSubscription = _children.CountChanged.Subscribe(_ => OnPropertyChanged(nameof(ChoiceCount)));
     }
 
+    [SerializationConstructor]
+    private ChatMessageNode(Guid id, ChatMessage message, IReadOnlyList<Guid> children, int choiceIndex) : this(id, message)
+    {
+        _children.AddRange(children);
+        ChoiceIndex = choiceIndex;
+    }
+
     private void HandleMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(nameof(Message));

@@ -142,27 +142,39 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
             () => this,
             static that =>
             {
-                List<ChatContextMetadataChangedMessage> toSave;
+                List<ChatContextMetadataChangedMessage> messages;
                 lock (that._saveBuffer)
                 {
-                    toSave = that._saveBuffer.Values.ToList(); // ToList is better than ToArray (less allocation)
+                    messages = that._saveBuffer.Values.ToList(); // ToList is better than ToArray (less allocation)
                     that._saveBuffer.Clear();
                 }
-                Task.WhenAll(
-                        toSave.AsValueEnumerable()
-                            .Where(p => !IsEmptyContext(p.Context) && !p.Metadata.IsTemporary)
-                            .Select(p => p.Context is not null ?
-                                that._chatContextStorage.SaveChatContextAsync(p.Context) :
-                                that._chatContextStorage.SaveChatContextMetadataAsync(p.Metadata)) // only save metadata if context is null
-                            .ToList())
-                    .Detach(that._logger.ToExceptionHandler());
+                SaveMessagesAsync(that, messages).Detach(that._logger.ToExceptionHandler());
+
+                static async Task SaveMessagesAsync(ChatContextManager that, List<ChatContextMetadataChangedMessage> messages)
+                {
+                    // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+                    foreach (var message in messages)
+                    {
+                        if (IsEmptyContext(message.Context) || message.Metadata.IsTemporary) continue;
+
+                        try
+                        {
+                            if (message.Context is not null) await that._chatContextStorage.SaveChatContextAsync(message.Context);
+                            else await that._chatContextStorage.SaveChatContextMetadataAsync(message.Metadata);
+                        }
+                        catch (Exception ex)
+                        {
+                            that._logger.LogError(ex, "Failed to save chat context {ChatContextId}", message.Metadata.Id);
+                        }
+                    }
+                }
             },
             TimeSpan.FromSeconds(0.5)
         );
 
         WeakReferenceMessenger.Default.Register(this);
 
-        Task.Run(CleanupUnusedWorkingDirectories);
+        Task.Run(CleanupUnusedWorkingDirectories).Detach(logger.ToExceptionHandler());
     }
 
     /// <summary>

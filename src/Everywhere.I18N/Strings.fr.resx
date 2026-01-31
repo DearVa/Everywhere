@@ -2069,4 +2069,7 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Erreur lors de l'appel de l'outil.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Réflexion Approfondie</value>
+    </data>
 </root>

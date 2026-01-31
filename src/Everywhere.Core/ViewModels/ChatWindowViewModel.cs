@@ -688,17 +688,29 @@ public sealed partial class ChatWindowViewModel :
 
         var markdownBuilder = new StringBuilder();
 
-        var topic = metadata.Topic ?? LocaleResolver.ChatContext_Metadata_Topic_Default;
-        markdownBuilder.AppendLine($"# {topic}");
-        markdownBuilder.AppendLine();
-        markdownBuilder.AppendLine($"**{LocaleResolver.ChatWindowViewModel_ExportMarkdown_DateCreated}:** {metadata.DateCreated:F}");
-        markdownBuilder.AppendLine($"**{LocaleResolver.ChatWindowViewModel_ExportMarkdown_DateModified}:** {metadata.DateModified:F}");
-        markdownBuilder.AppendLine();
-        markdownBuilder.AppendLine("---");
-        markdownBuilder.AppendLine();
+        markdownBuilder
+            .Append("# ")
+            .AppendLine(metadata.Topic ?? LocaleResolver.ChatContext_Metadata_Topic_Default)
+            .AppendLine();
+
+        markdownBuilder
+            .Append("**")
+            .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_DateCreated)
+            .Append(":** ")
+            .AppendLine(metadata.DateCreated.ToString("F"))
+            .AppendLine();
+
+        markdownBuilder
+            .Append("**")
+            .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_DateModified)
+            .Append(":** ")
+            .AppendLine(metadata.DateModified.ToString("F"))
+            .AppendLine();
+
+        markdownBuilder.AppendLine("---").AppendLine();
 
         foreach (var chatMessage in chatContext
-                     .GetAllNodes()
+                     .Items
                      .AsValueEnumerable()
                      .Select(node => node.Message))
         {
@@ -706,17 +718,26 @@ public sealed partial class ChatWindowViewModel :
             {
                 case UserChatMessage user:
                 {
-                    markdownBuilder.AppendLine($"## 👤 {LocaleResolver.ChatWindowViewModel_ExportMarkdown_UserRole}");
-                    markdownBuilder.AppendLine();
-                    markdownBuilder.AppendLine(user.Content);
+                    markdownBuilder
+                        .Append("## 👤 ")
+                        .AppendLine(LocaleResolver.ChatWindowViewModel_ExportMarkdown_UserRole)
+                        .AppendLine()
+                        .AppendLine(user.Content)
+                        .AppendLine();
 
                     if (user.Attachments.Any())
                     {
-                        markdownBuilder.AppendLine();
-                        markdownBuilder.AppendLine($"**{LocaleResolver.ChatWindowViewModel_ExportMarkdown_UserAttachments}:**");
+                        markdownBuilder
+                            .Append("**")
+                            .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_UserAttachments)
+                            .AppendLine(":**")
+                            .AppendLine();
                         foreach (var attachment in user.Attachments)
                         {
-                            markdownBuilder.AppendLine($"- {attachment.HeaderKey}");
+                            markdownBuilder
+                                .Append("- ")
+                                .AppendLine(attachment.HeaderKey.ToString())
+                                .AppendLine();
                         }
                     }
 
@@ -725,34 +746,72 @@ public sealed partial class ChatWindowViewModel :
                 }
                 case AssistantChatMessage assistant:
                 {
-                    if (assistant.Spans.AsValueEnumerable().All(span => span.MarkdownBuilder.Length == 0 && span.FunctionCalls.Count == 0))
-                        break;
-                    markdownBuilder.AppendLine($"## 🤖 {LocaleResolver.ChatWindowViewModel_ExportMarkdown_AssistantRole}");
-                    markdownBuilder.AppendLine();
+                    markdownBuilder
+                        .Append("## 🤖 ")
+                        .AppendLine(LocaleResolver.ChatWindowViewModel_ExportMarkdown_AssistantRole)
+                        .AppendLine();
 
-                    // ReSharper disable once ForCanBeConvertedToForeach
-                    // foreach would create an enumerator object, which will cause thread lock issues.
-                    for (var spanIndex = 0; spanIndex < assistant.Spans.Count; spanIndex++)
+                    foreach (var span in assistant.Items.AsValueEnumerable())
                     {
-                        var span = assistant.Spans[spanIndex];
-                        if (span.MarkdownBuilder.Length > 0)
+                        switch (span)
                         {
-                            markdownBuilder.AppendLine(span.MarkdownBuilder.ToString());
-                        }
-
-                        // ReSharper disable once ForCanBeConvertedToForeach
-                        // foreach would create an enumerator object, which will cause thread lock issues.
-                        for (var callIndex = 0; callIndex < span.FunctionCalls.Count; callIndex++)
-                        {
-                            var functionCall = span.FunctionCalls[callIndex];
-                            markdownBuilder.AppendLine(
-                                $"***{LocaleResolver.ChatWindowViewModel_ExportMarkdown_FunctionCall}:** {functionCall.HeaderKey}*");
-
-                            if (functionCall.ErrorMessageKey is not null)
+                            case AssistantChatMessageTextSpan { Content: { Length: > 0 } content }:
                             {
-                                markdownBuilder.AppendLine();
-                                markdownBuilder.AppendLine(
-                                    $"**{LocaleResolver.ChatWindowViewModel_ExportMarkdown_ErrorMessage}:** {functionCall.ErrorMessageKey}");
+                                markdownBuilder.AppendLine(content).AppendLine();
+                                break;
+                            }
+                            case AssistantChatMessageFunctionCallSpan { Items: { Count: > 0 } functionCalls }:
+                            {
+                                foreach (var functionCall in functionCalls.AsValueEnumerable())
+                                {
+                                    markdownBuilder
+                                        .Append("🛠️ **")
+                                        .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_FunctionCall)
+                                        .Append(":** ")
+                                        .AppendLine(functionCall.HeaderKey?.ToString())
+                                        .AppendLine();
+
+                                    foreach (var result in functionCall.Results
+                                                 .AsValueEnumerable()
+                                                 .Select(r => r.Result?.ToString())
+                                                 .Where(r => !r.IsNullOrEmpty()))
+                                    {
+                                        markdownBuilder
+                                            .AppendLine("```")
+                                            .AppendLine(result)
+                                            .AppendLine("```")
+                                            .AppendLine();
+                                    }
+
+                                    if (functionCall.ErrorMessageKey?.ToString() is { Length: > 0 } errorMessage)
+                                    {
+                                        markdownBuilder
+                                            .Append("**")
+                                            .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_ErrorMessage)
+                                            .Append(":** ")
+                                            .AppendLine(errorMessage)
+                                            .AppendLine();
+                                    }
+                                }
+                                break;
+                            }
+                            case AssistantChatMessageReasoningSpan { ReasoningOutput: { Length: > 0 } reasoningOutput }:
+                            {
+                                markdownBuilder
+                                    .AppendLine("<details open>")
+                                    .Append("<summary><b>")
+                                    .Append("🤔 ")
+                                    .Append(LocaleResolver.ChatWindowViewModel_ExportMarkdown_ReasoningOutput)
+                                    .AppendLine("</b></summary>")
+                                    .AppendLine();
+
+                                foreach (var line in reasoningOutput.Split(["\r\n", "\r", "\n"], StringSplitOptions.None))
+                                {
+                                    markdownBuilder.Append("> ").AppendLine(line);
+                                }
+
+                                markdownBuilder.AppendLine("</details>").AppendLine();
+                                break;
                             }
                         }
                     }

@@ -27,6 +27,7 @@ namespace Everywhere.Chat.Plugins;
 [Union(7, typeof(ChatPluginUrlsDisplayBlock))]
 [Union(8, typeof(ChatPluginSeparatorDisplayBlock))]
 [Union(9, typeof(ChatPluginCodeBlockDisplayBlock))]
+[Union(10, typeof(ChatPluginChatContextDisplayBlock))]
 public abstract partial class ChatPluginDisplayBlock : ObservableObject
 {
     /// <summary>
@@ -269,4 +270,11 @@ public sealed partial class ChatPluginCodeBlockDisplayBlock(string code, string?
 
     [Key(1)]
     public string? Language { get; } = language;
+}
+
+[MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
+public sealed partial class ChatPluginChatContextDisplayBlock(ChatContext chatContext) : ChatPluginDisplayBlock
+{
+    [Key(0)]
+    public ChatContext ChatContext { get; } = chatContext;
 }

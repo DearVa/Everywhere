@@ -12,12 +12,10 @@ using Everywhere.Storage;
 using Everywhere.Utilities;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
-using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using OpenAI.Chat;
 using ZLinq;
 using ChatFunction = Everywhere.Chat.Plugins.ChatFunction;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;
@@ -296,8 +294,8 @@ public sealed partial class ChatService(
         AssistantChatMessage assistantChatMessage,
         CancellationToken cancellationToken)
     {
-        using var activity = _activitySource.StartActivity();
-        activity?.SetTag("chat.context.id", chatContext.Metadata.Id);
+        using var activity = StartChatActivity("chat", customAssistant);
+        activity?.SetTag("id", chatContext.Metadata.Id);
 
         try
         {
@@ -309,64 +307,55 @@ public sealed partial class ChatService(
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
             chatContextManager.PopulateSystemPrompt(chatContext, customAssistant.SystemPrompt);
 
-            var chatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
-                chatContext
-                    .Items
-                    .AsValueEnumerable()
-                    .Select(n => n.Message)
-                    .Where(m => !ReferenceEquals(m, assistantChatMessage)) // exclude the current assistant message
-                    .Where(m => m.Role.Label is "system" or "assistant" or "user" or "tool")
-                    .ToList(), // make a snapshot, otherwise async may cause thread deadlock
-                cancellationToken);
-
-            var toolCallCount = 0;
             while (true)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var chatSpan = new AssistantChatMessageSpan();
-                assistantChatMessage.AddSpan(chatSpan);
-                try
+                // Build the chat history for the current generation.
+                var chatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
+                    chatContext
+                        .Items
+                        .AsValueEnumerable()
+                        .Select(n => n.Message)
+                        .Where(m => m.Role.Label is "system" or "assistant" or "user" or "tool")
+                        .ToList(),
+                    cancellationToken);
+
+                if (!chatContext.Metadata.IsTemporary && // Do not generate titles for temporary contexts.
+                    chatContext.Metadata.Topic.IsNullOrEmpty() &&
+                    chatHistory.Count(c => c.Role == AuthorRole.User) == 1 && // Only try when there's one user message.
+                    chatHistory.FirstOrDefault(c => c.Role == AuthorRole.User)?.Content is { Length: > 0 } userMessage)
                 {
-                    var functionCallContents = await GetStreamingChatMessageContentsAsync(
-                        kernel,
-                        kernelMixin,
-                        chatContext,
-                        chatHistory,
+                    // If the chat history only contains one user message and one assistant message,
+                    // we can generate a title for the chat context.
+                    GenerateTitleAsync(
                         customAssistant,
-                        chatSpan,
-                        assistantChatMessage,
-                        cancellationToken);
-                    if (functionCallContents.Count <= 0) break;
-
-                    toolCallCount += functionCallContents.Count;
-
-                    await InvokeFunctionsAsync(kernel, chatContext, chatHistory, chatSpan, functionCallContents, cancellationToken);
+                        kernelMixin,
+                        userMessage,
+                        chatContext.Metadata,
+                        cancellationToken).Detach(IExceptionHandler.DangerouslyIgnoreAllException);
                 }
-                finally
-                {
-                    chatSpan.FinishedAt = DateTimeOffset.UtcNow;
-                    chatSpan.ReasoningFinishedAt = DateTimeOffset.UtcNow;
-                }
-            }
 
-            activity?.SetTag("tool_calls.count", toolCallCount);
-
-            if (!chatContext.Metadata.IsTemporary && // Do not generate titles for temporary contexts.
-                chatContext.Metadata.Topic.IsNullOrEmpty() &&
-                chatHistory.Any(c => c.Role == AuthorRole.User) &&
-                chatHistory.Any(c => c.Role == AuthorRole.Assistant) &&
-                chatHistory.First(c => c.Role == AuthorRole.User).Content is { Length: > 0 } userMessage &&
-                chatHistory.First(c => c.Role == AuthorRole.Assistant).Content is { Length: > 0 } assistantMessage)
-            {
-                // If the chat history only contains one user message and one assistant message,
-                // we can generate a title for the chat context.
-                GenerateTitleAsync(
+                // Process streaming chat message contents (thinking, text, function calls, etc.)
+                // It will return the function call contents for further processing.
+                var functionCallContents = await GetStreamingChatMessageContentsAsync(
+                    customAssistant,
+                    kernel,
                     kernelMixin,
-                    userMessage,
-                    assistantMessage,
-                    chatContext.Metadata,
-                    cancellationToken).Detach(IExceptionHandler.DangerouslyIgnoreAllException);
+                    chatContext,
+                    chatHistory,
+                    assistantChatMessage,
+                    cancellationToken);
+                if (functionCallContents.Count <= 0) break; // No more function calls, exit the loop.
+
+                // Invoke the functions specified in the function call contents.
+                await InvokeFunctionsAsync(
+                    customAssistant,
+                    kernel,
+                    chatContext,
+                    assistantChatMessage,
+                    functionCallContents,
+                    cancellationToken);
             }
         }
         catch (Exception e)
@@ -378,6 +367,7 @@ public sealed partial class ChatService(
         }
         finally
         {
+            SetChatUsageTags(activity, assistantChatMessage.UsageDetails);
             assistantChatMessage.FinishedAt = DateTimeOffset.UtcNow;
             assistantChatMessage.IsBusy = false;
         }
@@ -386,80 +376,56 @@ public sealed partial class ChatService(
     /// <summary>
     /// Gets streaming chat message contents from the chat completion service.
     /// </summary>
+    /// <param name="customAssistant"></param>
     /// <param name="kernel"></param>
     /// <param name="kernelMixin"></param>
     /// <param name="chatContext"></param>
     /// <param name="chatHistory"></param>
-    /// <param name="customAssistant"></param>
-    /// <param name="chatSpan"></param>
     /// <param name="assistantChatMessage"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     private async Task<IReadOnlyList<FunctionCallContent>> GetStreamingChatMessageContentsAsync(
+        CustomAssistant customAssistant,
         Kernel kernel,
         IKernelMixin kernelMixin,
         ChatContext chatContext,
         ChatHistory chatHistory,
-        CustomAssistant customAssistant,
-        AssistantChatMessageSpan chatSpan,
         AssistantChatMessage assistantChatMessage,
         CancellationToken cancellationToken)
     {
-        using var activity = _activitySource.StartActivity();
-
-        var inputTokenCount = 0L;
-        var outputTokenCount = 0L;
-        var totalTokenCount = 0L;
+        using var activity = StartChatActivity("invoke_agent", customAssistant);
+        activity?.SetTag("gen_ai.messages.count", chatHistory.Count);
 
         AuthorRole? authorRole = null;
-        var assistantContentBuilder = new StringBuilder();
+        IDisposable? callingToolsBusyMessage = null;
+        AssistantChatMessageSpan? span = null;
+
+        var usage = new ChatUsageDetails(); // Each generation has its own usage details.
         var functionCallContentBuilder = new FunctionCallContentBuilder();
         var promptExecutionSettings = kernelMixin.GetPromptExecutionSettings(
             kernelMixin.IsFunctionCallingSupported && persistentState.IsToolCallEnabled ?
                 FunctionChoiceBehavior.Auto(autoInvoke: false) :
                 null);
 
-        activity?.SetTag("llm.model.id", customAssistant.ModelId);
-        activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens);
-
-        IDisposable? callingToolsBusyMessage = null;
-
         try
         {
             await foreach (var streamingContent in kernelMixin.ChatCompletionService.GetStreamingChatMessageContentsAsync(
-                               // They absolutely must modify this ChatHistory internally.
-                               // I can neither alter it nor inherit it.
-                               // Let's copy the chat history to avoid modifying the original one.
-                               new ChatHistory(chatHistory),
+                               chatHistory,
                                promptExecutionSettings,
                                kernel,
                                cancellationToken))
             {
-                if (streamingContent.Metadata?.TryGetValue("Usage", out var usage) is true && usage is not null)
+                usage.Update(streamingContent);
+
+                // Add persistent message-level metadata to the assistant chat message.
+                if (streamingContent.Metadata is not null)
                 {
-                    switch (usage)
+                    foreach (var (key, value) in streamingContent.Metadata
+                                 .AsValueEnumerable()
+                                 .Where(kv => kernelMixin.IsPersistentMessageMetadataKey(kv.Key)))
                     {
-                        case UsageContent usageContent:
-                        {
-                            inputTokenCount = Math.Max(inputTokenCount, usageContent.Details.InputTokenCount ?? 0);
-                            outputTokenCount = Math.Max(outputTokenCount, usageContent.Details.OutputTokenCount ?? 0);
-                            totalTokenCount = Math.Max(totalTokenCount, usageContent.Details.TotalTokenCount ?? 0);
-                            break;
-                        }
-                        case UsageDetails usageDetails:
-                        {
-                            inputTokenCount = Math.Max(inputTokenCount, usageDetails.InputTokenCount ?? 0);
-                            outputTokenCount = Math.Max(outputTokenCount, usageDetails.OutputTokenCount ?? 0);
-                            totalTokenCount = Math.Max(totalTokenCount, usageDetails.TotalTokenCount ?? 0);
-                            break;
-                        }
-                        case ChatTokenUsage openAIUsage:
-                        {
-                            inputTokenCount = Math.Max(inputTokenCount, openAIUsage.InputTokenCount);
-                            outputTokenCount = Math.Max(outputTokenCount, openAIUsage.OutputTokenCount);
-                            totalTokenCount = Math.Max(totalTokenCount, openAIUsage.TotalTokenCount);
-                            break;
-                        }
+                        assistantChatMessage.Metadata ??= new MetadataDictionary();
+                        assistantChatMessage.Metadata[key] = value;
                     }
                 }
 
@@ -493,33 +459,33 @@ public sealed partial class ChatService(
                     {
                         using var memoryStream = new MemoryStream(binaryContent.Data.Value.ToArray());
                         var blob = await blobStorage.StorageBlobAsync(memoryStream, binaryContent.MimeType, cancellationToken);
-                        chatSpan.ImageOutput = new ChatFileAttachment(
+                        EnsureSpan<AssistantChatMessageImageSpan>(true).ImageOutput = new ChatFileAttachment(
                             new DynamicResourceKey(string.Empty),
                             blob.LocalPath,
                             blob.Sha256,
                             blob.MimeType);
                     }
 
+                    if (item.Metadata is not null && span is not null)
+                    {
+                        foreach (var (key, value) in item.Metadata
+                                     .AsValueEnumerable()
+                                     .Where(kv => kernelMixin.IsPersistentSpanMetadataKey(kv.Key)))
+                        {
+                            span.Metadata ??= new MetadataDictionary();
+                            span.Metadata[key] = value;
+                        }
+                    }
+
                     bool IsReasoningContent(StreamingKernelContent content) =>
                         streamingContent.Metadata?.TryGetValue("reasoning", out var reasoning) is true && reasoning is true ||
                         content.Metadata?.TryGetValue("reasoning", out reasoning) is true && reasoning is true;
 
-                    DispatcherOperation<ObservableStringBuilder> HandleTextMessageAsync(string text)
-                    {
-                        // Mark the reasoning as finished when we receive the first content chunk.
-                        if (chatSpan.ReasoningOutput is not null && chatSpan.ReasoningFinishedAt is null)
-                        {
-                            chatSpan.ReasoningFinishedAt = DateTimeOffset.UtcNow;
-                        }
+                    DispatcherOperation<ObservableStringBuilder> HandleTextMessageAsync(string text) => Dispatcher.UIThread.InvokeAsync(() =>
+                        EnsureSpan<AssistantChatMessageTextSpan>(false).ContentMarkdownBuilder.Append(text));
 
-                        assistantContentBuilder.Append(text);
-                        return Dispatcher.UIThread.InvokeAsync(() => chatSpan.MarkdownBuilder.Append(text));
-                    }
-
-                    DispatcherOperation<ObservableStringBuilder> HandleReasoningMessageAsync(string text)
-                    {
-                        return Dispatcher.UIThread.InvokeAsync(() => chatSpan.ReasoningMarkdownBuilder.Append(text));
-                    }
+                    DispatcherOperation<ObservableStringBuilder> HandleReasoningMessageAsync(string text) => Dispatcher.UIThread.InvokeAsync(() =>
+                        EnsureSpan<AssistantChatMessageReasoningSpan>(false).ReasoningMarkdownBuilder.Append(text));
                 }
 
                 authorRole ??= streamingContent.Role;
@@ -533,54 +499,56 @@ public sealed partial class ChatService(
         }
         finally
         {
+            assistantChatMessage.UsageDetails.Accumulate(usage); // Accumulate usage details.
+            SetChatUsageTags(activity, usage);
+
+            span?.FinishedAt ??= DateTimeOffset.UtcNow;
             callingToolsBusyMessage?.Dispose();
         }
 
-        // Mark the reasoning as finished if we have any reasoning output.
-        if (!chatSpan.ReasoningOutput.IsNullOrEmpty() && chatSpan.ReasoningFinishedAt is null)
-        {
-            chatSpan.ReasoningFinishedAt = DateTimeOffset.UtcNow;
-        }
-
-        // Finally, add the assistant message to the chat history.
-        if (assistantContentBuilder.Length > 0)
-        {
-            // Don't forget to add reasoning content metadata.
-            chatHistory.AddMessage(AuthorRole.Assistant, assistantContentBuilder.ToString(), metadata: TryCreateReasoningMetadata(chatSpan));
-        }
-
-        assistantChatMessage.InputTokenCount = inputTokenCount;
-        assistantChatMessage.OutputTokenCount = outputTokenCount;
-        assistantChatMessage.TotalTokenCount = totalTokenCount;
-
         var functionCallContents = functionCallContentBuilder.Build();
-
-        activity?.SetTag("chat.history.count", chatHistory.Count);
-        activity?.SetTag("chat.embedding.input", inputTokenCount);
-        activity?.SetTag("chat.embedding.output", outputTokenCount);
-        activity?.SetTag("chat.embedding.total", totalTokenCount);
-        activity?.SetTag("chat.response.length", assistantContentBuilder.Length);
-        activity?.SetTag("chat.response.tool_call.count", functionCallContents.Count);
-
+        activity?.SetTag("gen_ai.tool.count", functionCallContents.Count);
         return functionCallContents;
+
+        TSpan EnsureSpan<TSpan>(bool createNew) where TSpan : AssistantChatMessageSpan, new()
+        {
+            // Handle existing span.
+            if (span is not null)
+            {
+                // If the existing span is of the requested type and we don't need to create a new one, return it.
+                if (!createNew && span is TSpan existingSpan)
+                {
+                    return existingSpan;
+                }
+
+                // Finish the existing span.
+                span.FinishedAt = DateTimeOffset.UtcNow;
+            }
+
+            // Create a new span of the requested type.
+            TSpan newSpan;
+            span = newSpan = new TSpan();
+            assistantChatMessage.AddSpan(span);
+            return newSpan;
+        }
     }
 
     /// <summary>
     /// Invokes the functions specified in the function call contents.
     /// This will group the function calls by plugin and function, and invoke them sequentially.
     /// </summary>
+    /// <param name="customAssistant"></param>
     /// <param name="kernel"></param>
     /// <param name="chatContext"></param>
-    /// <param name="chatHistory"></param>
-    /// <param name="chatSpan"></param>
+    /// <param name="assistantChatMessage"></param>
     /// <param name="functionCallContents"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException"></exception>
     private async Task InvokeFunctionsAsync(
+        CustomAssistant customAssistant,
         Kernel kernel,
         ChatContext chatContext,
-        ChatHistory chatHistory,
-        AssistantChatMessageSpan chatSpan,
+        AssistantChatMessage assistantChatMessage,
         IReadOnlyList<FunctionCallContent> functionCallContents,
         CancellationToken cancellationToken)
     {
@@ -605,6 +573,9 @@ public sealed partial class ChatService(
         // And invoke them one by one.
         // TODO: parallel invoke?
         var chatPluginScope = kernel.GetRequiredService<IChatPluginScope>();
+        var functionCallSpan = new AssistantChatMessageFunctionCallSpan();
+        assistantChatMessage.AddSpan(functionCallSpan);
+
         foreach (var functionCallContentGroup in functionCallContents.GroupBy(f => f.FunctionName))
         {
             // 1. Grouped by function name.
@@ -640,15 +611,7 @@ public sealed partial class ChatService(
                 var missingFunctionMessage = new FunctionCallChatMessage(
                     LucideIconKind.X,
                     new DirectResourceKey(functionCallContentGroup.Key));
-                chatSpan.AddFunctionCall(missingFunctionMessage);
-
-                // Add call message to the chat history.
-                var missingFunctionCallMessage = new ChatMessageContent(
-                    AuthorRole.Assistant,
-                    content: null,
-                    metadata: TryCreateReasoningMetadata(chatSpan));
-                missingFunctionCallMessage.Items.AddRange(functionCallContentGroup);
-                chatHistory.Add(missingFunctionCallMessage);
+                functionCallSpan.Add(missingFunctionMessage);
 
                 // Iterate through the function call contents in the group.
                 // Add the error message for each function call.
@@ -662,9 +625,6 @@ public sealed partial class ChatService(
 
                     // Add the function result content to the missing function chat message for DB storage.
                     missingFunctionMessage.Results.Add(missingFunctionResultContent);
-
-                    // Add the function result content to the chat history.
-                    chatHistory.Add(new ChatMessageContent(AuthorRole.Tool, [missingFunctionResultContent]));
                 }
 
                 missingFunctionMessage.ErrorMessageKey = new FormattedDynamicResourceKey(
@@ -680,6 +640,7 @@ public sealed partial class ChatService(
             {
                 IsBusy = true,
             };
+            functionCallSpan.Add(functionCallChatMessage);
 
             // Set the current function call context.
             // Push the previous context to the stack, allowing nested function calls.
@@ -694,15 +655,6 @@ public sealed partial class ChatService(
                 chatPlugin,
                 chatFunction,
                 functionCallChatMessage);
-
-            chatSpan.AddFunctionCall(functionCallChatMessage);
-
-            // Add call message to the chat history.
-            var functionCallMessage = new ChatMessageContent(
-                AuthorRole.Assistant,
-                content: null,
-                metadata: TryCreateReasoningMetadata(chatSpan));
-            chatHistory.Add(functionCallMessage);
 
             try
             {
@@ -728,11 +680,8 @@ public sealed partial class ChatService(
                     var friendlyContent = chatFunction.GetFriendlyCallContent(functionCallContent);
                     if (friendlyContent is not null) functionCallChatMessage.DisplaySink.AppendBlock(friendlyContent);
 
-                    // Add the function call content to the chat history.
-                    // This will allow the LLM to see the function call in the chat history.
-                    functionCallMessage.Items.Add(functionCallContent);
-
                     var resultContent = await InvokeFunctionAsync(
+                        customAssistant,
                         functionCallContent,
                         _currentFunctionCallContext,
                         friendlyContent,
@@ -744,20 +693,6 @@ public sealed partial class ChatService(
                     // dd the function result content to the function call chat message.
                     // This will record the function result in the database.
                     functionCallChatMessage.Results.Add(resultContent);
-
-                    // Add the function result content to the chat history.
-                    // This will allow the LLM to see the function result in the chat history.
-                    chatHistory.Add(new ChatMessageContent(AuthorRole.Tool, [resultContent]));
-
-                    // Some functions may return attachments (e.g., images, audio, files).
-                    // We need to add them to the function call chat message as well.
-                    // This is a workaround to include additional tool call results that are not part of the standard function call results.
-                    if (await ChatHistoryBuilder.TryCreateExtraToolCallResultsContentAsync(
-                            resultContent,
-                            cancellationToken) is { } extraToolCallResultsContent)
-                    {
-                        chatHistory.Add(extraToolCallResultsContent);
-                    }
 
                     if (resultContent.InnerContent is Exception ex)
                     {
@@ -790,14 +725,16 @@ public sealed partial class ChatService(
     }
 
     private async Task<FunctionResultContent> InvokeFunctionAsync(
+        CustomAssistant customAssistant,
         FunctionCallContent content,
         FunctionCallContext context,
         ChatPluginDisplayBlock? friendlyContent,
         CancellationToken cancellationToken)
     {
-        using var activity = _activitySource.StartActivity();
-        activity?.SetTag("tool.plugin_name", content.PluginName);
-        activity?.SetTag("tool.function_name", content.FunctionName);
+        using var activity = StartChatActivity("execute_tool", customAssistant);
+        activity?.SetTag("gen_ai.tool.plugin", content.PluginName);
+        activity?.SetTag("gen_ai.tool.name", content.FunctionName);
+        activity?.SetTag("gen_ai.tool.input", content.Arguments?.ToString());
 
         FunctionResultContent resultContent;
         try
@@ -889,30 +826,23 @@ public sealed partial class ChatService(
         return resultContent;
     }
 
-    /// <summary>
-    /// Creates reasoning metadata if the reasoning content is not null or empty.
-    /// </summary>
-    /// <param name="span"></param>
-    /// <returns></returns>
-    private static Dictionary<string, object?>? TryCreateReasoningMetadata(AssistantChatMessageSpan span) =>
-        span.ReasoningOutput.IsNullOrEmpty() ? null : new Dictionary<string, object?> { { "reasoning_content", span.ReasoningOutput } };
-
     private async Task GenerateTitleAsync(
+        CustomAssistant customAssistant,
         IKernelMixin kernelMixin,
         string userMessage,
-        string assistantMessage,
         ChatContextMetadata metadata,
         CancellationToken cancellationToken)
     {
-        using var activity = _activitySource.StartActivity();
+        if (metadata.IsGeneratingTopic) return;
+        metadata.IsGeneratingTopic = true;
+
+        using var activity = StartChatActivity("invoke_agent", customAssistant);
 
         try
         {
             var language = settings.Common.Language.ToEnglishName();
-
-            activity?.SetTag("chat.context.id", metadata.Id);
+            activity?.SetTag("id", metadata.Id);
             activity?.SetTag("user_message.length", userMessage.Length);
-            activity?.SetTag("assistant_message.length", assistantMessage.Length);
             activity?.SetTag("system_language", language);
 
             var chatHistory = new ChatHistory
@@ -927,14 +857,17 @@ public sealed partial class ChatService(
                         new Dictionary<string, Func<string>>
                         {
                             { "UserMessage", () => userMessage.SafeSubstring(0, 2048) },
-                            { "AssistantMessage", () => assistantMessage.SafeSubstring(0, 2048) },
                             { "SystemLanguage", () => language }
                         })),
             };
             var chatMessageContent = await kernelMixin.ChatCompletionService.GetChatMessageContentAsync(
                 chatHistory,
-                kernelMixin.GetPromptExecutionSettings(),
+                kernelMixin.GetPromptExecutionSettings(reasoningEffortLevel: ReasoningEffortLevel.Minimal),
                 cancellationToken: cancellationToken);
+
+            var usage = new ChatUsageDetails();
+            usage.Update(chatMessageContent);
+            SetChatUsageTags(activity, usage);
 
             Span<char> punctuationChars = ['.', ',', '!', '?', '。', '，', '！', '？'];
             metadata.Topic = chatMessageContent.Content?.Trim().Trim(punctuationChars).Trim().SafeSlice(0, 50).ToString();
@@ -947,6 +880,54 @@ public sealed partial class ChatService(
             activity?.SetStatus(ActivityStatusCode.Error, e.Message);
             logger.LogError(e, "Failed to generate chat title");
         }
+        finally
+        {
+            metadata.IsGeneratingTopic = false;
+        }
+    }
+
+    /// <summary>
+    /// Starts a chat activity for telemetry.
+    /// </summary>
+    /// <param name="operationName"></param>
+    /// <param name="customAssistant"></param>
+    /// <param name="displayName"></param>
+    /// <returns></returns>
+    private Activity? StartChatActivity(string operationName, CustomAssistant? customAssistant, [CallerMemberName] string displayName = "")
+    {
+        IEnumerable<KeyValuePair<string, object?>> tags = customAssistant is null ?
+            [
+                new KeyValuePair<string, object?>("gen_ai.operation.name", operationName)
+            ] :
+            [
+                new KeyValuePair<string, object?>("gen_ai.operation.name", operationName),
+                new KeyValuePair<string, object?>("gen_ai.request.model", customAssistant.ModelId),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.IsImageInputSupported),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.IsFunctionCallingSupported),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.IsDeepThinkingSupported),
+                new KeyValuePair<string, object?>("gen_ai.request.max_tokens", customAssistant.MaxTokens),
+                new KeyValuePair<string, object?>("gen_ai.request.temperature", customAssistant.Temperature),
+                new KeyValuePair<string, object?>("gen_ai.request.top_p", customAssistant.TopP)
+            ];
+        return _activitySource.StartActivity(
+            $"gen_ai.{operationName}",
+            ActivityKind.Client,
+            null,
+            tags).With(x => x?.DisplayName = displayName);
+    }
+
+    /// <summary>
+    /// Sets chat usage tags to the activity.
+    /// </summary>
+    /// <param name="activity"></param>
+    /// <param name="usage"></param>
+    private static void SetChatUsageTags(Activity? activity, ChatUsageDetails usage)
+    {
+        activity?.SetTag("gen_ai.usage.input_tokens", usage.InputTokenCount);
+        activity?.SetTag("gen_ai.usage.cached_input_tokens", usage.CachedInputTokenCount);
+        activity?.SetTag("gen_ai.usage.output_tokens", usage.OutputTokenCount);
+        activity?.SetTag("gen_ai.usage.reasoning_tokens", usage.ReasoningTokenCount);
+        activity?.SetTag("gen_ai.usage.total_tokens", usage.TotalTokenCount);
     }
 
     public IChatPluginDisplaySink DisplaySink =>

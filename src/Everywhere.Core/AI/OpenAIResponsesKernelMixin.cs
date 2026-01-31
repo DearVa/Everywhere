@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OpenAI;
 using OpenAI.Responses;
+using FunctionCallContent = Microsoft.Extensions.AI.FunctionCallContent;
+using TextContent = Microsoft.Extensions.AI.TextContent;
 
 namespace Everywhere.AI;
 
@@ -48,7 +50,7 @@ public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
             // MEAI not supporting Deep Thinking will skip adding the reasoning options
             // This is a workaround
             options ??= new ChatOptions();
-            options.RawRepresentationFactory = RawRepresentationFactory;
+            options.RawRepresentationFactory = _ => RawRepresentationFactory(options);
 
             // cache the value to avoid property changes during enumeration
             await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken))
@@ -60,7 +62,7 @@ public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
                     switch (content)
                     {
                         case FunctionCallContent { Name.Length: > 0, CallId: null or { Length: 0 } } missingIdContent:
-                        { 
+                        {
                             // Generate a unique ToolCallId for the function call update.
                             update.Contents[i] = new FunctionCallContent(
                                 Guid.CreateVersion7().ToString("N"),
@@ -69,7 +71,7 @@ public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
                             break;
                         }
                         case TextReasoningContent reasoningContent:
-                        { 
+                        {
                             // Semantic Kernel won't handle TextReasoningContent, convert it to TextContent with reasoning properties
                             update.Contents[i] = new TextContent(reasoningContent.Text)
                             {
@@ -85,14 +87,30 @@ public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
             }
         }
 
-        private object? RawRepresentationFactory(IChatClient chatClient) => owner.IsDeepThinkingSupported ?
-            new CreateResponseOptions
+        private CreateResponseOptions? RawRepresentationFactory(ChatOptions chatOptions)
+        {
+            if (!owner.IsDeepThinkingSupported) return null;
+            if (chatOptions.AdditionalProperties?.TryGetValue("reasoning_effort_level", out var reasoningEffortLevelObj) is not true) return null;
+            if (reasoningEffortLevelObj is not ReasoningEffortLevel reasoningEffortLevel) return null;
+
+            return new CreateResponseOptions
             {
                 ReasoningOptions = new ResponseReasoningOptions
                 {
-                    ReasoningSummaryVerbosity = ResponseReasoningSummaryVerbosity.Detailed
+                    ReasoningEffortLevel = reasoningEffortLevel switch
+                    {
+                        ReasoningEffortLevel.Minimal => ResponseReasoningEffortLevel.Minimal,
+                        ReasoningEffortLevel.Detailed => ResponseReasoningEffortLevel.High,
+                        _ => (ResponseReasoningEffortLevel?)null
+                    },
+                    ReasoningSummaryVerbosity = reasoningEffortLevel switch
+                    {
+                        ReasoningEffortLevel.Minimal => ResponseReasoningSummaryVerbosity.Concise,
+                        ReasoningEffortLevel.Detailed =>  ResponseReasoningSummaryVerbosity.Detailed,
+                        _ => (ResponseReasoningSummaryVerbosity?)null
+                    }
                 }
-            } :
-            null;
+            };
+        }
     }
 }

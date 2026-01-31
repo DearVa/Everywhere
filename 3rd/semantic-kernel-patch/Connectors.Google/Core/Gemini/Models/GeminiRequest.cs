@@ -220,24 +220,26 @@ internal sealed class GeminiRequest
         return parts;
     }
 
-    private static GeminiPart GetGeminiPartFromKernelContent(KernelContent item) => item switch
+    private static GeminiPart GetGeminiPartFromKernelContent(KernelContent item)
     {
-        TextContent textContent => new GeminiPart { Text = textContent.Text },
-        ImageContent imageContent => CreateGeminiPartFromImage(imageContent),
-        AudioContent audioContent => CreateGeminiPartFromAudio(audioContent),
-        BinaryContent binaryContent => CreateGeminiPartFromBinary(binaryContent),
-        FunctionCallContent functionCallContent => CreateGeminiPartFromFunctionCall(functionCallContent),
-        FunctionResultContent functionResultContent => CreateGeminiPartFromFunctionResult(functionResultContent),
-        _ => throw new NotSupportedException($"Unsupported content type. {item.GetType().Name} is not supported by Gemini.")
-    };
+        var geminiPart = item switch
+        {
+            TextContent textContent => new GeminiPart { Text = textContent.Text },
+            ImageContent imageContent => CreateGeminiPartFromImage(imageContent),
+            AudioContent audioContent => CreateGeminiPartFromAudio(audioContent),
+            BinaryContent binaryContent => CreateGeminiPartFromBinary(binaryContent),
+            FunctionCallContent functionCallContent => CreateGeminiPartFromFunctionCall(functionCallContent),
+            FunctionResultContent functionResultContent => CreateGeminiPartFromFunctionResult(functionResultContent),
+            _ => throw new NotSupportedException($"Unsupported content type. {item.GetType().Name} is not supported by Gemini.")
+        };
+        geminiPart.ThoughtSignature = item.Metadata?.TryGetValue("thoughtSignature", out var signature) is true && signature is string signatureStr
+            ? signatureStr
+            : null;
+        return geminiPart;
+    }
 
     private static GeminiPart CreateGeminiPartFromFunctionCall(FunctionCallContent functionCallContent)
     {
-        string? thoughtSignature = null;
-        if (functionCallContent.Metadata?.TryGetValue("thoughtSignature", out var signature) is true && signature is string signatureStr)
-        {
-            thoughtSignature = signatureStr;
-        }
         return new GeminiPart
         {
             FunctionCall = new GeminiPart.FunctionCallPart
@@ -249,7 +251,6 @@ internal sealed class GeminiRequest
                     ? JsonSerializer.SerializeToNode(functionCallContent.Arguments)
                     : null
             },
-            ThoughtSignature = thoughtSignature
         };
     }
 
