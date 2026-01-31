@@ -16,7 +16,6 @@
   <ItemGroup>
     <!-- Base packages -->
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageVersion Include="Duende.IdentityModel.OidcClient" Version="7.0.0" />
     <PackageVersion Include="DynamicData" Version="9.4.1" />
     <PackageVersion Include="FuzzySharp" Version="2.0.2" />
     <PackageVersion Include="GnomeStack.Os.Secrets" Version="0.1.3" />

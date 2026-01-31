@@ -1,5 +1,4 @@
-﻿using Duende.IdentityModel.OidcClient;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Everywhere.Cloud;
 
@@ -9,7 +8,7 @@ public static class ServiceExtension
     {
         public IServiceCollection AddCloudClient()
         {
-            services.AddSingleton<ICloudClient, HttpCloudClient>();
+            services.AddSingleton<ICloudClient, OAuthCloudClient>();
             return services;
         }
     }
