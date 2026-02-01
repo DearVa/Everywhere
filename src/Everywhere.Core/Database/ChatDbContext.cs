@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using Everywhere.Cloud;
 using Everywhere.Common;
+using MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,10 +14,17 @@ namespace Everywhere.Database;
 [method: DynamicDependency(DynamicallyAccessedMemberTypes.AllConstructors, typeof(DateTimeToTicksConverter))]
 public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbContext(options)
 {
+    /// <summary>
+    /// Indicates whether a synchronization operation is currently in progress.
+    /// This flag can be used to prevent <see cref="SyncSaveChangesInterceptor"/> modifications during sync.
+    /// </summary>
+    public bool IsSyncing { get; set; }
+
     public DbSet<ChatContextEntity> Chats => Set<ChatContextEntity>();
     public DbSet<ChatNodeEntity> Nodes => Set<ChatNodeEntity>();
     public DbSet<NodeBlobEntity> NodeBlobs => Set<NodeBlobEntity>();
     public DbSet<BlobEntity> Blobs => Set<BlobEntity>();
+    public DbSet<CloudSyncMetadataEntity> SyncMetadata => Set<CloudSyncMetadataEntity>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -24,8 +33,8 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
         {
             e.HasKey(x => x.Id);
             e.HasIndex(x => x.UpdatedAt);
-            // Optional: global query filter to exclude soft-deleted by default, if desired:
-            // e.HasQueryFilter(x => !x.IsDeleted);
+            // Index to support cloud sync
+            e.HasIndex(x => x.LocalSyncVersion);
         });
 
         // Chat node (message tree node)
@@ -42,6 +51,9 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
 
             // Optionally speed up "follow current branch" by chosen child id:
             e.HasIndex(x => new { ChatId = x.ChatContextId, x.ChoiceChildId });
+
+            // Index to support cloud sync
+            e.HasIndex(x => x.LocalSyncVersion);
 
             e.Property(x => x.Payload).IsRequired();
         });
@@ -68,6 +80,18 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
             e.HasKey(x => x.Sha256);
             e.HasIndex(x => x.LastAccessAt);
         });
+
+        builder.Entity<CloudSyncMetadataEntity>(e =>
+        {
+            e.HasKey(x => x.Id);
+        });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+
+        optionsBuilder.AddInterceptors(new SyncSaveChangesInterceptor());
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
@@ -93,92 +117,106 @@ public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory) : IAs
 }
 
 /// <summary>
+/// Base class for all cloud-syncable entities for MessagePack polymorphic serialization.
+/// </summary>
+[MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
+[Union(0, typeof(ChatContextEntity))]
+[Union(1, typeof(ChatNodeEntity))]
+public abstract partial class CloudSyncableEntity : ICloudSyncable
+{
+    /// <summary>
+    /// Node Id (Guid v7).
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Soft-delete flag. When true, the context should be hidden from normal listings but retained for sync/restore.
+    /// </summary>
+    public bool IsDeleted { get; set; }
+
+    /// <inheritdoc/>
+    public long LocalSyncVersion { get; set; }
+}
+
+/// <summary>
 /// Top-level chat context (a conversation).
 /// This row holds context-wide metadata used for listing, sorting, and synchronization.
 /// Messages/turns are stored as tree nodes in <see cref="ChatNodeEntity"/>.
 /// </summary>
-public sealed class ChatContextEntity
+[MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
+public sealed partial class ChatContextEntity : CloudSyncableEntity
 {
-    /// <summary>
-    /// Globally unique ID (Guid v7 recommended for better locality).
-    /// </summary>
-    public required Guid Id { get; init; }
-
     /// <summary>
     /// Creation time (local clock). Used for sorting; not authoritative for sync conflict resolution.
     /// </summary>
+    [MessagePack.Key(0)]
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
     /// Last modified time (local clock). Bump on any change within this context to support LWW at context level.
     /// </summary>
+    [MessagePack.Key(1)]
     public DateTimeOffset UpdatedAt { get; set; }
 
     /// <summary>
     /// Optional short title/topic for this chat. Limited to 64 chars.
     /// </summary>
     [MaxLength(64)]
+    [MessagePack.Key(2)]
     public string? Topic { get; set; }
-
-    /// <summary>
-    /// Soft-delete flag. When true, the context should be hidden from normal listings but retained for sync/restore.
-    /// </summary>
-    public bool IsDeleted { get; set; }
 }
 
 /// <summary>
 /// A node in the chat message tree (root + alternating user/assistant/tool messages with branches).
 /// Stores the serialized message payload (MessagePack).
 /// </summary>
-public sealed class ChatNodeEntity
+[MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
+public sealed partial class ChatNodeEntity : CloudSyncableEntity
 {
     /// <summary>
-    /// Parent chat context Id.
+    /// Parent chat context Id (Guid v7).
     /// </summary>
-    public Guid ChatContextId { get; init; }
-
-    /// <summary>
-    /// Node Id (Guid v7). Unique within its chat context; stable across devices.
-    /// </summary>
-    public Guid Id { get; init; } = Guid.CreateVersion7();
+    [MessagePack.Key(0)]
+    public required Guid ChatContextId { get; init; }
 
     /// <summary>
     /// Parent node ID. Null for the root node.
     /// </summary>
+    [MessagePack.Key(1)]
     public Guid? ParentId { get; set; }
 
     /// <summary>
     /// The "chosen" child of this node (persisted as ID to avoid index shifting on concurrent insert).
-    /// Map to in-memory ChoiceIndex by resolving children ordered by <see cref="Id"/>.
+    /// Map to in-memory ChoiceIndex by resolving children ordered by Id.
     /// Null means no child is chosen.
     /// </summary>
+    [MessagePack.Key(2)]
     public Guid? ChoiceChildId { get; set; }
 
     /// <summary>
     /// Serialized message payload (MessagePack binary of ChatMessage).
     /// </summary>
+    [MessagePack.Key(3)]
     public required byte[] Payload { get; set; }
 
     /// <summary>
     /// Role/author of the message (e.g., "system", "assistant", "user", "action", "tool").
     /// </summary>
     [MaxLength(10)]
+    [MessagePack.Key(4)]
     public string? Author { get; set; }
 
     /// <summary>
     /// Local creation time of this node (when first inserted).
     /// </summary>
+    [MessagePack.Key(5)]
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>
     /// Local last modified time (bump on payload update, branching changes that affect this node, etc.).
     /// </summary>
+    [MessagePack.Key(6)]
     public DateTimeOffset UpdatedAt { get; set; }
-
-    /// <summary>
-    /// Soft-delete flag.
-    /// </summary>
-    public bool IsDeleted { get; set; }
 }
 
 /// <summary>
@@ -190,22 +228,26 @@ public sealed class NodeBlobEntity
     /// <summary>
     /// Parent chat context ID.
     /// </summary>
+    [MessagePack.Key(1)]
     public required Guid ChatContextId { get; init; }
 
     /// <summary>
     /// Chat node ID to which the blob is attached.
     /// </summary>
+    [MessagePack.Key(2)]
     public required Guid ChatNodeId { get; init; }
 
     /// <summary>
     /// Zero-based order of this attachment in the node.
     /// </summary>
+    [MessagePack.Key(3)]
     public required int Index { get; init; }
 
     /// <summary>
     /// Hex-encoded SHA-256 (lowercase). This is the content address and storage key.
     /// </summary>
     [MaxLength(64)]
+    [MessagePack.Key(4)]
     public required string BlobSha256 { get; init; }
 }
 
@@ -247,4 +289,40 @@ public sealed class BlobEntity
     /// Last access time (for LRU/GC decisions).
     /// </summary>
     public DateTimeOffset LastAccessAt { get; set; }
+}
+
+/// <summary>
+/// A singleton metadata entity used to track the global synchronization state of the local database.
+/// </summary>
+public sealed class CloudSyncMetadataEntity
+{
+    public const int SingletonId = 1;
+
+    /// <summary>
+    /// The unique identifier for the metadata row. Typically set to a constant "1" to ensure a singleton.
+    /// </summary>
+    [System.ComponentModel.DataAnnotations.Key]
+    public required int Id { get; set; }
+
+    /// <summary>
+    /// The current global version of the local database.
+    /// This value increments strictly whenever any <see cref="ICloudSyncable"/> entity is modified.
+    /// </summary>
+    public long LocalVersion { get; set; }
+
+    /// <summary>
+    /// The previous successfully pushed local version number.
+    /// </summary>
+    public long LastPushedVersion { get; set; }
+
+    /// <summary>
+    /// The last version number confirmed by the remote server.
+    /// </summary>
+    public long LastPulledVersion { get; set; }
+
+    /// <summary>
+    /// The timestamp of the last successful synchronization attempt.
+    /// Mostly for UI display purposes (e.g., "Last synced: 2 mins ago").
+    /// </summary>
+    public DateTimeOffset? LastSyncAt { get; set; }
 }
