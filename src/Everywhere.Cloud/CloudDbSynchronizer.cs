@@ -1,4 +1,8 @@
-﻿using Everywhere.Common;
+﻿#if DEBUG
+using System.Net.Http.Headers;
+#endif
+
+using Everywhere.Common;
 using Everywhere.Database;
 using Everywhere.Extensions;
 using MessagePack;
@@ -61,7 +65,16 @@ public class CloudChatDbSynchronizer(
         if (metadata is null) return;
 
         // Use named HttpClient for ICloudClient to ensure proper configuration (e.g., authentication, proxy).
+#if DEBUG
+        using var httpClient = httpClientFactory.CreateClient();
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            "dev-user-pro");
+        httpClient.DefaultRequestHeaders.Add("X-Device-Id", Environment.MachineName);
+#else
         using var httpClient = httpClientFactory.CreateClient(nameof(ICloudClient));
+#endif
+        httpClient.Timeout = TimeSpan.FromMinutes(5); // Set a reasonable timeout for sync operations
 
         try
         {
@@ -94,74 +107,81 @@ public class CloudChatDbSynchronizer(
         HttpClient httpClient,
         CancellationToken cancellationToken)
     {
-        var lastPulledVersion = metadata.LastPulledVersion;
-
-        // TODO: x-client-id
-        var response = await httpClient.GetAsync(
-            new Uri($"https://api.sylinko.com/everywhere/sync/pull?sinceVersion={lastPulledVersion}"),
-            cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        if (stream is null)
+        while (true)
         {
-            throw new HttpRequestException("Failed to deserialize cloud pull response payload.");
-        }
+            logger.LogDebug("Pulling cloud changes since version {LastPulledVersion}", metadata.LastPulledVersion);
 
-        var payload = await MessagePackSerializer.DeserializeAsync<CloudPullApiPayload>(
-            stream,
-            cancellationToken: cancellationToken);
-        var data = payload.EnsureData();
-
-        // Apply pulled version regardless of whether there are items to process.
-        metadata.LastPulledVersion = data.LatestVersion;
-
-        if (data.EntityWrappers is not { Count: > 0 }) return;
-
-        var dbSet = dbContext.Set<ICloudSyncable>();
-        foreach (var entityWrapper in data.EntityWrappers)
-        {
-            if (entityWrapper.IsDeleted)
+            var response = await httpClient.GetAsync(
+                new Uri($"http://127.0.0.1:8787/sync/pull?sinceVersion={Math.Max(metadata.LastPulledVersion, 0L)}"),
+                cancellationToken);
+            if (!response.IsSuccessStatusCode)
             {
-                var existedEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
-                if (existedEntity is not null)
+                // This will throw an exception with detailed error info.
+                await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response);
+            }
+
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            if (stream is null)
+            {
+                throw new HttpRequestException("Failed to deserialize cloud pull response payload.");
+            }
+
+            var data = await MessagePackSerializer.DeserializeAsync<CloudPullData>(
+                stream,
+                cancellationToken: cancellationToken);
+
+            // Apply pulled version regardless of whether there are items to process.
+            metadata.LastPulledVersion = data.LatestVersion;
+
+            if (data.EntityWrappers is not { Count: > 0 }) return;
+
+            var dbSet = dbContext.Set<ICloudSyncable>();
+            foreach (var entityWrapper in data.EntityWrappers)
+            {
+                if (entityWrapper.IsDeleted)
                 {
-                    dbSet.Remove(existedEntity);
+                    var existedEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
+                    if (existedEntity is not null)
+                    {
+                        dbSet.Remove(existedEntity);
+                    }
+                }
+                else
+                {
+                    CloudSyncableEntity entity;
+                    try
+                    {
+                        entity = MessagePackSerializer.Deserialize<CloudSyncableEntity>(
+                            entityWrapper.Data,
+                            cancellationToken: cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Failed to deserialize a pulled cloud entity.");
+                        continue;
+                    }
+
+                    // entity.Id is not serialized/deserialized, so we need to set it manually.
+                    entity.Id = entityWrapper.Id;
+                    entity.LocalSyncVersion = ICloudSyncable.UnmodifiedFromCloud;
+                    var existingEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
+                    if (existingEntity is null)
+                    {
+                        dbSet.Add(entity);
+                    }
+                    else if (existingEntity.LocalSyncVersion <= metadata.LastPushedVersion)
+                    {
+                        // Only update(replace) if the local entity is unmodified since last pull
+                        // In the other words, if existedEntity.SyncVersion > metadata.LastPushedVersion,
+                        // it means the local entity has been modified locally after last pull,
+                        // so we should not overwrite it with the pulled entity.
+                        // It needs to be pushed again in the next sync cycle.
+                        dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
+                    }
                 }
             }
-            else
-            {
-                CloudSyncableEntity entity;
-                try
-                {
-                    entity = MessagePackSerializer.Deserialize<CloudSyncableEntity>(
-                        entityWrapper.Data,
-                        cancellationToken: cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    logger.LogWarning(ex, "Failed to deserialize a pulled cloud entity.");
-                    continue;
-                }
 
-                // entity.Id is not serialized/deserialized, so we need to set it manually.
-                entity.Id = entityWrapper.Id;
-                entity.LocalSyncVersion = ICloudSyncable.UnmodifiedFromCloud;
-                var existingEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
-                if (existingEntity is null)
-                {
-                    dbSet.Add(entity);
-                }
-                else if (existingEntity.LocalSyncVersion <= metadata.LastPushedVersion)
-                {
-                    // Only update(replace) if the local entity is unmodified since last pull
-                    // In the other words, if existedEntity.SyncVersion > metadata.LastPushedVersion,
-                    // it means the local entity has been modified locally after last pull,
-                    // so we should not overwrite it with the pulled entity.
-                    // It needs to be pushed again in the next sync cycle.
-                    dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
-                }
-            }
+            if (!data.HasMore) break;
         }
     }
 
@@ -245,11 +265,12 @@ public class CloudChatDbSynchronizer(
     /// <param name="httpClient"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>The highest SyncVersion that was successfully pushed.</returns>
-    private async static ValueTask PushPayloadAsync(List<EntityWrapper> payload, HttpClient httpClient, CancellationToken cancellationToken)
+    private async ValueTask PushPayloadAsync(List<EntityWrapper> payload, HttpClient httpClient, CancellationToken cancellationToken)
     {
         var data = MessagePackSerializer.Serialize(payload, cancellationToken: cancellationToken);
-        // TODO: x-client-id
-        await httpClient.PostAsync(new Uri("https://api.sylinko.com/everywhere/sync/push"), new ByteArrayContent(data), cancellationToken);
+        var response = await httpClient.PostAsync(new Uri("http://127.0.0.1:8787/sync/push"), new ByteArrayContent(data), cancellationToken);
+        var result = await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response);
+        logger.LogDebug("Pushed {EntityCount} entities to cloud successfully: {Result}", payload.Count, result);
     }
 }
 
@@ -273,8 +294,8 @@ public sealed partial class CloudPullData
     public long LatestVersion { get; set; }
 
     [Key(1)]
+    public bool HasMore { get; set; }
+
+    [Key(2)]
     public List<EntityWrapper>? EntityWrappers { get; set; }
 }
-
-[MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
-public sealed partial class CloudPullApiPayload : ApiPayload<CloudPullData>;
