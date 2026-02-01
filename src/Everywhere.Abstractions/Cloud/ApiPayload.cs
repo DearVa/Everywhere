@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MessagePack;
@@ -66,6 +67,29 @@ public partial class ApiPayload
     }
 
     public override string ToString() => JsonSerializer.Serialize(this);
+
+    /// <summary>
+    /// Deserializes the JSON payload from the HTTP response.
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
+    public static async Task<ApiPayload> FromHttpResponseJsonAsync(HttpResponseMessage response) =>
+        await response.Content.ReadFromJsonAsync<ApiPayload>() ??
+        throw new HttpRequestException(HttpRequestError.InvalidResponse, statusCode: response.StatusCode);
+
+    /// <summary>
+    /// Ensures that the HTTP response indicates success and deserializes the JSON payload.
+    /// </summary>
+    /// <param name="response"></param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException">Thrown if the response indicates failure.</exception>
+    public static async Task<ApiPayload> EnsureSuccessFromHttpResponseJsonAsync(HttpResponseMessage response)
+    {
+        var payload = await FromHttpResponseJsonAsync(response);
+        if (!payload.Success) throw new HttpRequestException(payload.ToString(), null, statusCode: response.StatusCode);
+        return payload;
+    }
 }
 
 /// <summary>
