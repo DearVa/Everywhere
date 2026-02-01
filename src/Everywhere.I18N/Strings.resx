@@ -2171,4 +2171,10 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="UserProfile_Feedback" xml:space="preserve">
         <value>Feedback</value>
     </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>Native Mode</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>Official managed service. No API key setup needed—it's ready when you are.</value>
+    </data>
 </root>

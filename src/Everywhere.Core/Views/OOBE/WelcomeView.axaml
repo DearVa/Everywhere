@@ -124,6 +124,14 @@
           </ListBox>
         </DataTemplate>
 
+        <DataTemplate DataType="vm:WelcomeViewModelSoftLoginStep">
+          <ListBox Classes="AssistantMessage">
+            <TextBlock Text="Soft_1"/>
+            <TextBlock Text="Soft_2"/>
+            <Button Command="{Binding LoginCommand}" Content="This is a login button"></Button>
+          </ListBox>
+        </DataTemplate>
+
         <DataTemplate DataType="vm:WelcomeViewModelConfiguratorStep">
           <ListBox Classes="AssistantMessage">
             <TextBlock Text="{I18N {x:Static LocaleKey.WelcomeView_ConfiguratorStep_Message1}}"/>
@@ -131,6 +139,14 @@
             <v:ModelProviderConfiguratorSelector
               CustomAssistant="{Binding ViewModel.Assistant, Mode=OneTime}"
               IsSettingsVisible="False"/>
+          </ListBox>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:WelcomeViewModelHardLoginStep">
+          <ListBox Classes="AssistantMessage">
+            <TextBlock Text="Hard_1"/>
+            <TextBlock Text="Hard_2"/>
+            <Button Command="{Binding LoginCommand}" Content="This is a login button"></Button>
           </ListBox>
         </DataTemplate>
 
@@ -206,8 +222,24 @@
         <DataTemplate DataType="vm:WelcomeViewModelIntroStep">
           <Button
             Classes="Primary" VerticalAlignment="Bottom"
-            Command="{Binding ViewModel.MoveNextCommand}"
+            Command="{Binding MoveNextCommand}"
             Content="{I18N {x:Static LocaleKey.WelcomeView_LetsStartButton_Content}}"/>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:WelcomeViewModelSoftLoginStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8">
+            <Button
+              Classes="Secondary" Grid.Column="0"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="Soft_Skip_Next"/>
+            <Button
+              Classes="Primary" Grid.Column="1"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="Soft_Login_Next"
+              IsEnabled="{Binding ViewModel.CloudClient.CurrentUser, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+          </Grid>
         </DataTemplate>
 
         <DataTemplate DataType="vm:WelcomeViewModelConfiguratorStep">
@@ -216,12 +248,28 @@
             ColumnSpacing="8">
             <Button
               Classes="Secondary" Grid.Column="0"
-              Command="{Binding ViewModel.MovePreviousCommand}"
+              Command="{Binding MovePreviousCommand}"
               Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
             <Button
               Classes="Primary" Grid.Column="1"
-              Command="{Binding ViewModel.MoveNextCommand}"
+              Command="{Binding MoveNextCommand}"
               Content="{I18N {x:Static LocaleKey.WelcomeView_NextStepButton_Content}}"/>
+          </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="vm:WelcomeViewModelHardLoginStep">
+          <Grid
+            VerticalAlignment="Bottom" ColumnDefinitions="*,4*"
+            ColumnSpacing="8">
+            <Button
+              Classes="Secondary" Grid.Column="0"
+              Command="{Binding ViewModel.MovePreviousCommand}"
+              Content="Hard_Previous"/>
+            <Button
+              Classes="Primary" Grid.Column="1"
+              Command="{Binding ViewModel.MoveNextCommand}"
+              Content="Hard_Login_Next"
+              IsEnabled="{Binding ViewModel.CloudClient.CurrentUser, Converter={x:Static ObjectConverters.IsNotNull}}"/>
           </Grid>
         </DataTemplate>
 
@@ -241,7 +289,7 @@
             <Button
               Classes="Secondary" Grid.Row="1"
               Grid.Column="0"
-              Command="{Binding ViewModel.MovePreviousCommand}"
+              Command="{Binding MovePreviousCommand}"
               Content="{I18N {x:Static LocaleKey.WelcomeView_PreviousStepButton_Content}}"/>
             <Button
               Classes="Primary" Grid.Row="1"

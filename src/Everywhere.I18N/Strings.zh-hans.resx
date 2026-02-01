@@ -2172,4 +2172,10 @@
     <data name="UserProfile_Feedback" xml:space="preserve">
         <value>反馈</value>
     </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>原生模式</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>官方托管服务。无需 API 密钥，开箱即用</value>
+    </data>
 </root>

@@ -24,12 +24,17 @@ public class ModelProviderConfiguratorSelector : TemplatedControl
 
     public IReadOnlyList<ConfiguratorModel> ConfiguratorModels { get; } =
     [
-        new ConfiguratorModel(
+        new(
+            ModelProviderConfiguratorType.Official,
+            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header),
+            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description),
+            null),
+        new(
             ModelProviderConfiguratorType.PresetBased,
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header),
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description),
             null),
-        new ConfiguratorModel(
+        new(
             ModelProviderConfiguratorType.Advanced,
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header),
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description),

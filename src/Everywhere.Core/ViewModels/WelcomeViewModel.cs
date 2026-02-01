@@ -2,11 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.AI;
+using Everywhere.Cloud;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using ShadUI;
 
 namespace Everywhere.ViewModels;
@@ -38,6 +40,8 @@ public sealed partial class WelcomeViewModel : BusyViewModelBase
 
     public CustomAssistant Assistant { get; }
 
+    public ICloudClient CloudClient { get; }
+
     [ObservableProperty]
     public partial bool IsConnectivityChecked { get; set; }
 
@@ -48,12 +52,13 @@ public sealed partial class WelcomeViewModel : BusyViewModelBase
     public WelcomeViewModel(IServiceProvider serviceProvider)
     {
         Settings = serviceProvider.GetRequiredService<Settings>();
+        CloudClient = serviceProvider.GetRequiredService<ICloudClient>();
 
         // Initialize a default custom assistant
         Assistant = new CustomAssistant
         {
             Name = LocaleResolver.CustomAssistant_Name_Default,
-            ConfiguratorType = ModelProviderConfiguratorType.PresetBased
+            ConfiguratorType = ModelProviderConfiguratorType.Official
         };
         Assistant.PropertyChanged += delegate
         {
@@ -64,7 +69,9 @@ public sealed partial class WelcomeViewModel : BusyViewModelBase
         _steps =
         [
             new WelcomeViewModelIntroStep(this),
+            new WelcomeViewModelSoftLoginStep(this),
             new WelcomeViewModelConfiguratorStep(this),
+            new WelcomeViewModelHardLoginStep(this),
             new WelcomeViewModelAssistantStep(this, serviceProvider),
             new WelcomeViewModelShortcutStep(this),
             new WelcomeViewModelTelemetryStep(this)
@@ -86,6 +93,16 @@ public sealed partial class WelcomeViewModel : BusyViewModelBase
     {
         IsPageTransitionReversed = true;
         _currentStepIndex--;
+        CurrentStep = _steps[_currentStepIndex];
+    }
+
+    public void MoveTo<TStep>() where TStep : WelcomeViewModelStep
+    {
+        var targetIndex = _steps.FindIndexOf(step => step is TStep);
+        if (targetIndex == -1) return;
+
+        IsPageTransitionReversed = targetIndex < _currentStepIndex;
+        _currentStepIndex = targetIndex;
         CurrentStep = _steps[_currentStepIndex];
     }
 
@@ -120,9 +137,100 @@ public abstract class WelcomeViewModelStep(WelcomeViewModel viewModel) : BusyVie
 /// The introduction step of the welcome view model.
 /// </summary>
 /// <param name="viewModel"></param>
-public sealed class WelcomeViewModelIntroStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel);
+public sealed partial class WelcomeViewModelIntroStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
+{
+    [RelayCommand]
+    private void MoveNext()
+    {
+        // Skip the soft login step if already logged in
+        if (ViewModel.CloudClient.CurrentUser is not null)
+        {
+            ViewModel.MoveTo<WelcomeViewModelConfiguratorStep>();
+        }
+        else
+        {
+            ViewModel.MoveTo<WelcomeViewModelSoftLoginStep>();
+        }
 
-public sealed class WelcomeViewModelConfiguratorStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel);
+    }
+}
+
+public sealed partial class WelcomeViewModelSoftLoginStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
+{
+    [RelayCommand]
+    private async Task LoginAsync()
+    {
+        try
+        {
+            await ViewModel.CloudClient.LoginAsync();
+        }
+        catch (Exception e)
+        {
+            Log.ForContext<WelcomeViewModelHardLoginStep>().Error(e, "Failed to login user in welcome flow");
+
+            e = HandledChatException.Handle(e);
+            ToastManager
+                .CreateToast("failed")
+                .WithContent(e.GetFriendlyMessage().ToTextBlock())
+                .DismissOnClick()
+                .ShowError();
+        }
+    }
+}
+
+public sealed partial class WelcomeViewModelConfiguratorStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
+{
+    [RelayCommand]
+    private void MovePrevious()
+    {
+        // Skip the soft login step if already logged in
+        if (ViewModel.CloudClient.CurrentUser is not null)
+        {
+            ViewModel.MoveTo<WelcomeViewModelIntroStep>();
+        }
+        else
+        {
+            ViewModel.MoveTo<WelcomeViewModelSoftLoginStep>();
+        }
+    }
+
+    [RelayCommand]
+    private void MoveNext()
+    {
+        // Skip the hard login step if not using official configurator or already logged in
+        if (ViewModel.Assistant.ConfiguratorType != ModelProviderConfiguratorType.Official || ViewModel.CloudClient.CurrentUser is not null)
+        {
+            ViewModel.MoveTo<WelcomeViewModelAssistantStep>();
+        }
+        else
+        {
+            ViewModel.MoveTo<WelcomeViewModelHardLoginStep>();
+        }
+    }
+}
+
+public sealed partial class WelcomeViewModelHardLoginStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
+{
+    [RelayCommand]
+    private async Task LoginAsync()
+    {
+        try
+        {
+            await ViewModel.CloudClient.LoginAsync();
+        }
+        catch (Exception e)
+        {
+            Log.ForContext<WelcomeViewModelHardLoginStep>().Error(e, "Failed to login user in welcome flow");
+
+            e = HandledChatException.Handle(e);
+            ToastManager
+                .CreateToast("failed")
+                .WithContent(e.GetFriendlyMessage().ToTextBlock())
+                .DismissOnClick()
+                .ShowError();
+        }
+    }
+}
 
 /// <summary>
 /// Message to trigger confetti effect in the UI.
@@ -134,6 +242,12 @@ public sealed partial class WelcomeViewModelAssistantStep(WelcomeViewModel viewM
 {
     private readonly IKernelMixinFactory _kernelMixinFactory = serviceProvider.GetRequiredService<IKernelMixinFactory>();
     private readonly ILogger<WelcomeViewModelAssistantStep> _logger = serviceProvider.GetRequiredService<ILogger<WelcomeViewModelAssistantStep>>();
+
+    [RelayCommand]
+    private void MovePrevious()
+    {
+        ViewModel.MoveTo<WelcomeViewModelConfiguratorStep>();
+    }
 
     [RelayCommand]
     private Task CheckConnectivityAsync()
