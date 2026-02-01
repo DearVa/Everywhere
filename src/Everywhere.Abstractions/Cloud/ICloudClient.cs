@@ -81,19 +81,16 @@ public interface ICloudClient : INotifyPropertyChanged
     Task RefreshUserProfileAsync();
 
     /// <summary>
-    /// Creates a configured <see cref="HttpClient"/> for making API requests.
-    /// The client automatically handles "Bearer" token attachment and silent token refreshing upon 401 Unauthorized responses.
+    /// Gets the current access token for API requests.
+    /// Returns null if not authenticated.
     /// </summary>
-    /// <returns>A configured <see cref="HttpClient"/> instance.</returns>
-    HttpClient CreateApiClient();
+    /// <returns>The current access token, or null if not available.</returns>
+    Task<string?> GetAccessTokenAsync();
 
     /// <summary>
-    /// Retrieves the current valid Access Token.
-    /// <para>
-    /// Prefer using <see cref="CreateApiClient"/> for standard HTTP requests.
-    /// This method is intended for scenarios where HttpClient cannot be used directly (e.g., establishing SignalR/WebSocket connections, or integration with third-party SDKs).
-    /// </para>
+    /// Attempts to refresh the access token using the stored refresh token.
+    /// This is typically called by the authentication handler when a 401 response is received.
     /// </summary>
-    /// <returns>The access token string, or null if not authenticated.</returns>
-    Task<string?> GetAccessTokenAsync();
+    /// <returns>True if the token was successfully refreshed, false otherwise.</returns>
+    Task<bool> TryRefreshTokenAsync();
 }
