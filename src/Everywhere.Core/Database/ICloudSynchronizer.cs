@@ -7,5 +7,10 @@ namespace Everywhere.Database;
 /// </summary>
 public interface IChatDbSynchronizer : IAsyncInitializer
 {
+    /// <summary>
+    /// Manually triggers synchronization with the remote source.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     Task SynchronizeAsync(CancellationToken cancellationToken = default);
 }
