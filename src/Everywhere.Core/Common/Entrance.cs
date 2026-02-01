@@ -168,7 +168,7 @@ public static partial class Entrance
             o.Dsn = SentryDsn;
             o.AutoSessionTracking = true;
             o.IsGlobalModeEnabled = true;
-            o.Experimental.EnableLogs = true;
+            o.EnableLogs = true;
 #if DEBUG
             o.TracesSampleRate = 1.0;
             o.Environment = "debug";

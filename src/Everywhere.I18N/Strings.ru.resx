@@ -2069,4 +2069,7 @@
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Ошибка при вызове инструмента.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Глубокое мышление</value>
+    </data>
 </root>

@@ -61,21 +61,16 @@ public static partial class Prompts
 
     public const string TitleGeneratorUserPrompt =
         """
-        Generate a concise and descriptive title for the following conversation.
-        The title should accurately reflect the main topic or purpose of the conversation in a few words.
+        Generate a concise and descriptive title for the user's conversation start.
+        The title should accurately reflect the main topic or purpose of the conversation in 10 words or fewer.
         Avoid using generic titles like "Chat" or "Conversation".
+        Do not include punctuation or pronouns.
         
-        User:
-        ```markdown
+        <UserMessage>
         {UserMessage}
-        ```
+        </UserMessage>
         
-        Everywhere:
-        ```markdown
-        {AssistantMessage}
-        ```
-        
-        Summarize the above conversation into a topic of 10 characters or fewer. Do not include punctuation or pronouns. Output language: {SystemLanguage}
+        Output language: {SystemLanguage}
         """;
 
     public const string TestPrompt =

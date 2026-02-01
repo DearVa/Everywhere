@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Responses;
 using ZLinq;
 using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 using FunctionCallContent = Microsoft.Extensions.AI.FunctionCallContent;
@@ -51,11 +52,8 @@ public class OpenAIKernelMixin : KernelMixinBase
         // If deep thinking is not supported, skip processing.
         if (!_customAssistant.IsDeepThinkingSupported) return Task.CompletedTask;
 
-        options ??= new ChatOptions();
-        options.RawRepresentationFactory = _ => new ChatCompletionOptions
-        {
-            ReasoningEffortLevel = ChatReasoningEffortLevel.High
-        };
+        var opt = options ??= new ChatOptions();
+        options.RawRepresentationFactory ??= _ => RawRepresentationFactory(opt);
 
         foreach (var assistantMessage in messages.AsValueEnumerable().Where(m => m.Role == ChatRole.Assistant))
         {
@@ -69,6 +67,31 @@ public class OpenAIKernelMixin : KernelMixinBase
         }
 
         return Task.CompletedTask;
+    }
+
+    private static CreateResponseOptions? RawRepresentationFactory(ChatOptions chatOptions)
+    {
+        if (chatOptions.AdditionalProperties?.TryGetValue("reasoning_effort_level", out var reasoningEffortLevelObj) is not true) return null;
+        if (reasoningEffortLevelObj is not ReasoningEffortLevel reasoningEffortLevel) return null;
+
+        return new CreateResponseOptions
+        {
+            ReasoningOptions = new ResponseReasoningOptions
+            {
+                ReasoningEffortLevel = reasoningEffortLevel switch
+                {
+                    ReasoningEffortLevel.Minimal => ResponseReasoningEffortLevel.Minimal,
+                    ReasoningEffortLevel.Detailed => ResponseReasoningEffortLevel.High,
+                    _ => (ResponseReasoningEffortLevel?)null
+                },
+                ReasoningSummaryVerbosity = reasoningEffortLevel switch
+                {
+                    ReasoningEffortLevel.Minimal => ResponseReasoningSummaryVerbosity.Concise,
+                    ReasoningEffortLevel.Detailed =>  ResponseReasoningSummaryVerbosity.Detailed,
+                    _ => (ResponseReasoningSummaryVerbosity?)null
+                }
+            }
+        };
     }
 
     /// <summary>

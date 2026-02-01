@@ -23,10 +23,12 @@
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ModelProviderConfiguratorSelector.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/RestartAsAdministratorControl.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/SoftwareUpdateControl.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatInputArea.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatActionBubble.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatAttachmentItemsControl.axaml"/>
-        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ChatPluginDisplayBlockPresenter.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatActionBubble.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatAttachmentItemsControl.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatInputArea.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatMessageControl.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatMessageItemsControl.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/Chat/ChatPluginDisplayBlockPresenter.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/ConsentDecisionCard.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/CreateApiKeyForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Controls/IconEditor.axaml"/>

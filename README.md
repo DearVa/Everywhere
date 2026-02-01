@@ -2,7 +2,7 @@
 
 <a href="https://github.com/DearVa/Everywhere/blob/main/README-zh-cn.md">前往中文版本 »</a>
 
-[![.NET 9][.NET 9]][.NET-url][![Avalonia][Avalonia]][Avalonia-url]
+[![.NET 10][.NET 10]][.NET-url][![Avalonia][Avalonia]][Avalonia-url]
 [![Join Discord](https://dcbadge.limes.pink/api/server/5fyg6nE3yn)](https://discord.gg/5fyg6nE3yn)
 [![Join QQ Group][QQ-Group]](https://qm.qq.com/cgi-bin/qm/qr?k=wp9aDBBnLc7pYATqT99tB-N2ZP2ETmJC&jump_from=webapi&authKey=97qUJfsQoI70dUNcgBZ0C3HCZeiEn8inLT7pzg8x+KinbQwfIrHFu3dB2+aHMbRD)
 
@@ -45,52 +45,52 @@ Every moment, Every place. Your AI - `Everywhere`
 <details open>
 <summary><b>❔ Troubleshooting Expert</b></summary>
 
-> You encounter an error message while using your computer but are unsure how to resolve it
+> You encounter an error message while using your computer but are unsure how to resolve it.
 >
-> 📌 **Invoke Everywhere** next to the error message
+> 📌 **Bring up Everywhere** next to the error message.
 >
 > 🗣️ **Command:** "What is this error? How to solve it?"
 >
-> ✨ **Result:** Everywhere captures the message context and provides a solution
+> ✨ **Result:** Everywhere captures the message context and provides a solution.
 
 </details>
 
 <details open>
 <summary><b>📰 Quick Web Summarization</b></summary>
 
-> You're browsing a lengthy technical article but need just the key points
+> You're browsing a lengthy technical article but need just the key points.
 >
-> 📌 **Invoke Everywhere** over the webpage
+> 📌 **Bring up Everywhere** over the webpage.
 >
 > 🗣️ **Command:** "Give me a 3-point summary of this"
 >
-> ✨ **Result:** Instantly receive the main arguments without reading the entire content
+> ✨ **Result:** Instantly receive the main arguments without reading the entire content.
 
 </details>
 
 <details open>
 <summary><b>🌐 Instant Translation</b></summary>
 
-> You encounter text in a foreign language while researching
+> You encounter text in a foreign language while researching.
 >
-> 📌 **Invoke Everywhere** over the text
+> 📌 **Bring up Everywhere** over the text.
 >
 > 🗣️ **Command:** "Translate this to English"
 >
-> ✨ **Result:** See an immediate translation without switching to another app
+> ✨ **Result:** See an immediate translation without switching to another app.
 
 </details>
 
 <details open>
 <summary><b>✉️ Email Draft Assistance</b></summary>
 
-> You're writing an important business email but unsure about the tone
+> You're writing an important business email but unsure about the tone.
 >
-> 📌 **Invoke Everywhere** over your draft
+> 📌 **Bring up Everywhere** over your draft.
 >
-> 🗣️ **Command:** "Make this sound more professional"
+> 🗣️ **Command:** "Make this email more professional"
 >
-> ✨ **Result:** Your casual text is transformed into polished business communication
+> ✨ **Result:** Your casual text is transformed into polished, business-ready communication.
 
 </details>
 
@@ -150,10 +150,10 @@ Every moment, Every place. Your AI - `Everywhere`
     <tr>
       <td><b>🖥️ Platform Support</b></td>
       <td>
-        • Windows
+        • Windows<br>
+        • macOS
       </td>
       <td>
-        • macOS<br>
         • Linux
       </td>
     </tr>
@@ -262,7 +262,7 @@ The Code Signing Certificate for this project is sponsored by [Certum China](htt
 
 <!-- MARKDOWN LINKS & IMAGES -->
 
-[.NET 9]: https://img.shields.io/badge/.NET_9-512BD4?style=for-the-badge&logo=dotnet&logoColor=white
+[.NET 10]: https://img.shields.io/badge/.NET_10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white
 
 [.NET-url]: https://dotnet.microsoft.com/
 

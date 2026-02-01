@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.Versioning;
 using System.Text.Json;
 using Everywhere.Common;
 using Everywhere.Initialization;
@@ -12,6 +13,9 @@ namespace Everywhere.Configuration;
 
 public static class SettingsExtensions
 {
+#if WINDOWS
+    [SupportedOSPlatform("windows")]
+#endif
     public static IServiceCollection AddSettings(this IServiceCollection services) => services
         .AddKeyedSingleton<IConfiguration>(
             typeof(Settings),

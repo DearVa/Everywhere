@@ -110,7 +110,6 @@ public partial class ChatWindow : ReactiveShadWindow<ChatWindowViewModel>, IReac
         ApplyTemplate();
 
         _windowHelper.SetCloaked(this, true);
-        Topmost = true;
 
         // Setup window placement saving after initialization
         this[SaveWindowPlacementAssist.KeyProperty] = nameof(ChatWindow);

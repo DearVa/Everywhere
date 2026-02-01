@@ -56,7 +56,7 @@ public sealed class DynamicWebProxy : IWebProxy
         else
         {
             var addressToUse = settings.Endpoint?.Trim();
-            if (string.IsNullOrWhiteSpace(addressToUse))
+            if (string.IsNullOrEmpty(addressToUse))
             {
                 throw new HandledException(
                     new InvalidOperationException("Proxy server address is required."),

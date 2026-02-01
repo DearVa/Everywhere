@@ -47,8 +47,11 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
         set => _rootNode.Message.To<SystemChatMessage>().SystemPrompt = value;
     }
 
+    /// <summary>
+    /// Items in the current branch, excluding the root system prompt node. Used for UI bindings.
+    /// </summary>
     [IgnoreMember]
-    public ReadOnlyObservableCollection<ChatMessageNode> BranchNodesWithoutSystem { get; }
+    public ReadOnlyObservableCollection<ChatMessageNode> DisplayItems { get; }
 
     /// <summary>
     /// Messages in the current branch.
@@ -138,7 +141,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
 
         UpdateBranchAfter(0, rootNode);
 
-        BranchNodesWithoutSystem = _branchNodes
+        DisplayItems = _branchNodes
             .Connect()
             .Filter(node => node != _rootNode)
             .BindEx(out _branchNodesWithoutSystemSubscription);
@@ -159,7 +162,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
             .Filter(node => node != _rootNode)
             .Bind(out var branchNodesWithoutSystem)
             .Subscribe();
-        BranchNodesWithoutSystem = branchNodesWithoutSystem;
+        DisplayItems = branchNodesWithoutSystem;
     }
 
     /// <summary>

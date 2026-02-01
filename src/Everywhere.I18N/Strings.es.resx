@@ -2069,4 +2069,7 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Error al invocar la herramienta.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Reflexión Profunda</value>
+    </data>
 </root>

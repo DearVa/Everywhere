@@ -2069,4 +2069,7 @@
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>도구 호출 중 오류가 발생했습니다.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>심층 사고</value>
+    </data>
 </root>

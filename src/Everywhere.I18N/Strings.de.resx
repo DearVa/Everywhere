@@ -2066,4 +2066,7 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Fehler beim Aufrufen des Tools.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Tiefes Nachdenken</value>
+    </data>
 </root>
