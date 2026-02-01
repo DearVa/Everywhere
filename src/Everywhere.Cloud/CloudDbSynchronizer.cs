@@ -21,24 +21,29 @@ public class CloudChatDbSynchronizer(
 
     public Task InitializeAsync()
     {
-        // ReSharper disable once FunctionNeverReturns
         Task.Run(async () =>
         {
+            // TODO: adjust delayMinutes dynamically after manual syncs
+            var delayMinutes = 1d;
             while (true)
             {
                 try
                 {
                     await SynchronizeAsync();
+                    delayMinutes = 1d; // reset delay on success
                 }
-                catch (OperationCanceledException) { }
-                catch (HttpRequestException) { }
-                catch (IOException) { }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
                 catch (Exception ex)
                 {
+                    delayMinutes = Math.Min(2 * delayMinutes, 30); // exponential backoff
+
                     logger.LogError(ex, "Error occurred during cloud database synchronization.");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromMinutes(delayMinutes));
             }
         }).Detach(logger.ToExceptionHandler());
 
@@ -55,7 +60,8 @@ public class CloudChatDbSynchronizer(
             cancellationToken: cancellationToken);
         if (metadata is null) return;
 
-        using var httpClient = httpClientFactory.CreateClient("CloudSyncClient");
+        // Use named HttpClient for ICloudClient to ensure proper configuration (e.g., authentication, proxy).
+        using var httpClient = httpClientFactory.CreateClient(nameof(ICloudClient));
 
         try
         {
