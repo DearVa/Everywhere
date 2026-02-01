@@ -85,6 +85,11 @@ public sealed class ChatPluginDisplaySink : IReadOnlyList<ChatPluginDisplayBlock
         _itemsSource.Add(new ChatPluginCodeBlockDisplayBlock(code, language));
     }
 
+    public void AppendChatContext(ChatContext chatContext)
+    {
+        _itemsSource.Add(new ChatPluginChatContextDisplayBlock(chatContext));
+    }
+
     public IEnumerator<ChatPluginDisplayBlock> GetEnumerator() => _itemsSource.Items.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

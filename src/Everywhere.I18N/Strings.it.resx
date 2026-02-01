@@ -2069,4 +2069,7 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Errore durante la chiamata dello strumento.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Ragionamento Profondo</value>
+    </data>
 </root>

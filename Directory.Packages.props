@@ -6,7 +6,7 @@
     <EntityFrameworkVersion>10.0.0</EntityFrameworkVersion>
     <SemanticKernelVersion>1.68.0</SemanticKernelVersion>
     <OpenTelemetryVersion>1.14.0</OpenTelemetryVersion>
-    <SentryVersion>5.16.2</SentryVersion>
+    <SentryVersion>6.0.0</SentryVersion>
     <AvaloniaVersion>11.3.10</AvaloniaVersion>
     <AvaloniaEditVersion>11.3.0</AvaloniaEditVersion>
     <LiveMarkdownVersion>1.7.0</LiveMarkdownVersion>
@@ -40,6 +40,7 @@
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="Sentry" Version="$(SentryVersion)" />
+    <PackageVersion Include="Sentry.Extensions.AI" Version="$(SentryVersion)" />
     <PackageVersion Include="Sentry.OpenTelemetry" Version="$(SentryVersion)" />
     <PackageVersion Include="Sentry.Serilog" Version="$(SentryVersion)" />
     <PackageVersion Include="Serilog" Version="4.3.0" />

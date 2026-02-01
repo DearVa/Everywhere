@@ -101,6 +101,10 @@ public class EssentialPlugin : BuiltInChatPlugin
         var chatContext = new ChatContext { Metadata = { IsTemporary = true } };
         chatContext.Add(new UserChatMessage(prompt, []));
         var assistantChatMessage = new AssistantChatMessage();
+        chatContext.Add(assistantChatMessage);
+
+        // Display the chat context in the UI
+        userInterface.DisplaySink.AppendChatContext(chatContext);
 
         await chatService.GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
 
@@ -110,16 +114,8 @@ public class EssentialPlugin : BuiltInChatPlugin
             return "The subagent did not return any response.";
         }
 
-        var result = assistantChatMessage[^1].Content;
-        userInterface.DisplaySink.AppendMarkdown().Append(result);
-        userInterface.DisplaySink.AppendDynamicResourceKey(
-            new FormattedDynamicResourceKey(
-                LocaleKey.BuiltInChatPlugin_Essential_RunSubagent_TokenCount,
-                new DirectResourceKey(assistantChatMessage.InputTokenCount),
-                new DirectResourceKey(assistantChatMessage.OutputTokenCount),
-                new DirectResourceKey(assistantChatMessage.TotalTokenCount)),
-            "Small Muted");
-        return result;
+        var result = (assistantChatMessage.Items[^1] as AssistantChatMessageTextSpan)?.Content;
+        return result ?? string.Empty;
     }
 
     [KernelFunction("manage_todo_list")]

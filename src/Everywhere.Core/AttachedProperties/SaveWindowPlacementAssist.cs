@@ -1,7 +1,6 @@
 ﻿using Avalonia.Controls;
 using Everywhere.Common;
 using Everywhere.Configuration;
-using ZLinq;
 using Window = ShadUI.Window;
 
 namespace Everywhere.AttachedProperties;
@@ -51,34 +50,38 @@ public static class SaveWindowPlacementAssist
     {
         if (KeyValueStorage.Get<WindowPlacement?>($"TransientWindow.Placement.{key}") is not { } placement) return;
 
-        if (window.Screens.All.Count == 0) return;
+        double x, y;
+        if (window.Screens.All.Count == 0)
+        {
+            x = placement.X;
+            y = placement.Y;
+        }
+        else
+        {
+            // Calculate scaling based on the target screen
+            var targetScreen = window.Screens.ScreenFromPoint(placement.Position)
+                ?? window.Screens.Primary
+                ?? window.Screens.All.FirstOrDefault();
+            var scaling = targetScreen?.Scaling ?? 1.0;
 
-        var screenBounds = window.Screens.All.AsValueEnumerable()
-            .Select(x => x.WorkingArea)
-            .Aggregate((a, b) => a.Union(b));
+            // Leave a safety margin to avoid window being too close to the edge or taskbar
+            const int SafetyPadding = 20;
 
-        // Calculate scaling based on the target screen
-        var targetScreen = window.Screens.ScreenFromPoint(placement.Position)
-                           ?? window.Screens.Primary
-                           ?? window.Screens.All.FirstOrDefault();
-        var scaling = targetScreen?.Scaling ?? 1.0;
+            var screenBounds = targetScreen?.WorkingArea ?? default;
+            var actualWidth = placement.Width <= 0 ? 200d : placement.Width * scaling;
+            var actualHeight = placement.Height <= 0 ? 200d : placement.Height * scaling;
 
-        // Leave a safety margin to avoid window being too close to the edge or taskbar
-        const int SafetyPadding = 20;
+            x = Math.Clamp(placement.X,
+                screenBounds.X + SafetyPadding,
+                Math.Max(screenBounds.X + SafetyPadding, screenBounds.Right - actualWidth - SafetyPadding));
 
-        var widthDevice = placement.Width <= 0 ? 200d : placement.Width * scaling;
-        var heightDevice = placement.Height <= 0 ? 200d : placement.Height * scaling;
-
-        var newX = Math.Clamp(placement.X,
-            screenBounds.X + SafetyPadding,
-            Math.Max(screenBounds.X + SafetyPadding, screenBounds.Right - widthDevice - SafetyPadding));
-
-        var newY = Math.Clamp(placement.Y,
-            screenBounds.Y + SafetyPadding,
-            Math.Max(screenBounds.Y + SafetyPadding, screenBounds.Bottom - heightDevice - SafetyPadding));
+            y = Math.Clamp(placement.Y,
+                screenBounds.Y + SafetyPadding,
+                Math.Max(screenBounds.Y + SafetyPadding, screenBounds.Bottom - actualHeight - SafetyPadding));
+        }
 
         // Restore bounds first so that maximizing works correctly from the restored position
-        window.Position = new PixelPoint((int)newX, (int)newY);
+        window.Position = new PixelPoint((int)x, (int)y);
 
         window.WindowStartupLocation = WindowStartupLocation.Manual;
         window.SizeToContent = (placement.Width, placement.Height) switch

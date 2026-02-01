@@ -55,8 +55,15 @@ public partial class ChatContextMetadata(Guid id, DateTimeOffset dateCreated, Da
         set => Topic = value?.Trim();
     }
 
+    /// <summary>
+    /// Indicates whether the topic is being generated.
+    /// </summary>
+    [IgnoreMember]
+    public bool IsGeneratingTopic { get; set; }
+
     [IgnoreMember]
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActualTopic))]
     public partial bool IsTemporary { get; set; }
 
     /// <summary>

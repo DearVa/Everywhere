@@ -26,7 +26,12 @@ namespace Everywhere.Windows;
 public static class Program
 {
     [STAThread]
-    public static async Task Main(string[] args)
+    public static void Main(string[] args)
+    {
+        MainAsync(args).GetAwaiter().GetResult();
+    }
+
+    private static async Task MainAsync(string[] args)
     {
         if (args.Contains("--load-user-profile"))
         {

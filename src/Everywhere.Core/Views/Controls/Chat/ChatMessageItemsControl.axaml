@@ -1,0 +1,42 @@
+﻿<ResourceDictionary
+  xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:v="using:Everywhere.Views">
+  <ControlTheme
+    x:Key="{x:Type v:ChatMessageItemsControl}"
+    TargetType="v:ChatMessageItemsControl">
+    <Setter Property="ClipToBounds" Value="False"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <shadui:Timeline
+          ClipToBounds="False" DotSize="9"
+          Fill="{DynamicResource PrimaryColor}"
+          IgnoreSingleItem="True" Spacing="3"
+          Stroke="{DynamicResource BorderColor}"
+          StrokeThickness="2">
+          <ItemsPresenter
+            x:Name="PART_ItemsPresenter"
+            Margin="{TemplateBinding Padding}">
+            <ItemsPresenter.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel
+                  Orientation="Vertical" Spacing="6"/>
+              </ItemsPanelTemplate>
+            </ItemsPresenter.ItemsPanel>
+          </ItemsPresenter>
+        </shadui:Timeline>
+      </ControlTemplate>
+    </Setter>
+    <Setter Property="shadui:BindingAssist.DataTemplates">
+      <DataTemplates>
+        <DataTemplate x:DataType="chat:ChatMessageNode">
+          <v:ChatMessageControl Content="{Binding Message}"/>
+        </DataTemplate>
+
+        <DataTemplate x:DataType="chat:ChatMessage">
+          <v:ChatMessageControl Content="{Binding}"/>
+        </DataTemplate>
+      </DataTemplates>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

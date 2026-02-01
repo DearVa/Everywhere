@@ -7,6 +7,7 @@ using Everywhere.Database;
 using MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx;
 using ZLinq;
 
 namespace Everywhere.Storage;
@@ -25,12 +26,14 @@ public sealed class ChatContextStorage(
     // cache of alive instances to avoid multi-instance but same id problems
     private readonly ConcurrentDictionary<Guid, WeakReference<ChatContextMetadata>> _metadataCache = [];
     private readonly ConcurrentDictionary<Guid, WeakReference<ChatContext>> _contextCache = [];
+    private readonly AsyncLock _lock = new();
 
     public async Task AddChatContextAsync(ChatContext context, CancellationToken cancellationToken = default)
     {
         if (context.Metadata.Id.Version != 7)
             throw new ArgumentException("ChatContext.Metadata.Id must be Guid v7.", nameof(context));
 
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var exists = await db.Chats.AsNoTracking().AnyAsync(x => x.Id == context.Metadata.Id, cancellationToken);
@@ -66,6 +69,7 @@ public sealed class ChatContextStorage(
 
     public async Task DeleteChatContextAsync(Guid chatContextId, CancellationToken cancellationToken = default)
     {
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
         var ctx = await db.Chats.FirstOrDefaultAsync(x => x.Id == chatContextId, cancellationToken);
         if (ctx is null) return;
@@ -84,8 +88,8 @@ public sealed class ChatContextStorage(
         await db.SaveChangesAsync(cancellationToken);
 
         // Invalidate caches
-        _contextCache.TryRemove(chatContextId, out _);
-        _metadataCache.TryRemove(chatContextId, out _);
+        _contextCache.TryRemove(chatContextId, out var _);
+        _metadataCache.TryRemove(chatContextId, out var _);
     }
 
     public async IAsyncEnumerable<ChatContextMetadata> QueryChatContextsAsync(
@@ -95,6 +99,7 @@ public sealed class ChatContextStorage(
         Guid? startAfterId = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var query = db.Chats.AsNoTracking().Where(x => !x.IsDeleted);
@@ -172,6 +177,7 @@ public sealed class ChatContextStorage(
         if (_contextCache.TryGetValue(chatContextId, out var wr) && wr.TryGetTarget(out var cached))
             return cached;
 
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var ctxRow = await db.Chats.AsNoTracking().FirstOrDefaultAsync(x => x.Id == chatContextId, cancellationToken)
@@ -210,9 +216,9 @@ public sealed class ChatContextStorage(
             if (row.Id == Guid.Empty) continue; // handle root later
 
             var msg = DeserializeMessage(row.Payload);
-            if (msg is UserChatMessage userMsg)
+            if (msg is IHaveChatAttachments { Attachments: { } attachments })
             {
-                foreach (var attachment in userMsg.Attachments.OfType<ChatFileAttachment>())
+                foreach (var attachment in attachments.OfType<ChatFileAttachment>())
                 {
                     if (blobsByHash.TryGetValue(attachment.Sha256, out var blobEntity))
                     {
@@ -285,6 +291,7 @@ public sealed class ChatContextStorage(
         if (context.Metadata.Id.Version != 7)
             throw new ArgumentException("ChatContext.Metadata.Id must be Guid v7.", nameof(context));
 
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var chatId = context.Metadata.Id;
@@ -406,6 +413,7 @@ public sealed class ChatContextStorage(
 
     public async Task SaveChatContextMetadataAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default)
     {
+        using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
         var ctxRow = await db.Chats.FirstOrDefaultAsync(x => x.Id == metadata.Id, cancellationToken);
@@ -417,7 +425,7 @@ public sealed class ChatContextStorage(
         await db.SaveChangesAsync(cancellationToken);
 
         SetAlive(_metadataCache, metadata.Id, metadata);
-        _contextCache.TryRemove(metadata.Id, out _); // keep metadata-context coherence
+        _contextCache.TryRemove(metadata.Id, out var _); // keep metadata-context coherence
     }
 
     // ————— helpers —————

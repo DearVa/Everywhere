@@ -155,7 +155,7 @@ public sealed class ChatNodeEntity
     public Guid? ChoiceChildId { get; set; }
 
     /// <summary>
-    /// Serialized message payload (MessagePack binary of your ChatMessage).
+    /// Serialized message payload (MessagePack binary of ChatMessage).
     /// </summary>
     public required byte[] Payload { get; set; }
 

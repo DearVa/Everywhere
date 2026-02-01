@@ -2069,4 +2069,7 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="HandledSystemException_FunctionInvoking" xml:space="preserve">
         <value>Error invoking tool.</value>
     </data>
+    <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
+        <value>Deep Thinking</value>
+    </data>
 </root>

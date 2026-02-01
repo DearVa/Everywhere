@@ -43,7 +43,7 @@ jobs:
           remote-repository-name: cla-signatures
           create-file-commit-message: 'Creating file for storing CLA Signatures'
           #signed-commit-message: 'For example: $contributorName has signed the CLA in $owner/$repo#$pullRequestNo'
-          custom-notsigned-prcomment: 'Please read the following [Contributor License Agreement (CLA)](https://everywhere.sylinko.com/policies/cla). If you agree with the CLA, please reply with the following:'
+          custom-notsigned-prcomment: 'Please read the following [Contributor License Agreement (CLA)](https://everywhere.sylinko.com/policies/cla). If you agree with the CLA, please comment with the following:'
           #custom-pr-sign-comment: 'The signature to be committed in order to sign the CLA'
           #custom-allsigned-prcomment: 'pull request comment when all contributors has signed, defaults to **CLA Assistant Lite bot** All Contributors have signed the CLA.'
           #lock-pullrequest-aftermerge: false - if you don't want this bot to automatically lock the pull request after merging (default - true)

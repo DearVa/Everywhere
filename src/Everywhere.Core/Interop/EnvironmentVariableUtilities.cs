@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Serilog;
 
 namespace Everywhere.Interop;
 
@@ -40,8 +41,10 @@ public static class EnvironmentVariableUtilities
 
             return sb.ToString();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Log.ForContext(typeof(EnvironmentVariableUtilities)).Error(ex, "Failed to get latest PATH environment variable.");
+
             // Ignore errors when trying to refresh environment
             return null;
         }
