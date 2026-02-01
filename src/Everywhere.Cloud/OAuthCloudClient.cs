@@ -32,18 +32,21 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
     private string? _refreshToken;
     private string? _idToken;
 
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILauncher _launcher;
+
+    private readonly SemaphoreSlim _loginLock = new(1, 1);
+    private readonly SemaphoreSlim _refreshLock = new(1, 1);
 
     // To coordinate the callback
     private TaskCompletionSource<string>? _authCodeTcs;
     private string? _expectedState;
     private string? _codeVerifier;
 
-    public OAuthCloudClient(ILauncher launcher)
+    public OAuthCloudClient(ILauncher launcher, IHttpClientFactory httpClientFactory)
     {
         _launcher = launcher;
-        _httpClient = new HttpClient();
+        _httpClientFactory = httpClientFactory;
         WeakReferenceMessenger.Default.Register(this);
     }
 
@@ -99,32 +102,34 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
 
     public async Task<bool> LoginAsync()
     {
-        // 1. Prepare for callback
-        _authCodeTcs = new TaskCompletionSource<string>();
-        _expectedState = Guid.NewGuid().ToString();
-        _codeVerifier = GenerateCodeVerifier();
-        var codeChallenge = GenerateCodeChallenge(_codeVerifier);
-
-        // 2. Construct Authorization URL with PKCE
-        // Added: offline_access, profile, email to scopes
-        var sb = new StringBuilder(AuthorizeEndpoint);
-        sb.Append($"?response_type=code");
-        sb.Append($"&client_id={ClientId}");
-        sb.Append($"&redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}");
-        sb.Append($"&state={_expectedState}");
-        sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
-        sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
-        sb.Append($"&code_challenge_method=S256");
-        sb.Append($"&audience={Uri.EscapeDataString("https://localhost:4001")}");
-
-        var authorizeUrl = sb.ToString();
-        Console.WriteLine($"[AuthService] Starting login flow. Auth URL: {authorizeUrl}");
-
-        // 3. Open the system browser
-        await _launcher.LaunchUriAsync(new Uri(authorizeUrl));
+        if (!await _loginLock.WaitAsync(0)) return false;
 
         try
         {
+            // 1. Prepare for callback
+            _authCodeTcs = new TaskCompletionSource<string>();
+            _expectedState = Guid.CreateVersion7().ToString();
+            _codeVerifier = GenerateCodeVerifier();
+            var codeChallenge = GenerateCodeChallenge(_codeVerifier);
+
+            // 2. Construct Authorization URL with PKCE
+            // Added: offline_access, profile, email to scopes
+            var sb = new StringBuilder(AuthorizeEndpoint);
+            sb.Append("?response_type=code");
+            sb.Append($"&client_id={ClientId}");
+            sb.Append($"&redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}");
+            sb.Append($"&state={_expectedState}");
+            sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
+            sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
+            sb.Append("&code_challenge_method=S256");
+            sb.Append($"&audience={Uri.EscapeDataString("https://localhost:4001")}");
+
+            var authorizeUrl = sb.ToString();
+            Console.WriteLine($"[AuthService] Starting login flow. Auth URL: {authorizeUrl}");
+
+            // 3. Open the system browser
+            await _launcher.LaunchUriAsync(new Uri(authorizeUrl));
+
             // 4. Wait for the callback
             var completedTask = await Task.WhenAny(_authCodeTcs.Task, Task.Delay(TimeSpan.FromMinutes(5)));
 
@@ -149,6 +154,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
             _authCodeTcs = null;
             _expectedState = null;
             _codeVerifier = null;
+            _loginLock.Release();
         }
     }
 
@@ -177,7 +183,9 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
 
         try
         {
-            var response = await _httpClient.SendAsync(request);
+            // Use the default client (without auth handler) to avoid circular dependency
+            using var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
@@ -217,7 +225,8 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
 
         try
         {
-            var response = await _httpClient.SendAsync(request);
+            using var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<UserProfile>();
@@ -274,11 +283,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
     }
 
     private static string GenerateCodeChallenge(string codeVerifier)
-    {
-        using var sha256 = SHA256.Create();
-        var challengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier));
-        return Base64UrlEncode(challengeBytes);
-    }
+        => Base64UrlEncode(SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier)));
 
     public async Task LogoutAsync()
     {
@@ -328,7 +333,11 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
             Content = new FormUrlEncodedContent(parameters)
         };
 
-        try { await _httpClient.SendAsync(request); }
+        try
+        {
+            using var httpClient = _httpClientFactory.CreateClient();
+            await httpClient.SendAsync(request);
+        }
         catch
         { /* Ignore revocation errors */
         }
@@ -348,9 +357,44 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
         CurrentUser = await RequestTokenAsync(parameters);
     }
 
-    public HttpClient CreateApiClient() => throw new NotImplementedException();
-
     public Task<string?> GetAccessTokenAsync() => Task.FromResult(_accessToken);
+
+    public async Task<bool> TryRefreshTokenAsync()
+    {
+        if (string.IsNullOrEmpty(_refreshToken)) return false;
+
+        // Prevent concurrent refresh attempts
+        if (!await _refreshLock.WaitAsync(0))
+        {
+            // Another refresh is in progress, wait for it
+            await _refreshLock.WaitAsync();
+            _refreshLock.Release();
+            // Check if the refresh was successful by verifying we have a token
+            return !string.IsNullOrEmpty(_accessToken);
+        }
+
+        try
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "grant_type", "refresh_token" },
+                { "refresh_token", _refreshToken },
+                { "client_id", ClientId }
+            };
+
+            var result = await RequestTokenAsync(parameters);
+            return result is not null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Token refresh failed: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            _refreshLock.Release();
+        }
+    }
 
     public void Receive(ApplicationCommand message)
     {
@@ -372,7 +416,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
 
             // Check if it matches our redirect scheme/path
             // Note: Simplistic check. Better to check Scheme and Path specifically.
-            if (!url.StartsWith(ResponseRedirectUri))
+            if (!url.StartsWith(ResponseRedirectUri, StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("[AuthService] URL does not match expected prefix. Ignoring.");
                 return;
