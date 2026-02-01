@@ -34,18 +34,7 @@ public class SyncSaveChangesInterceptor : SaveChangesInterceptor
         var meta = await context.Set<CloudSyncMetadataEntity>().FirstOrDefaultAsync(
             m => m.Id == CloudSyncMetadataEntity.SingletonId,
             cancellationToken: cancellationToken);
-
-        if (meta == null)
-        {
-            meta = new CloudSyncMetadataEntity
-            {
-                Id = CloudSyncMetadataEntity.SingletonId,
-                LocalVersion = 0,
-                LastPushedVersion = -1,
-                LastPulledVersion = -1
-            };
-            context.Set<CloudSyncMetadataEntity>().Add(meta);
-        }
+        if (meta is null) return result;
 
         // 3. Assign Version Numbers.
         // We increment the version for EACH entity individually.

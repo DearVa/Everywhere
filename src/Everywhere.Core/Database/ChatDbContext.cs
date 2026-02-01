@@ -113,6 +113,24 @@ public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory) : IAs
     {
         await using var dbContext = await dbFactory.CreateDbContextAsync();
         await dbContext.Database.MigrateAsync();
+
+        await EnsureSyncMetadataAsync(dbContext);
+    }
+
+    private async static ValueTask EnsureSyncMetadataAsync(ChatDbContext dbContext)
+    {
+        var meta = await dbContext.Set<CloudSyncMetadataEntity>().FirstOrDefaultAsync(m => m.Id == CloudSyncMetadataEntity.SingletonId);
+        if (meta is not null) return;
+
+        meta = new CloudSyncMetadataEntity
+        {
+            Id = CloudSyncMetadataEntity.SingletonId,
+            LocalVersion = 0,
+            LastPushedVersion = -1,
+            LastPulledVersion = -1
+        };
+        dbContext.SyncMetadata.Add(meta);
+        await dbContext.SaveChangesAsync();
     }
 }
 
