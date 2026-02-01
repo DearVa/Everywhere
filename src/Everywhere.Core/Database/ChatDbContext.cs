@@ -228,26 +228,22 @@ public sealed class NodeBlobEntity
     /// <summary>
     /// Parent chat context ID.
     /// </summary>
-    [MessagePack.Key(1)]
     public required Guid ChatContextId { get; init; }
 
     /// <summary>
     /// Chat node ID to which the blob is attached.
     /// </summary>
-    [MessagePack.Key(2)]
     public required Guid ChatNodeId { get; init; }
 
     /// <summary>
     /// Zero-based order of this attachment in the node.
     /// </summary>
-    [MessagePack.Key(3)]
     public required int Index { get; init; }
 
     /// <summary>
     /// Hex-encoded SHA-256 (lowercase). This is the content address and storage key.
     /// </summary>
     [MaxLength(64)]
-    [MessagePack.Key(4)]
     public required string BlobSha256 { get; init; }
 }
 
