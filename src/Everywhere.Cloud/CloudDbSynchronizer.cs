@@ -7,6 +7,7 @@ using Everywhere.Common;
 using Everywhere.Database;
 using Everywhere.Extensions;
 using MessagePack;
+using MessagePack.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
@@ -71,7 +72,7 @@ public class CloudChatDbSynchronizer(
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
             "Bearer",
             "dev-user-pro");
-        httpClient.DefaultRequestHeaders.Add("X-Device-Id", Environment.MachineName);
+        httpClient.DefaultRequestHeaders.Add("X-Device-Name", Environment.MachineName);
 #else
         using var httpClient = httpClientFactory.CreateClient(nameof(ICloudClient));
 #endif
@@ -141,7 +142,7 @@ public class CloudChatDbSynchronizer(
             var nodes = dbContext.Nodes;
             foreach (var entityWrapper in data.EntityWrappers)
             {
-                if (entityWrapper.IsDeleted)
+                if (entityWrapper.Data is null)
                 {
                     var existedChat = await chats.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
                     if (existedChat is not null)
@@ -250,8 +251,8 @@ public class CloudChatDbSynchronizer(
             EntityWrapper entityWrapper;
             if (entity.IsDeleted)
             {
-                // If the entity is marked as deleted, we only need to send its Id and IsDeleted flag.
-                entityWrapper = new EntityWrapper(entity.Id, true, null);
+                // If the entity is marked as deleted, we only need to send its Id and null data.
+                entityWrapper = new EntityWrapper(entity.Id, null);
             }
             else
             {
@@ -267,7 +268,7 @@ public class CloudChatDbSynchronizer(
                     continue;
                 }
 
-                entityWrapper = new EntityWrapper(entity.Id, false, data);
+                entityWrapper = new EntityWrapper(entity.Id, data);
             }
 
             entityWrappers.Add(entityWrapper);
@@ -311,9 +312,8 @@ public class CloudChatDbSynchronizer(
 /// </summary>
 [MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]
 public sealed partial record EntityWrapper(
-    [property: Key(0)] Guid Id,
-    [property: Key(1)] bool IsDeleted,
-    [property: Key(2)] byte[]? Data
+    [property: Key(0), MessagePackFormatter(typeof(NativeGuidFormatter))] Guid Id,
+    [property: Key(1)] byte[]? Data
 );
 
 /// <summary>
