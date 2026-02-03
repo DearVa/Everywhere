@@ -369,7 +369,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
     public string EnsureWorkingDirectory(ChatContext chatContext) =>
         _runtimeConstantProvider.EnsureWritableDataFolderPath($"plugins/{chatContext.Metadata.DateCreated:yyyy-MM-dd}");
 
-    public void PopulateSystemPrompt(ChatContext chatContext, string? systemPrompt)
+    public string RenderSystemPrompt(ChatContext chatContext, string? systemPrompt)
     {
         var variables =
             ImmutableDictionary.CreateRange(
@@ -381,7 +381,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
                     new("WorkingDirectory", () => EnsureWorkingDirectory(chatContext))
                 });
         if (systemPrompt.IsNullOrWhiteSpace()) systemPrompt = Prompts.DefaultSystemPrompt;
-        chatContext.SystemPrompt = Prompts.RenderPrompt(systemPrompt, variables);
+        return Prompts.RenderPrompt(systemPrompt, variables);
     }
 
     private async Task<ChatContext?> LoadChatContextAsync(Guid id, bool deleteIfFailed, CancellationToken cancellationToken)
