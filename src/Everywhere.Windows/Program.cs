@@ -53,6 +53,9 @@ public static class Program
                 #region Basic
 
                 .AddLogging(builder => builder
+#if DEBUG
+                    .SetMinimumLevel(LogLevel.Trace)
+#endif
                     .AddSerilog(dispose: true)
                     .AddFilter<SerilogLoggerProvider>("Microsoft.EntityFrameworkCore", LogLevel.Warning))
                 .AddSingleton<IRuntimeConstantProvider, RuntimeConstantProvider>()
