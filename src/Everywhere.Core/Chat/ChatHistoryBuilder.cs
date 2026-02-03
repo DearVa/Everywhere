@@ -13,10 +13,13 @@ namespace Everywhere.Chat;
 public static class ChatHistoryBuilder
 {
     public static async ValueTask<ChatHistory> BuildChatHistoryAsync(
+        string systemPrompt,
         IEnumerable<ChatMessage> chatMessages,
         CancellationToken cancellationToken = default)
     {
         var chatHistory = new ChatHistory();
+        chatHistory.AddSystemMessage(systemPrompt);
+
         foreach (var chatMessage in chatMessages)
         {
             await foreach (var chatMessageContent in CreateChatMessageContentsAsync(chatMessage, cancellationToken))
@@ -40,11 +43,6 @@ public static class ChatHistoryBuilder
     {
         switch (chatMessage)
         {
-            case SystemChatMessage system:
-            {
-                yield return new ChatMessageContent(AuthorRole.System, system.SystemPrompt);
-                break;
-            }
             case AssistantChatMessage assistant:
             {
                 var items = new ChatMessageContentItemCollection();

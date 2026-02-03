@@ -75,5 +75,5 @@ public interface IChatContextManager : INotifyPropertyChanged
     /// </summary>
     /// <param name="chatContext"></param>
     /// <param name="systemPrompt"></param>
-    void PopulateSystemPrompt(ChatContext chatContext, string? systemPrompt);
+    string RenderSystemPrompt(ChatContext chatContext, string? systemPrompt);
 }

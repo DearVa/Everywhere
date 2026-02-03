@@ -5,6 +5,7 @@ using Everywhere.Common;
 using MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Logging;
 
 namespace Everywhere.Database;
 
@@ -105,7 +106,7 @@ public sealed class ChatDbContext(DbContextOptions<ChatDbContext> options) : DbC
     private class DateTimeOffsetToTicksConverter() : ValueConverter<DateTimeOffset, long>(v => v.Ticks, v => new DateTimeOffset(v, TimeSpan.Zero));
 }
 
-public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory) : IAsyncInitializer
+public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory, ILogger<ChatDbInitializer> logger) : IAsyncInitializer
 {
     public AsyncInitializerPriority Priority => AsyncInitializerPriority.Database;
 
@@ -115,12 +116,15 @@ public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory) : IAs
         await dbContext.Database.MigrateAsync();
 
         await EnsureSyncMetadataAsync(dbContext);
+        await EnsureRootNodeIdsMigratedAsync(dbContext);
     }
 
-    private async static ValueTask EnsureSyncMetadataAsync(ChatDbContext dbContext)
+    private async Task EnsureSyncMetadataAsync(ChatDbContext dbContext)
     {
         var meta = await dbContext.Set<CloudSyncMetadataEntity>().FirstOrDefaultAsync(m => m.Id == CloudSyncMetadataEntity.SingletonId);
         if (meta is not null) return;
+
+        logger.LogInformation("Initializing sync metadata...");
 
         meta = new CloudSyncMetadataEntity
         {
@@ -131,6 +135,56 @@ public class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory) : IAs
         };
         dbContext.SyncMetadata.Add(meta);
         await dbContext.SaveChangesAsync();
+    }
+
+    private async Task EnsureRootNodeIdsMigratedAsync(ChatDbContext dbContext)
+    {
+        // 1. Check if there are any legacy root nodes (Id == Guid.Empty)
+        var hasLegacyRootNodes = await dbContext.Nodes.AnyAsync(x => x.Id == Guid.Empty);
+        if (!hasLegacyRootNodes) return;
+
+        logger.LogInformation("Migrating legacy Root Nodes (Guid.Empty) to Version-0 deterministic IDs...");
+
+        // 2. Get all ChatContextIds that need migration
+        // Note: Only select IDs to avoid loading entire entities into memory, saving IO
+        var targetIds = await dbContext.Nodes
+            .AsNoTracking()
+            .Where(x => x.Id == Guid.Empty)
+            .Select(x => x.ChatContextId)
+            .ToListAsync();
+
+        // 3. Start migration
+        // It's recommended to use ExecuteUpdateAsync (EF Core 7+), as it generates SQL directly,
+        // avoiding the "Load -> Modify PK -> Save" operation that would cause errors
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            foreach (var chatId in targetIds)
+            {
+                var oldRootId = Guid.Empty;
+                var newRootId = Guid.CreateVersion7().SetVersion(0);
+
+                // A. First update all child nodes (where ParentId points to old Root, change to new Root)
+                await dbContext.Nodes
+                    .Where(n => n.ChatContextId == chatId && n.ParentId == oldRootId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(n => n.ParentId, newRootId));
+
+                // B. Update the Root node's primary key itself
+                // Note: Directly modifying PKs is not allowed in EF Core, but ExecuteUpdate bypasses this via SQL, so it's feasible.
+                // The WHERE clause must include all primary key columns (ChatContextId, Id)
+                await dbContext.Nodes
+                    .Where(n => n.ChatContextId == chatId && n.Id == oldRootId)
+                    .ExecuteUpdateAsync(s => s.SetProperty(n => n.Id, newRootId));
+            }
+
+            await transaction.CommitAsync();
+            logger.LogInformation("Successfully migrated {Count} root nodes.", targetIds.Count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to migrate root nodes. Data remains in legacy state.");
+            throw;
+        }
     }
 }
 

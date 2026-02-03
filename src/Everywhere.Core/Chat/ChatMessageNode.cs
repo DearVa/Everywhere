@@ -47,6 +47,12 @@ public sealed partial class ChatMessageNode : ObservableObject, IDisposable
     [IgnoreMember] private readonly SourceList<Guid> _children = new();
     [IgnoreMember] private readonly IDisposable _childrenCountChangedSubscription;
 
+    /// <summary>
+    /// Creates a new ChatMessageNode with the given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="message"></param>
+    /// <exception cref="ArgumentNullException"></exception>
     public ChatMessageNode(Guid id, ChatMessage message)
     {
         Id = id;
@@ -54,6 +60,12 @@ public sealed partial class ChatMessageNode : ObservableObject, IDisposable
         message.PropertyChanged += HandleMessagePropertyChanged;
         _childrenCountChangedSubscription = _children.CountChanged.Subscribe(_ => OnPropertyChanged(nameof(ChoiceCount)));
     }
+
+    /// <summary>
+    /// Creates a new ChatMessageNode with a new Version 7 GUID.
+    /// </summary>
+    /// <param name="message"></param>
+    public ChatMessageNode(ChatMessage message) : this(Guid.CreateVersion7(), message) { }
 
     [SerializationConstructor]
     private ChatMessageNode(Guid id, ChatMessage message, IReadOnlyList<Guid> children, int choiceIndex) : this(id, message)
@@ -67,15 +79,11 @@ public sealed partial class ChatMessageNode : ObservableObject, IDisposable
         OnPropertyChanged(nameof(Message));
     }
 
-    public ChatMessageNode(ChatMessage message) : this(Guid.CreateVersion7(), message) { }
-
     public void Add(Guid childId) => _children.Add(childId);
 
     public void AddRange(IEnumerable<Guid> childIds) => _children.AddRange(childIds);
 
     public void Clear() => _children.Clear();
-
-    internal static ChatMessageNode CreateRootNode(string systemPrompt) => new(Guid.Empty, new SystemChatMessage(systemPrompt));
 
     public void Dispose()
     {

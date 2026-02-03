@@ -15,7 +15,7 @@ using ZLinq;
 namespace Everywhere.Chat;
 
 [MessagePackObject(OnlyIncludeKeyedMembers = true)]
-[Union(0, typeof(SystemChatMessage))]
+[Union(0, typeof(RootChatMessage))]
 [Union(1, typeof(AssistantChatMessage))]
 [Union(2, typeof(UserChatMessage))]
 [Union(3, typeof(ActionChatMessage))]
@@ -36,15 +36,11 @@ public interface IHaveChatAttachments
 }
 
 [MessagePackObject(OnlyIncludeKeyedMembers = true)]
-public partial class SystemChatMessage(string systemPrompt) : ChatMessage
+public partial class RootChatMessage : ChatMessage
 {
+    public static RootChatMessage Shared { get; } = new();
+
     public override AuthorRole Role => AuthorRole.System;
-
-    [Key(0)]
-    [ObservableProperty]
-    public partial string SystemPrompt { get; set; } = systemPrompt;
-
-    public override string ToString() => SystemPrompt;
 }
 
 [MessagePackObject(OnlyIncludeKeyedMembers = true, AllowPrivate = true)]

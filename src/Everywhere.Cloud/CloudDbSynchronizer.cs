@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 #endif
 
+using System.Net.Sockets;
 using Everywhere.Common;
 using Everywhere.Database;
 using Everywhere.Extensions;
@@ -27,27 +28,27 @@ public class CloudChatDbSynchronizer(
     {
         Task.Run(async () =>
         {
-            // TODO: adjust delayMinutes dynamically after manual syncs
-            var delayMinutes = 1d;
             while (true)
             {
                 try
                 {
                     await SynchronizeAsync();
-                    delayMinutes = 1d; // reset delay on success
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
+                catch (HttpRequestException ex) when (ex.InnerException is SocketException)
+                {
+                    // Network-related errors
+                    logger.LogInformation(ex, "Network error occurred during cloud database synchronization.");
+                }
                 catch (Exception ex)
                 {
-                    delayMinutes = Math.Min(2 * delayMinutes, 30); // exponential backoff
-
                     logger.LogError(ex, "Error occurred during cloud database synchronization.");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(delayMinutes));
+                await Task.Delay(TimeSpan.FromMinutes(1d));
             }
         }).Detach(logger.ToExceptionHandler());
 
@@ -132,18 +133,25 @@ public class CloudChatDbSynchronizer(
 
             // Apply pulled version regardless of whether there are items to process.
             metadata.LastPulledVersion = data.LatestVersion;
+            metadata.LastSyncAt = DateTimeOffset.UtcNow;
 
             if (data.EntityWrappers is not { Count: > 0 }) return;
 
-            var dbSet = dbContext.Set<ICloudSyncable>();
+            var chats = dbContext.Chats;
+            var nodes = dbContext.Nodes;
             foreach (var entityWrapper in data.EntityWrappers)
             {
                 if (entityWrapper.IsDeleted)
                 {
-                    var existedEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
-                    if (existedEntity is not null)
+                    var existedChat = await chats.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
+                    if (existedChat is not null)
                     {
-                        dbSet.Remove(existedEntity);
+                        chats.Remove(existedChat);
+                    }
+                    var existedNode = await nodes.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
+                    if (existedNode is not null)
+                    {
+                        nodes.Remove(existedNode);
                     }
                 }
                 else
@@ -161,13 +169,31 @@ public class CloudChatDbSynchronizer(
                         continue;
                     }
 
+                    if (entityWrapper.Id == Guid.Empty)
+                    {
+                        // Invalid Id, skip it.
+                        continue;
+                    }
+
                     // entity.Id is not serialized/deserialized, so we need to set it manually.
                     entity.Id = entityWrapper.Id;
                     entity.LocalSyncVersion = ICloudSyncable.UnmodifiedFromCloud;
-                    var existingEntity = await dbSet.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
+                    var existingEntity = await chats.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
                     if (existingEntity is null)
                     {
-                        dbSet.Add(entity);
+                        switch (entity)
+                        {
+                            case ChatContextEntity chat:
+                            {
+                                await chats.AddAsync(chat, cancellationToken);
+                                break;
+                            }
+                            case ChatNodeEntity node:
+                            {
+                                await nodes.AddAsync(node, cancellationToken);
+                                break;
+                            }
+                        }
                     }
                     else if (existingEntity.LocalSyncVersion <= metadata.LastPushedVersion)
                     {
@@ -199,11 +225,15 @@ public class CloudChatDbSynchronizer(
         var entitiesToPush = new List<CloudSyncableEntity>();
         entitiesToPush.AddRange(
             await dbContext.Chats
+                .AsNoTracking()
                 .Where(x => x.LocalSyncVersion > lastPushedVersion)
+                .Where(x => x.Id != Guid.Empty)
                 .ToListAsync(cancellationToken: cancellationToken));
         entitiesToPush.AddRange(
             await dbContext.Nodes
+                .AsNoTracking()
                 .Where(x => x.LocalSyncVersion > lastPushedVersion)
+                .Where(x => x.Id != Guid.Empty)
                 .ToListAsync(cancellationToken: cancellationToken));
         if (entitiesToPush.Count == 0) return;
 
@@ -251,11 +281,13 @@ public class CloudChatDbSynchronizer(
                 entityWrappers.Clear();
                 totalPushBytes = 0;
                 metadata.LastPushedVersion = currentPushedVersion; // If successful, update the last pushed version
+                metadata.LastSyncAt = DateTimeOffset.UtcNow;
             }
         }
 
         await PushPayloadAsync(entityWrappers, httpClient, cancellationToken);
         metadata.LastPushedVersion = currentPushedVersion; // If successful, update the last pushed version
+        metadata.LastSyncAt = DateTimeOffset.UtcNow;
     }
 
     /// <summary>
