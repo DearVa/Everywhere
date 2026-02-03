@@ -419,6 +419,13 @@
               x:Name="ChatMessageOperationPanel"
               IsVisible="{Binding !$parent[v:ChatMessageItemsControl].IsReadonly}"
               Orientation="Horizontal">
+              <NumericUpDown
+                x:Name="ChoiceSelector" Margin="0,0,4,0"
+                IsVisible="{Binding $parent[ContentControl].((chat:ChatMessageNode)DataContext).Parent.ChoiceCount, FallbackValue=False, Converter={x:Static vc:Int32Converters.GreaterThan}, ConverterParameter=1}"
+                Maximum="{Binding $parent[ContentControl].((chat:ChatMessageNode)DataContext).Parent.ChoiceCount, FallbackValue=1}"
+                Minimum="1"
+                Value="{Binding $parent[ContentControl].((chat:ChatMessageNode)DataContext).Parent.ChoiceIndex, FallbackValue=1, Converter={x:Static vc:Int32Converters.Plus}, ConverterParameter=1}"/>
+
               <Button
                 Classes="Ghost Compact"
                 Command="{Binding $parent[v:ChatWindow].ViewModel.EditCommand}"
