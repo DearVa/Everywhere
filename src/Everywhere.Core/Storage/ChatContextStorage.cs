@@ -53,10 +53,9 @@ public sealed class ChatContextStorage(
         db.Chats.Add(ctxEntity);
 
         // Insert nodes (including root Guid.Empty if present)
-        var now = DateTimeOffset.UtcNow;
         foreach (var node in context.GetAllNodes().AsValueEnumerable())
         {
-            var entity = BuildNodeEntity(context.Metadata.Id, node, now);
+            var entity = BuildNodeEntity(context.Metadata.Id, node);
             db.Nodes.Add(entity);
         }
 
@@ -260,7 +259,7 @@ public sealed class ChatContextStorage(
                 }
             }
 
-            var node = new ChatMessageNode(row.Id, msg);
+            var node = new ChatMessageNode(row.Id, msg, row.UpdatedAt);
             nodesById[row.Id] = node;
 
             if (row.ParentId is { } parentId)
@@ -324,10 +323,8 @@ public sealed class ChatContextStorage(
         using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
-        var chatId = context.Metadata.Id;
-        var now = DateTimeOffset.UtcNow;
-
         // Upsert context row
+        var chatId = context.Metadata.Id;
         var ctxRow = await db.Chats.FirstOrDefaultAsync(x => x.Id == chatId, cancellationToken);
         if (ctxRow is null)
         {
@@ -358,18 +355,22 @@ public sealed class ChatContextStorage(
             .Where(x => x.ChatContextId == chatId)
             .ToListAsync(cancellationToken);
         var dbNodeBlobsSet = dbNodeBlobs
+            .AsValueEnumerable()
             .Select(nb => (nb.ChatNodeId, nb.BlobSha256, nb.Index))
             .ToHashSet();
 
-        var memNodes = context.GetAllNodes().ToDictionary(x => x.Id, x => x);
-
         // Upsert / Update
+        var memNodes = context.GetAllNodes().AsValueEnumerable().ToDictionary(x => x.Id, x => x);
         foreach (var (id, node) in memNodes)
         {
             if (!dbNodes.TryGetValue(id, out var row))
             {
-                var entity = BuildNodeEntity(chatId, node, now);
+                var entity = BuildNodeEntity(chatId, node);
                 db.Nodes.Add(entity);
+            }
+            else if (row.UpdatedAt == node.DateModified)
+            {
+                continue; // No changes
             }
             else
             {
@@ -378,7 +379,7 @@ public sealed class ChatContextStorage(
                 row.ChoiceChildId = ResolveChoiceChildId(node);
                 row.Payload = SerializeMessage(node.Message);
                 row.Author = node.Message.Role.Label.SafeSubstring(0, 10);
-                row.UpdatedAt = now;
+                row.UpdatedAt = node.DateModified;
                 row.IsDeleted = false;
             }
 
@@ -425,7 +426,8 @@ public sealed class ChatContextStorage(
         }
 
         // Soft-delete nodes that disappeared in memory
-        foreach (var (id, row) in dbNodes)
+        var now = DateTimeOffset.UtcNow;
+        foreach (var (id, row) in dbNodes.AsValueEnumerable())
         {
             if (!memNodes.ContainsKey(id))
             {
@@ -515,7 +517,7 @@ public sealed class ChatContextStorage(
         }
     }
 
-    private ChatNodeEntity BuildNodeEntity(Guid chatId, ChatMessageNode node, DateTimeOffset now) =>
+    private ChatNodeEntity BuildNodeEntity(Guid chatId, ChatMessageNode node) =>
         new()
         {
             ChatContextId = chatId,
@@ -524,8 +526,8 @@ public sealed class ChatContextStorage(
             ChoiceChildId = ResolveChoiceChildId(node),
             Payload = SerializeMessage(node.Message),
             Author = node.Message.Role.Label.SafeSubstring(0, 10),
-            CreatedAt = now,
-            UpdatedAt = now,
+            CreatedAt = node.DateModified,
+            UpdatedAt = node.DateModified,
             IsDeleted = false
         };
 
