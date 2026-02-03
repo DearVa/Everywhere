@@ -54,7 +54,7 @@ public sealed class ChatContextStorage(
 
         // Insert nodes (including root Guid.Empty if present)
         var now = DateTimeOffset.UtcNow;
-        foreach (var node in context.GetAllNodes())
+        foreach (var node in context.GetAllNodes().AsValueEnumerable())
         {
             var entity = BuildNodeEntity(context.Metadata.Id, node, now);
             db.Nodes.Add(entity);
@@ -229,11 +229,12 @@ public sealed class ChatContextStorage(
             .ToDictionaryAsync(b => b.Sha256, cancellationToken);
 
         // Root node
-        var rootRow = nodeRows.FirstOrDefault(x => x.Id == Guid.Empty);
-        if (rootRow is null || DeserializeMessage(rootRow.Payload) is not SystemChatMessage rootMessage)
-            throw new InvalidOperationException("Root node (System Prompt) is missing or invalid.");
+        var rootRow = nodeRows.AsValueEnumerable().FirstOrDefault(x => x.Id.Version == 0);
+        if (rootRow is null)
+            throw new InvalidOperationException("Root node is missing or invalid.");
 
-        var rootNode = new ChatMessageNode(Guid.Empty, rootMessage);
+        // Use shared root message instance for memory savings
+        var rootNode = new ChatMessageNode(rootRow.Id, RootChatMessage.Shared);
 
         // Build node instances
         var nodesById = new Dictionary<Guid, ChatMessageNode>();
@@ -242,7 +243,7 @@ public sealed class ChatContextStorage(
         // Create non-root nodes first (we also create root below)
         foreach (var row in nodeRows)
         {
-            if (row.Id == Guid.Empty) continue; // handle root later
+            if (row.Id.Version == 0) continue; // handle root later
 
             var msg = DeserializeMessage(row.Payload);
             if (msg is IHaveChatAttachments { Attachments: { } attachments })
@@ -291,7 +292,7 @@ public sealed class ChatContextStorage(
         }
 
         // Apply for root
-        ApplyChildren(Guid.Empty, rootNode, rootRow);
+        ApplyChildren(rootRow.Id, rootNode, rootRow);
 
         // Apply for all parents present
         var rowById = nodeRows.ToDictionary(x => x.Id);

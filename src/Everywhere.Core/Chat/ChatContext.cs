@@ -40,13 +40,6 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     [Key(0)]
     public ChatContextMetadata Metadata { get; }
 
-    [IgnoreMember]
-    public string SystemPrompt
-    {
-        get => _rootNode.Message.To<SystemChatMessage>().SystemPrompt;
-        set => _rootNode.Message.To<SystemChatMessage>().SystemPrompt = value;
-    }
-
     /// <summary>
     /// Items in the current branch, excluding the root system prompt node. Used for UI bindings.
     /// </summary>
@@ -97,7 +90,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     private ICollection<ChatMessageNode> MessageNodes => _messageNodeMap.Values;
 
     /// <summary>
-    /// Root node (Guid.Empty) containing the System Prompt.
+    /// Root node (Guid.Empty) which is important for branch resolution but not included in the message node map.
     /// </summary>
     [Key(2)]
     private readonly ChatMessageNode _rootNode;
@@ -137,23 +130,23 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
         }
 
         if (_messageNodeMap.ContainsKey(Guid.Empty))
-            throw new InvalidOperationException("Root node (Guid.Empty) must not be in the messageNodeMap.");
+            throw new InvalidOperationException("Message nodes cannot contain a node with an empty ID.");
 
         UpdateBranchAfter(0, rootNode);
 
         DisplayItems = _branchNodes
             .Connect()
-            .Filter(node => node != _rootNode)
+            .Filter(node => node != rootNode)
             .BindEx(out _branchNodesWithoutSystemSubscription);
     }
 
     /// <summary>
-    /// Creates a new chat context with the given system prompt. A new Guid v7 ID is assigned.
+    /// Creates a new chat context. A new Guid v7 ID is assigned.
     /// </summary>
     public ChatContext()
     {
         Metadata = new ChatContextMetadata(Guid.CreateVersion7(), DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, null);
-        _rootNode = ChatMessageNode.CreateRootNode("You are a helpful assistant.");
+        _rootNode = new ChatMessageNode(Guid.CreateVersion7().SetVersion(0), RootChatMessage.Shared);
         _rootNode.PropertyChanged += HandleNodePropertyChanged;
         _branchNodes.Add(_rootNode);
 

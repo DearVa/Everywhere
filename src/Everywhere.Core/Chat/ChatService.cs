@@ -386,7 +386,9 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, cancellationToken);
 
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
-            _chatContextManager.PopulateSystemPrompt(chatContext, customAssistant.SystemPrompt);
+            // But we only do this once per generation, even if the system time may change during function calls.
+            // This can save prompt tokens because they may be cached by LLM providers.
+            var systemPrompt = _chatContextManager.RenderSystemPrompt(chatContext, customAssistant.SystemPrompt);
 
             while (true)
             {
@@ -394,11 +396,12 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
 
                 // Build the chat history for the current generation.
                 var chatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
+                    systemPrompt,
                     chatContext
                         .Items
                         .AsValueEnumerable()
                         .Select(n => n.Message)
-                        .Where(m => m.Role.Label is "system" or "assistant" or "user" or "tool")
+                        .Where(m => m.Role.Label is "assistant" or "user" or "tool")
                         .ToList(),
                     cancellationToken);
 
