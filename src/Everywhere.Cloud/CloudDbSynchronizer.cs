@@ -144,15 +144,15 @@ public class CloudChatDbSynchronizer(
             {
                 if (entityWrapper.Data is null)
                 {
-                    var existedChat = await chats.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
-                    if (existedChat is not null)
-                    {
-                        chats.Remove(existedChat);
-                    }
-                    var existedNode = await nodes.FirstOrDefaultAsync(x => x.Id == entityWrapper.Id, cancellationToken: cancellationToken);
+                    var existedNode = await FindEntityAsync(entityWrapper.Id);
                     if (existedNode is not null)
                     {
-                        nodes.Remove(existedNode);
+                        existedNode.IsDeleted = true;
+                        existedNode.LocalSyncVersion = ICloudSyncable.UnmodifiedFromCloud;
+                    }
+                    else
+                    {
+                        logger.LogWarning("Received delete for non-existing entity Id {EntityId} from cloud.", entityWrapper.Id);
                     }
                 }
                 else
@@ -179,7 +179,8 @@ public class CloudChatDbSynchronizer(
                     // entity.Id is not serialized/deserialized, so we need to set it manually.
                     entity.Id = entityWrapper.Id;
                     entity.LocalSyncVersion = ICloudSyncable.UnmodifiedFromCloud;
-                    var existingEntity = await chats.FirstOrDefaultAsync(x => x.Id == entity.Id, cancellationToken: cancellationToken);
+
+                    var existingEntity = await FindEntityAsync(entity.Id);
                     if (existingEntity is null)
                     {
                         switch (entity)
@@ -210,6 +211,11 @@ public class CloudChatDbSynchronizer(
 
             if (!data.HasMore) break;
         }
+
+        // Find nodes first because it has a higher chance of being requested.
+        async Task<CloudSyncableEntity?> FindEntityAsync(Guid id) =>
+            await dbContext.Nodes.FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken) as CloudSyncableEntity ??
+            await dbContext.Chats.FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
     }
 
     private async ValueTask PushChangesAsync(
