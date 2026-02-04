@@ -1,5 +1,4 @@
 ﻿using System.Buffers.Binary;
-using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using DynamicData;
 using Everywhere.Chat;
@@ -23,9 +22,6 @@ public sealed class ChatContextStorage(
     MessagePackSerializerOptions? serializerOptions = null
 ) : IChatContextStorage
 {
-    // cache of alive instances to avoid multi-instance but same id problems
-    private readonly ConcurrentDictionary<Guid, WeakReference<ChatContextMetadata>> _metadataCache = [];
-    private readonly ConcurrentDictionary<Guid, WeakReference<ChatContext>> _contextCache = [];
     private readonly AsyncLock _lock = new();
 
     public async Task AddChatContextAsync(ChatContext context, CancellationToken cancellationToken = default)
@@ -60,10 +56,6 @@ public sealed class ChatContextStorage(
         }
 
         await db.SaveChangesAsync(cancellationToken);
-
-        // Canonicalize cache entries (replace dead refs atomically)
-        SetAlive(_contextCache, context.Metadata.Id, context);
-        SetAlive(_metadataCache, context.Metadata.Id, context.Metadata);
     }
 
     public async Task DeleteChatContextsAsync(IEnumerable<Guid> chatContextIds, CancellationToken cancellationToken = default)
@@ -76,22 +68,17 @@ public sealed class ChatContextStorage(
             var ctx = await db.Chats.FirstOrDefaultAsync(x => x.Id == chatContextId, cancellationToken);
             if (ctx is null) continue;
 
-            var now = DateTimeOffset.UtcNow;
+            // We don't change UpdatedAt here since it's a soft delete and we want to preserve the original timestamp for ordering purposes.
+            // If needed, we could add a DeletedAt column in the future.
             ctx.IsDeleted = true;
-            ctx.UpdatedAt = now;
 
-            await db.Nodes.Where(n => n.ChatContextId == chatContextId)
-                .ExecuteUpdateAsync(
-                    s => s
-                        .SetProperty(x => x.IsDeleted, true)
-                        .SetProperty(x => x.UpdatedAt, now),
-                    cancellationToken);
+            var nodes = await db.Nodes.Where(n => n.ChatContextId == chatContextId).ToListAsync(cancellationToken);
+            foreach (var node in nodes)
+            {
+                node.IsDeleted = true;
+            }
 
             await db.SaveChangesAsync(cancellationToken);
-
-            // Invalidate caches
-            _contextCache.TryRemove(chatContextId, out var _);
-            _metadataCache.TryRemove(chatContextId, out var _);
         }
     }
 
@@ -105,16 +92,14 @@ public sealed class ChatContextStorage(
             var ctx = await db.Chats.FirstOrDefaultAsync(x => x.Id == chatContextId, cancellationToken);
             if (ctx is null) continue;
 
-            var now = DateTimeOffset.UtcNow;
+            // Similar to DeleteChatContextsAsync, we don't update timestamps on restore to preserve original ordering.
             ctx.IsDeleted = false;
-            ctx.UpdatedAt = now;
 
-            await db.Nodes.Where(n => n.ChatContextId == chatContextId)
-                .ExecuteUpdateAsync(
-                    s => s
-                        .SetProperty(x => x.IsDeleted, false)
-                        .SetProperty(x => x.UpdatedAt, now),
-                    cancellationToken);
+            var nodes = await db.Nodes.Where(n => n.ChatContextId == chatContextId).ToListAsync(cancellationToken);
+            foreach (var node in nodes)
+            {
+                node.IsDeleted = false;
+            }
 
             await db.SaveChangesAsync(cancellationToken);
         }
@@ -150,12 +135,7 @@ public sealed class ChatContextStorage(
 
         await foreach (var entity in query.AsAsyncEnumerable().WithCancellation(cancellationToken))
         {
-            var metadata = GetOrAddAlive(
-                _metadataCache,
-                entity.Id,
-                () => new ChatContextMetadata(entity.Id, entity.CreatedAt, entity.UpdatedAt, entity.Topic));
-
-            yield return metadata;
+            yield return new ChatContextMetadata(entity.Id, entity.CreatedAt, entity.UpdatedAt, entity.Topic);
         }
 
         IQueryable<ChatContextEntity> ApplyOrder<TKey>(
@@ -201,10 +181,6 @@ public sealed class ChatContextStorage(
 
     public async Task<ChatContext> GetChatContextAsync(Guid chatContextId, CancellationToken cancellationToken = default)
     {
-        // 1) Fast path: alive cached context
-        if (_contextCache.TryGetValue(chatContextId, out var wr) && wr.TryGetTarget(out var cached))
-            return cached;
-
         using var _ = await _lock.LockAsync(cancellationToken);
         await using var db = await dbFactory.CreateDbContextAsync(cancellationToken);
 
@@ -302,17 +278,8 @@ public sealed class ChatContextStorage(
         }
 
         // Canonical metadata instance
-        var metadata = GetOrAddAlive(
-            _metadataCache,
-            ctxRow.Id,
-            () => new ChatContextMetadata(ctxRow.Id, ctxRow.CreatedAt, ctxRow.UpdatedAt, ctxRow.Topic));
-
-        var built = new ChatContext(metadata, nodesById.Values, rootNode);
-
-        // Canonical context instance (replace dead refs if any)
-        var finalContext = GetOrAddAlive(_contextCache, chatContextId, () => built);
-
-        return finalContext;
+        var metadata = new ChatContextMetadata(ctxRow.Id, ctxRow.CreatedAt, ctxRow.UpdatedAt, ctxRow.Topic);
+        return new ChatContext(metadata, nodesById.Values, rootNode);
     }
 
     public async Task SaveChatContextAsync(ChatContext context, CancellationToken cancellationToken = default)
@@ -437,10 +404,6 @@ public sealed class ChatContextStorage(
         }
 
         await db.SaveChangesAsync(cancellationToken);
-
-        // Canonicalize cache after save
-        SetAlive(_contextCache, context.Metadata.Id, context);
-        SetAlive(_metadataCache, context.Metadata.Id, context.Metadata);
     }
 
     public async Task SaveChatContextMetadataAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default)
@@ -455,66 +418,6 @@ public sealed class ChatContextStorage(
         ctxRow.UpdatedAt = metadata.DateModified;
 
         await db.SaveChangesAsync(cancellationToken);
-
-        SetAlive(_metadataCache, metadata.Id, metadata);
-        _contextCache.TryRemove(metadata.Id, out var _); // keep metadata-context coherence
-    }
-
-    // ————— helpers —————
-    private static T GetOrAddAlive<T>(
-        ConcurrentDictionary<Guid, WeakReference<T>> cache,
-        Guid id,
-        Func<T> factory) where T : class
-    {
-        while (true)
-        {
-            if (cache.TryGetValue(id, out var existingWr) && existingWr.TryGetTarget(out var existing))
-                return existing;
-
-            var created = factory();
-            var newWr = new WeakReference<T>(created);
-
-            if (existingWr is null)
-            {
-                if (cache.TryAdd(id, newWr))
-                    return created;
-                // Lost the race, retry to read the winner
-            }
-            else
-            {
-                if (cache.TryUpdate(id, newWr, existingWr))
-                    return created;
-                // Lost the race, retry to read the winner
-            }
-        }
-    }
-
-    private static void SetAlive<T>(
-        ConcurrentDictionary<Guid, WeakReference<T>> cache,
-        Guid id,
-        T instance) where T : class
-    {
-        var newWr = new WeakReference<T>(instance);
-
-        while (true)
-        {
-            if (!cache.TryGetValue(id, out var existingWr))
-            {
-                if (cache.TryAdd(id, newWr))
-                    return;
-                continue; // race, retry
-            }
-
-            // If the cache already points to the very same instance, nothing to do
-            if (existingWr.TryGetTarget(out var existing) && ReferenceEquals(existing, instance))
-                return;
-
-            // Either dead or different instance -> replace
-            if (cache.TryUpdate(id, newWr, existingWr))
-                return;
-
-            // race, retry
-        }
     }
 
     private ChatNodeEntity BuildNodeEntity(Guid chatId, ChatMessageNode node) =>
