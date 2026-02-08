@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
+using WritableJsonConfiguration;
 using ZLinq;
 
 namespace Everywhere.Configuration;
@@ -32,7 +33,11 @@ public class SettingsMigrator
             try
             {
                 var json = File.ReadAllText(_filePath);
-                root = JsonNode.Parse(json) as JsonObject;
+                root = JsonNode.Parse(json, null, new JsonDocumentOptions
+                {
+                    AllowTrailingCommas = true,
+                    CommentHandling = JsonCommentHandling.Skip
+                }) as JsonObject;
             }
             catch (Exception ex)
             {
@@ -72,14 +77,7 @@ public class SettingsMigrator
 
             try
             {
-                File.WriteAllText(_filePath, root.ToJsonString(new JsonSerializerOptions
-                {
-                    Converters = { new JsonStringEnumConverter() },
-                    WriteIndented = true,
-                    AllowTrailingCommas = true,
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    IgnoreReadOnlyProperties = true
-                }));
+                File.WriteAllText(_filePath, root.ToJsonString(WritableJsonConfigurationSource.DefaultJsonSerializerOptions));
             }
             catch (Exception ex)
             {

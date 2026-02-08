@@ -558,7 +558,7 @@
         <value>Максимальная длина контекста диалога. Это влияет на стратегию построения визуального контекста, пожалуйста, установите максимально возможное значение.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>Максимальная длина контекста (max_tokens)</value>
+        <value>Максимальная длина контекста (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>Сброс</value>

@@ -558,7 +558,7 @@
         <value>対話の最大コンテキスト長。これは視覚コンテキストの構築戦略に影響を与えますので、できるだけ実際の値に設定してください。</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>最大コンテキスト長 (max_tokens)</value>
+        <value>最大コンテキスト長 (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>リセット</value>

@@ -558,7 +558,7 @@
         <value>對話的最大上下文長度。此項會影響構建視覺上下文的策略，請盡可能設為真實值。</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>最大上下文長度 (max_tokens)</value>
+        <value>最大上下文長度 (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>重置</value>

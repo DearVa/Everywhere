@@ -43,9 +43,8 @@ public sealed record ModelDefinitionTemplate
 
     /// <summary>
     /// Maximum number of tokens that the model can process in a single request.
-    /// aka, the maximum context length.
     /// </summary>
-    public int MaxTokens { get; set; }
+    public int ContextLimit { get; set; }
 
     /// <summary>
     /// Gets or sets the default model in a model provider.

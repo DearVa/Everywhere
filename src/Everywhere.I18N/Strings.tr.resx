@@ -557,7 +557,7 @@
         <value>Sohbetin maksimum bağlam uzunluğu. Bu, görsel bağlam oluşturma stratejisini etkiler, mümkünse gerçek bir değer olarak ayarlayın.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>Maksimum Bağlam Uzunluğu (max_tokens)</value>
+        <value>Maksimum Bağlam Uzunluğu (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>Sıfırla</value>

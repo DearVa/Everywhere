@@ -557,7 +557,7 @@
         <value>Die maximale Kontextlänge des Gesprächs. Dies beeinflusst die Strategie zum Erstellen des visuellen Baums, bitte setze es so realistisch wie möglich.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>Maximale Kontextlänge (max_tokens)</value>
+        <value>Maximale Kontextlänge (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>Standard</value>

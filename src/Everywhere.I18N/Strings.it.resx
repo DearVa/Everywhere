@@ -558,7 +558,7 @@
         <value>La lunghezza massima del contesto della conversazione. Questo influenzerà la strategia di costruzione dell'albero visivo, cerca di impostarlo su un valore reale.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>Lunghezza Massima del Contesto (max_tokens)</value>
+        <value>Lunghezza Massima del Contesto (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>Ripristina</value>

@@ -65,7 +65,7 @@
           ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_MaxTokens_Header}}">
           <TextBlock
             FontSize="{DynamicResource FontSizeS}"
-            Text="{Binding MaxTokens, Converter={x:Static vc:TokenCountHumanizationConverter.Shared}}"/>
+            Text="{Binding ContextLimit, Converter={x:Static vc:TokenCountHumanizationConverter.Shared}}"/>
         </shadui:Badge>
       </StackPanel>
     </Grid>
