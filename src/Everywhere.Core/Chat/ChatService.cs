@@ -261,25 +261,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         }
     }
 
-    private IKernelMixin CreateKernelMixin(CustomAssistant customAssistant)
-    {
-        using var activity = _activitySource.StartActivity();
-
-        try
-        {
-            var kernelMixin = _kernelMixinFactory.GetOrCreate(customAssistant);
-            activity?.SetTag("llm.model.id", customAssistant.ModelId);
-            activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens);
-            return kernelMixin;
-        }
-        catch (Exception e)
-        {
-            // This method may throw if the model settings are invalid.
-            activity?.SetStatus(ActivityStatusCode.Error, e.Message.Trim());
-            throw;
-        }
-    }
-
     /// <summary>
     /// Kernel is very cheap to create, so we can create a new kernel for each request.
     /// This method builds the kernel based on the current settings.
@@ -364,7 +345,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var kernelMixin = CreateKernelMixin(customAssistant);
+            var kernelMixin = _kernelMixinFactory.GetOrCreate(customAssistant);
             var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, cancellationToken);
 
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
@@ -1024,7 +1005,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                 new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.IsImageInputSupported),
                 new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.IsFunctionCallingSupported),
                 new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.IsDeepThinkingSupported),
-                new KeyValuePair<string, object?>("gen_ai.request.max_tokens", customAssistant.MaxTokens),
+                new KeyValuePair<string, object?>("gen_ai.request.context_limit", customAssistant.ContextLimit),
                 new KeyValuePair<string, object?>("gen_ai.request.temperature", customAssistant.Temperature),
                 new KeyValuePair<string, object?>("gen_ai.request.top_p", customAssistant.TopP)
             ];

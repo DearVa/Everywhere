@@ -558,7 +558,7 @@
         <value>대화의 최대 맥락 길이. 이 항목은 시각적 맥락을 구축하는 전략에 영향을 미치므로 가능한 실제 값으로 설정하십시오.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
-        <value>최대 컨텍스트 길이 (max_tokens)</value>
+        <value>최대 컨텍스트 길이 (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
         <value>초기화</value>

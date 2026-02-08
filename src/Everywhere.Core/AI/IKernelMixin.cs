@@ -16,7 +16,7 @@ public interface IKernelMixin : IDisposable
     /// <summary>
     /// Gets the maximum number of tokens allowed in a single request to the model.
     /// </summary>
-    int ContextWindow { get; }
+    int ContextLimit { get; }
 
     bool IsImageInputSupported { get; }
 

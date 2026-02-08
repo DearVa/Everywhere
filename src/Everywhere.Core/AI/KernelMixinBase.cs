@@ -30,7 +30,7 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
 
     public int RequestTimeoutSeconds { get; } = customAssistant.RequestTimeoutSeconds;
 
-    public int ContextWindow => _customAssistant.MaxTokens;
+    public int ContextLimit => _customAssistant.ContextLimit;
 
     public bool IsImageInputSupported => _customAssistant.IsImageInputSupported;
 
