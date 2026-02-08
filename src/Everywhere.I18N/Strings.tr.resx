@@ -490,6 +490,9 @@
     <data name="VisualTreeDetailLevel_Detailed" xml:space="preserve">
         <value>Detaylı</value>
     </data>
+    <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
+        <value>Kompakt (Önerilen)</value>
+    </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>Minimum</value>
     </data>
@@ -498,6 +501,12 @@
     </data>
     <data name="ChatWindowSettings_WindowPinMode_Description" xml:space="preserve">
         <value>Sohbet penceresi açıldığında sabitleme modunu belirler. Pencere sabitlenmemişse odak kaybolduğunda otomatik olarak gizlenecektir.</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
+        <value>Görsel Bağlam Detay Seviyesi</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
+        <value>Görsel öğe eklenmişse, Everywhere asistanınıza göndermeden önce bunu ve çevresindeki öğeleri yapılandırılmış metin olarak toplar. Bu seçenek, toplanan bilgilerin zenginliğini ve miktarını kontrol eder.</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>İstemci hatası.</value>
@@ -543,6 +552,9 @@
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Derin Düşünme Desteği</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>Sohbetin maksimum bağlam uzunluğu. Bu, görsel bağlam oluşturma stratejisini etkiler, mümkünse gerçek bir değer olarak ayarlayın.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Maksimum Bağlam Uzunluğu (max_tokens)</value>
@@ -624,6 +636,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
         <value>API çağrıları için model kimliği, örneğin gpt-4o.</value>
+    </data>
+    <data name="ChatPluginPage_Title" xml:space="preserve">
+        <value>Sohbet Araçları</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>Soğbet eklentileri, yerleşik eklentiler ve MCP eklentilerini içerir. Araç çağrılarını destekleyen LLM'ler, daha güçlü işlevsellik elde etmek için (web arama veya yerel dosyalara erişim gibi) bu eklentileri uygun zamanlarda kullanır.</value>
@@ -880,6 +895,9 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
     </data>
     <data name="ChatInputArea_SettingsButton_ToolTip" xml:space="preserve">
         <value>Ayarlar</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
+        <value>Görsel Bağlam Uzunluğu Bütçesi</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>Güncelleme mevcut.</value>
@@ -2047,5 +2065,11 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>Derin Düşünme</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
+        <value>Görsel bağlamın toplanacak uzunluk üst sınırı, birim token. Bu bir tahmindir, kesin bir sınır garantisi vermez.</value>
+    </data>
+    <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
+        <value>Araç Çağrısını Aç</value>
     </data>
 </root>

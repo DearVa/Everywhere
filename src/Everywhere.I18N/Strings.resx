@@ -492,7 +492,7 @@
         <value>Detailed</value>
     </data>
     <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
-        <value />
+        <value>Compact (Recommended)</value>
     </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>Minimal</value>
@@ -504,10 +504,10 @@
         <value>Specifies the pin mode for the chat window when it is opened. When the window is not fixed, it will be hidden automatically when it loses focus.</value>
     </data>
     <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
-        <value />
+        <value>Visual Context Detail Level</value>
     </data>
     <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
-        <value />
+        <value>If visual element attachments are added, Everywhere will collect them along with surrounding elements as structured text before sending to the assistant. This option controls the richness and amount of information collected.</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>Client error.</value>
@@ -639,7 +639,7 @@
         <value>The model identifier for API calls, such as gpt-4o.</value>
     </data>
     <data name="ChatPluginPage_Title" xml:space="preserve">
-        <value />
+        <value>Chat Tools</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>Chat plugins include built-in plugins and MCP plugins. LLMs that support tool calls will use these plugins at appropriate times (such as searching the web or accessing local files) to gain more powerful functionality.</value>
@@ -900,7 +900,7 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Settings</value>
     </data>
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
-        <value />
+        <value>Visual Context Length Budget</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>Update available.</value>
@@ -2070,9 +2070,9 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Deep Thinking</value>
     </data>
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
-        <value />
+        <value>The upper limit for the length of collected visual context, measured in tokens. This is an estimate and cannot guarantee precise limits.</value>
     </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
-        <value />
+        <value>Enable Tool Call</value>
     </data>
 </root>

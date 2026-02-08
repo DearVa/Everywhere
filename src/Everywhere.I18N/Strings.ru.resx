@@ -491,6 +491,9 @@
     <data name="VisualTreeDetailLevel_Detailed" xml:space="preserve">
         <value>Подробно</value>
     </data>
+    <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
+        <value>Компактный (рекомендуется)</value>
+    </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>Минимально</value>
     </data>
@@ -499,6 +502,12 @@
     </data>
     <data name="ChatWindowSettings_WindowPinMode_Description" xml:space="preserve">
         <value>Определяет режим закрепления окна чата при его открытии. Когда окно не закреплено, оно будет автоматически скрываться при потере фокуса.</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
+        <value>Уровень Подробности Визуального Контекста</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
+        <value>Если добавлены визуальные элементы, Everywhere соберет их с окружающими элементами в структурированный текст перед отправкой помощнику. Эта опция контролирует степень богатства и объема собранной информации.</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>Ошибка клиента.</value>
@@ -544,6 +553,9 @@
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Поддержка глубокого мышления</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>Максимальная длина контекста диалога. Это влияет на стратегию построения визуального контекста, пожалуйста, установите максимально возможное значение.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>Максимальная длина контекста (max_tokens)</value>
@@ -625,6 +637,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
         <value>Идентификатор модели для вызова API, например, gpt-4o.</value>
+    </data>
+    <data name="ChatPluginPage_Title" xml:space="preserve">
+        <value>Чат Плагины</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>Чат-плагины включают встроенные плагины и MCP-плагины. LLM, поддерживающие вызовы инструментов, будут использовать эти плагины в подходящее время (например, для поиска в интернете или доступа к локальным файлам), чтобы получить более мощные функции.</value>
@@ -883,6 +898,9 @@
     </data>
     <data name="ChatInputArea_SettingsButton_ToolTip" xml:space="preserve">
         <value>Настройки</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
+        <value>Бюджет Длины Визуального Контекста</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>Доступно обновление.</value>
@@ -2050,5 +2068,11 @@
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>Глубокое мышление</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
+        <value>Максимальная длина визуального контекста, измеряемая в токенах. Это оценка, точное ограничение не гарантируется.</value>
+    </data>
+    <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
+        <value>Включить Вызов Инструментов</value>
     </data>
 </root>

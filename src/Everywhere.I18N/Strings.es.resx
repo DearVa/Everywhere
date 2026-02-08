@@ -491,6 +491,9 @@
     <data name="VisualTreeDetailLevel_Detailed" xml:space="preserve">
         <value>Detallado</value>
     </data>
+    <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
+        <value>Compacto (Recomendado)</value>
+    </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>Mínimo</value>
     </data>
@@ -499,6 +502,12 @@
     </data>
     <data name="ChatWindowSettings_WindowPinMode_Description" xml:space="preserve">
         <value>Especifica el modo de fijación para la ventana de chat cuando se abre. Cuando la ventana no está fijada, se ocultará automáticamente al perder el foco.</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
+        <value>Nivel De Detalle Del Contexto Visual</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
+        <value>Si se añaden elementos visuales adjuntos, Everywhere los recopilará junto con los elementos circundantes como texto estructurado antes de enviarlos al asistente. Esta opción controla la riqueza y cantidad de información recopilada.</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>Error del cliente.</value>
@@ -628,6 +637,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
         <value>Identificador del modelo para llamadas API, por ejemplo gpt-4o.</value>
+    </data>
+    <data name="ChatPluginPage_Title" xml:space="preserve">
+        <value>Herramientas De Chat</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>Los plugins de chat incluyen plugins integrados y plugins MCP. Los LLM que soportan llamadas a herramientas usarán estos plugins en momentos apropiados (como buscar en la web o acceder a archivos locales) para obtener funcionalidades más potentes.</value>
@@ -889,9 +901,6 @@ Mi inteligencia está impulsada por un modelo de lenguaje grande, y necesito que
     </data>
     <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
         <value>Límite de longitud del árbol visual:</value>
-    </data>
-    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeDetailLevel" xml:space="preserve">
-        <value>Nivel de detalle del árbol visual:</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>Actualización disponible.</value>
@@ -2059,5 +2068,11 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>Reflexión Profunda</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
+        <value>Límite de longitud para la recopilación del contexto visual, en tokens. Este es un estimado y no garantiza un límite preciso.</value>
+    </data>
+    <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
+        <value>Activar Llamada A Herramientas</value>
     </data>
 </root>

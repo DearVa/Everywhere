@@ -491,6 +491,9 @@
     <data name="VisualTreeDetailLevel_Detailed" xml:space="preserve">
         <value>詳細</value>
     </data>
+    <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
+        <value>コンパクト (推奨)</value>
+    </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>最小限</value>
     </data>
@@ -499,6 +502,12 @@
     </data>
     <data name="ChatWindowSettings_WindowPinMode_Description" xml:space="preserve">
         <value>チャットウィンドウを開いたときの固定モードを指定します。ウィンドウが固定されていない場合、フォーカスを失うと自動的に隠れます。</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
+        <value>視覚コンテキスト詳細レベル</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
+        <value>視覚要素の添付が追加された場合、Everywhereはそれを周囲の要素と共に構造化テキストとして収集します。このオプションは収集の豊かさと情報量を制御します。</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>クライアントエラー。</value>
@@ -544,6 +553,9 @@
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>深い思考サポート</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>対話の最大コンテキスト長。これは視覚コンテキストの構築戦略に影響を与えますので、できるだけ実際の値に設定してください。</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>最大コンテキスト長 (max_tokens)</value>
@@ -625,6 +637,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
         <value>API呼び出しに使用するモデル識別子、例：gpt-4o。</value>
+    </data>
+    <data name="ChatPluginPage_Title" xml:space="preserve">
+        <value>チャットツール</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>チャットプラグインには、組み込みプラグインとMCPプラグインが含まれます。ツール呼び出しをサポートするLLMは、適切なタイミングでこれらのプラグインを使用し（例: ウェブ検索やローカルファイルへのアクセス）、より強力な機能を提供します。</value>
@@ -883,6 +898,9 @@
     </data>
     <data name="ChatInputArea_SettingsButton_ToolTip" xml:space="preserve">
         <value>設定</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
+        <value>視覚コンテキスト長予算</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>アップデートが利用可能です。</value>
@@ -2050,5 +2068,11 @@
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>深い思考</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
+        <value>視覚コンテキストの収集の長さ上限、単位はトークンです。この項目は推定値であり、正確な制限を保証するものではありません。</value>
+    </data>
+    <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
+        <value>ツール呼び出しを有効にする</value>
     </data>
 </root>

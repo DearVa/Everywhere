@@ -491,6 +491,9 @@
     <data name="VisualTreeDetailLevel_Detailed" xml:space="preserve">
         <value>상세</value>
     </data>
+    <data name="VisualTreeDetailLevel_Compact" xml:space="preserve">
+        <value>간략 (추천)</value>
+    </data>
     <data name="VisualTreeDetailLevel_Minimal" xml:space="preserve">
         <value>최소</value>
     </data>
@@ -499,6 +502,12 @@
     </data>
     <data name="ChatWindowSettings_WindowPinMode_Description" xml:space="preserve">
         <value>채팅 창이 열릴 때 고정 모드를 지정합니다. 창이 고정되지 않은 경우, 포커스를 잃으면 자동으로 숨겨집니다.</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Header" xml:space="preserve">
+        <value>시각적 맥락 세부 수준</value>
+    </data>
+    <data name="ChatWindowSettings_VisualTreeDetailLevel_Description" xml:space="preserve">
+        <value>시각 요소 첨부가 추가된 경우, Everywhere는 이를 주변 요소와 함께 구조화된 텍스트로 수집하여 도우미에게 보냅니다. 이 옵션은 수집의 풍부함과 정보량을 제어합니다.</value>
     </data>
     <data name="FriendlyExceptionMessage_ClientResult" xml:space="preserve">
         <value>클라이언트 오류입니다.</value>
@@ -544,6 +553,9 @@
     </data>
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>심층 사고 지원</value>
+    </data>
+    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+        <value>대화의 최대 맥락 길이. 이 항목은 시각적 맥락을 구축하는 전략에 영향을 미치므로 가능한 실제 값으로 설정하십시오.</value>
     </data>
     <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
         <value>최대 컨텍스트 길이 (max_tokens)</value>
@@ -625,6 +637,9 @@
     </data>
     <data name="CustomAssistant_ModelId_Description" xml:space="preserve">
         <value>API 호출에 사용할 모델 식별자입니다. 예: gpt-4o.</value>
+    </data>
+    <data name="ChatPluginPage_Title" xml:space="preserve">
+        <value>채팅 도구</value>
     </data>
     <data name="ChatPluginPage_Description" xml:space="preserve">
         <value>채팅 플러그인은 내장 플러그인과 MCP 플러그인을 포함합니다. 도구 호출을 지원하는 LLM은 적절한 시점에 이러한 플러그인을 사용하여 더 강력한 기능을 제공합니다 (예: 웹 검색 또는 로컬 파일 접근).</value>
@@ -883,6 +898,9 @@
     </data>
     <data name="ChatInputArea_SettingsButton_ToolTip" xml:space="preserve">
         <value>설정</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit" xml:space="preserve">
+        <value>시각적 맥락 길이 예산</value>
     </data>
     <data name="SoftwareUpdater_UpdateAvailable_Toast_Message" xml:space="preserve">
         <value>업데이트가 가능합니다.</value>
@@ -2050,5 +2068,11 @@
     </data>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>심층 사고</value>
+    </data>
+    <data name="ChatWindow_ChatInputArea_SettingsMenuItems_VisualTreeTokenLimit_Tip" xml:space="preserve">
+        <value>시각적 맥락 수집의 길이 상한, 단위는 토큰입니다. 이 항목은 추정치이며 정확한 제한을 보장하지 않습니다.</value>
+    </data>
+    <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
+        <value>도구 호출 활성화</value>
     </data>
 </root>
