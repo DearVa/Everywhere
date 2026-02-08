@@ -509,7 +509,7 @@
                   MinWidth="200" VerticalAlignment="Center">
                   <Interaction.Behaviors>
                     <be:LogarithmicSliderBehavior
-                      Maximum="{Binding Settings.Model.SelectedCustomAssistant.MaxTokens, FallbackValue=8192, Converter={x:Static vc:DoubleConverters.Multiply}, ConverterParameter=0.5}"
+                      Maximum="{Binding Settings.Model.SelectedCustomAssistant.ContextLimit, FallbackValue=8192, Converter={x:Static vc:DoubleConverters.Multiply}, ConverterParameter=0.5}"
                       Minimum="512"
                       Value="{Binding PersistentState.VisualTreeTokenLimit, Mode=TwoWay}"/>
                   </Interaction.Behaviors>

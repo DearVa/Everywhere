@@ -151,7 +151,7 @@ public sealed partial class ChatService(
             // 2. Group the visual elements and build the XML in separate tasks.
             // 3. Populate result into ChatVisualElementAttachment.Xml
 
-            var maxTokens = Math.Max(customAssistant.MaxTokens, 4096);
+            var maxTokens = Math.Max(customAssistant.ContextLimit, 4096);
             var approximateTokenLimit = Math.Min(persistentState.VisualTreeTokenLimit, maxTokens / 10);
             var detailLevel = settings.ChatWindow.VisualTreeDetailLevel;
 
@@ -195,25 +195,6 @@ public sealed partial class ChatService(
         {
             analyzingContextMessage.FinishedAt = DateTimeOffset.UtcNow;
             analyzingContextMessage.IsBusy = false;
-        }
-    }
-
-    private IKernelMixin CreateKernelMixin(CustomAssistant customAssistant)
-    {
-        using var activity = _activitySource.StartActivity();
-
-        try
-        {
-            var kernelMixin = kernelMixinFactory.GetOrCreate(customAssistant);
-            activity?.SetTag("llm.model.id", customAssistant.ModelId);
-            activity?.SetTag("llm.model.max_embedding", customAssistant.MaxTokens);
-            return kernelMixin;
-        }
-        catch (Exception e)
-        {
-            // This method may throw if the model settings are invalid.
-            activity?.SetStatus(ActivityStatusCode.Error, e.Message.Trim());
-            throw;
         }
     }
 
@@ -301,7 +282,7 @@ public sealed partial class ChatService(
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var kernelMixin = CreateKernelMixin(customAssistant);
+            var kernelMixin = kernelMixinFactory.GetOrCreate(customAssistant);
             var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, cancellationToken);
 
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
@@ -908,7 +889,7 @@ public sealed partial class ChatService(
                 new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.IsImageInputSupported),
                 new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.IsFunctionCallingSupported),
                 new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.IsDeepThinkingSupported),
-                new KeyValuePair<string, object?>("gen_ai.request.max_tokens", customAssistant.MaxTokens),
+                new KeyValuePair<string, object?>("gen_ai.request.context_limit", customAssistant.ContextLimit),
                 new KeyValuePair<string, object?>("gen_ai.request.temperature", customAssistant.Temperature),
                 new KeyValuePair<string, object?>("gen_ai.request.top_p", customAssistant.TopP)
             ];
