@@ -941,6 +941,9 @@ Mon intelligence est alimentée par un grand modèle de langage, et j'ai besoin 
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>Assistant par défaut</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>Assistant Personnalisé</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Créer</value>
     </data>
@@ -1100,6 +1103,9 @@ Le prompt peut contenir des espaces réservés, inclus dans {}, qui seront rempl
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>Confirmez la disponibilité du service de modèle</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Créer un nouvel assistant</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Supprime définitivement l'assistant sélectionné</value>
@@ -1854,6 +1860,9 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Configurer le Fournisseur de Services</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>Ajouter une clé API</value>

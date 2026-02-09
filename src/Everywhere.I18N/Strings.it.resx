@@ -941,6 +941,9 @@ La mia intelligenza è fornita da un grande modello linguistico e ho bisogno del
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>Assistente Predefinito</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>Assistente Personalizzato</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Crea</value>
     </data>
@@ -1100,6 +1103,9 @@ Nel prompt possono essere utilizzati segnaposto, racchiusi in {}, che verranno s
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>Conferma la disponibilità del servizio del modello</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Crea un nuovo assistente</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Elimina definitivamente l'assistente selezionato</value>
@@ -1854,6 +1860,9 @@ Rotellina o tasti numerici per cambiare modalità di selezione</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Configura Fornitore di Servizi</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>Aggiungi chiave API</value>

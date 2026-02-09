@@ -941,6 +941,9 @@
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>デフォルトアシスタント</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>カスタムアシスタント</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>作成</value>
     </data>
@@ -1100,6 +1103,9 @@
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>モデルサービスの利用可能性を確認します</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>新しいアシスタントを作成</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>選択したアシスタントを完全に削除します</value>
@@ -1854,6 +1860,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>サービスプロバイダーの設定</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>APIキーを追加</value>

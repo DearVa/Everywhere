@@ -942,7 +942,7 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Default Assistant</value>
     </data>
     <data name="CustomAssistantPage_Title" xml:space="preserve">
-        <value />
+        <value>Custom Assistant</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Create</value>
@@ -1105,7 +1105,7 @@ Placeholders can be used in the prompt, enclosed in {}, which will be replaced w
         <value>Confirm the availability of the model service</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
-        <value />
+        <value>Create a New Assistant</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Deletes the selected assistant permanently</value>
@@ -1862,7 +1862,7 @@ Scroll wheel or number keys to switch pick modes</value>
         <value>📂 {0}</value>
     </data>
     <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
-        <value />
+        <value>Configure Service Provider</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>Add API Key</value>

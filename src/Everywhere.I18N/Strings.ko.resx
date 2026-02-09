@@ -941,6 +941,9 @@
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>기본 어시스턴트</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>맞춤형 도우미</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>생성</value>
     </data>
@@ -1100,6 +1103,9 @@
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>모델 서비스의 가용성을 확인합니다</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>새 도우미 만들기</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>선택한 어시스턴트를 영구적으로 삭제합니다</value>
@@ -1854,6 +1860,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>서비스 제공자 설정</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>API 키 추가</value>

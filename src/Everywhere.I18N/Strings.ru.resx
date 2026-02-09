@@ -941,6 +941,9 @@
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>Ассистент по умолчанию</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>Настройка помощника</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Создать</value>
     </data>
@@ -1100,6 +1103,9 @@
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>Подтвердите доступность сервиса модели</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>Создать нового помощника</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>Удаляет выбранного ассистента навсегда</value>
@@ -1854,6 +1860,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Настройка поставщика услуг</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>Добавить API-ключ</value>

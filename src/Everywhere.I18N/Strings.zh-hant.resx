@@ -941,6 +941,9 @@
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>預設助理</value>
     </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>自訂助手</value>
+    </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>建立</value>
     </data>
@@ -1100,6 +1103,9 @@
     </data>
     <data name="CustomAssistantPage_CheckConnectivityButton_ToolTip" xml:space="preserve">
         <value>確認模型服務的可用性</value>
+    </data>
+    <data name="CustomAssistantPage_CreateNewCustomAssistantButton_ToolTip" xml:space="preserve">
+        <value>創建一個新的助手</value>
     </data>
     <data name="CustomAssistantPage_DeleteCustomAssistantButton_ToolTip" xml:space="preserve">
         <value>永久刪除選定的助理</value>
@@ -1854,6 +1860,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
+    </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>配置服務提供者</value>
     </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>添加 API 密鑰</value>
