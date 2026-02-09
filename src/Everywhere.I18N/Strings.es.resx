@@ -2075,4 +2075,13 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Activar Llamada A Herramientas</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>¿Sabías que puedes usar Ctrl + tecla numérica para cambiar rápidamente al asistente?</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>¿Sabías que puedes usar la rueda del ratón sobre el ícono del asistente en la esquina inferior izquierda para cambiar rápidamente?</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>¿Sabías que puedes establecer la tecla de Copilot como un atajo para Everywhere?</value>
+    </data>
 </root>

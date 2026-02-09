@@ -2075,4 +2075,13 @@
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>도구 호출 활성화</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>알고 계셨나요? Ctrl + 숫자 키를 사용하여 도우미를 빠르게 전환할 수 있습니다.</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>알고 계셨나요? 왼쪽 아래 도우미 아이콘에서 스크롤 휠을 사용하여 빠르게 전환할 수 있습니다.</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>알고 계셨나요? Copilot 키를 Everywhere 단축키로 설정할 수 있습니다.</value>
+    </data>
 </root>

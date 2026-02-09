@@ -2075,4 +2075,13 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Attiva Chiamata Strumento</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>Lo sapevi? Puoi passare rapidamente all'assistente usando Ctrl + tasto numerico.</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>Lo sapevi? Puoi scorrere rapidamente tra gli assistenti usando la rotellina del mouse sull'icona in basso a sinistra.</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>Lo sapevi? Puoi impostare il tasto Copilot come scorciatoia per Everywhere.</value>
+    </data>
 </root>

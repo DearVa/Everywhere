@@ -2075,4 +2075,13 @@
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>開啟工具調用</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>你知道嗎：你可以使用 Ctrl + 數字鍵 快速切換助手</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>你知道嗎：你可以在左下角的助手圖標上使用滾輪快速切換</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>你知道嗎：你可以將 Copilot 按鍵設為 Everywhere 快捷鍵</value>
+    </data>
 </root>

@@ -2076,12 +2076,12 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Enable Tool Call</value>
     </data>
     <data name="Greetings_Tip1" xml:space="preserve">
-        <value />
+        <value>Did you know: You can quickly switch assistants using Ctrl + Number Keys</value>
     </data>
     <data name="Greetings_Tip2" xml:space="preserve">
-        <value />
+        <value>Did you know: You can quickly switch by using the scroll wheel on the assistant icon in the bottom left corner</value>
     </data>
     <data name="Greetings_Tip3" xml:space="preserve">
-        <value />
+        <value>Did you know: You can set the Copilot key as the Everywhere shortcut</value>
     </data>
 </root>

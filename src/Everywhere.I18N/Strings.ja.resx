@@ -2075,4 +2075,13 @@
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>ツール呼び出しを有効にする</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>知っていましたか？Ctrl + 数字キーでアシスタントを素早く切り替えられます。</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>知っていましたか？左下のアシスタントアイコンでホイールを使って素早く切り替えられます。</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>知っていましたか？CopilotキーをEverywhereのショートカットキーに設定できます。</value>
+    </data>
 </root>

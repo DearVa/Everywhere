@@ -2075,4 +2075,13 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Activer l'Appel d'Outil</value>
     </data>
+    <data name="Greetings_Tip1" xml:space="preserve">
+        <value>Saviez-vous que vous pouvez rapidement changer d'assistant en utilisant Ctrl + Touche numérique ?</value>
+    </data>
+    <data name="Greetings_Tip2" xml:space="preserve">
+        <value>Saviez-vous que vous pouvez faire défiler rapidement en utilisant la molette sur l'icône de l'assistant en bas à gauche ?</value>
+    </data>
+    <data name="Greetings_Tip3" xml:space="preserve">
+        <value>Saviez-vous que vous pouvez définir la touche Copilot comme raccourci pour Everywhere ?</value>
+    </data>
 </root>
