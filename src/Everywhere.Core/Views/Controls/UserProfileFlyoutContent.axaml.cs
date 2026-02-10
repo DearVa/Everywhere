@@ -1,4 +1,4 @@
-namespace Everywhere.Views.Controls;
+namespace Everywhere.Views;
 
 public partial class UserProfileFlyoutContent : ReactiveUserControl<UserProfileFlyoutViewModel>
 {
