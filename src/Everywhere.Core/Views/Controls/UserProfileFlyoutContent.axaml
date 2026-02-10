@@ -1,5 +1,5 @@
 <UserControl
-  x:Class="Everywhere.Views.Controls.UserProfileFlyoutContent" xmlns="https://github.com/avaloniaui"
+  x:Class="Everywhere.Views.UserProfileFlyoutContent" xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
   xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
   Width="280" x:DataType="vm:UserProfileFlyoutViewModel">
@@ -13,19 +13,18 @@
         HorizontalAlignment="Center" Spacing="12">
         <Image
           Width="56" Height="56"
-          HorizontalAlignment="Center"
-          Source="avares://Everywhere.Core/Assets/Everywhere.png"/>
+          HorizontalAlignment="Center" Source="avares://Everywhere.Core/Assets/Everywhere.png"/>
         <StackPanel
           HorizontalAlignment="Center" Spacing="4">
           <TextBlock
-            HorizontalAlignment="Center" Classes="Small"
+            Classes="Small" HorizontalAlignment="Center"
             FontWeight="SemiBold">
             <TextBlock.Text>
               <I18N Key="{x:Static LocaleKey.UserProfile_LoginToCloud}"/>
             </TextBlock.Text>
           </TextBlock>
           <TextBlock
-            HorizontalAlignment="Center" Classes="Caption Muted"
+            Classes="Caption Muted" HorizontalAlignment="Center"
             TextAlignment="Center">
             <TextBlock.Text>
               <I18N Key="{x:Static LocaleKey.UserProfile_CloudDescription}"/>
@@ -60,12 +59,12 @@
         <StackPanel
           HorizontalAlignment="Center" Spacing="2">
           <TextBlock
-            HorizontalAlignment="Center" Classes="Small"
+            Classes="Small" HorizontalAlignment="Center"
             FontWeight="SemiBold"
             Text="{Binding CloudClient.CurrentUser.Name, FallbackValue={x:Null}}"
             TextTrimming="CharacterEllipsis"/>
           <TextBlock
-            HorizontalAlignment="Center" Classes="Caption Muted"
+            Classes="Caption Muted" HorizontalAlignment="Center"
             Text="{Binding CloudClient.CurrentUser.Email, FallbackValue={x:Null}}"
             TextTrimming="CharacterEllipsis"/>
           <shadui:Badge
