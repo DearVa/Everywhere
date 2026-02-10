@@ -2084,4 +2084,10 @@
     <data name="Greetings_Tip3" xml:space="preserve">
         <value>知っていましたか？CopilotキーをEverywhereのショートカットキーに設定できます。</value>
     </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Title" xml:space="preserve">
+        <value>削除の確認</value>
+    </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
+        <value>選択した {0} 件のチャットを削除してもよろしいですか？</value>
+    </data>
 </root>

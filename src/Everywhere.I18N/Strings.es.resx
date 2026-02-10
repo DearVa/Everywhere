@@ -2084,4 +2084,10 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="Greetings_Tip3" xml:space="preserve">
         <value>¿Sabías que puedes establecer la tecla de Copilot como un atajo para Everywhere?</value>
     </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Title" xml:space="preserve">
+        <value>Confirmar Eliminación</value>
+    </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
+        <value>¿Confirma que desea eliminar las {0} conversaciones seleccionadas?</value>
+    </data>
 </root>

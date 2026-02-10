@@ -2084,4 +2084,10 @@
     <data name="Greetings_Tip3" xml:space="preserve">
         <value>Знаете ли вы: вы можете назначить клавишу Copilot как горячую клавишу для Everywhere</value>
     </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Title" xml:space="preserve">
+        <value>Подтвердить удаление</value>
+    </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
+        <value>Вы уверены, что хотите удалить выбранные {0} чата?</value>
+    </data>
 </root>

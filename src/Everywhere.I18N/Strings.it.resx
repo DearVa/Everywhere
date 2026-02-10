@@ -2084,4 +2084,10 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="Greetings_Tip3" xml:space="preserve">
         <value>Lo sapevi? Puoi impostare il tasto Copilot come scorciatoia per Everywhere.</value>
     </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Title" xml:space="preserve">
+        <value>Conferma Cancellazione</value>
+    </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
+        <value>Sei sicuro di voler eliminare le {0} chat selezionate?</value>
+    </data>
 </root>

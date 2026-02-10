@@ -2084,4 +2084,10 @@
     <data name="Greetings_Tip3" xml:space="preserve">
         <value>알고 계셨나요? Copilot 키를 Everywhere 단축키로 설정할 수 있습니다.</value>
     </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Title" xml:space="preserve">
+        <value>삭제 확인</value>
+    </data>
+    <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
+        <value>선택한 {0}개의 채팅을 삭제하시겠습니까?</value>
+    </data>
 </root>
