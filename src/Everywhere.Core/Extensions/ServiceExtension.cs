@@ -5,7 +5,6 @@ using Everywhere.Configuration;
 using Everywhere.Database;
 using Everywhere.Storage;
 using Everywhere.Views;
-using Everywhere.Views.Controls;
 using Everywhere.Views.Pages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

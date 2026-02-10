@@ -1,41 +1,36 @@
 ﻿<v:ReactiveUserControl
-  x:Class="Everywhere.Views.MainView"
-  x:DataType="vm:MainViewModel"
-  x:TypeArguments="vm:MainViewModel"
-  xmlns="https://github.com/avaloniaui"
-  xmlns:ct="clr-namespace:Everywhere.Views.Controls"
-  xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
-  xmlns:v="clr-namespace:Everywhere.Views"
-  xmlns:vm="clr-namespace:Everywhere.ViewModels"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  x:Class="Everywhere.Views.MainView" xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
+  xmlns:vm="clr-namespace:Everywhere.ViewModels" x:DataType="vm:MainViewModel"
+  x:TypeArguments="vm:MainViewModel">
 
   <v:ReactiveUserControl.Styles>
     <Style Selector="DockPanel#RootPanel">
       <Style Selector="^ &gt; shadui|NavigationBar">
         <Style Selector="^ /template/ ContentPresenter#PART_FooterPresenter Button#UserProfileButton">
-          <Setter Property="Flyout.Placement" Value="RightEdgeAlignedBottom" />
-          <Setter Property="Flyout.HorizontalOffset" Value="4" />
+          <Setter Property="Flyout.Placement" Value="RightEdgeAlignedBottom"/>
+          <Setter Property="Flyout.HorizontalOffset" Value="4"/>
         </Style>
       </Style>
       <Style Selector="^ &gt; TransitioningContentControl">
-        <Setter Property="Margin" Value="0,14,16,16" />
+        <Setter Property="Margin" Value="0,14,16,16"/>
       </Style>
     </Style>
     <Style Selector="DockPanel#RootPanel.narrow">
       <Style Selector="^ &gt; shadui|NavigationBar">
-        <Setter Property="DockPanel.Dock" Value="Bottom" />
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Margin" Value="0,8" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="DockPanel.Dock" Value="Bottom"/>
+        <Setter Property="Orientation" Value="Horizontal"/>
+        <Setter Property="Margin" Value="0,8"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
         <Style Selector="^ /template/ ContentPresenter#PART_FooterPresenter Button#UserProfileButton">
-          <Setter Property="Flyout.Placement" Value="Top" />
-          <Setter Property="Flyout.VerticalOffset" Value="-4" />
+          <Setter Property="Flyout.Placement" Value="Top"/>
+          <Setter Property="Flyout.VerticalOffset" Value="-4"/>
         </Style>
       </Style>
       <Style Selector="^ &gt; TransitioningContentControl">
-        <Setter Property="Margin" Value="16,14,16,0" />
+        <Setter Property="Margin" Value="16,14,16,0"/>
       </Style>
     </Style>
   </v:ReactiveUserControl.Styles>
@@ -44,25 +39,21 @@
     <Interaction.Behaviors>
       <AdaptiveBehavior SourceControl="{Binding $parent[TopLevel]}">
         <AdaptiveClassSetter
-          ClassName="narrow"
-          MaxWidth="700"
-          MaxWidthOperator="LessThan"
-          MinWidth="0"
-          MinWidthOperator="GreaterThanOrEqual" />
+          MinWidth="0" MaxWidth="700"
+          ClassName="narrow" MaxWidthOperator="LessThan"
+          MinWidthOperator="GreaterThanOrEqual"/>
         <AdaptiveClassSetter
-          ClassName="wide"
-          MaxWidth="Infinity"
-          MaxWidthOperator="LessThan"
-          MinWidth="700"
-          MinWidthOperator="GreaterThanOrEqual" />
+          MinWidth="700" MaxWidth="Infinity"
+          ClassName="wide" MaxWidthOperator="LessThan"
+          MinWidthOperator="GreaterThanOrEqual"/>
       </AdaptiveBehavior>
     </Interaction.Behaviors>
 
     <shadui:NavigationBar
       Margin="12,8"
       IsExpanded="{Binding PersistentState.IsMainViewSidebarExpanded, Mode=TwoWay}"
-      ItemsSource="{Binding Pages}"
-      SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+      ItemsSource="{Binding Items}"
+      SelectedItem="{Binding CurrentItem, Mode=TwoWay}"
       ZIndex="1">
       <Interaction.Behaviors>
         <shadui:ImplicitCompositionAnimationBehavior>
@@ -74,45 +65,40 @@
 
       <shadui:NavigationBar.Footer>
         <Button
-          Classes="Ghost"
+          x:Name="UserProfileButton" Classes="Ghost"
+          Margin="8" Padding="0"
+          HorizontalAlignment="Left" HorizontalContentAlignment="Center"
           CornerRadius="{DynamicResource FullCornerRadius}"
-          HorizontalAlignment="Left"
-          HorizontalContentAlignment="Center"
-          Margin="8"
-          Padding="0"
           ToolTip.Placement="Right"
-          ToolTip.Tip="{Binding CloudClient.CurrentUser.Name, FallbackValue=未登录}"
-          x:Name="UserProfileButton">
+          ToolTip.Tip="{Binding CloudClient.CurrentUser.Name, FallbackValue=未登录}">
           <Button.Flyout>
             <Flyout
               HorizontalOffset="{Binding $self.Target.(Flyout.HorizontalOffset), FallbackValue=0}"
               Placement="{Binding $self.Target.(Flyout.Placement), FallbackValue=Right}"
               VerticalOffset="{Binding $self.Target.(Flyout.VerticalOffset), FallbackValue=0}">
-              <ct:UserProfileFlyoutContent />
+              <v:UserProfileFlyoutContent/>
             </Flyout>
           </Button.Flyout>
           <Panel>
             <Border
-              Height="36"
-              Width="36" Background="{DynamicResource BorderColor}">
-              <LucideIcon Kind="User" Size="16" />
+              Width="36" Height="36"
+              Background="{DynamicResource BorderColor}">
+              <LucideIcon
+                Kind="User" Size="16"/>
             </Border>
             <Image
-              RenderOptions.BitmapInterpolationMode="HighQuality"
-              RenderOptions.EdgeMode="Antialias"
-              Height="36"
-              Width="36"
+              Width="36" Height="36"
               md:AsyncImageLoader.SizeToContent="Manual"
-              md:AsyncImageLoader.Source="{Binding CloudClient.CurrentUser.AvatarUrl, FallbackValue={x:Null}}" />
+              md:AsyncImageLoader.Source="{Binding CloudClient.CurrentUser.AvatarUrl, FallbackValue={x:Null}}"
+              RenderOptions.BitmapInterpolationMode="HighQuality" RenderOptions.EdgeMode="Antialias"/>
           </Panel>
         </Button>
       </shadui:NavigationBar.Footer>
     </shadui:NavigationBar>
 
     <TransitioningContentControl
-      ClipToBounds="False"
-      Content="{Binding CurrentItem.Route, FallbackValue={x:Null}}"
-      x:Name="TransitioningContentControl">
+      x:Name="TransitioningContentControl" ClipToBounds="False"
+      Content="{Binding CurrentItem.Route, FallbackValue={x:Null}}">
       <TransitioningContentControl.PageTransition>
         <shadui:BetterPageSlide
           FadeDuration="0:0:0.4" FadeEasing="CubicEaseInOut"
