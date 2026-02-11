@@ -2069,6 +2069,9 @@
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>深度思考</value>
     </data>
+    <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
+        <value>採集視覺上下文的長度上限，單位為 token。此項為估算，無法保證精確限制。對於簡單的上下文，消耗的 token 往往會小於這個數；對於複雜的上下文，超出的部分會被截斷。</value>
+    </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>開啟工具調用</value>
     </data>
@@ -2086,5 +2089,32 @@
     </data>
     <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
         <value>你確認要刪除選中的 {0} 項聊天嗎？</value>
+    </data>
+    <data name="ReasoningEffortLevel_Default" xml:space="preserve">
+        <value>默認</value>
+    </data>
+    <data name="ReasoningEffortLevel_Detailed" xml:space="preserve">
+        <value>詳細</value>
+    </data>
+    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
+        <value>最小</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
+        <value>推理強度</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
+        <value>平衡 (~4096，推薦)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Unlimited" xml:space="preserve">
+        <value>無限制</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
+        <value>最小 (~1024)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
+        <value>極致 (~40960)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
+        <value>詳細 (~10240)</value>
     </data>
 </root>

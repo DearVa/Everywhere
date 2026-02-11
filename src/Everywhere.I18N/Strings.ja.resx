@@ -2069,6 +2069,9 @@
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>深い思考</value>
     </data>
+    <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
+        <value>視覚コンテキストの長さの上限、単位はトークンです。この値は推定であり、正確な制限を保証するものではありません。単純なコンテキストでは、消費されるトークンはこの数値より少なくなることが多く、複雑なコンテキストでは超過分が切り捨てられます。</value>
+    </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>ツール呼び出しを有効にする</value>
     </data>
@@ -2086,5 +2089,32 @@
     </data>
     <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
         <value>選択した {0} 件のチャットを削除してもよろしいですか？</value>
+    </data>
+    <data name="ReasoningEffortLevel_Default" xml:space="preserve">
+        <value>デフォルト</value>
+    </data>
+    <data name="ReasoningEffortLevel_Detailed" xml:space="preserve">
+        <value>詳細</value>
+    </data>
+    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
+        <value>最小</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
+        <value>推論強度</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
+        <value>バランス (~4096、推奨)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Unlimited" xml:space="preserve">
+        <value>無制限</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
+        <value>最小 (~1024)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
+        <value>究極 (~40960)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
+        <value>詳細 (~10240)</value>
     </data>
 </root>

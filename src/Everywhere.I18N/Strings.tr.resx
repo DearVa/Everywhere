@@ -2066,6 +2066,9 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>Derin Düşünme</value>
     </data>
+    <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
+        <value>Görsel bağlamın uzunluk sınırı, birim token. Bu bir tahmindir, kesin bir sınır garanti edilmez. Basit bağlamlar için harcanan token genellikle bu sayıdan daha azdır; karmaşık bağlamlar için fazlası kesilecektir.</value>
+    </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Araç Çağrısını Aç</value>
     </data>
@@ -2083,5 +2086,32 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     </data>
     <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
         <value>Seçili {0} sohbeti silmek istediğinize emin misiniz?</value>
+    </data>
+    <data name="ReasoningEffortLevel_Default" xml:space="preserve">
+        <value>Varsayılan</value>
+    </data>
+    <data name="ReasoningEffortLevel_Detailed" xml:space="preserve">
+        <value>Ayrıntılı</value>
+    </data>
+    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
+        <value>Minimum</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
+        <value>Akıl Yürütme Gücü</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
+        <value>Dengeli (~4096, önerilir)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Unlimited" xml:space="preserve">
+        <value>Sınırsız</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
+        <value>Minimum (~1024)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
+        <value>En Yüksek (~40960)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
+        <value>Ayrıntılı (~10240)</value>
     </data>
 </root>

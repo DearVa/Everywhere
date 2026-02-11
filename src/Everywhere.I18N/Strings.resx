@@ -2070,7 +2070,7 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Deep Thinking</value>
     </data>
     <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
-        <value />
+        <value>The maximum length limit for capturing visual context, measured in tokens. This is an estimate and cannot guarantee precise limits. For simple contexts, the token consumption is often less than this number; for complex contexts, the excess will be truncated.</value>
     </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Enable Tool Call</value>
@@ -2090,34 +2090,31 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
         <value>Are you sure you want to delete the selected {0} chat items?</value>
     </data>
-    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
-        <value />
-    </data>
     <data name="ReasoningEffortLevel_Default" xml:space="preserve">
-        <value />
+        <value>Default</value>
     </data>
     <data name="ReasoningEffortLevel_Detailed" xml:space="preserve">
-        <value />
+        <value>Detailed</value>
+    </data>
+    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
+        <value>Minimal</value>
     </data>
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
-        <value />
-    </data>
-    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
-        <value />
-    </data>
-    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
-        <value />
+        <value>Reasoning Effort</value>
     </data>
     <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
-        <value />
-    </data>
-    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
-        <value />
-    </data>
-    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
-        <value />
+        <value>Balanced (~4096, Recommended)</value>
     </data>
     <data name="VisualTreeLengthLimit_Unlimited" xml:space="preserve">
-        <value />
+        <value>Unlimited</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
+        <value>Minimal (~1024)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
+        <value>Ultimate (~40960)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
+        <value>Detailed (~10240)</value>
     </data>
 </root>

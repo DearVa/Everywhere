@@ -2069,6 +2069,9 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>Reflexión Profunda</value>
     </data>
+    <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
+        <value>Límite de longitud para el contexto visual, en tokens. Este es un estimado y no garantiza un límite preciso. Para contextos simples, el consumo de tokens suele ser menor que este número; para contextos complejos, la parte excedente será truncada.</value>
+    </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>Activar Llamada A Herramientas</value>
     </data>
@@ -2086,5 +2089,32 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="ChatContextManager_RemoveSelectedDialog_Content" xml:space="preserve">
         <value>¿Confirma que desea eliminar las {0} conversaciones seleccionadas?</value>
+    </data>
+    <data name="ReasoningEffortLevel_Default" xml:space="preserve">
+        <value>Predeterminado</value>
+    </data>
+    <data name="ReasoningEffortLevel_Detailed" xml:space="preserve">
+        <value>Detallado</value>
+    </data>
+    <data name="ReasoningEffortLevel_Minimal" xml:space="preserve">
+        <value>Mínimo</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
+        <value>Intensidad de Razonamiento</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
+        <value>Equilibrado (~4096, recomendado)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Unlimited" xml:space="preserve">
+        <value>Sin límite</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Minimal" xml:space="preserve">
+        <value>Mínimo (~1024)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Ultimate" xml:space="preserve">
+        <value>Máximo (~40960)</value>
+    </data>
+    <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
+        <value>Detallado (~10240)</value>
     </data>
 </root>
