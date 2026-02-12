@@ -9,12 +9,12 @@ public partial class UserProfileFlyoutViewModel(ICloudClient cloudClient, ILaunc
     public ICloudClient CloudClient { get; } = cloudClient;
 
     [RelayCommand]
-    private Task<bool> LoginAsync() =>
-        CloudClient.LoginAsync();
+    private Task<bool> LoginAsync(CancellationToken cancellationToken) =>
+        CloudClient.LoginAsync(cancellationToken);
 
     [RelayCommand]
-    private Task LogoutAsync() =>
-        CloudClient.LogoutAsync();
+    private Task LogoutAsync(CancellationToken cancellationToken) =>
+        CloudClient.LogoutAsync(cancellationToken);
 
     [RelayCommand]
     private Task<bool> ManageSubscriptionAsync() =>
