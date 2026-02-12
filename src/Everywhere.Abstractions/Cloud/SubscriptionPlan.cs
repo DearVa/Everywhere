@@ -2,8 +2,8 @@
 
 public enum SubscriptionPlan
 {
-    Free,
-    Starter,
-    Plus,
-    Pro
+    Free = 0,
+    Starter = 1,
+    Plus = 2,
+    Pro = 3
 }

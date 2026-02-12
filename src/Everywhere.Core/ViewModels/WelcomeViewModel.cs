@@ -9,7 +9,6 @@ using Everywhere.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using ShadUI;
 
 namespace Everywhere.ViewModels;
 
@@ -158,11 +157,11 @@ public sealed partial class WelcomeViewModelIntroStep(WelcomeViewModel viewModel
 public sealed partial class WelcomeViewModelSoftLoginStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
 {
     [RelayCommand]
-    private async Task LoginAsync()
+    private async Task LoginAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await ViewModel.CloudClient.LoginAsync();
+            await ViewModel.CloudClient.LoginAsync(cancellationToken);
         }
         catch (Exception e)
         {
@@ -212,11 +211,11 @@ public sealed partial class WelcomeViewModelConfiguratorStep(WelcomeViewModel vi
 public sealed partial class WelcomeViewModelHardLoginStep(WelcomeViewModel viewModel) : WelcomeViewModelStep(viewModel)
 {
     [RelayCommand]
-    private async Task LoginAsync()
+    private async Task LoginAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await ViewModel.CloudClient.LoginAsync();
+            await ViewModel.CloudClient.LoginAsync(cancellationToken);
         }
         catch (Exception e)
         {

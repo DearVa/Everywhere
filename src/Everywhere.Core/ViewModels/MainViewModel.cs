@@ -59,9 +59,6 @@ public sealed partial class MainViewModel : ReactiveViewModelBase, IDisposable
             return;
         }
 
-        // Try to restore user session with silent login (fire and forget)
-        _ = CloudClient.TrySilentLoginAsync();
-
         _itemsSource.AddRange(
             _serviceProvider
                 .GetServices<IMainViewPageFactory>()
