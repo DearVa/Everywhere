@@ -2117,4 +2117,7 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
         <value>Detallado (~10240)</value>
     </data>
+    <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
+        <value>Por favor, selecciona un asistente en la esquina inferior izquierda. Si no hay ninguno, configúralo en la configuración.</value>
+    </data>
 </root>

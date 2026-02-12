@@ -2117,4 +2117,7 @@
     <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
         <value>詳細 (~10240)</value>
     </data>
+    <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
+        <value>左下隅でアシスタントを選択してください。ない場合は、設定で構成してください。</value>
+    </data>
 </root>

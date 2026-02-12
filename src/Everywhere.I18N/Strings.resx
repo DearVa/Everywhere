@@ -2118,6 +2118,6 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Detailed (~10240)</value>
     </data>
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
-        <value />
+        <value>Please select an assistant in the bottom left corner. If none are available, configure one in settings.</value>
     </data>
 </root>

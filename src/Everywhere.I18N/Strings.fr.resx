@@ -2117,4 +2117,7 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
         <value>Détaillé (~10240)</value>
     </data>
+    <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
+        <value>Veuillez sélectionner un assistant en bas à gauche. S'il n'y en a pas, veuillez le configurer dans les paramètres.</value>
+    </data>
 </root>

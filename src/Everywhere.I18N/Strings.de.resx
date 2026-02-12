@@ -2114,4 +2114,7 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
         <value>Detailliert (~10240)</value>
     </data>
+    <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
+        <value>Bitte wählen Sie einen Assistenten in der linken unteren Ecke aus. Wenn keiner vorhanden ist, konfigurieren Sie ihn in den Einstellungen.</value>
+    </data>
 </root>

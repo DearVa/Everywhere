@@ -2117,4 +2117,7 @@
     <data name="VisualTreeLengthLimit_Detailed" xml:space="preserve">
         <value>상세 (~10240)</value>
     </data>
+    <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
+        <value>왼쪽 하단에서 도우미를 선택하세요. 없다면 설정에서 구성해 주세요.</value>
+    </data>
 </root>
