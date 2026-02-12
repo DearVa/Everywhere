@@ -11,10 +11,12 @@ public static class ServiceExtension
     {
         public IServiceCollection AddCloudClient()
         {
-            services.AddSingleton<ICloudClient, OAuthCloudClient>();
+            services.AddSingleton<OAuthCloudClient>();
+            services.AddSingleton<ICloudClient>(x => x.GetRequiredService<OAuthCloudClient>());
+            services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<OAuthCloudClient>());
+
             services.AddSingleton<IChatDbSynchronizer, CloudChatDbSynchronizer>();
             services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<IChatDbSynchronizer>());
-            services.AddTransient<CloudAuthenticationHandler>();
 
             // Register the authenticated HttpClient for API requests.
             // This client includes the CloudAuthenticationHandler which:
@@ -40,7 +42,7 @@ public static class ServiceExtension
                         UseProxy = true,
                         AllowAutoRedirect = true,
                     })
-                .AddHttpMessageHandler<CloudAuthenticationHandler>();
+                .AddHttpMessageHandler(x => x.GetRequiredService<ICloudClient>().CreateAuthenticationHandler());
 
             return services;
         }

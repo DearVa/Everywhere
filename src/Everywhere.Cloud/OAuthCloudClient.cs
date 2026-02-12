@@ -1,19 +1,60 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
 using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.Common;
+using Everywhere.Extensions;
 using GnomeStack.Os.Secrets;
+using Microsoft.Extensions.Logging;
 
 namespace Everywhere.Cloud;
 
-public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipient<ApplicationCommand>
+public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncInitializer, IRecipient<ApplicationCommand>
 {
+    /// <summary>
+    /// Record for holding token data for secure storage. Using a record for easy JSON serialization and immutability.
+    /// </summary>
+    /// <param name="RefreshToken"></param>
+    /// <param name="AccessToken"></param>
+    /// <param name="IdToken"></param>
+    private partial record TokenData(
+        [property: JsonPropertyName("refresh_token")] string RefreshToken,
+        [property: JsonPropertyName("access_token")] string? AccessToken = null,
+        [property: JsonPropertyName("id_token")] string? IdToken = null
+    )
+    {
+        [JsonSerializable(typeof(TokenData))]
+        private partial class TokenDataJsonSerializerContext : JsonSerializerContext;
+
+        public static TokenData? FromJson(string json)
+        {
+            try
+            {
+                return JsonSerializer.Deserialize(json, TokenDataJsonSerializerContext.Default.TokenData);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this, TokenDataJsonSerializerContext.Default.TokenData);
+        }
+    }
+
+    [ObservableProperty]
+    public partial UserProfile? CurrentUser { get; set; }
+
     private const string ServiceName = "com.sylinko.everywhere";
     private const string TokenDataKey = "oauth_token_data";
 
@@ -28,247 +69,339 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
     private const string ResponseRedirectUri = "sylinko-everywhere://callback";
     private const string Scopes = "openid profile email offline_access";
 
-    private string? _accessToken;
-    private string? _refreshToken;
-    private string? _idToken;
+    private TokenData? _tokenData;
 
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILauncher _launcher;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<OAuthCloudClient> _logger;
 
     private readonly SemaphoreSlim _loginLock = new(1, 1);
     private readonly SemaphoreSlim _refreshLock = new(1, 1);
 
     // To coordinate the callback
     private TaskCompletionSource<string>? _authCodeTcs;
-    private string? _expectedState;
-    private string? _codeVerifier;
+    private volatile string? _expectedState;
 
-    public OAuthCloudClient(ILauncher launcher, IHttpClientFactory httpClientFactory)
+    public OAuthCloudClient(ILauncher launcher, IHttpClientFactory httpClientFactory, ILogger<OAuthCloudClient> logger)
     {
         _launcher = launcher;
         _httpClientFactory = httpClientFactory;
+        _logger = logger;
+
         WeakReferenceMessenger.Default.Register(this);
     }
 
-    public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
-    public string? IdToken => _idToken;
-
-    private static void SecureStore(string key, string value)
+    public async Task<bool> LoginAsync(CancellationToken cancellationToken)
     {
-        OsSecretVault.SetSecret(ServiceName, key, value);
-    }
-
-    [ObservableProperty]
-    public partial UserProfile? CurrentUser { get; set; }
-
-    public async Task<bool> TrySilentLoginAsync()
-    {
-        try
-        {
-            // Try to load tokens from secure storage
-            var json = OsSecretVault.GetSecret(ServiceName, TokenDataKey);
-            if (string.IsNullOrEmpty(json))
-            {
-                return false;
-            }
-
-            var data = JsonSerializer.Deserialize<TokenData>(json);
-            if (data?.RefreshToken == null)
-            {
-                return false;
-            }
-
-            _accessToken = data.AccessToken;
-            _refreshToken = data.RefreshToken;
-            _idToken = data.IdToken;
-
-            // Try to refresh the token to ensure it's still valid
-            var parameters = new Dictionary<string, string>
-            {
-                { "grant_type", "refresh_token" },
-                { "refresh_token", _refreshToken },
-                { "client_id", ClientId }
-            };
-
-            CurrentUser = await RequestTokenAsync(parameters);
-            return CurrentUser is not null;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Silent login failed: {ex.Message}");
-            return false;
-        }
-    }
-
-    public async Task<bool> LoginAsync()
-    {
-        if (!await _loginLock.WaitAsync(0)) return false;
+        if (!await _loginLock.WaitAsync(0, cancellationToken)) return false;
 
         try
         {
             // 1. Prepare for callback
             _authCodeTcs = new TaskCompletionSource<string>();
-            _expectedState = Guid.CreateVersion7().ToString();
-            _codeVerifier = GenerateCodeVerifier();
-            var codeChallenge = GenerateCodeChallenge(_codeVerifier);
+            _expectedState = Guid.NewGuid().ToString();
+            var codeVerifier = GenerateCodeVerifier();
+            var codeChallenge = GenerateCodeChallenge(codeVerifier);
 
             // 2. Construct Authorization URL with PKCE
             // Added: offline_access, profile, email to scopes
             var sb = new StringBuilder(AuthorizeEndpoint);
-            sb.Append("?response_type=code");
+            sb.Append($"?response_type=code");
             sb.Append($"&client_id={ClientId}");
             sb.Append($"&redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}");
             sb.Append($"&state={_expectedState}");
             sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
             sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
-            sb.Append("&code_challenge_method=S256");
+            sb.Append($"&code_challenge_method=S256");
             sb.Append($"&audience={Uri.EscapeDataString("https://localhost:4001")}");
 
             var authorizeUrl = sb.ToString();
-            Console.WriteLine($"[AuthService] Starting login flow. Auth URL: {authorizeUrl}");
+            _logger.LogDebug("[AuthService] Starting login flow. Auth URL: {AuthorizeUrl}", authorizeUrl);
 
             // 3. Open the system browser
             await _launcher.LaunchUriAsync(new Uri(authorizeUrl));
 
             // 4. Wait for the callback
-            var completedTask = await Task.WhenAny(_authCodeTcs.Task, Task.Delay(TimeSpan.FromMinutes(5)));
-
-            if (completedTask != _authCodeTcs.Task)
+            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            string code;
+            try
+            {
+                code = await _authCodeTcs.Task.WaitAsync(cts.Token);
+            }
+            catch (OperationCanceledException)
             {
                 throw new TimeoutException("Login timed out.");
             }
 
-            var code = await _authCodeTcs.Task;
-
             // 5. Exchange Authorization Code for Access Token
-            CurrentUser = await ExchangeCodeForTokenAsync(code);
-            return CurrentUser is not null;
+            var parameters = new Dictionary<string, string>
+            {
+                { "grant_type", "authorization_code" },
+                { "code", code },
+                { "redirect_uri", RequestRedirectUri },
+                { "client_id", ClientId },
+                { "code_verifier", codeVerifier }
+            };
+            await RequestTokenAsync(parameters, cancellationToken);
+
+            // 6. Refresh UserProfile
+            await RefreshUserProfileAsync(cancellationToken);
+            return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Login flow failed: {ex.Message}");
+            _logger.LogError(ex, "Failed to login flow.");
+            _tokenData = null;
             return false;
         }
         finally
         {
             _authCodeTcs = null;
             _expectedState = null;
-            _codeVerifier = null;
             _loginLock.Release();
         }
     }
 
-    private async Task<UserProfile?> ExchangeCodeForTokenAsync(string code)
+    /// <summary>
+    /// Requests an access token using the provided parameters.
+    /// This method is used for both exchanging the authorization code and refreshing the token.
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <param name="cancellationToken"></param>
+    /// <exception cref="HttpRequestException"></exception>
+    private async Task RequestTokenAsync(Dictionary<string, string> parameters, CancellationToken cancellationToken)
     {
-        if (_codeVerifier == null) return null;
+        // Use the default client (without auth handler) to avoid circular dependency
+        using var httpClient = _httpClientFactory.CreateClient();
 
-        var parameters = new Dictionary<string, string>
-        {
-            { "grant_type", "authorization_code" },
-            { "code", code },
-            { "redirect_uri", RequestRedirectUri },
-            { "client_id", ClientId },
-            { "code_verifier", _codeVerifier }
-        };
-
-        return await RequestTokenAsync(parameters);
-    }
-
-    private async Task<UserProfile?> RequestTokenAsync(Dictionary<string, string> parameters)
-    {
         var request = new HttpRequestMessage(HttpMethod.Post, TokenEndpoint)
         {
             Content = new FormUrlEncodedContent(parameters)
         };
+        var response = await httpClient.SendAsync(request, cancellationToken);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        _tokenData = TokenData.FromJson(content);
+        if (_tokenData is null)
+        {
+            throw new HttpRequestException("Failed to parse token response. Invalid format.", null, response.StatusCode);
+        }
 
         try
         {
-            // Use the default client (without auth handler) to avoid circular dependency
-            using var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine($"Token exchange failed. Status: {response.StatusCode}, Body: {content}");
-                return null;
-            }
-
-            var json = JsonSerializer.Deserialize<JsonElement>(content);
-
-            if (json.TryGetProperty("access_token", out var at))
-            {
-                _accessToken = at.GetString();
-                Console.WriteLine($"[AuthService] Access Token received: {_accessToken}");
-            }
-            if (json.TryGetProperty("refresh_token", out var rt)) _refreshToken = rt.GetString();
-            if (json.TryGetProperty("id_token", out var it)) _idToken = it.GetString();
-
-            SaveTokens();
-
-            return await GetUserInfoAsync();
+            OsSecretVault.SetSecret(ServiceName, TokenDataKey, _tokenData.ToJson());
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Token request exception: {ex.Message}");
-            return null;
+            // Not a critical failure, we can still proceed with the obtained tokens
+            _logger.LogWarning(ex, "Failed to save token data to secure storage");
         }
     }
 
-
-    public async Task<UserProfile?> GetUserInfoAsync()
+    public async Task LogoutAsync(CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(_accessToken)) return null;
-
-        var request = new HttpRequestMessage(HttpMethod.Get, UserInfoEndpoint);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _accessToken);
+        if (!await _loginLock.WaitAsync(0, cancellationToken)) return; // Prevent logout during login flow
 
         try
         {
+            if (_tokenData is null) return; // Already logged out
+
             using var httpClient = _httpClientFactory.CreateClient();
-            var response = await httpClient.SendAsync(request);
-            if (response.IsSuccessStatusCode)
+
+            // 1. Revoke Access Token if exists
+            if (!_tokenData.AccessToken.IsNullOrEmpty())
             {
-                return await response.Content.ReadFromJsonAsync<UserProfile>();
+                await RevokeTokenAsync(_tokenData.AccessToken, "access_token");
+            }
+
+            // 2. Revoke Refresh Token if exists
+            if (!_tokenData.RefreshToken.IsNullOrEmpty())
+            {
+                await RevokeTokenAsync(_tokenData.RefreshToken, "refresh_token");
+            }
+
+            // 3. Open RP-Initiated Logout if id_token exists
+            if (!_tokenData.IdToken.IsNullOrEmpty())
+            {
+                var url =
+                    $"{EndSessionEndpoint}?id_token_hint={_tokenData.IdToken}&post_logout_redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}";
+                try
+                {
+                    await _launcher.LaunchUriAsync(new Uri(url));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to launch logout URL");
+                }
+            }
+
+            _tokenData = null;
+            CurrentUser = null;
+
+            try
+            {
+                OsSecretVault.DeleteSecret(ServiceName, TokenDataKey);
+            }
+            catch (Exception ex)
+            {
+                // Not a critical failure, just log it
+                _logger.LogWarning(ex, "Failed to delete token data from secure storage");
+            }
+
+            async Task RevokeTokenAsync(string token, string tokenTypeHint)
+            {
+                var parameters = new Dictionary<string, string>
+                {
+                    { "token", token },
+                    { "token_type_hint", tokenTypeHint },
+                    { "client_id", ClientId }
+                };
+
+                var request = new HttpRequestMessage(HttpMethod.Post, RevokeEndpoint)
+                {
+                    Content = new FormUrlEncodedContent(parameters)
+                };
+
+                try
+                {
+                    // ReSharper disable once AccessToDisposedClosure
+                    await httpClient.SendAsync(request, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to revoke {TokenType}", tokenTypeHint);
+                }
+            }
+        }
+        finally
+        {
+            _loginLock.Release();
+        }
+    }
+
+    public async Task RefreshUserProfileAsync(CancellationToken cancellationToken)
+    {
+        // This client is configured with auth and auto refresh token
+        using var httpClient = _httpClientFactory.CreateClient(nameof(ICloudClient));
+
+        try
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, UserInfoEndpoint);
+            var response = await httpClient.SendAsync(request, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            CurrentUser = await response.Content.ReadFromJsonAsync<UserProfile>(cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get user profile");
+        }
+    }
+
+    public async Task<bool> TryRefreshTokenAsync(CancellationToken cancellationToken)
+    {
+        if (_tokenData is null) return false;
+        if (_tokenData.RefreshToken.IsNullOrEmpty()) return false;
+
+        // Prevent concurrent refresh attempts
+        if (!await _refreshLock.WaitAsync(0, cancellationToken))
+        {
+            // Another refresh is in progress, wait for it
+            await _refreshLock.WaitAsync(cancellationToken);
+            _refreshLock.Release();
+
+            // Check if the refresh was successful by verifying we have a token
+            return !string.IsNullOrEmpty(_tokenData.AccessToken);
+        }
+
+        try
+        {
+            var parameters = new Dictionary<string, string>
+            {
+                { "grant_type", "refresh_token" },
+                { "refresh_token", _tokenData.RefreshToken },
+                { "client_id", ClientId }
+            };
+
+            await RequestTokenAsync(parameters, cancellationToken);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Token refresh failed");
+            return false;
+        }
+        finally
+        {
+            _refreshLock.Release();
+        }
+    }
+
+    public DelegatingHandler CreateAuthenticationHandler() => new CloudAuthenticationHandler(this);
+
+    public void Receive(ApplicationCommand message)
+    {
+        if (message is not UrlProtocolCallbackCommand oauth) return;
+
+        var url = oauth.Url;
+        _logger.LogDebug("[AuthService] Received URL callback: {url}", url);
+
+        // Only process if we are expecting a callback
+        if (_authCodeTcs == null || _authCodeTcs.Task.IsCompleted)
+        {
+            _logger.LogDebug("[AuthService] Not expecting callback or task already completed. Ignoring.");
+            return;
+        }
+
+        try
+        {
+            var uri = new Uri(url);
+
+            // Check if it matches our redirect scheme/path
+            // Note: Simplistic check. Better to check Scheme and Path specifically.
+            if (!url.StartsWith(ResponseRedirectUri, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogDebug("[AuthService] URL does not match expected prefix. Ignoring.");
+                return;
+            }
+
+            // Parse Query Parameters
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            var code = query["code"];
+            var state = query["state"];
+            var error = query["error"];
+            var errorDesc = query["error_description"];
+
+            _logger.LogDebug("[AuthService] Extracted - Code: '{code}', State: '{state}', Error: '{error}'", code, state, error);
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                _authCodeTcs.TrySetException(new Exception($"OAuth Error: {error} - {errorDesc}"));
+                return;
+            }
+
+            if (state != _expectedState)
+            {
+                _logger.LogDebug("[AuthService] State mismatch!");
+                _authCodeTcs.TrySetException(new Exception($"Invalid state received. Expected: {_expectedState}, Received: {state}"));
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                _authCodeTcs.TrySetResult(code);
             }
             else
             {
-                Console.WriteLine($"UserInfo failed: {response.StatusCode}");
+                _authCodeTcs.TrySetException(new Exception("No code found in callback."));
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"User info fetch failed: {ex.Message}");
+            _logger.LogDebug("[AuthService] Exception in OnUrlDropped: {exception}", ex);
+            _authCodeTcs.TrySetException(ex);
         }
-
-        return null;
-    }
-
-    private void SaveTokens()
-    {
-        try
-        {
-            var data = new TokenData
-            {
-                AccessToken = _accessToken,
-                RefreshToken = _refreshToken,
-                IdToken = _idToken
-            };
-            var json = JsonSerializer.Serialize(data);
-            SecureStore(TokenDataKey, json);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[AuthService] Failed to save tokens: {ex.Message}");
-        }
-    }
-
-    // Token Persistence
-    private class TokenData
-    {
-        public string? AccessToken { get; set; }
-        public string? RefreshToken { get; set; }
-        public string? IdToken { get; set; }
     }
 
     // PKCE Helper Methods
@@ -285,186 +418,145 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IRecipie
     private static string GenerateCodeChallenge(string codeVerifier)
         => Base64UrlEncode(SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier)));
 
-    public async Task LogoutAsync()
-    {
-        // 1. Revoke Access Token if exists
-        if (!string.IsNullOrEmpty(_accessToken))
-        {
-            await RevokeTokenAsync(_accessToken, "access_token");
-        }
-
-        // 2. Revoke Refresh Token if exists
-        if (!string.IsNullOrEmpty(_refreshToken))
-        {
-            await RevokeTokenAsync(_refreshToken, "refresh_token");
-        }
-
-        // 3. Open RP-Initiated Logout if id_token exists
-        if (!string.IsNullOrEmpty(_idToken))
-        {
-            var url = $"{EndSessionEndpoint}?id_token_hint={_idToken}&post_logout_redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}";
-            try
-            {
-                await _launcher.LaunchUriAsync(new Uri(url));
-            }
-            catch
-            { /* Ignore browser errors */
-            }
-        }
-
-        _accessToken = null;
-        _refreshToken = null;
-        _idToken = null;
-        CurrentUser = null;
-        OsSecretVault.DeleteSecret(ServiceName, TokenDataKey);
-    }
-
-    private async Task RevokeTokenAsync(string token, string tokenTypeHint)
-    {
-        var parameters = new Dictionary<string, string>
-        {
-            { "token", token },
-            { "token_type_hint", tokenTypeHint },
-            { "client_id", ClientId }
-        };
-
-        var request = new HttpRequestMessage(HttpMethod.Post, RevokeEndpoint)
-        {
-            Content = new FormUrlEncodedContent(parameters)
-        };
-
-        try
-        {
-            using var httpClient = _httpClientFactory.CreateClient();
-            await httpClient.SendAsync(request);
-        }
-        catch
-        { /* Ignore revocation errors */
-        }
-    }
-
-    public async Task RefreshUserProfileAsync()
-    {
-        if (string.IsNullOrEmpty(_refreshToken)) return;
-
-        var parameters = new Dictionary<string, string>
-        {
-            { "grant_type", "refresh_token" },
-            { "refresh_token", _refreshToken },
-            { "client_id", ClientId }
-        };
-
-        CurrentUser = await RequestTokenAsync(parameters);
-    }
-
-    public Task<string?> GetAccessTokenAsync() => Task.FromResult(_accessToken);
-
-    public async Task<bool> TryRefreshTokenAsync()
-    {
-        if (string.IsNullOrEmpty(_refreshToken)) return false;
-
-        // Prevent concurrent refresh attempts
-        if (!await _refreshLock.WaitAsync(0))
-        {
-            // Another refresh is in progress, wait for it
-            await _refreshLock.WaitAsync();
-            _refreshLock.Release();
-            // Check if the refresh was successful by verifying we have a token
-            return !string.IsNullOrEmpty(_accessToken);
-        }
-
-        try
-        {
-            var parameters = new Dictionary<string, string>
-            {
-                { "grant_type", "refresh_token" },
-                { "refresh_token", _refreshToken },
-                { "client_id", ClientId }
-            };
-
-            var result = await RequestTokenAsync(parameters);
-            return result is not null;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Token refresh failed: {ex.Message}");
-            return false;
-        }
-        finally
-        {
-            _refreshLock.Release();
-        }
-    }
-
-    public void Receive(ApplicationCommand message)
-    {
-        if (message is not UrlProtocolCallbackCommand oauth) return;
-
-        var url = oauth.Url;
-        Console.WriteLine($"[AuthService] Received URL callback: {url}");
-
-        // Only process if we are expecting a callback
-        if (_authCodeTcs == null || _authCodeTcs.Task.IsCompleted)
-        {
-            Console.WriteLine("[AuthService] Not expecting callback or task already completed. Ignoring.");
-            return;
-        }
-
-        try
-        {
-            var uri = new Uri(url);
-
-            // Check if it matches our redirect scheme/path
-            // Note: Simplistic check. Better to check Scheme and Path specifically.
-            if (!url.StartsWith(ResponseRedirectUri, StringComparison.OrdinalIgnoreCase))
-            {
-                Console.WriteLine("[AuthService] URL does not match expected prefix. Ignoring.");
-                return;
-            }
-
-            // Parse Query Parameters
-            var query = HttpUtility.ParseQueryString(uri.Query);
-            var code = query["code"];
-            var state = query["state"];
-            var error = query["error"];
-            var errorDesc = query["error_description"];
-
-            Console.WriteLine($"[AuthService] Extracted - Code: '{code}', State: '{state}', Error: '{error}'");
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                _authCodeTcs.TrySetException(new Exception($"OAuth Error: {error} - {errorDesc}"));
-                return;
-            }
-
-            if (state != _expectedState)
-            {
-                Console.WriteLine("[AuthService] State mismatch!");
-                _authCodeTcs.TrySetException(new Exception($"Invalid state received. Expected: {_expectedState}, Received: {state}"));
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(code))
-            {
-                _authCodeTcs.TrySetResult(code);
-            }
-            else
-            {
-                _authCodeTcs.TrySetException(new Exception("No code found in callback."));
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[AuthService] Exception in OnUrlDropped: {ex}");
-            _authCodeTcs.TrySetException(ex);
-        }
-    }
-
     private static string Base64UrlEncode(byte[] bytes)
     {
         return Convert.ToBase64String(bytes)
             .Replace("+", "-")
             .Replace("/", "_")
             .Replace("=", "");
+    }
+
+    #region IAsyncInitializer Implementation
+
+    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Highest;
+
+    /// <summary>
+    /// Initializes the client by attempting a silent login using stored tokens.
+    /// This allows the app to restore the user's session without requiring them to log in again, providing a smoother user experience.
+    /// If valid tokens are found and the refresh is successful, the CurrentUser will be populated.
+    /// Otherwise, it will remain null, indicating that the user needs to log in interactively.
+    /// </summary>
+    public async Task InitializeAsync()
+    {
+        Debug.Assert(_tokenData is null, "Token data should be null before initialization");
+        Debug.Assert(CurrentUser is null, "CurrentUser should be null before initialization");
+
+        if (!await _loginLock.WaitAsync(0)) return; // Prevent reentry for initialization
+
+        try
+        {
+            // Try to load tokens from secure storage
+            var json = OsSecretVault.GetSecret(ServiceName, TokenDataKey);
+            if (string.IsNullOrEmpty(json))
+            {
+                return;
+            }
+
+            var data = TokenData.FromJson(json);
+            if (data?.RefreshToken == null)
+            {
+                return;
+            }
+
+            _tokenData = data;
+
+            // Try to refresh the token to ensure it's still valid
+            var parameters = new Dictionary<string, string>
+            {
+                { "grant_type", "refresh_token" },
+                { "refresh_token", _tokenData.RefreshToken },
+                { "client_id", ClientId }
+            };
+
+            await RequestTokenAsync(parameters, CancellationToken.None);
+            await RefreshUserProfileAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            // This exception is expected to happen if the user has never logged in before or if the stored tokens are invalid/expired.
+            // Log it for debugging but don't treat it as an error.
+            _logger.LogInformation(ex, "Silent login failed");
+        }
+        finally
+        {
+            _loginLock.Release();
+        }
+    }
+
+    #endregion
+
+    /// <summary>
+    /// A delegating handler that automatically adds authentication headers to outgoing requests
+    /// and handles token refresh on 401 Unauthorized responses.
+    /// </summary>
+    /// <remarks>
+    /// This handler:
+    /// <list type="bullet">
+    ///   <item>Adds Bearer token to Authorization header before each request</item>
+    ///   <item>Catches 401 responses and attempts to refresh the token</item>
+    ///   <item>Retries the request once with the new token after successful refresh</item>
+    ///   <item>Uses a semaphore to prevent concurrent token refresh operations</item>
+    /// </list>
+    /// </remarks>
+    private sealed class CloudAuthenticationHandler(OAuthCloudClient cloudClient) : DelegatingHandler
+    {
+        private static readonly SemaphoreSlim RefreshLock = new(1, 1);
+
+        // Use IServiceProvider to avoid circular dependency:
+        // CloudAuthenticationHandler -> ICloudClient -> IHttpClientFactory -> CloudAuthenticationHandler
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            if (cloudClient._tokenData?.AccessToken is not { Length: > 0 } token)
+            {
+                // No token available, proceed without adding Authorization header
+                return await base.SendAsync(request, cancellationToken);
+            }
+
+            // Add authorization header if we have a token
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Before first send, ensure content is buffered for potential retry
+            if (request.Content != null)
+            {
+                await request.Content.LoadIntoBufferAsync(cancellationToken);
+            }
+
+            var response = await base.SendAsync(request, cancellationToken);
+
+            // If the response is not 401, return it as is
+            if (response.StatusCode != HttpStatusCode.Unauthorized) return response;
+
+            // If we get a 401, try to refresh the token and retry once
+            var refreshed = await TryRefreshTokenWithLockAsync(cloudClient, cancellationToken);
+            if (!refreshed) return response;
+
+            if (cloudClient._tokenData?.AccessToken is not { Length: > 0 } newToken)
+            {
+                return response; // Refresh succeeded, but we don't have a new token, give up
+            }
+
+            // Dispose the original response before retrying
+            response.Dispose();
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", newToken);
+            response = await base.SendAsync(request, cancellationToken);
+
+            return response;
+        }
+
+        private static async Task<bool> TryRefreshTokenWithLockAsync(OAuthCloudClient cloudClient, CancellationToken cancellationToken)
+        {
+            // Use a lock to prevent multiple concurrent refresh attempts
+            await RefreshLock.WaitAsync(cancellationToken);
+            try
+            {
+                return await cloudClient.TryRefreshTokenAsync(cancellationToken);
+            }
+            finally
+            {
+                RefreshLock.Release();
+            }
+        }
     }
 }
