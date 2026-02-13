@@ -554,10 +554,10 @@
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>支持深度思考</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>对话的最大上下文长度。此项会影响构建视觉上下文的策略，请尽可能设为真实值。</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>最大上下文长度 (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">

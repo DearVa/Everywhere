@@ -554,10 +554,10 @@
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Supporto per Pensiero Profondo</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>La lunghezza massima del contesto della conversazione. Questo influenzerà la strategia di costruzione dell'albero visivo, cerca di impostarlo su un valore reale.</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>Lunghezza Massima del Contesto (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">

@@ -554,10 +554,10 @@
     <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
         <value>Поддержка глубокого мышления</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Description" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>Максимальная длина контекста диалога. Это влияет на стратегию построения визуального контекста, пожалуйста, установите максимально возможное значение.</value>
     </data>
-    <data name="CustomAssistant_MaxTokens_Header" xml:space="preserve">
+    <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>Максимальная длина контекста (context_limit)</value>
     </data>
     <data name="SettingsPage_Reset_Button_ToolTip" xml:space="preserve">
