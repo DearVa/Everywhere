@@ -1091,7 +1091,6 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
 
     /// <summary>
     /// Maximum number of tokens that the model can process in a single request.
-    /// aka, the maximum context length.
     /// </summary>
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_ContextLimit_Header,
