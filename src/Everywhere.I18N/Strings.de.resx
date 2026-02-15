@@ -2117,4 +2117,10 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
         <value>Bitte wählen Sie einen Assistenten in der linken unteren Ecke aus. Wenn keiner vorhanden ist, konfigurieren Sie ihn in den Einstellungen.</value>
     </data>
+    <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Aktivieren</value>
+    </data>
+    <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Automatische Genehmigung</value>
+    </data>
 </root>

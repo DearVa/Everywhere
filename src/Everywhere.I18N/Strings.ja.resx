@@ -2120,4 +2120,10 @@
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
         <value>左下隅でアシスタントを選択してください。ない場合は、設定で構成してください。</value>
     </data>
+    <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>有効</value>
+    </data>
+    <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>自動承認</value>
+    </data>
 </root>

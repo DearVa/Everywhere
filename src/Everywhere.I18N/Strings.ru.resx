@@ -2120,4 +2120,10 @@
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
         <value>Пожалуйста, выберите помощника в левом нижнем углу. Если его нет, настройте в параметрах.</value>
     </data>
+    <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Включено</value>
+    </data>
+    <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Автоутверждение</value>
+    </data>
 </root>

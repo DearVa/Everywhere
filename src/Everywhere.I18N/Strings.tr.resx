@@ -2117,4 +2117,10 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
         <value>Lütfen sol altta bir asistan seçin. Yoksa, ayarlarda yapılandırın.</value>
     </data>
+    <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Etkin</value>
+    </data>
+    <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Otomatik Onay</value>
+    </data>
 </root>

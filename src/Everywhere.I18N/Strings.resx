@@ -2121,9 +2121,9 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Please select an assistant in the bottom left corner. If none are available, configure one in settings.</value>
     </data>
     <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
-        <value />
+        <value>Enabled</value>
     </data>
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
-        <value />
+        <value>Auto Approve</value>
     </data>
 </root>

@@ -2120,4 +2120,10 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="ChatService_Error_CustomAssistantNotSelected" xml:space="preserve">
         <value>Por favor, selecciona un asistente en la esquina inferior izquierda. Si no hay ninguno, configúralo en la configuración.</value>
     </data>
+    <data name="ChatPluginPage_FunctionsTabItem_EnabledDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Habilitado</value>
+    </data>
+    <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
+        <value>Aprobación Automática</value>
+    </data>
 </root>
