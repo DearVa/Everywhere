@@ -8,13 +8,11 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.Input;
 using Everywhere.AttachedProperties;
 using Everywhere.Chat;
-using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Utilities;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using ShadUI;
 
