@@ -11,7 +11,6 @@
           <ListBox
             x:Name="PART_ListBox"
             Width="{Binding $parent[DockPanel].Bounds.Width}"
-            ItemContainerTheme="{StaticResource TabListBoxItemTheme}"
             ItemsSource="{Binding ConfiguratorModels, RelativeSource={RelativeSource TemplatedParent}}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
             SelectedValue="{Binding CustomAssistant.ConfiguratorType, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
@@ -23,9 +22,52 @@
               </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
 
-            <ListBox.ItemTemplate>
-              <DataTemplate DataType="v:ModelProviderConfiguratorSelector+ConfiguratorModel">
-                <Border Background="{Binding Background}">
+            <ListBox.ItemContainerTheme>
+              <ControlTheme
+                BasedOn="{StaticResource TabListBoxItemTheme}"
+                TargetType="ListBoxItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+              </ControlTheme>
+            </ListBox.ItemContainerTheme>
+
+            <ListBox.DataTemplates>
+              <DataTemplate DataType="v:ModelProviderConfiguratorSelector+OfficialConfiguratorModel">
+                <Panel>
+                  <Border
+                    Margin="-12,-8"
+                    CornerRadius="{DynamicResource MdCornerRadius}">
+                    <Border.Background>
+                      <ConicGradientBrush Center="100%,-50%">
+                        <GradientStop Offset="0.5" Color="#FF4EADFC"/>
+                        <GradientStop Offset="0.6" Color="#FFEE4BB5"/>
+                        <GradientStop Offset="0.73" Color="#FFDFDF62"/>
+                      </ConicGradientBrush>
+                    </Border.Background>
+
+                    <Border.OpacityMask>
+                      <!--  <DrawingBrush  -->
+                      <!--  Stretch="Fill" Transform="scale(1, 0.6)">  -->
+                      <!--   <DrawingBrush.Drawing> -->
+                      <!--     <DrawingGroup ClipGeometry="M0,0 V256 H1009 V0 H0 Z"> -->
+                      <!--       <GeometryDrawing Geometry="F1 M1009,256z M0,0z M0,0C46,183 149,88 302,63 409,48 556,265 769,256 860,252 1006,209 1006,209L1008,0 0,0z"> -->
+                      <!--         <GeometryDrawing.Brush> -->
+                      <!--           <LinearGradientBrush SpreadMethod="Pad" StartPoint="469,253" EndPoint="539,-47"> -->
+                      <!--             <GradientStop Offset="0" Color="#FFFFFFFF"/> -->
+                      <!--             <GradientStop Offset="1" Color="#FF000000"/> -->
+                      <!--           </LinearGradientBrush> -->
+                      <!--         </GeometryDrawing.Brush> -->
+                      <!--       </GeometryDrawing> -->
+                      <!--     </DrawingGroup> -->
+                      <!--   </DrawingBrush.Drawing> -->
+                      <!-- </DrawingBrush> -->
+                      <RadialGradientBrush Center="80%,0%" GradientOrigin="80%,0%" RadiusX="70%" RadiusY="50%">
+                        <GradientStop Offset="0.0" Color="#FFFFFFFF"/>
+                        <GradientStop Offset="1.0" Color="#00FFFFFF"/>
+                      </RadialGradientBrush>
+                    </Border.OpacityMask>
+                  </Border>
+
                   <StackPanel
                     Orientation="Vertical" Spacing="4">
                     <TextBlock
@@ -37,9 +79,23 @@
                       Text="{Binding DescriptionKey^}"
                       TextWrapping="Wrap"/>
                   </StackPanel>
-                </Border>
+                </Panel>
               </DataTemplate>
-            </ListBox.ItemTemplate>
+
+              <DataTemplate DataType="v:ModelProviderConfiguratorSelector+ConfiguratorModel">
+                <StackPanel
+                  Orientation="Vertical" Spacing="4">
+                  <TextBlock
+                    Classes="Large"
+                    Text="{Binding HeaderKey^}"
+                    TextWrapping="Wrap"/>
+                  <TextBlock
+                    Classes="Muted Small"
+                    Text="{Binding DescriptionKey^}"
+                    TextWrapping="Wrap"/>
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.DataTemplates>
           </ListBox>
 
           <v:SettingsItemsControl

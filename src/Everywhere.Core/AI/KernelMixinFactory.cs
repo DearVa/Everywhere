@@ -1,4 +1,5 @@
-﻿using Everywhere.Common;
+﻿using Everywhere.Cloud;
+using Everywhere.Common;
 using Everywhere.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -52,6 +53,14 @@ public sealed class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILo
 
         _cachedHttpClient?.Dispose();
         _cachedKernelMixin?.Dispose();
+
+        if (customAssistant.Schema is ModelProviderSchema.Official)
+        {
+            return _cachedKernelMixin = new OfficialKernelMixin(
+                customAssistant,
+                _cachedHttpClient = httpClientFactory.CreateClient(nameof(ICloudClient)),
+                loggerFactory);
+        }
 
         // Create an HttpClient instance using the factory.
         // It will have the configured settings (timeout and proxy).

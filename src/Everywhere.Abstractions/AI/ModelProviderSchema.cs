@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+using MessagePack;
+using System.Text.RegularExpressions;
 
 namespace Everywhere.AI;
 
@@ -7,6 +8,12 @@ namespace Everywhere.AI;
 /// </summary>
 public enum ModelProviderSchema
 {
+    /// <summary>
+    /// Official provider schema.
+    /// </summary>
+    [IgnoreMember]
+    Official = -1,
+
     OpenAI,
     OpenAIResponses,
     Anthropic,

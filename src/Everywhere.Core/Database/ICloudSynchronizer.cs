@@ -1,11 +1,9 @@
-﻿using Everywhere.Common;
-
-namespace Everywhere.Database;
+﻿namespace Everywhere.Database;
 
 /// <summary>
 /// Defines methods for synchronizing chat database with a remote source.
 /// </summary>
-public interface IChatDbSynchronizer : IAsyncInitializer
+public interface IChatDbSynchronizer
 {
     /// <summary>
     /// Manually triggers synchronization with the remote source.
