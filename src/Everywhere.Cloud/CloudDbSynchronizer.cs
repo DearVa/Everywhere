@@ -18,7 +18,7 @@ public class CloudChatDbSynchronizer(
     IDbContextFactory<ChatDbContext> dbFactory,
     IHttpClientFactory httpClientFactory,
     ILogger<CloudChatDbSynchronizer> logger
-) : IChatDbSynchronizer
+) : IChatDbSynchronizer, IAsyncInitializer
 {
     public AsyncInitializerPriority Priority => AsyncInitializerPriority.Database + 1;
 
@@ -27,6 +27,9 @@ public class CloudChatDbSynchronizer(
 
     public Task InitializeAsync()
     {
+        // If the cloud sync base URL is not configured, skip synchronization.
+        if (CloudConstants.CloudSyncBaseUrl.IsNullOrEmpty()) return Task.CompletedTask;
+
         Task.Run(async () =>
         {
             while (true)
@@ -114,12 +117,12 @@ public class CloudChatDbSynchronizer(
             logger.LogDebug("Pulling cloud changes since version {LastPulledVersion}", metadata.LastPulledVersion);
 
             var response = await httpClient.GetAsync(
-                new Uri($"http://127.0.0.1:8787/sync/pull?sinceVersion={Math.Max(metadata.LastPulledVersion, 0L)}"),
+                new Uri($"{CloudConstants.CloudSyncBaseUrl}/chat-db/pull?sinceVersion={Math.Max(metadata.LastPulledVersion, 0L)}"),
                 cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 // This will throw an exception with detailed error info.
-                await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response);
+                await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response, cancellationToken: cancellationToken);
             }
 
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -307,8 +310,11 @@ public class CloudChatDbSynchronizer(
     private async ValueTask PushPayloadAsync(List<EntityWrapper> payload, HttpClient httpClient, CancellationToken cancellationToken)
     {
         var data = MessagePackSerializer.Serialize(payload, cancellationToken: cancellationToken);
-        var response = await httpClient.PostAsync(new Uri("http://127.0.0.1:8787/sync/push"), new ByteArrayContent(data), cancellationToken);
-        var result = await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response);
+        var response = await httpClient.PostAsync(
+            new Uri($"{CloudConstants.CloudSyncBaseUrl}/chat-db/push"),
+            new ByteArrayContent(data),
+            cancellationToken);
+        var result = await ApiPayload.EnsureSuccessFromHttpResponseJsonAsync(response, cancellationToken: cancellationToken);
         logger.LogDebug("Pushed {EntityCount} entities to cloud successfully: {Result}", payload.Count, result);
     }
 }
