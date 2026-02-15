@@ -26,7 +26,6 @@ public class ChatPluginManager : IChatPluginManager
 
     public ReadOnlyObservableCollection<McpChatPlugin> McpPlugins { get; }
 
-    private readonly IRuntimeConstantProvider _runtimeConstantProvider;
     private readonly IWatchdogManager _watchdogManager;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
@@ -40,14 +39,12 @@ public class ChatPluginManager : IChatPluginManager
 
     public ChatPluginManager(
         IEnumerable<BuiltInChatPlugin> builtInPlugins,
-        IRuntimeConstantProvider runtimeConstantProvider,
         IWatchdogManager watchdogManager,
         IHttpClientFactory httpClientFactory,
         ILoggerFactory loggerFactory,
         Settings settings)
     {
         _builtInPluginsSource.AddRange(builtInPlugins);
-        _runtimeConstantProvider = runtimeConstantProvider;
         _watchdogManager = watchdogManager;
         _httpClientFactory = httpClientFactory;
         _loggerFactory = loggerFactory;
@@ -351,7 +348,7 @@ public class ChatPluginManager : IChatPluginManager
             if (Directory.Exists(workingDirectory)) return workingDirectory;
 
             // If not exists, fall back to Everywhere\cache\plugins\mcp\<plugin-id>
-            var fallbackDir = _runtimeConstantProvider.EnsureWritableDataFolderPath(
+            var fallbackDir = RuntimeConstants.EnsureWritableDataFolderPath(
                 Path.Combine("plugins", "mcp", mcpChatPlugin.Id.ToString("N")));
             return fallbackDir;
         }

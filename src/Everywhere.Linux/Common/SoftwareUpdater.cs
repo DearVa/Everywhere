@@ -19,7 +19,6 @@ namespace Everywhere.Linux.Common;
 
 public sealed partial class SoftwareUpdater(
     INativeHelper nativeHelper,
-    IRuntimeConstantProvider runtimeConstantProvider,
     ILogger<SoftwareUpdater> logger
 ) : ObservableObject, ISoftwareUpdater, IDisposable
 {
@@ -229,7 +228,7 @@ public sealed partial class SoftwareUpdater(
         {
             try
             {
-                var updatesPath = runtimeConstantProvider.EnsureWritableDataFolderPath("updates");
+                var updatesPath = RuntimeConstants.EnsureWritableDataFolderPath("updates");
                 if (!Directory.Exists(updatesPath)) return;
 
                 foreach (var file in Directory.EnumerateFiles(updatesPath))
@@ -262,7 +261,7 @@ public sealed partial class SoftwareUpdater(
 
     private async Task<string> DownloadAssetAsync(Asset asset, IProgress<double> progress)
     {
-        var installPath = runtimeConstantProvider.EnsureWritableDataFolderPath("updates");
+        var installPath = RuntimeConstants.EnsureWritableDataFolderPath("updates");
         var assetDownloadPath = Path.Combine(installPath, asset.Name);
 
         var fileInfo = new FileInfo(assetDownloadPath);

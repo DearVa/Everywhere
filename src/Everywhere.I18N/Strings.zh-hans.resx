@@ -2178,4 +2178,11 @@
     <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
         <value>官方托管服务。无需 API 密钥，开箱即用</value>
     </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value>严重错误</value>
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value>初始化数据目录失败，请确保你有对数据目录的写入权限。
+{0}</value>
+    </data>
 </root>

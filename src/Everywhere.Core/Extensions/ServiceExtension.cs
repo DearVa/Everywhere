@@ -51,9 +51,9 @@ public static class ServiceExtension
 
         public IServiceCollection AddDatabaseAndStorage() =>
             services
-                .AddDbContextFactory<ChatDbContext>((x, options) =>
+                .AddDbContextFactory<ChatDbContext>((_, options) =>
                 {
-                    var dbPath = x.GetRequiredService<IRuntimeConstantProvider>().GetDatabasePath("chat.db");
+                    var dbPath = RuntimeConstants.GetDatabasePath("chat.db");
                     options.UseSqlite($"Data Source={dbPath}");
                 })
                 .AddSingleton<IBlobStorage, BlobStorage>()

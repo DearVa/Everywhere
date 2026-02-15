@@ -2177,4 +2177,10 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
         <value>Official managed service. No API key setup needed—it's ready when you are.</value>
     </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value />
+    </data>
 </root>

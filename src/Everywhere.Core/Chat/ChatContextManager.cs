@@ -126,19 +126,16 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
 
     private readonly Settings _settings;
     private readonly IChatContextStorage _chatContextStorage;
-    private readonly IRuntimeConstantProvider _runtimeConstantProvider;
     private readonly ILogger<ChatContextManager> _logger;
     private readonly DebounceExecutor<ChatContextManager, ThreadingTimerImpl> _saveDebounceExecutor;
 
     public ChatContextManager(
         Settings settings,
         IChatContextStorage chatContextStorage,
-        IRuntimeConstantProvider runtimeConstantProvider,
         ILogger<ChatContextManager> logger)
     {
         _settings = settings;
         _chatContextStorage = chatContextStorage;
-        _runtimeConstantProvider = runtimeConstantProvider;
         _logger = logger;
         _saveDebounceExecutor = new DebounceExecutor<ChatContextManager, ThreadingTimerImpl>(
             () => this,
@@ -209,7 +206,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
     private void CleanupUnusedWorkingDirectories()
     {
         var regex = WorkingDirectoryRegex();
-        var pluginsDir = _runtimeConstantProvider.EnsureWritableDataFolderPath("plugins");
+        var pluginsDir = RuntimeConstants.EnsureWritableDataFolderPath("plugins");
         foreach (var dir in Directory.GetDirectories(pluginsDir))
         {
             var dirName = Path.GetFileName(dir);
@@ -467,7 +464,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         metadata.Id == _current?.Metadata.Id ? Task.FromResult<ChatContext?>(_current) : LoadChatContextAsync(metadata.Id, false, cancellationToken);
 
     public string EnsureWorkingDirectory(ChatContext chatContext) =>
-        _runtimeConstantProvider.EnsureWritableDataFolderPath($"plugins/{chatContext.Metadata.DateCreated:yyyy-MM-dd}");
+        RuntimeConstants.EnsureWritableDataFolderPath($"plugins/{chatContext.Metadata.DateCreated:yyyy-MM-dd}");
 
     public string RenderSystemPrompt(ChatContext chatContext, string? systemPrompt)
     {
