@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.IO.Pipes;
 using CommunityToolkit.Mvvm.Messaging;
+using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Views;
 using MessagePack;
@@ -47,6 +48,7 @@ public static partial class Entrance
     {
         await InitializeSingleInstanceAsync(args);
 
+        InitializeRuntimeConstants();
         InitializeTelemetry();
         InitializeLogger();
         InitializeErrorHandling();
@@ -160,6 +162,24 @@ public static partial class Entrance
         }
     }
 
+    private static void InitializeRuntimeConstants()
+    {
+        try
+        {
+            // Accessing DeviceId to trigger its initialization and catch any potential exceptions early
+            _ = RuntimeConstants.DeviceId;
+        }
+        catch (Exception ex)
+        {
+            NativeMessageBox.Show(
+                LocaleResolver.Common_CriticalError,
+                string.Format(LocaleResolver.Entrance_FailedToInitializeRuntimeConstants, ex),
+                NativeMessageBoxButtons.Ok,
+                NativeMessageBoxIcon.Error);
+            Environment.Exit(1);
+        }
+    }
+
     private static void InitializeTelemetry()
     {
         if (string.IsNullOrEmpty(SentryDsn)) return;
@@ -197,6 +217,7 @@ public static partial class Entrance
 
         SentrySdk.ConfigureScope(scope =>
         {
+            scope.User.Id = RuntimeConstants.DeviceId;
             scope.User.Username = null;
             scope.User.IpAddress = null;
             scope.User.Email = null;
@@ -317,7 +338,7 @@ public static partial class Entrance
             }
         }
 
-        private void OnMeasurement<T>(
+        private static void OnMeasurement<T>(
             Instrument instrument,
             T measurement,
             ReadOnlySpan<KeyValuePair<string, object?>> tags,

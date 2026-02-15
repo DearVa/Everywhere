@@ -28,12 +28,12 @@ public sealed class KeyValueStorage : IKeyValueStorage, IAsyncInitializer, IDisp
     private volatile bool _isLoaded;
     private int _isDirty;
 
-    public KeyValueStorage(IRuntimeConstantProvider runtimeConstantProvider, ILogger<KeyValueStorage> logger)
+    public KeyValueStorage(ILogger<KeyValueStorage> logger)
     {
         _logger = logger;
-        var basePath = runtimeConstantProvider.Get<string>(RuntimeConstantType.WritableDataPath);
-        _primaryPath = Path.Combine(basePath, "storage" + PrimaryExtension);
-        _tempPath = Path.Combine(basePath, "storage" + TempExtension);
+
+        _primaryPath = Path.Combine(RuntimeConstants.WritableDataPath, "storage" + PrimaryExtension);
+        _tempPath = Path.Combine(RuntimeConstants.WritableDataPath, "storage" + TempExtension);
 
         _saveExecutor = new DebounceExecutor<bool, ThreadingTimerImpl>(
             () => true,

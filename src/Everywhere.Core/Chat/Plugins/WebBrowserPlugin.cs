@@ -30,7 +30,6 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
     public override IReadOnlyList<SettingsItem> SettingsItems => _webSearchEngineSettings.SettingsItems;
 
     private readonly WebSearchEngineSettings _webSearchEngineSettings;
-    private readonly IRuntimeConstantProvider _runtimeConstantProvider;
     private readonly IWatchdogManager _watchdogManager;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
@@ -62,13 +61,11 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
 
     public WebBrowserPlugin(
         Settings settings,
-        IRuntimeConstantProvider runtimeConstantProvider,
         IWatchdogManager watchdogManager,
         IHttpClientFactory httpClientFactory,
         ILoggerFactory loggerFactory) : base("web_browser")
     {
         _webSearchEngineSettings = settings.Plugin.WebSearchEngine;
-        _runtimeConstantProvider = runtimeConstantProvider;
         _watchdogManager = watchdogManager;
         _httpClientFactory = httpClientFactory;
         _loggerFactory = loggerFactory;
@@ -265,7 +262,7 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
         if (_browser is not null) return _browser;
 
         // Finally download and launch Puppeteer browser
-        var cachePath = _runtimeConstantProvider.EnsureWritableDataFolderPath("cache/plugins/puppeteer");
+        var cachePath = RuntimeConstants.EnsureWritableDataFolderPath("cache/plugins/puppeteer");
         var browserFetcher = new BrowserFetcher
         {
             CacheDir = cachePath,

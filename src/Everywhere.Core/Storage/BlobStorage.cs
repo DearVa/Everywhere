@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Everywhere.Storage;
 
-public class BlobStorage(IDbContextFactory<ChatDbContext> dbFactory, IRuntimeConstantProvider runtimeConstantProvider) : IBlobStorage
+public class BlobStorage(IDbContextFactory<ChatDbContext> dbFactory) : IBlobStorage
 {
-    private readonly string _blobBasePath = runtimeConstantProvider.EnsureWritableDataFolderPath("blob");
+    private readonly string _blobBasePath = RuntimeConstants.EnsureWritableDataFolderPath("blob");
 
     public Task<BlobEntity> StorageBlobAsync(Stream content, string mimeType, CancellationToken cancellationToken = default) =>
         StorageBlobAsync(content, null, mimeType, cancellationToken);

@@ -15,7 +15,6 @@ using Everywhere.Initialization;
 using Everywhere.Interop;
 using Everywhere.Windows.Chat.Plugins;
 using Everywhere.Windows.Common;
-using Everywhere.Windows.Configuration;
 using Everywhere.Windows.Interop;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -58,7 +57,6 @@ public static class Program
 #endif
                     .AddSerilog(dispose: true)
                     .AddFilter<SerilogLoggerProvider>("Microsoft.EntityFrameworkCore", LogLevel.Warning))
-                .AddSingleton<IRuntimeConstantProvider, RuntimeConstantProvider>()
                 .AddSingleton<IVisualElementContext, VisualElementContext>()
                 .AddSingleton<IShortcutListener, ShortcutListener>()
                 .AddSingleton<INativeHelper, NativeHelper>()

@@ -11,7 +11,6 @@ using Everywhere.Extensions;
 using Everywhere.I18N;
 using Everywhere.Interop;
 using Microsoft.Extensions.Logging;
-
 #if !DEBUG
 using System.Text.RegularExpressions;
 using Everywhere.Utilities;
@@ -21,7 +20,6 @@ namespace Everywhere.Mac.Common;
 
 public sealed partial class SoftwareUpdater(
     INativeHelper nativeHelper,
-    IRuntimeConstantProvider runtimeConstantProvider,
     ILogger<SoftwareUpdater> logger
 ) : ObservableObject, ISoftwareUpdater, IDisposable
 {
@@ -230,7 +228,7 @@ public sealed partial class SoftwareUpdater(
 
     private async Task<string> DownloadAssetAsync(Asset asset, IProgress<double> progress, CancellationToken cancellationToken = default)
     {
-        var installPath = runtimeConstantProvider.EnsureWritableDataFolderPath("updates");
+        var installPath = RuntimeConstants.EnsureWritableDataFolderPath("updates");
         var assetDownloadPath = Path.Combine(installPath, asset.Name);
 
         var fileInfo = new FileInfo(assetDownloadPath);
