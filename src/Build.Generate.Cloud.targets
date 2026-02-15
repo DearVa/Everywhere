@@ -1,0 +1,29 @@
+<Project>
+  <Target Name="GenerateCloudConstants" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <ClientId Condition="'$(ClientId)' == ''"/>
+      <OAuthBaseUrl Condition="'$(OAuthBaseUrl)' == ''"/>
+      <AIGatewayBaseUrl Condition="'$(AIGatewayBaseUrl)' == ''"/>
+      <CloudSyncBaseUrl Condition="'$(CloudSyncBaseUrl)' == ''"/>
+      <GenerateCloudConstants>$(IntermediateOutputPath)CloudConstants.g.cs</GenerateCloudConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <CloudCode Include="// &lt;auto-generated /&gt;"/>
+      <CloudCode Include="namespace Everywhere.Cloud%3B"/>
+      <CloudCode Include="internal partial class CloudConstants"/>
+      <CloudCode Include="{"/>
+      <CloudCode Include="public const string ClientId = &quot;$(ClientId)&quot;%3B"/>
+      <CloudCode Include="public const string OAuthBaseUrl = &quot;$(OAuthBaseUrl)&quot;%3B"/>
+      <CloudCode Include="public const string AIGatewayBaseUrl = &quot;$(AIGatewayBaseUrl)&quot;%3B"/>
+      <CloudCode Include="public const string CloudSyncBaseUrl = &quot;$(CloudSyncBaseUrl)&quot;%3B"/>
+      <CloudCode Include="}"/>
+    </ItemGroup>
+
+    <WriteLinesToFile File="$(GenerateCloudConstants)" Lines="@(CloudCode)" Overwrite="true"/>
+
+    <ItemGroup>
+      <Compile Include="$(GenerateCloudConstants)"/>
+    </ItemGroup>
+  </Target>
+</Project>

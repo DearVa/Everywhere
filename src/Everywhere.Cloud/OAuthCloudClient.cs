@@ -58,14 +58,12 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
     private const string ServiceName = "com.sylinko.everywhere";
     private const string TokenDataKey = "oauth_token_data";
 
-    private const string ClientId = "2594ff9a1589fa4817fc5156ffaeee13";
-    private const string BaseUrl = "https://localhost:3000";
-    private const string AuthorizeEndpoint = $"{BaseUrl}/api/auth/oauth2/authorize";
-    private const string TokenEndpoint = $"{BaseUrl}/api/auth/oauth2/token";
-    private const string UserInfoEndpoint = $"{BaseUrl}/api/auth/oauth2/userinfo";
-    private const string RevokeEndpoint = $"{BaseUrl}/api/auth/oauth2/revoke";
-    private const string EndSessionEndpoint = $"{BaseUrl}/api/auth/oauth2/end-session";
-    private const string RequestRedirectUri = $"{BaseUrl}/oauth2/device-callback?redirect=sylinko-everywhere://callback";
+    private const string AuthorizeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/authorize";
+    private const string TokenEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/token";
+    private const string UserInfoEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/userinfo";
+    private const string RevokeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/revoke";
+    private const string EndSessionEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/end-session";
+    private const string RequestRedirectUri = $"{CloudConstants.OAuthBaseUrl}/oauth2/device-callback?redirect=sylinko-everywhere://callback";
     private const string ResponseRedirectUri = "sylinko-everywhere://callback";
     private const string Scopes = "openid profile email offline_access";
 
@@ -107,7 +105,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             // Added: offline_access, profile, email to scopes
             var sb = new StringBuilder(AuthorizeEndpoint);
             sb.Append($"?response_type=code");
-            sb.Append($"&client_id={ClientId}");
+            sb.Append($"&client_id={CloudConstants.ClientId}");
             sb.Append($"&redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}");
             sb.Append($"&state={_expectedState}");
             sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
@@ -139,7 +137,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
                 { "grant_type", "authorization_code" },
                 { "code", code },
                 { "redirect_uri", RequestRedirectUri },
-                { "client_id", ClientId },
+                { "client_id", CloudConstants.ClientId },
                 { "code_verifier", codeVerifier }
             };
             await RequestTokenAsync(parameters, cancellationToken);
@@ -255,7 +253,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
                 {
                     { "token", token },
                     { "token_type_hint", tokenTypeHint },
-                    { "client_id", ClientId }
+                    { "client_id", CloudConstants.ClientId }
                 };
 
                 var request = new HttpRequestMessage(HttpMethod.Post, RevokeEndpoint)
@@ -321,7 +319,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             {
                 { "grant_type", "refresh_token" },
                 { "refresh_token", _tokenData.RefreshToken },
-                { "client_id", ClientId }
+                { "client_id", CloudConstants.ClientId }
             };
 
             await RequestTokenAsync(parameters, cancellationToken);
@@ -465,7 +463,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             {
                 { "grant_type", "refresh_token" },
                 { "refresh_token", _tokenData.RefreshToken },
-                { "client_id", ClientId }
+                { "client_id", CloudConstants.ClientId }
             };
 
             await RequestTokenAsync(parameters, CancellationToken.None);

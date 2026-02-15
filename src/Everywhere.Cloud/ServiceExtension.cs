@@ -15,8 +15,13 @@ public static class ServiceExtension
             services.AddSingleton<ICloudClient>(x => x.GetRequiredService<OAuthCloudClient>());
             services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<OAuthCloudClient>());
 
-            services.AddSingleton<IChatDbSynchronizer, CloudChatDbSynchronizer>();
-            services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<IChatDbSynchronizer>());
+            services.AddSingleton<CloudChatDbSynchronizer>();
+            services.AddSingleton<IChatDbSynchronizer>(x => x.GetRequiredService<CloudChatDbSynchronizer>());
+            services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<CloudChatDbSynchronizer>());
+
+            services.AddSingleton<OfficialModelProvider>();
+            services.AddSingleton<IOfficialModelProvider>(x => x.GetRequiredService<OfficialModelProvider>());
+            services.AddSingleton<IAsyncInitializer>(x => x.GetRequiredService<OfficialModelProvider>());
 
             // Register the authenticated HttpClient for API requests.
             // This client includes the CloudAuthenticationHandler which:
@@ -33,7 +38,7 @@ public static class ServiceExtension
                         var version = typeof(ServiceExtension).Assembly.GetName().Version ?? new Version(0, 0, 0, 0);
                         client.DefaultRequestHeaders.Add(
                             "User-Agent",
-                            $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Everywhere/{version}");
+                            $"Everywhere/{version}");
                     })
                 .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
                     new HttpClientHandler
