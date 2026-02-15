@@ -136,6 +136,7 @@ public class App : Application, IRecipient<ApplicationCommand>
                 { "os.type", OsType },
                 { "os.description", RuntimeInformation.OSDescription },
                 { "app.version", Version },
+                { "user.id", RuntimeConstants.DeviceId }
             });
     }
 

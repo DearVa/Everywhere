@@ -11,7 +11,6 @@ using Everywhere.Initialization;
 using Everywhere.Interop;
 using Everywhere.Mac.Chat.Plugin;
 using Everywhere.Mac.Common;
-using Everywhere.Mac.Configuration;
 using Everywhere.Mac.Interop;
 using Everywhere.Mac.Patches;
 using HarmonyLib;
@@ -38,7 +37,6 @@ public static class Program
                 .AddLogging(builder => builder
                     .AddSerilog(dispose: true)
                     .AddFilter<SerilogLoggerProvider>("Microsoft.EntityFrameworkCore", LogLevel.Warning))
-                .AddSingleton<IRuntimeConstantProvider, RuntimeConstantProvider>()
                 .AddSingleton<IVisualElementContext, VisualElementContext>()
                 .AddSingleton<IShortcutListener, CGEventShortcutListener>()
                 .AddSingleton<INativeHelper, NativeHelper>()

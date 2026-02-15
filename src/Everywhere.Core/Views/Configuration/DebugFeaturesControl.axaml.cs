@@ -12,7 +12,6 @@ namespace Everywhere.Views;
 public partial class DebugFeaturesControl(
     ILauncher launcher,
     ToastManager toastManager,
-    IRuntimeConstantProvider runtimeConstantProvider,
     ILogger<DebugFeaturesControl> logger)
     : TemplatedControl
 {
@@ -21,9 +20,7 @@ public partial class DebugFeaturesControl(
     {
         try
         {
-            var settingsPath = Path.Combine(
-                runtimeConstantProvider.Get<string>(RuntimeConstantType.WritableDataPath),
-                "settings.json");
+            var settingsPath = Path.Combine(RuntimeConstants.WritableDataPath, "settings.json");
             var launched = await launcher.LaunchFileInfoAsync(new FileInfo(settingsPath));
             if (!launched)
             {
@@ -48,7 +45,7 @@ public partial class DebugFeaturesControl(
     {
         try
         {
-            var logsPath = runtimeConstantProvider.EnsureWritableDataFolderPath("logs");
+            var logsPath = RuntimeConstants.EnsureWritableDataFolderPath("logs");
             var launched = await launcher.LaunchDirectoryInfoAsync(new DirectoryInfo(logsPath));
             if (!launched)
             {
@@ -79,7 +76,7 @@ public partial class DebugFeaturesControl(
                 Path.Combine(
                     Path.GetDirectoryName(Environment.ProcessPath ?? typeof(DebugFeaturesControl).Assembly.Location) ?? ".",
                     "createdump.exe"));
-            var dumpsPath = runtimeConstantProvider.EnsureWritableDataFolderPath("dumps");
+            var dumpsPath = RuntimeConstants.EnsureWritableDataFolderPath("dumps");
             var dumpPath = Path.Combine(dumpsPath, $"dump_{DateTimeOffset.UtcNow:yyyyMMdd_HHmmss}.dmp");
             var psi = new ProcessStartInfo
             {

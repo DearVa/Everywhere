@@ -10,7 +10,6 @@ using Everywhere.Extensions;
 using Everywhere.Initialization;
 using Everywhere.Interop;
 using Everywhere.Linux.Chat.Plugins;
-using Everywhere.Linux.Configuration;
 using Everywhere.Linux.Interop;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -57,7 +56,6 @@ public static class Program
                 .AddLogging(builder => builder
                     .AddSerilog(dispose: true)
                     .AddFilter<SerilogLoggerProvider>("Microsoft.EntityFrameworkCore", LogLevel.Debug))
-                .AddSingleton<IRuntimeConstantProvider, RuntimeConstantProvider>()
                 .AddWindowEventHelper()
                 .AddSingleton<IVisualElementContext, VisualElementContext>()
                 .AddSingleton<IShortcutListener, ShortcutListener>()
