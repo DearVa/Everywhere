@@ -72,21 +72,31 @@ public partial class ApiPayload
     /// Deserializes the JSON payload from the HTTP response.
     /// </summary>
     /// <param name="response"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException"></exception>
-    public static async Task<ApiPayload> FromHttpResponseJsonAsync(HttpResponseMessage response) =>
-        await response.Content.ReadFromJsonAsync<ApiPayload>() ??
+    public static async Task<ApiPayload> FromHttpResponseJsonAsync(
+        HttpResponseMessage response,
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        CancellationToken cancellationToken = default) =>
+        await response.Content.ReadFromJsonAsync<ApiPayload>(jsonSerializerOptions, cancellationToken: cancellationToken) ??
         throw new HttpRequestException(HttpRequestError.InvalidResponse, statusCode: response.StatusCode);
 
     /// <summary>
     /// Ensures that the HTTP response indicates success and deserializes the JSON payload.
     /// </summary>
     /// <param name="response"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     /// <exception cref="HttpRequestException">Thrown if the response indicates failure.</exception>
-    public static async Task<ApiPayload> EnsureSuccessFromHttpResponseJsonAsync(HttpResponseMessage response)
+    public static async Task<ApiPayload> EnsureSuccessFromHttpResponseJsonAsync(
+        HttpResponseMessage response,
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        CancellationToken cancellationToken = default)
     {
-        var payload = await FromHttpResponseJsonAsync(response);
+        var payload = await FromHttpResponseJsonAsync(response, jsonSerializerOptions, cancellationToken);
         if (!payload.Success) throw new HttpRequestException(payload.ToString(), null, statusCode: response.StatusCode);
         return payload;
     }
@@ -118,5 +128,38 @@ public class ApiPayload<T> : ApiPayload
     {
         EnsureSuccess();
         return Data ?? throw new HttpRequestException($"{nameof(Data)} is null");
+    }
+
+    /// <summary>
+    /// Deserializes the JSON payload from the HTTP response.
+    /// </summary>
+    /// <param name="response"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException"></exception>
+    public static async new Task<ApiPayload<T>> FromHttpResponseJsonAsync(
+        HttpResponseMessage response,
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        CancellationToken cancellationToken = default) =>
+        await response.Content.ReadFromJsonAsync<ApiPayload<T>>(jsonSerializerOptions, cancellationToken: cancellationToken) ??
+        throw new HttpRequestException(HttpRequestError.InvalidResponse, statusCode: response.StatusCode);
+
+    /// <summary>
+    /// Ensures that the HTTP response indicates success and deserializes the JSON payload.
+    /// </summary>
+    /// <param name="response"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="HttpRequestException">Thrown if the response indicates failure.</exception>
+    public static async new Task<ApiPayload<T>> EnsureSuccessFromHttpResponseJsonAsync(
+        HttpResponseMessage response,
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        var payload = await FromHttpResponseJsonAsync(response, jsonSerializerOptions, cancellationToken);
+        if (!payload.Success) throw new HttpRequestException(payload.ToString(), null, statusCode: response.StatusCode);
+        return payload;
     }
 }

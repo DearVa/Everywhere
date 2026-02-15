@@ -534,7 +534,8 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 {
                     var enumMembers = metadata.Type.GetMembers()
                         .OfType<IFieldSymbol>()
-                        .Where(f => f.IsConst); // Enum members are constants
+                        .Where(f => f.IsConst) // Enum members are constants
+                        .Where(f => !f.HasAttribute("MessagePack.IgnoreMemberAttribute"));
 
                     foreach (var member in enumMembers)
                     {

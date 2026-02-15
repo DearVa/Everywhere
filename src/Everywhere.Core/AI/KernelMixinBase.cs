@@ -11,12 +11,12 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
     // cache properties for comparison
     public ModelProviderSchema Schema { get; } = customAssistant.Schema;
 
-    public string Endpoint { get; } = customAssistant.Endpoint?.Trim().Trim('/') ??
+    public virtual string Endpoint { get; } = customAssistant.Endpoint?.Trim().Trim('/') ??
         throw new HandledChatException(
             new InvalidOperationException("Endpoint cannot be empty."),
             HandledChatExceptionType.InvalidEndpoint);
 
-    public string? ApiKey { get; } = Configuration.ApiKey.GetKey(customAssistant.ApiKey);
+    public virtual string? ApiKey { get; } = Configuration.ApiKey.GetKey(customAssistant.ApiKey);
 
     protected string EnsureApiKey() => ApiKey ??
         throw new HandledChatException(
