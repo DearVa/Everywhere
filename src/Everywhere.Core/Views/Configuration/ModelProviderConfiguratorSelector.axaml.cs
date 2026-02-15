@@ -15,37 +15,39 @@ public class ModelProviderConfiguratorSelector : TemplatedControl
 {
     private const string ListBoxPartName = "PART_ListBox";
 
-    public sealed record ConfiguratorModel(
+    public record ConfiguratorModel(
         ModelProviderConfiguratorType Type,
         DynamicResourceKeyBase HeaderKey,
-        DynamicResourceKeyBase DescriptionKey,
-        IBrush? Background
+        DynamicResourceKeyBase DescriptionKey
     );
+
+    public sealed record OfficialConfiguratorModel(
+        ModelProviderConfiguratorType Type,
+        DynamicResourceKeyBase HeaderKey,
+        DynamicResourceKeyBase DescriptionKey
+    ) : ConfiguratorModel(Type, HeaderKey, DescriptionKey);
 
     public IReadOnlyList<ConfiguratorModel> ConfiguratorModels { get; } =
     [
-        new(
+        new OfficialConfiguratorModel(
             ModelProviderConfiguratorType.Official,
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header),
-            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description),
-            null),
+            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description)),
         new(
             ModelProviderConfiguratorType.PresetBased,
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Header),
-            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description),
-            null),
+            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_PresetBasedConfiguratorModel_Description)),
         new(
             ModelProviderConfiguratorType.Advanced,
             new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Header),
-            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description),
-            null),
+            new DynamicResourceKey(LocaleKey.ModelProviderConfiguratorSelector_AdvancedConfiguratorModel_Description)),
     ];
 
     public static readonly DirectProperty<ModelProviderConfiguratorSelector, CustomAssistant?> CustomAssistantProperty =
         AvaloniaProperty.RegisterDirect<ModelProviderConfiguratorSelector, CustomAssistant?>(
-        nameof(CustomAssistant),
-        o => o.CustomAssistant,
-        (o, v) => o.CustomAssistant = v);
+            nameof(CustomAssistant),
+            o => o.CustomAssistant,
+            (o, v) => o.CustomAssistant = v);
 
     public CustomAssistant? CustomAssistant
     {
@@ -70,7 +72,8 @@ public class ModelProviderConfiguratorSelector : TemplatedControl
     /// </summary>
     public static readonly StyledProperty<bool> IsSettingsVisibleProperty =
         AvaloniaProperty.Register<ModelProviderConfiguratorSelector, bool>(
-        nameof(IsSettingsVisible), true);
+            nameof(IsSettingsVisible),
+            true);
 
     /// <summary>
     /// Gets or sets a value indicating whether the settings content is visible.

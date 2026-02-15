@@ -62,7 +62,7 @@
         </shadui:Badge>
         <shadui:Badge
           Padding="6,0" Background="MediumSlateBlue"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_MaxTokens_Header}}">
+          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_ContextLimit_Header}}">
           <TextBlock
             FontSize="{DynamicResource FontSizeS}"
             Text="{Binding ContextLimit, Converter={x:Static vc:TokenCountHumanizationConverter.Shared}}"/>

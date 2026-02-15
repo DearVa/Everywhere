@@ -10,6 +10,21 @@ using Lucide.Avalonia;
 
 namespace Everywhere.AI;
 
+[Flags]
+public enum CustomAssistantAbility
+{
+    ImageInput = 0x1,
+    FunctionCalling = 0x2,
+    DeepThinking = 0x4
+}
+
+public enum CustomAssistantType
+{
+    Text = 0,
+    Embedding = 1,
+    Image = 2,
+}
+
 /// <summary>
 /// Allowing users to define and manage their own custom AI assistants.
 /// </summary>
@@ -202,12 +217,18 @@ public interface IModelProviderConfigurator
 [GeneratedSettingsItems]
 public sealed partial class OfficialModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
 {
+    [DynamicResourceKey("123")]
+    public SettingsControl<OfficialModelDefinitionForm> ModelDefinitionForm { get; } = new();
+
     public void Backup()
     {
     }
 
     public void Apply()
     {
+        owner.Endpoint = null;
+        owner.Schema = ModelProviderSchema.Official;
+        owner.RequestTimeoutSeconds = 20;
     }
 
     public bool Validate()
