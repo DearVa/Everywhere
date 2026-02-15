@@ -6,5 +6,7 @@
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj" />
     <ProjectReference Include="..\Everywhere.Core\Everywhere.Core.csproj" />
   </ItemGroup>
+
+  <Import Project="..\Build.Generate.Cloud.targets"/>
   
 </Project>

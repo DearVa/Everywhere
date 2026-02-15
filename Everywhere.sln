@@ -106,6 +106,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{1759E8BE-00FC-4797-8F24-FC2B1242E1F0}"
 	ProjectSection(SolutionItems) = preProject
 		src\Build.Watchdog.targets = src\Build.Watchdog.targets
+		src\Build.Generate.Telemetry.targets = src\Build.Generate.Telemetry.targets
+		src\Build.Generate.Cloud.targets = src\Build.Generate.Cloud.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SemanticKernel", "SemanticKernel", "{1F3E1A58-51BB-46BD-815D-966D1BF0AB21}"
