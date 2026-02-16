@@ -2126,4 +2126,7 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
         <value>Approvazione Automatica</value>
     </data>
+    <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
+        <value>Anteprima: {0}</value>
+    </data>
 </root>

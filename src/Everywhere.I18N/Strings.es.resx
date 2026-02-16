@@ -2126,4 +2126,7 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
         <value>Aprobación Automática</value>
     </data>
+    <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
+        <value>Vista previa: {0}</value>
+    </data>
 </root>

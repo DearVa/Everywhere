@@ -2123,4 +2123,7 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
         <value>Otomatik Onay</value>
     </data>
+    <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
+        <value>Önizleme: {0}</value>
+    </data>
 </root>
