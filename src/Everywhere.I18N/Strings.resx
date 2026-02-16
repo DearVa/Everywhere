@@ -2127,6 +2127,6 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Auto Approve</value>
     </data>
     <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
-        <value />
+        <value>Preview: {0}</value>
     </data>
 </root>

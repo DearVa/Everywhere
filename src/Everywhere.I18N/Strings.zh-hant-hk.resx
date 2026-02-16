@@ -2126,4 +2126,7 @@
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
         <value>自動批准</value>
     </data>
+    <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
+        <value>預覽: {0}</value>
+    </data>
 </root>
