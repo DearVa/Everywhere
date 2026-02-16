@@ -91,13 +91,6 @@
     </AvaloniaResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Views\Controls\Eva.axaml.cs">
-      <DependentUpon>Eva.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
   <Target Name="GenerateTelemetryConstants" BeforeTargets="CoreCompile">
     <PropertyGroup>
       <SentryDsn Condition="'$(SentryDsn)' == ''"/>

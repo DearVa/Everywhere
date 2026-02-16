@@ -951,8 +951,6 @@ public sealed partial class ChatWindowViewModel :
 
     void IObserver<TextSelectionData>.OnNext(TextSelectionData data)
     {
-        Console.WriteLine(data);
-
         if (_chatAttachmentsSource.Count >= PersistentState.MaxChatAttachmentCount) return;
         if (data.Element?.ProcessId == Environment.ProcessId) return; // Ignore selections from this app
 

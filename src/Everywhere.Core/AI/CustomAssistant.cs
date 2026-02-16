@@ -229,7 +229,8 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
     /// </summary>
     [JsonIgnore]
     [HiddenSettingsItem]
-    private static ModelProviderTemplate[] ModelProviderTemplates { get; } = [
+    private static ModelProviderTemplate[] ModelProviderTemplates { get; } =
+    [
         new()
         {
             Id = "openai",
@@ -968,15 +969,38 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
 [GeneratedSettingsItems]
 public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
 {
-    [DynamicResourceKey(
-        LocaleKey.CustomAssistant_Endpoint_Header,
-        LocaleKey.CustomAssistant_Endpoint_Description)]
+    [HiddenSettingsItem]
     [CustomValidation(typeof(AdvancedModelProviderConfigurator), nameof(ValidateEndpoint))]
     public string? Endpoint
     {
         get => owner.Endpoint;
-        set => owner.Endpoint = value;
+        set
+        {
+            if (owner.Endpoint == value) return;
+
+            ValidateProperty(value);
+            owner.Endpoint = value;
+            OnPropertyChanged();
+        }
     }
+
+    [DynamicResourceKey(
+        LocaleKey.CustomAssistant_Endpoint_Header,
+        LocaleKey.CustomAssistant_Endpoint_Description)]
+    public SettingsControl<PreviewEndpointTextBox> PreviewEndpointControl => new(new PreviewEndpointTextBox
+    {
+        MinWidth = 320d,
+        [!PreviewEndpointTextBox.EndpointProperty] = new Binding(nameof(Endpoint))
+        {
+            Source = this,
+            Mode = BindingMode.TwoWay
+        },
+        [!PreviewEndpointTextBox.SchemaProperty] = new Binding(nameof(Schema))
+        {
+            Source = this,
+            Mode = BindingMode.OneWay
+        }
+    });
 
     [HiddenSettingsItem]
     public Guid ApiKey
@@ -1011,7 +1035,13 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
     public ModelProviderSchema Schema
     {
         get => owner.Schema;
-        set => owner.Schema = value;
+        set
+        {
+            if (owner.Schema == value) return;
+
+            owner.Schema = value;
+            OnPropertyChanged();
+        }
     }
 
     [DynamicResourceKey(

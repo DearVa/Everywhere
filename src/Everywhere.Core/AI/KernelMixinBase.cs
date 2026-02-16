@@ -11,7 +11,7 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
     // cache properties for comparison
     public ModelProviderSchema Schema { get; } = customAssistant.Schema;
 
-    public string Endpoint { get; } = customAssistant.Endpoint?.Trim().Trim('/') ??
+    public string Endpoint { get; } = customAssistant.Schema.NormalizeEndpoint(customAssistant.Endpoint) ??
         throw new HandledChatException(
             new InvalidOperationException("Endpoint cannot be empty."),
             HandledChatExceptionType.InvalidEndpoint);

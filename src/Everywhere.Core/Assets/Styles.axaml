@@ -1,6 +1,7 @@
 ﻿<Styles
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia">
+  xmlns:grammars="clr-namespace:TextMateSharp.Grammars;assembly=TextMateSharp.Grammars" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views">
   <Styles.Resources>
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
@@ -75,5 +76,13 @@
         <Setter Property="Margin" Value="0,0,0,4"/>
       </Style>
     </Style>
+  </Style>
+
+  <Style Selector="v|PreviewEndpointTextBox">
+    <Setter Property="shadui:ControlAssist.Hint">
+      <I18N Key="{x:Static LocaleKey.PreviewEndpointTextBox_Hint}">
+        <TemplateBinding Property="PreviewEndpoint"/>
+      </I18N>
+    </Setter>
   </Style>
 </Styles>

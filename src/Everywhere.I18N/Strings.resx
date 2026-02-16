@@ -2126,4 +2126,7 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="ChatPluginPage_FunctionsTabItem_AutoApproveDataGridTemplateColumn_Header" xml:space="preserve">
         <value>Auto Approve</value>
     </data>
+    <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
+        <value />
+    </data>
 </root>

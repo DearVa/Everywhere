@@ -339,7 +339,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 using (sb.Indent())
                 {
                     sb.AppendLine(
-                        $"var control_{itemName} = ((global::Everywhere.Configuration.ISettingsControl)this.{metadata.Name}).CreateControl();");
+                        $"var control_{itemName} = ((global::Everywhere.Configuration.ISettingsControl)this.{metadata.Name}).CreateControl(this);");
                     sb.AppendLine($"control_{itemName}.DataContext = this;");
                     sb.AppendLine($"return control_{itemName};");
                 }
