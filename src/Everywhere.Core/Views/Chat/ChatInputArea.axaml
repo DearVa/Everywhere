@@ -296,7 +296,7 @@
               Classes.Primary="{TemplateBinding IsToolCallEnabled, Mode=TwoWay}"
               Flyout="{TemplateBinding ToolCallButtonFlyout}"
               Focusable="False"
-              IsEnabled="{TemplateBinding IsToolCallSupported}"
+              IsVisible="{TemplateBinding IsToolCallSupported}"
               ToolTip.Tip="{I18N {x:Static LocaleKey.ChatInputArea_ToolCallButton_ToolTip}}">
 
               <Button.Styles>
