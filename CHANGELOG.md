@@ -1,3 +1,22 @@
+## [v0.6.5](https://github.com/DearVa/Everywhere/releases/tag/v0.6.5) - 2026-02-16
+
+### ✨ Features
+- **Model Updates**: Added Claude Opus 4.6 and Haiku 3, setting Sonnet 4.5 as default; Google now defaults to Gemini 3 Flash Preview; DeepSeek now defaults to Deepseek Reasoner; OpenRouter added Kimi 2.5 and Gemini 3 Flash Preview, while upgrading Grok to v4.1.
+- **Auto-Approval for Tools**: Added management for auto-agreeing tool execution; terminal-based tools remain manual for security reasons (#292).
+- **Text Selection Enhancements (Windows)**: Improved selection stability, prevented selection results from polluting clipboard history, and resolved the issue where Ctrl+C was sent when used with terminal applications (#281).
+- **Model URL Preview**: Added the ability to preview model URLs to improve transparency and user experience.
+
+### 🚀 Improvements
+- Refined error messages for unsupported image inputs and context length limit violations.
+- Optimized the loading animations within the chat window.
+
+### 🐛 Bug Fixes
+- Fixed the OpenAI.ChangeTrackingList type mismatch error (#171).
+
+**Full Changelog**:  https://github.com/DearVa/Everywhere/compare/v0.6.4...v0.6.5
+
+
+
 ## [v0.6.4](https://github.com/DearVa/Everywhere/releases/tag/v0.6.4) - 2026-02-13
 
 ### ✨ Features
