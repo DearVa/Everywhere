@@ -39,7 +39,7 @@
   <DataTemplate
     x:Key="{x:Type aai:ModelDefinitionTemplate}"
     x:DataType="aai:ModelDefinitionTemplate">
-    <TextBlock Text="{Binding DisplayName, FallbackValue={x:Null}}"/>
+    <TextBlock Text="{Binding Name, FallbackValue={x:Null}}"/>
   </DataTemplate>
 
   <DataTemplate x:Key="{x:Type interop:KeyboardShortcut}">

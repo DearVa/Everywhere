@@ -52,7 +52,7 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
     private Task BeforeStreamingRequestAsync(IList<ChatMessage> messages, ref ChatOptions? options)
     {
         // If deep thinking is not supported, skip processing.
-        if (!_customAssistant.IsDeepThinkingSupported) return Task.CompletedTask;
+        if (!_customAssistant.SupportsReasoning) return Task.CompletedTask;
 
         var opt = options ??= new ChatOptions();
         options.AdditionalProperties ??= new AdditionalPropertiesDictionary();
@@ -130,12 +130,12 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
             await owner.BeforeStreamingRequestAsync(messagesList, ref options).ConfigureAwait(false);
 
             // cache the value to avoid property changes during enumeration
-            var isDeepThinkingSupported = owner.IsDeepThinkingSupported;
+            var SupportsReasoning = owner.SupportsReasoning;
             await foreach (var update in base.GetStreamingResponseAsync(messagesList, options, cancellationToken))
             {
                 // Why you keep reasoning in the fucking internal properties, OpenAI???
                 // I'm not a thief, let me access the data! 😭😭😭😭
-                if (isDeepThinkingSupported && update is { Text: not { Length: > 0 }, RawRepresentation: StreamingChatCompletionUpdate detail })
+                if (SupportsReasoning && update is { Text: not { Length: > 0 }, RawRepresentation: StreamingChatCompletionUpdate detail })
                 {
                     // Get the value of the internal 'Choices' property.
                     if (GetChoices(detail) is not IEnumerable choices)

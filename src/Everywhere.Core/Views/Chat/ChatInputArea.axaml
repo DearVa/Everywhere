@@ -42,22 +42,22 @@
           </Style>
         </StackPanel.Styles>
 
-        <shadui:Badge
-          Background="Chocolate"
-          IsVisible="{Binding IsImageInputSupported}"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_IsImageInputSupported_Header}}">
-          <LucideIcon Kind="Eye"/>
-        </shadui:Badge>
+        <!--  <shadui:Badge  -->
+        <!--  Background="Chocolate"  -->
+        <!--  IsVisible="{Binding InputModalities.}"  -->
+        <!--  ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_IsImageInputSupported_Header}}">  -->
+        <!--   <LucideIcon Kind="Eye"/> -->
+        <!-- </shadui:Badge> -->
         <shadui:Badge
           Background="CadetBlue"
-          IsVisible="{Binding IsFunctionCallingSupported}"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_IsFunctionCallingSupported_Header}}">
+          IsVisible="{Binding SupportsToolCall}"
+          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_SupportsToolCall_Header}}">
           <LucideIcon Kind="Hammer"/>
         </shadui:Badge>
         <shadui:Badge
           Background="ForestGreen"
-          IsVisible="{Binding IsDeepThinkingSupported}"
-          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_IsDeepThinkingSupported_Header}}">
+          IsVisible="{Binding SupportsReasoning}"
+          ToolTip.Tip="{I18N {x:Static LocaleKey.CustomAssistant_SupportsReasoning_Header}}">
           <LucideIcon Kind="Brain"/>
         </shadui:Badge>
         <shadui:Badge

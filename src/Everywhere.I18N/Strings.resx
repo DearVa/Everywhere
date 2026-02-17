@@ -536,22 +536,22 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>For online models, you need to get from the corresponding official, please refer to the guide for details.</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>Image Input Support</value>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value />
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>The model supports image input. Enabling this option may cause errors during conversation if the model does not support it.</value>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value />
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Tools Usage Support</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>The model supports using configured tools. Enabling this option may cause errors during conversation if the model does not support it.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>The model supports thinking before answering. Enabling this option may cause errors during conversation if the model does not support it.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Deep Thinking Support</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
@@ -2181,6 +2181,21 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value />
     </data>
     <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
         <value />
     </data>
 </root>

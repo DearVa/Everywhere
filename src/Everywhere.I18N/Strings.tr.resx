@@ -535,22 +535,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Çevrimiçi modeller için ilgili resmi kaynaktan almanız gerekir, ayrıntılar için lütfen kılavuzu inceleyin.</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>Görüntü Girişi Desteği</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>Model görüntü girişi destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Araç Kullanım Desteği</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>Model yapılandırılmış araçları kullanmayı destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>Model önce düşünmeyi sonra yanıt vermeyi destekler. Model desteklemiyorsa, bu seçeneği açmak sohbet sırasında hatalara neden olabilir.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Derin Düşünme Desteği</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

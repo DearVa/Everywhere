@@ -30,13 +30,11 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
 
     public int RequestTimeoutSeconds { get; } = customAssistant.RequestTimeoutSeconds;
 
+    public bool SupportsReasoning => _customAssistant.SupportsReasoning;
+
+    public bool SupportsToolCall => _customAssistant.SupportsToolCall;
+
     public int ContextLimit => _customAssistant.ContextLimit;
-
-    public bool IsImageInputSupported => _customAssistant.IsImageInputSupported;
-
-    public bool IsFunctionCallingSupported => _customAssistant.IsFunctionCallingSupported;
-
-    public bool IsDeepThinkingSupported => _customAssistant.IsDeepThinkingSupported;
 
     public abstract IChatCompletionService ChatCompletionService { get; }
 

@@ -536,22 +536,22 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>如果是在线模型，需要从对应的官方获取，详情请参考指南。</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>支持图像输入</value>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value>模型输入模态</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>模型支持图像输入。如果模型不支持，开启此选项可能会导致对话时出现错误。</value>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value>模型支持的输入模态，选择错误可能导致调用失败。</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>支持使用工具</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>模型支持使用已配置的工具。如果模型不支持，开启此选项可能会导致对话时出现错误。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>模型支持先思考再回答。如果模型不支持，开启此选项可能会导致对话时出现错误。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>支持深度思考</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
@@ -2184,5 +2184,20 @@
     <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
         <value>初始化数据目录失败，请确保你有对数据目录的写入权限。
 {0}</value>
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value>音频</value>
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>图像</value>
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>文本</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>视频</value>
     </data>
 </root>

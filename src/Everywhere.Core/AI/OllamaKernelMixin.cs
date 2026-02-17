@@ -38,7 +38,7 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
             CancellationToken cancellationToken = default)
         {
             var response = await base.GetResponseAsync(messages, options, cancellationToken);
-            if (!owner.IsDeepThinkingSupported) return response;
+            if (!owner.SupportsReasoning) return response;
 
             // handle reasoning in non-streaming mode, only actual response
             // use regex to extract parts <think>[reasoning]</think>[response]
@@ -62,7 +62,7 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
             ChatOptions? options = null,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            if (!owner.IsDeepThinkingSupported)
+            if (!owner.SupportsReasoning)
             {
                 await foreach (var update in base.GetStreamingResponseAsync(messages, options, cancellationToken))
                 {

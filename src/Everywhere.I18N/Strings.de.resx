@@ -535,22 +535,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Bei Online-Modellen müssen Sie dies vom entsprechenden Anbieter erhalten. Bitte beachten Sie die Anleitung für weitere Details.</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>Bildinput-Unterstützung</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>Das Modell unterstützt Bildinput. Wenn das Modell dies nicht unterstützt, kann das Aktivieren dieser Option zu Fehlern im Gespräch führen.</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Unterstützung für die Nutzung von Tools</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>Das Modell unterstützt die Verwendung konfigurierter Werkzeuge. Wenn das Modell dies nicht unterstützt, kann das Aktivieren dieser Option zu Fehlern im Gespräch führen.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>Das Modell unterstützt zuerst Denken, dann Antworten. Wenn das Modell dies nicht unterstützt, kann das Aktivieren dieser Option zu Fehlern im Gespräch führen.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Unterstützung für tiefes Denken</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

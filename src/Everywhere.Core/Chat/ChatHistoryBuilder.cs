@@ -1,4 +1,5 @@
-﻿using Everywhere.Common;
+﻿using Everywhere.AI;
+using Everywhere.Common;
 using Everywhere.Utilities;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -15,6 +16,7 @@ public static class ChatHistoryBuilder
     public static async ValueTask<ChatHistory> BuildChatHistoryAsync(
         string systemPrompt,
         IEnumerable<ChatMessage> chatMessages,
+        Modalities supportedModalities,
         CancellationToken cancellationToken = default)
     {
         var chatHistory = new ChatHistory();
@@ -22,7 +24,7 @@ public static class ChatHistoryBuilder
 
         foreach (var chatMessage in chatMessages)
         {
-            await foreach (var chatMessageContent in CreateChatMessageContentsAsync(chatMessage, cancellationToken))
+            await foreach (var chatMessageContent in CreateChatMessageContentsAsync(chatMessage, supportedModalities, cancellationToken))
             {
                 chatHistory.Add(chatMessageContent);
             }
@@ -35,10 +37,12 @@ public static class ChatHistoryBuilder
     /// Creates chat message contents from a chat message.
     /// </summary>
     /// <param name="chatMessage"></param>
+    /// <param name="supportedModalities"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     private static async IAsyncEnumerable<ChatMessageContent> CreateChatMessageContentsAsync(
         ChatMessage chatMessage,
+        Modalities supportedModalities,
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         switch (chatMessage)
@@ -150,7 +154,7 @@ public static class ChatHistoryBuilder
                 var items = new ChatMessageContentItemCollection();
                 foreach (var chatAttachment in user.Attachments.AsValueEnumerable().ToList())
                 {
-                    await PopulateKernelContentsAsync(chatAttachment, items, cancellationToken);
+                    await PopulateKernelContentsAsync(chatAttachment, items, supportedModalities, cancellationToken);
                 }
 
                 if (items.Count > 0)
@@ -185,10 +189,12 @@ public static class ChatHistoryBuilder
     /// </summary>
     /// <param name="chatAttachment"></param>
     /// <param name="contents"></param>
+    /// <param name="supportedModalities"></param>
     /// <param name="cancellationToken"></param>
     private static async ValueTask PopulateKernelContentsAsync(
         ChatAttachment chatAttachment,
         ChatMessageContentItemCollection contents,
+        Modalities supportedModalities,
         CancellationToken cancellationToken)
     {
         switch (chatAttachment)
@@ -236,12 +242,24 @@ public static class ChatHistoryBuilder
                 var fileInfo = new FileInfo(file.FilePath);
                 if (!fileInfo.Exists || fileInfo.Length <= 0 || fileInfo.Length > 25 * 1024 * 1024) // TODO: Configurable max file size?
                 {
-                    return;
+                    break;
                 }
 
                 byte[] data;
                 try
                 {
+                    await using var stream = fileInfo.OpenRead();
+                    var extension = Path.GetExtension(file.FilePath).ToLowerInvariant();
+                    if (!FileUtilities.KnownMimeTypes.TryGetValue(extension, out var mimeType))
+                    {
+                        mimeType = await FileUtilities.DetectMimeTypeAsync(stream, cancellationToken);
+                    }
+
+                    if (!supportedModalities.SupportsMimeType(mimeType))
+                    {
+                        break;
+                    }
+
                     data = await File.ReadAllBytesAsync(file.FilePath, cancellationToken);
                 }
                 catch (Exception ex)

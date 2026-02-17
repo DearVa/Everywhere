@@ -10,26 +10,11 @@ using Lucide.Avalonia;
 
 namespace Everywhere.AI;
 
-[Flags]
-public enum CustomAssistantAbility
-{
-    ImageInput = 0x1,
-    FunctionCalling = 0x2,
-    DeepThinking = 0x4
-}
-
-public enum CustomAssistantType
-{
-    Text = 0,
-    Embedding = 1,
-    Image = 2,
-}
-
 /// <summary>
 /// Allowing users to define and manage their own custom AI assistants.
 /// </summary>
 [GeneratedSettingsItems]
-public sealed partial class CustomAssistant : ObservableValidator
+public sealed partial class CustomAssistant : ObservableValidator, IModelDefinition
 {
     [HiddenSettingsItem]
     public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -109,30 +94,22 @@ public sealed partial class CustomAssistant : ObservableValidator
     [HiddenSettingsItem]
     public partial string? ModelId { get; set; }
 
-    /// <summary>
-    /// Indicates whether the model supports image input capabilities.
-    /// </summary>
     [ObservableProperty]
     [HiddenSettingsItem]
-    public partial bool IsImageInputSupported { get; set; }
+    public partial bool SupportsReasoning { get; set; }
 
-    /// <summary>
-    /// Indicates whether the model supports function calling capabilities.
-    /// </summary>
     [ObservableProperty]
     [HiddenSettingsItem]
-    public partial bool IsFunctionCallingSupported { get; set; }
+    public partial bool SupportsToolCall { get; set; }
 
-    /// <summary>
-    /// Indicates whether the model supports tool calls.
-    /// </summary>
     [ObservableProperty]
     [HiddenSettingsItem]
-    public partial bool IsDeepThinkingSupported { get; set; }
+    public partial Modalities InputModalities { get; set; }
 
-    /// <summary>
-    /// Maximum number of tokens that the model can process in a single request.
-    /// </summary>
+    [ObservableProperty]
+    [HiddenSettingsItem]
+    public partial Modalities OutputModalities { get; set; }
+
     [ObservableProperty]
     [HiddenSettingsItem]
     public partial int ContextLimit { get; set; }
@@ -245,588 +222,6 @@ public sealed partial class OfficialModelProviderConfigurator(CustomAssistant ow
 public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
 {
     /// <summary>
-    /// Helper property to get all supported model provider templates.
-    /// </summary>
-    [JsonIgnore]
-    [HiddenSettingsItem]
-    private static ModelProviderTemplate[] ModelProviderTemplates { get; } =
-    [
-        new()
-        {
-            Id = "openai",
-            DisplayName = "OpenAI",
-            Endpoint = "https://api.openai.com/v1",
-            OfficialWebsiteUrl = "https://openai.com",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/openai-dark.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/openai-light.svg",
-            Schema = ModelProviderSchema.OpenAIResponses,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-5.2",
-                    ModelId = "gpt-5.2",
-                    DisplayName = "GPT-5.2",
-                    ContextLimit = 400_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-5.1",
-                    ModelId = "gpt-5.1",
-                    DisplayName = "GPT-5.1",
-                    ContextLimit = 400_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-5",
-                    ModelId = "gpt-5",
-                    DisplayName = "GPT-5",
-                    ContextLimit = 400_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-5-mini",
-                    ModelId = "gpt-5-mini",
-                    DisplayName = "GPT-5 mini",
-                    ContextLimit = 400_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "o4-mini",
-                    ModelId = "o4-mini",
-                    DisplayName = "o4-mini",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-4.1",
-                    ModelId = "gpt-4.1",
-                    DisplayName = "GPT 4.1",
-                    ContextLimit = 1_047_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-4.1-mini",
-                    ModelId = "gpt-4.1-mini",
-                    DisplayName = "GPT 4.1 mini",
-                    ContextLimit = 1_047_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-4o",
-                    ModelId = "gpt-4o",
-                    DisplayName = "GPT-4o",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                }
-            ]
-        },
-        new()
-        {
-            Id = "anthropic",
-            DisplayName = "Anthropic (Claude)",
-            Endpoint = "https://api.anthropic.com",
-            OfficialWebsiteUrl = "https://www.anthropic.com",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/anthropic-dark.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/anthropic-light.svg",
-            Schema = ModelProviderSchema.Anthropic,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-opus-4-6",
-                    ModelId = "claude-opus-4-6",
-                    DisplayName = "Claude Opus 4.6",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-opus-4-5-20251101",
-                    ModelId = "claude-opus-4-5-20251101",
-                    DisplayName = "Claude Opus 4.5",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-sonnet-4-5-20250929",
-                    ModelId = "claude-sonnet-4-5-20250929",
-                    DisplayName = "Claude Sonnet 4.5",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-haiku-4-5-20251001",
-                    ModelId = "claude-haiku-4-5-20251001",
-                    DisplayName = "Claude Haiku 4.5",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-opus-4-1-20250805",
-                    ModelId = "claude-opus-4-1-20250805",
-                    DisplayName = "Claude Opus 4.1",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-opus-4-20250514",
-                    ModelId = "claude-opus-4-20250514",
-                    DisplayName = "Claude Opus 4",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-sonnet-4-20250514",
-                    ModelId = "claude-sonnet-4-20250514",
-                    DisplayName = "Claude Sonnet 4",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-3-7-sonnet-20250219",
-                    ModelId = "claude-3-7-sonnet-20250219",
-                    DisplayName = "Claude 3.7 Sonnet",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-3-5-haiku-20241022",
-                    ModelId = "claude-3-5-haiku-20241022",
-                    DisplayName = "Claude 3.5 Haiku",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "claude-3-haiku-20240307",
-                    ModelId = "claude-3-haiku-20240307",
-                    DisplayName = "Claude 3 Haiku",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                }
-            ]
-        },
-        new()
-        {
-            Id = "google",
-            DisplayName = "Google (Gemini)",
-            OfficialWebsiteUrl = "https://gemini.google.com",
-            Endpoint = "https://generativelanguage.googleapis.com/v1beta",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/google-color.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/google-color.svg",
-            Schema = ModelProviderSchema.Google,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "gemini-3.1-pro-preview",
-                    ModelId = "gemini-3.1-pro-preview",
-                    DisplayName = "Gemini 3.1 Pro Preview",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gemini-3-flash-preview",
-                    ModelId = "gemini-3-flash-preview",
-                    DisplayName = "Gemini 3 Flash Preview",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gemini-2.5-pro",
-                    ModelId = "gemini-2.5-pro",
-                    DisplayName = "Gemini 2.5 Pro",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gemini-2.5-flash",
-                    ModelId = "gemini-2.5-flash",
-                    DisplayName = "Gemini 2.5 Flash",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "gemini-2.5-flash-lite",
-                    ModelId = "gemini-2.5-flash-lite",
-                    DisplayName = "Gemini 2.5 Flash-Lite",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                }
-            ]
-        },
-        new()
-        {
-            Id = "deepseek",
-            DisplayName = "DeepSeek",
-            Endpoint = "https://api.deepseek.com",
-            OfficialWebsiteUrl = "https://www.deepseek.com",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
-            Schema = ModelProviderSchema.OpenAI,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "deepseek-chat",
-                    ModelId = "deepseek-chat",
-                    DisplayName = "DeepSeek V3.2 (Non-thinking Mode)",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "deepseek-reasoner",
-                    ModelId = "deepseek-reasoner",
-                    DisplayName = "DeepSeek V3.2 (Thinking Mode)",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                }
-            ]
-        },
-        new()
-        {
-            Id = "moonshot",
-            DisplayName = "Moonshot (Kimi)",
-            Endpoint = "https://api.moonshot.cn/v1",
-            OfficialWebsiteUrl = "https://www.moonshot.cn",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/moonshot-dark.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/moonshot-light.svg",
-            Schema = ModelProviderSchema.OpenAI,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "kimi-k2.5",
-                    ModelId = "kimi-k2.5",
-                    DisplayName = "Kimi K2.5",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "kimi-k2-0905-preview",
-                    ModelId = "kimi-k2-0905-preview",
-                    DisplayName = "Kimi K2",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "kimi-k2-turbo-preview",
-                    ModelId = "kimi-k2-turbo-preview",
-                    DisplayName = "Kimi K2 Turbo",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "kimi-k2-thinking",
-                    ModelId = "kimi-k2-thinking",
-                    DisplayName = "Kimi K2 Thinking",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "kimi-k2-thinking-turbo",
-                    ModelId = "kimi-k2-thinking-turbo",
-                    DisplayName = "Kimi K2 Thinking Turbo",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                }
-            ]
-        },
-        new()
-        {
-            Id = "openrouter",
-            DisplayName = "OpenRouter",
-            OfficialWebsiteUrl = "https://openrouter.ai",
-            Endpoint = "https://openrouter.ai/api/v1",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/openrouter-dark.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/openrouter-light.svg",
-            Schema = ModelProviderSchema.OpenAI,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "moonshotai/kimi-k2.5",
-                    ModelId = "moonshotai/kimi-k2.5",
-                    DisplayName = "MoonshotAI: Kimi K2.5",
-                    ContextLimit = 262_144,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "google/gemini-3-flash-preview",
-                    ModelId = "google/gemini-3-flash-preview",
-                    DisplayName = "Google: Gemini 3 Flash Preview",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "google/gemini-2.5-flash",
-                    ModelId = "google/gemini-2.5-flash",
-                    DisplayName = "Google: Gemini 2.5 Flash",
-                    ContextLimit = 1_048_576,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "anthropic/claude-sonnet-4.5",
-                    ModelId = "anthropic/claude-sonnet-4.5",
-                    DisplayName = "Anthropic: Claude Sonnet 4.5",
-                    ContextLimit = 1_000_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "anthropic/claude-opus-4.5",
-                    ModelId = "anthropic/claude-sonnet-4.5",
-                    DisplayName = "Anthropic: Claude Opus 4.5",
-                    ContextLimit = 200_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "deepseek/deepseek-v3.2",
-                    ModelId = "deepseek/deepseek-v3.2",
-                    DisplayName = "DeepSeek: DeepSeek V3.2",
-                    ContextLimit = 163_840,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "openai/gpt-oss-120b",
-                    ModelId = "openai/gpt-oss-120b",
-                    DisplayName = "OpenAI: GPT-OSS 120B",
-                    ContextLimit = 131_072,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "x-ai/grok-4.1-fast",
-                    ModelId = "x-ai/grok-4.1-fast",
-                    DisplayName = "X-AI: Grok 4.1 Fast",
-                    ContextLimit = 2_000_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                }
-            ]
-        },
-        new()
-        {
-            Id = "siliconcloud",
-            DisplayName = "SiliconCloud (SiliconFlow)",
-            OfficialWebsiteUrl = "https://www.siliconflow.cn",
-            Endpoint = "https://api.siliconflow.cn/v1",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/siliconcloud-color.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/siliconcloud-color.svg",
-            Schema = ModelProviderSchema.OpenAI,
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "Qwen/Qwen3-8B",
-                    ModelId = "Qwen/Qwen3-8B",
-                    DisplayName = "Qwen3-8B (free)",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "zai-org/GLM-4.6V",
-                    ModelId = "zai-org/GLM-4.6V",
-                    DisplayName = "GLM 4.6V",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = true,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "moonshotai/Kimi-K2-Thinking",
-                    ModelId = "moonshotai/Kimi-K2-Thinking",
-                    DisplayName = "Kimi K2 Thinking",
-                    ContextLimit = 256_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "MiniMaxAI/MiniMax-M2",
-                    ModelId = "MiniMaxAI/MiniMax-M2",
-                    DisplayName = "MiniMax M2",
-                    ContextLimit = 192_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "deepseek-ai/DeepSeek-V3.2",
-                    ModelId = "deepseek-ai/DeepSeek-V3.2",
-                    DisplayName = "DeepSeek-V3.2",
-                    ContextLimit = 160_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                }
-            ]
-        },
-        new()
-        {
-            Id = "ollama",
-            DisplayName = "Ollama",
-            OfficialWebsiteUrl = "https://ollama.com",
-            Endpoint = "http://127.0.0.1:11434",
-            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/ollama-dark.svg",
-            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/ollama-light.svg",
-            Schema = ModelProviderSchema.Ollama,
-            RequestTimeoutSeconds = 120, // Local models may take longer time.
-            ModelDefinitions =
-            [
-                new ModelDefinitionTemplate
-                {
-                    Id = "gpt-oss:20b",
-                    ModelId = "gpt-oss:20b",
-                    DisplayName = "GPT-OSS 20B",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = true,
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "deepseek-r1:8b",
-                    ModelId = "deepseek-r1:8b",
-                    DisplayName = "DeepSeek R1 8B",
-                    ContextLimit = 128_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = false,
-                    IsDeepThinkingSupported = true,
-                    IsDefault = true
-                },
-                new ModelDefinitionTemplate
-                {
-                    Id = "qwen3:8b",
-                    ModelId = "qwen3:8b",
-                    DisplayName = "Qwen 3 8B",
-                    ContextLimit = 40_000,
-                    IsImageInputSupported = false,
-                    IsFunctionCallingSupported = true,
-                    IsDeepThinkingSupported = false,
-                }
-            ]
-        }
-    ];
-
-    /// <summary>
     /// The ID of the model provider to use for this custom assistant.
     /// This ID should correspond to one of the available model providers in the application.
     /// </summary>
@@ -921,8 +316,8 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
     public ModelDefinitionTemplate? ModelDefinitionTemplate
     {
         get => ModelProviderTemplates.FirstOrDefault(t => t.Id == ModelProviderTemplateId)?
-            .ModelDefinitions.FirstOrDefault(m => m.Id == ModelDefinitionTemplateId);
-        set => ModelDefinitionTemplateId = value?.Id;
+            .ModelDefinitions.FirstOrDefault(m => m.ModelId == ModelDefinitionTemplateId);
+        set => ModelDefinitionTemplateId = value?.ModelId;
     }
 
     private Guid _apiKeyBackup;
@@ -960,19 +355,21 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
     {
         if (ModelDefinitionTemplate is { } modelDefinitionTemplate)
         {
-            owner.ModelId = modelDefinitionTemplate.Id;
-            owner.IsImageInputSupported = modelDefinitionTemplate.IsImageInputSupported;
-            owner.IsFunctionCallingSupported = modelDefinitionTemplate.IsFunctionCallingSupported;
-            owner.IsDeepThinkingSupported = modelDefinitionTemplate.IsDeepThinkingSupported;
+            owner.ModelId = modelDefinitionTemplate.ModelId;
+            owner.SupportsReasoning = modelDefinitionTemplate.SupportsReasoning;
+            owner.SupportsToolCall = modelDefinitionTemplate.SupportsToolCall;
+            owner.InputModalities = modelDefinitionTemplate.InputModalities;
+            owner.OutputModalities = modelDefinitionTemplate.OutputModalities;
             owner.ContextLimit = modelDefinitionTemplate.ContextLimit;
         }
         else
         {
             owner.ModelId = string.Empty;
-            owner.IsImageInputSupported = false;
-            owner.IsFunctionCallingSupported = false;
-            owner.IsDeepThinkingSupported = false;
-            owner.ContextLimit = 81920;
+            owner.SupportsReasoning = false;
+            owner.SupportsToolCall = false;
+            owner.InputModalities = default;
+            owner.OutputModalities = default;
+            owner.ContextLimit = 0;
         }
     }
 
@@ -1074,41 +471,35 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
         set => owner.ModelId = value;
     }
 
-    /// <summary>
-    /// Indicates whether the model supports image input capabilities.
-    /// </summary>
     [DynamicResourceKey(
-        LocaleKey.CustomAssistant_IsImageInputSupported_Header,
-        LocaleKey.CustomAssistant_IsImageInputSupported_Description)]
-    public bool IsImageInputSupported
+        LocaleKey.CustomAssistant_SupportsReasoning_Header,
+        LocaleKey.CustomAssistant_SupportsReasoning_Description)]
+    public bool SupportsReasoning
     {
-        get => owner.IsImageInputSupported;
-        set => owner.IsImageInputSupported = value;
+        get => owner.SupportsReasoning;
+        set => owner.SupportsReasoning = value;
     }
 
-    /// <summary>
-    /// Indicates whether the model supports function calling capabilities.
-    /// </summary>
     [DynamicResourceKey(
-        LocaleKey.CustomAssistant_IsFunctionCallingSupported_Header,
-        LocaleKey.CustomAssistant_IsFunctionCallingSupported_Description)]
-    public bool IsFunctionCallingSupported
+        LocaleKey.CustomAssistant_SupportsToolCall_Header,
+        LocaleKey.CustomAssistant_SupportsToolCall_Description)]
+    public bool SupportsToolCall
     {
-        get => owner.IsFunctionCallingSupported;
-        set => owner.IsFunctionCallingSupported = value;
+        get => owner.SupportsToolCall;
+        set => owner.SupportsToolCall = value;
     }
 
-    /// <summary>
-    /// Indicates whether the model supports tool calls.
-    /// </summary>
     [DynamicResourceKey(
-        LocaleKey.CustomAssistant_IsDeepThinkingSupported_Header,
-        LocaleKey.CustomAssistant_IsDeepThinkingSupported_Description)]
-    public bool IsDeepThinkingSupported
+        LocaleKey.CustomAssistant_InputModalities_Header,
+        LocaleKey.CustomAssistant_InputModalities_Description)]
+    public SettingsControl<ModalitiesSelector> InputModalitiesSelector => new(new ModalitiesSelector
     {
-        get => owner.IsDeepThinkingSupported;
-        set => owner.IsDeepThinkingSupported = value;
-    }
+        [!ModalitiesSelector.ModalitiesProperty] = new Binding(nameof(owner.InputModalities))
+        {
+            Source = owner,
+            Mode = BindingMode.TwoWay
+        }
+    });
 
     /// <summary>
     /// Maximum number of tokens that the model can process in a single request.
@@ -1135,9 +526,10 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
         Backup(Endpoint);
         Backup(Schema);
         Backup(ModelId);
-        Backup(IsImageInputSupported);
-        Backup(IsFunctionCallingSupported);
-        Backup(IsDeepThinkingSupported);
+        Backup(SupportsToolCall);
+        Backup(SupportsReasoning);
+        Backup(owner.InputModalities);
+        Backup(owner.OutputModalities);
         Backup(ContextLimit);
     }
 
@@ -1146,9 +538,10 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
         Endpoint = Restore(Endpoint);
         Schema = Restore(Schema);
         ModelId = Restore(ModelId);
-        IsImageInputSupported = Restore(IsImageInputSupported);
-        IsFunctionCallingSupported = Restore(IsFunctionCallingSupported);
-        IsDeepThinkingSupported = Restore(IsDeepThinkingSupported);
+        SupportsToolCall = Restore(SupportsToolCall);
+        SupportsReasoning = Restore(SupportsReasoning);
+        owner.InputModalities = Restore(owner.InputModalities);
+        owner.OutputModalities = Restore(owner.OutputModalities);
         ContextLimit = Restore(ContextLimit);
     }
 

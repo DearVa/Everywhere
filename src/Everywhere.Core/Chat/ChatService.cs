@@ -351,7 +351,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         builder.Services.AddSingleton(customAssistant);
         builder.Services.AddSingleton<IChatPluginUserInterface>(this);
 
-        if (kernelMixin.IsFunctionCallingSupported && _persistentState.IsToolCallEnabled)
+        if (kernelMixin.SupportsToolCall && _persistentState.IsToolCallEnabled)
         {
             var needToStartMcp = _chatPluginManager.McpPlugins.AsValueEnumerable().Any(p => p is { IsEnabled: true, IsRunning: false });
             using var _ = needToStartMcp ? chatContext.SetBusyMessage(new DynamicResourceKey(LocaleKey.ChatContext_BusyMessage_StartingMcp)) : null;
@@ -412,6 +412,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                         .Select(n => n.Message)
                         .Where(m => m.Role.Label is "assistant" or "user" or "tool")
                         .ToList(),
+                    customAssistant.InputModalities,
                     cancellationToken);
 
                 if (!chatContext.Metadata.IsTemporary && // Do not generate titles for temporary contexts.
@@ -501,10 +502,10 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         var startTime = DateTimeOffset.UtcNow;
         var isFirstToken = true;
         var promptExecutionSettings = kernelMixin.GetPromptExecutionSettings(
-            kernelMixin.IsFunctionCallingSupported && _persistentState.IsToolCallEnabled ?
+            kernelMixin.SupportsToolCall && _persistentState.IsToolCallEnabled ?
                 FunctionChoiceBehavior.Auto(autoInvoke: false) :
                 null,
-            kernelMixin.IsDeepThinkingSupported ?
+            kernelMixin.SupportsReasoning ?
                 _persistentState.ReasoningEffortLevel :
                 null);
 
@@ -1059,9 +1060,9 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             [
                 new KeyValuePair<string, object?>("gen_ai.operation.name", operationName),
                 new KeyValuePair<string, object?>("gen_ai.request.model", customAssistant.ModelId),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.IsImageInputSupported),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.IsFunctionCallingSupported),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.IsDeepThinkingSupported),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.InputModalities.SupportsImage),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.SupportsReasoning),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.SupportsToolCall),
                 new KeyValuePair<string, object?>("gen_ai.request.context_limit", customAssistant.ContextLimit),
                 new KeyValuePair<string, object?>("gen_ai.request.temperature", customAssistant.Temperature),
                 new KeyValuePair<string, object?>("gen_ai.request.top_p", customAssistant.TopP)
