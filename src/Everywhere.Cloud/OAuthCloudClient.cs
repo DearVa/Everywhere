@@ -57,14 +57,14 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
     private const string ServiceName = "com.sylinko.everywhere";
     private const string TokenDataKey = "oauth_token_data";
+    private const string ResponseRedirectUri = "sylinko-everywhere://callback";
 
     private const string AuthorizeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/authorize";
     private const string TokenEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/token";
     private const string UserInfoEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/userinfo";
     private const string RevokeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/revoke";
     private const string EndSessionEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/end-session";
-    private const string RequestRedirectUri = $"{CloudConstants.OAuthBaseUrl}/oauth2/device-callback?redirect=sylinko-everywhere://callback";
-    private const string ResponseRedirectUri = "sylinko-everywhere://callback";
+    private const string RequestRedirectUri = $"{CloudConstants.OAuthBaseUrl}/oauth2/device-callback?redirect={ResponseRedirectUri}";
     private const string Scopes = "openid profile email offline_access";
 
     private TokenData? _tokenData;
@@ -111,7 +111,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
             sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
             sb.Append($"&code_challenge_method=S256");
-            sb.Append($"&audience={Uri.EscapeDataString("https://localhost:4001")}");
+            sb.Append($"&audience=sylinko-everywhere-api");
 
             var authorizeUrl = sb.ToString();
             _logger.LogDebug("[AuthService] Starting login flow. Auth URL: {AuthorizeUrl}", authorizeUrl);
