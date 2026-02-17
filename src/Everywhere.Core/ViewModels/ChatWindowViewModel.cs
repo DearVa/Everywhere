@@ -15,6 +15,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using DynamicData;
 using DynamicData.Binding;
+using Everywhere.AI;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
@@ -369,7 +370,7 @@ public sealed partial class ChatWindowViewModel :
                     }
                 }
             }
-            else if (Settings.Model.SelectedCustomAssistant?.IsImageInputSupported is true &&
+            else if (Settings.Model.SelectedCustomAssistant?.InputModalities.SupportsImage is true &&
                      formats.Contains(DataFormat.Bitmap) &&
                      await Clipboard.TryGetBitmapAsync() is { } bitmap)
             {
@@ -460,11 +461,27 @@ public sealed partial class ChatWindowViewModel :
 
         try
         {
-            _chatAttachmentsSource.Add(
-                await ChatFileAttachment.CreateAsync(
-                    filePath,
-                    description: description,
-                    cancellationToken: cancellationToken));
+            var attachment = await ChatFileAttachment.CreateAsync(
+                filePath,
+                description: description,
+                cancellationToken: cancellationToken);
+
+            if (Settings.Model.SelectedCustomAssistant?.InputModalities is { } modalities)
+            {
+                if (!modalities.SupportsMimeType(attachment.MimeType))
+                {
+                    // TODO: add toast message
+                    // ToastManager
+                    //     .CreateToast(LocaleResolver.Common_UnsupportedAttachment)
+                    //     .WithContent(LocaleResolver.Common_UnsupportedAttachment_Content.With("file", attachment.FilePath))
+                    //     .DismissOnClick()
+                    //     .OnBottomRight()
+                    //     .ShowWarning();
+                    return;
+                }
+            }
+
+            _chatAttachmentsSource.Add(attachment);
         }
         catch (Exception ex)
         {

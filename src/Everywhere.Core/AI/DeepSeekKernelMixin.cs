@@ -38,7 +38,7 @@ public class DeepSeekKernelMixin(
     /// <returns></returns>
     protected override Task BeforeStreamingRequestAsync(IList<ChatMessage> messages, ref ChatOptions? options)
     {
-        if (!_customAssistant.IsDeepThinkingSupported) return Task.CompletedTask;
+        if (!_customAssistant.SupportsReasoning) return Task.CompletedTask;
 
         options ??= new ChatOptions();
         options.AdditionalProperties ??= new AdditionalPropertiesDictionary();

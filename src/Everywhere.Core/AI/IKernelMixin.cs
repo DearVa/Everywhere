@@ -13,16 +13,14 @@ public interface IKernelMixin : IDisposable
     /// </summary>
     IChatCompletionService ChatCompletionService { get; }
 
+    bool SupportsReasoning { get; }
+
+    bool SupportsToolCall { get; }
+
     /// <summary>
     /// Gets the maximum number of tokens allowed in a single request to the model.
     /// </summary>
     int ContextLimit { get; }
-
-    bool IsImageInputSupported { get; }
-
-    bool IsFunctionCallingSupported { get; }
-
-    bool IsDeepThinkingSupported { get; }
 
     /// <summary>
     /// Determines if the specified message-level metadata key is needed to be persisted.

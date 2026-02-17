@@ -29,6 +29,7 @@
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ManageApiKeyForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/McpImportForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/McpTransportConfigurationForm.axaml"/>
+        <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ModalitiesSelector.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/ModelProviderConfiguratorSelector.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/OfficialModelDefinitionForm.axaml"/>
         <ResourceInclude Source="avares://Everywhere.Core/Views/Configuration/PreviewEndpointTextBox.axaml"/>

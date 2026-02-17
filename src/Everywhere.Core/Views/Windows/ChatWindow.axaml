@@ -443,7 +443,7 @@
             Focusable="True"
             IsSendButtonEnabled="{Binding !IsBusy}"
             IsToolCallEnabled="{Binding PersistentState.IsToolCallEnabled, Mode=TwoWay}"
-            IsToolCallSupported="{Binding Settings.Model.SelectedCustomAssistant.IsFunctionCallingSupported, FallbackValue={x:False}}"
+            IsToolCallSupported="{Binding Settings.Model.SelectedCustomAssistant.SupportsToolCall, FallbackValue={x:False}}"
             MaxChatAttachmentCount="{Binding PersistentState.MaxChatAttachmentCount}"
             MaxLength="{Binding ChatInputAreaTextMaxLength}"
             MaxLines="12"
@@ -743,7 +743,7 @@
 
               <StackPanel
                 Margin="0,4,0,0"
-                IsVisible="{Binding Settings.Model.SelectedCustomAssistant.IsDeepThinkingSupported, FallbackValue=False}"
+                IsVisible="{Binding Settings.Model.SelectedCustomAssistant.SupportsReasoning, FallbackValue=False}"
                 Orientation="Vertical" Spacing="4">
                 <TextBlock
                   VerticalAlignment="Center"

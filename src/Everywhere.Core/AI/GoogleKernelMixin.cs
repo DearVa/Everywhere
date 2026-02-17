@@ -56,7 +56,7 @@ public sealed class GoogleKernelMixin : KernelMixinBase
         // https://ai.google.dev/gemini-api/docs/thinking
         GeminiThinkingConfig? GetThinkingConfig()
         {
-            if (!IsDeepThinkingSupported) return null;
+            if (!SupportsReasoning) return null;
 
             var thinkingConfig = new GeminiThinkingConfig
             {

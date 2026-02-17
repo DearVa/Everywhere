@@ -536,22 +536,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Для онлайн-моделей необходимо получить у соответствующего официального представителя, пожалуйста, обратитесь к руководству для получения подробной информации.</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>Поддержка ввода изображений</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>Модель поддерживает ввод изображений. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Поддержка использования инструментов</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>Модель поддерживает использование настроенных инструментов. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>Модель поддерживает предварительное обдумывание перед ответом. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Поддержка глубокого мышления</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

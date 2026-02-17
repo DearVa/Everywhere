@@ -536,22 +536,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>對於在線模型，您需要從相應的官方獲取，詳情請參考指南。</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>支援圖像輸入</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>模型支持圖像輸入。如果模型不支持，開啟此選項可能會導致對話時出現錯誤。</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>支援工具使用</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>模型支持使用已配置的工具。如果模型不支持，開啟此選項可能會導致對話時出現錯誤。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>模型支持先思考再回答。如果模型不支持，開啟此選項可能會導致對話時出現錯誤。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>支援深度思考</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

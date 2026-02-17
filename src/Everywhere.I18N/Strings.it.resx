@@ -536,22 +536,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Per i modelli online, devi ottenerla dall'ufficiale corrispondente, fai riferimento alla guida per i dettagli.</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>Supporto per Input Immagine</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>Il modello supporta l'input di immagini. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Supporto per Uso Strumenti</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>Il modello supporta l'uso degli strumenti configurati. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>Il modello supporta il pensiero profondo prima di rispondere. Se il modello non lo supporta, attivare questa opzione potrebbe causare errori durante la conversazione.</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Supporto per Pensiero Profondo</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

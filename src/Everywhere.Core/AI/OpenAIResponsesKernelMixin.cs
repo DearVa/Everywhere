@@ -89,7 +89,7 @@ public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
 
         private CreateResponseOptions? RawRepresentationFactory(ChatOptions chatOptions)
         {
-            if (!owner.IsDeepThinkingSupported) return null;
+            if (!owner.SupportsReasoning) return null;
             if (chatOptions.AdditionalProperties?.TryGetValue("reasoning_effort_level", out var reasoningEffortLevelObj) is not true) return null;
             if (reasoningEffortLevelObj is not ReasoningEffortLevel reasoningEffortLevel) return null;
 

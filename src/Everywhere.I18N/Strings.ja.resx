@@ -536,22 +536,16 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>オンラインモデルの場合、対応する公式から取得する必要があります。詳細はガイドを参照してください。</value>
     </data>
-    <data name="CustomAssistant_IsImageInputSupported_Header" xml:space="preserve">
-        <value>画像入力サポート</value>
-    </data>
-    <data name="CustomAssistant_IsImageInputSupported_Description" xml:space="preserve">
-        <value>モデルは画像入力をサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
-    </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>ツール使用サポート</value>
     </data>
-    <data name="CustomAssistant_IsFunctionCallingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsToolCall_Description" xml:space="preserve">
         <value>モデルは設定されたツールの使用をサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Description" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>モデルは考えてから回答することをサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
     </data>
-    <data name="CustomAssistant_IsDeepThinkingSupported_Header" xml:space="preserve">
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>深い思考サポート</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">

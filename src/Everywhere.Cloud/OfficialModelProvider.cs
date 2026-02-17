@@ -97,42 +97,58 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
     /// <summary>
     /// Standard model definition according to https://models.dev/api.json
     /// </summary>
-    /// <param name="Id"></param>
+    /// <param name="ModelId"></param>
     /// <param name="Name"></param>
     /// <param name="Attachment"></param>
-    /// <param name="IsDeepThinkingSupported"></param>
-    /// <param name="IsFunctionCallingSupported"></param>
+    /// <param name="SupportsReasoning"></param>
+    /// <param name="SupportsToolCall"></param>
     /// <param name="Modalities"></param>
     /// <param name="LimitInfo"></param>
     private sealed record CloudModelDefinition(
-        [property: JsonPropertyName("id")] string Id,
+        [property: JsonPropertyName("id")] string ModelId,
         [property: JsonPropertyName("name")] string Name,
         [property: JsonPropertyName("attachment")] bool Attachment,
-        [property: JsonPropertyName("reasoning")] bool IsDeepThinkingSupported,
-        [property: JsonPropertyName("tool_call")] bool IsFunctionCallingSupported,
-        [property: JsonPropertyName("modalities")] Modalities Modalities,
-        [property: JsonPropertyName("limit")] LimitInfo LimitInfo)
+        [property: JsonPropertyName("reasoning")] bool SupportsReasoning,
+        [property: JsonPropertyName("tool_call")] bool SupportsToolCall,
+        [property: JsonPropertyName("modalities")] CloudModelModalities Modalities,
+        [property: JsonPropertyName("limit")] CloudModelLimitInfo LimitInfo
+    )
     {
         public ModelDefinitionTemplate ToModelDefinitionTemplate() =>
             new()
             {
-                Id = Id,
-                ModelId = Id,
-                DisplayName = Name,
-                ContextLimit = LimitInfo.Context,
-                IsImageInputSupported = Attachment && Modalities.Input.Contains("image"),
-                IsFunctionCallingSupported = IsFunctionCallingSupported,
-                IsDeepThinkingSupported = IsDeepThinkingSupported
+                ModelId = ModelId,
+                Name = Name,
+                SupportsReasoning = SupportsReasoning,
+                SupportsToolCall = SupportsToolCall,
+                InputModalities = ConvertModalities(Modalities.Input),
+                OutputModalities = ConvertModalities(Modalities.Output),
+                ContextLimit = LimitInfo.Context
             };
+
+        private static Modalities ConvertModalities(IReadOnlyList<string> modalityStrings) => modalityStrings.Aggregate(
+            AI.Modalities.None,
+            (current, modality) => current | modality.ToLower() switch
+            {
+                "text" => AI.Modalities.Text,
+                "image" => AI.Modalities.Image,
+                "audio" => AI.Modalities.Audio,
+                "video" => AI.Modalities.Video,
+                "pdf" => AI.Modalities.Pdf,
+                _ => AI.Modalities.None
+            });
     }
 
-    private sealed record Modalities(
+    private sealed record CloudModelModalities(
         [property: JsonPropertyName("input")] IReadOnlyList<string> Input,
-        [property: JsonPropertyName("output")] IReadOnlyList<string> Output);
+        [property: JsonPropertyName("output")] IReadOnlyList<string> Output
+    );
 
-    private sealed record LimitInfo(
+    private sealed record CloudModelLimitInfo(
         [property: JsonPropertyName("context")] int Context,
-        [property: JsonPropertyName("output")] int Output);
+        [property: JsonPropertyName("input")] int Input = 0,
+        [property: JsonPropertyName("output")] int Output = 0
+    );
 
     [JsonSerializable(typeof(ApiPayload<IReadOnlyList<CloudModelDefinition>>))]
     private sealed partial class ModelsResponseJsonSerializerContext : JsonSerializerContext;
@@ -148,4 +164,5 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
     }
 
     #endregion
+
 }
