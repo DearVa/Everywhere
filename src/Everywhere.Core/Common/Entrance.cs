@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Patches;
-using Everywhere.Views;
 using MessagePack;
 using OpenTelemetry.Trace;
 using PuppeteerSharp;
@@ -88,18 +87,21 @@ public static partial class Entrance
         }
 
         // Bring the existing instance to the foreground.
-        await SendToHost(new ShowWindowCommand(nameof(MainView))).ConfigureAwait(false);
+        await SendToHost(new ShowWindowCommand(nameof(ChatWindowViewModel))).ConfigureAwait(false);
         Environment.Exit(0);
     }
 
     private static async Task StartHostPipeServer()
     {
-        var retryCount = 3;
-        while (retryCount > 0)
+        const int maxRetries = 5;
+        var consecutiveErrors = 0;
+
+        while (consecutiveErrors < maxRetries)
         {
+            NamedPipeServerStream? server = null;
             try
             {
-                await using var server = new NamedPipeServerStream(
+                server = new NamedPipeServerStream(
                     BundleName,
                     PipeDirection.In,
                     1,
@@ -109,11 +111,17 @@ public static partial class Entrance
                 await server.WaitForConnectionAsync();
 
                 var lengthBuffer = new byte[4];
-                if (await server.ReadAsync(lengthBuffer.AsMemory(0, 4)) != 4) continue;
+                await server.ReadExactlyAsync(lengthBuffer.AsMemory(0, 4));
 
                 var length = BitConverter.ToInt32(lengthBuffer, 0);
+                if (length is <= 0 or > 1024 * 1024) // sanity check: max 1 MB
+                {
+                    Log.ForContext(typeof(Entrance)).Warning("Received invalid command length: {Length}", length);
+                    continue;
+                }
+
                 var buffer = new byte[length];
-                if (await server.ReadAsync(buffer.AsMemory(0, length)) != length) continue;
+                await server.ReadExactlyAsync(buffer.AsMemory(0, length));
 
                 try
                 {
@@ -124,42 +132,73 @@ public static partial class Entrance
                 {
                     Log.ForContext(typeof(Entrance)).Error(ex, "Failed to deserialize host command.");
                 }
+
+                // Reset error counter on successful processing
+                consecutiveErrors = 0;
+            }
+            catch (EndOfStreamException)
+            {
+                // Client disconnected before sending complete data; not a server error, just retry
+                Log.ForContext(typeof(Entrance)).Warning("Pipe client disconnected prematurely.");
             }
             catch (Exception ex)
             {
                 Log.ForContext(typeof(Entrance)).Error(ex, "Host pipe server error.");
 
-                retryCount--;
+                consecutiveErrors++;
                 await Task.Delay(1000);
             }
+            finally
+            {
+                if (server != null)
+                {
+                    await server.DisposeAsync();
+                }
+            }
         }
+
+        Log.ForContext(typeof(Entrance)).Error(
+            "Host pipe server stopped after {MaxRetries} consecutive errors.", maxRetries);
     }
 
     private static async Task SendToHost(ApplicationCommand command)
     {
-        try
+        const int maxAttempts = 3;
+        const int connectTimeoutMs = 5000;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
         {
-            await using var client = new NamedPipeClientStream(".", BundleName, PipeDirection.Out, PipeOptions.Asynchronous);
-            await client.ConnectAsync(1000);
-
-            var bytes = MessagePackSerializer.Serialize(command);
-            var lengthBytes = BitConverter.GetBytes(bytes.Length);
-
-            await client.WriteAsync(lengthBytes);
-            await client.WriteAsync(bytes);
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, "Failed to send command to host instance.");
-
-            // Show message box if the command is ShowMainWindowCommand as a fallback
-            if (command is ShowWindowCommand)
+            try
             {
-                NativeMessageBox.Show(
-                    LocaleResolver.Common_Info,
-                    LocaleResolver.Entrance_EverywhereAlreadyRunning,
-                    NativeMessageBoxButtons.Ok,
-                    NativeMessageBoxIcon.Information);
+                await using var client = new NamedPipeClientStream(".", BundleName, PipeDirection.Out, PipeOptions.Asynchronous);
+                await client.ConnectAsync(connectTimeoutMs);
+
+                var bytes = MessagePackSerializer.Serialize(command);
+                var lengthBytes = BitConverter.GetBytes(bytes.Length);
+
+                await client.WriteAsync(lengthBytes);
+                await client.WriteAsync(bytes);
+                await client.FlushAsync();
+                return; // success
+            }
+            catch (Exception ex) when (attempt < maxAttempts)
+            {
+                Log.Error(ex, "Failed to send command to host instance (attempt {Attempt}/{MaxAttempts}).", attempt, maxAttempts);
+                await Task.Delay(500 * attempt);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to send command to host instance after {MaxAttempts} attempts.", maxAttempts);
+
+                // Show message box if the command is ShowMainWindowCommand as a fallback
+                if (command is ShowWindowCommand)
+                {
+                    NativeMessageBox.Show(
+                        LocaleResolver.Common_Info,
+                        LocaleResolver.Entrance_EverywhereAlreadyRunning,
+                        NativeMessageBoxButtons.Ok,
+                        NativeMessageBoxIcon.Information);
+                }
             }
         }
     }
