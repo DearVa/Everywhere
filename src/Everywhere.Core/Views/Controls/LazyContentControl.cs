@@ -17,7 +17,7 @@ public class LazyContentControl : ContentControl
     /// Identifies the <see cref="ItemIndex"/> property.
     /// </summary>
     public static readonly StyledProperty<int> ItemIndexProperty =
-        AvaloniaProperty.Register<LazyContentControl, int>(nameof(ItemIndex));
+        AvaloniaProperty.Register<LazyContentControl, int>(nameof(ItemIndex), -1);
 
     /// <summary>
     /// Gets or sets the index of the item displayed in this control.
@@ -31,16 +31,15 @@ public class LazyContentControl : ContentControl
     /// <summary>
     /// Identifies the <see cref="IsActive"/> property.
     /// </summary>
-    public static readonly StyledProperty<bool?> IsActiveProperty =
-        AvaloniaProperty.Register<LazyContentControl, bool?>(nameof(IsActive));
+    public static readonly StyledProperty<bool> IsActiveProperty =
+        AvaloniaProperty.Register<LazyContentControl, bool>(nameof(IsActive));
 
     /// <summary>
     /// Gets or sets a value that provides a quick way to control the ItemIndex.
-    /// null corresponds to ItemIndex -1.
-    /// false corresponds to ItemIndex 0.
-    /// true corresponds to ItemIndex 1.
+    /// false corresponds to ItemIndex -1.
+    /// true corresponds to ItemIndex 0.
     /// </summary>
-    public bool? IsActive
+    public bool IsActive
     {
         get => GetValue(IsActiveProperty);
         set => SetValue(IsActiveProperty, value);
@@ -77,19 +76,6 @@ public class LazyContentControl : ContentControl
 
     private static void HandleItemIndexChanged(LazyContentControl sender, AvaloniaPropertyChangedEventArgs args)
     {
-        switch (args.NewValue)
-        {
-            case -1:
-                sender.SetCurrentValue(IsActiveProperty, null);
-                break;
-            case 0:
-                sender.SetCurrentValue(IsActiveProperty, false);
-                break;
-            case 1:
-                sender.SetCurrentValue(IsActiveProperty, true);
-                break;
-        }
-
         sender.UpdateContent();
     }
 
@@ -97,8 +83,7 @@ public class LazyContentControl : ContentControl
     {
         sender.SetCurrentValue(ItemIndexProperty, args.NewValue switch
         {
-            false => 0,
-            true => 1,
+            true => 0,
             _ => -1,
         });
     }

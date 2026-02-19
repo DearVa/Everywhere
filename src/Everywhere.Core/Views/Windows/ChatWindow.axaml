@@ -349,7 +349,7 @@
           </StackPanel>
 
           <v:ChatMessageItemsControl
-            Margin="10,0,8,0" Padding="8,0"
+            Margin="10,0,8,0" Padding="6,0"
             IsVisible="{Binding $self.ItemCount, Converter={x:Static vc:Int32Converters.GreaterThan}, ConverterParameter=0}"
             ItemsSource="{Binding ChatContextManager.Current.DisplayItems}"/>
         </Panel>
