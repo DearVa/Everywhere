@@ -1173,6 +1173,9 @@
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>捨棄</value>
     </data>
+    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
+        <value>是否允許「{0}」執行？它需要「{1}」權限。</value>
+    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>、</value>
     </data>
@@ -2125,5 +2128,8 @@
     </data>
     <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
         <value>預覽: {0}</value>
+    </data>
+    <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
+        <value>是否允許「{0}」執行？</value>
     </data>
 </root>

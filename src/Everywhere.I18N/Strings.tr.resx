@@ -1170,6 +1170,9 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>İptal Et</value>
     </data>
+    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
+        <value>“{0}”ın çalışmasına izin verilsin mi? “{1}” iznine ihtiyaç var.</value>
+    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>, </value>
     </data>
@@ -2122,5 +2125,8 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     </data>
     <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
         <value>Önizleme: {0}</value>
+    </data>
+    <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
+        <value>“{0}”ın çalışmasına izin verilsin mi?</value>
     </data>
 </root>

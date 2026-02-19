@@ -1173,6 +1173,9 @@
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>破棄</value>
     </data>
+    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
+        <value>「{0}」の実行を許可しますか？「{1}」の権限が必要です。</value>
+    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>、</value>
     </data>
@@ -2125,5 +2128,8 @@
     </data>
     <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
         <value>プレビュー: {0}</value>
+    </data>
+    <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
+        <value>「{0}」の実行を許可しますか？</value>
     </data>
 </root>
