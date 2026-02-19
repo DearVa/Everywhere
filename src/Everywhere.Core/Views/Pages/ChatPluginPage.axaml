@@ -363,7 +363,7 @@
                       <DataTemplate DataType="p:ChatFunction">
                         <ToggleSwitch
                           HorizontalAlignment="Center"
-                          IsChecked="{Binding IsEnabled}"/>
+                          IsChecked="{Binding IsEnabled, Mode=TwoWay}"/>
                       </DataTemplate>
                     </DataGridTemplateColumn>
 
@@ -374,7 +374,7 @@
                       <DataTemplate DataType="p:ChatFunction">
                         <ToggleSwitch
                           HorizontalAlignment="Center"
-                          IsChecked="{Binding AutoApprove}"
+                          IsChecked="{Binding AutoApprove, Mode=TwoWay}"
                           IsEnabled="{Binding IsAutoApproveAllowed}"/>
                       </DataTemplate>
                     </DataGridTemplateColumn>

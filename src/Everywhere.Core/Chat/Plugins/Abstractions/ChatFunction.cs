@@ -58,6 +58,15 @@ public sealed class NativeChatFunction : ChatFunction
 
     public override KernelFunction KernelFunction { get; }
 
+    /// <summary>
+    /// An optional predicate that can be used to inspect the function call content before prompting the user for permission consent.
+    /// This will be called only if the function call requires user consent and is not auto-approved.
+    /// If the predicate returns false, the function call will be **rejected** without prompting the user.
+    /// If the predicate returns true, the function call will be **approved** without prompting the user.
+    /// If the predicate is null or returns null, the user will be prompted for consent without additional checks (default behavior).
+    /// </summary>
+    public Func<FunctionCallContent, bool?>? OnPermissionConsent { get; }
+
     private readonly DynamicResourceKey? _descriptionKey;
     private readonly IFriendlyFunctionCallContentRenderer? _renderer;
 
@@ -66,7 +75,8 @@ public sealed class NativeChatFunction : ChatFunction
         ChatFunctionPermissions permissions,
         LucideIconKind? icon = null,
         bool isAutoApproveAllowed = true,
-        bool isExperimental = false)
+        bool isExperimental = false,
+        Func<FunctionCallContent, bool?>? onPermissionConsent = null)
     {
         if (method.Method.GetCustomAttributes<DynamicResourceKeyAttribute>(false).FirstOrDefault() is
             { HeaderKey: { Length: > 0 } headerKey } attribute)
@@ -91,6 +101,7 @@ public sealed class NativeChatFunction : ChatFunction
         Icon = icon;
         IsAutoApproveAllowed = isAutoApproveAllowed;
         IsExperimental = isExperimental;
+        OnPermissionConsent = onPermissionConsent;
 
         if (method.Method.GetCustomAttributes<FriendlyFunctionCallContentRendererAttribute>(false).FirstOrDefault() is
             { RendererType: { } rendererType })

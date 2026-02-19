@@ -1170,9 +1170,6 @@ Im Prompt können Platzhalter verwendet werden, die in {} enthalten sind und vor
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>Verwerfen</value>
     </data>
-    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
-        <value>Soll „{0}“ die Berechtigung für {1} erhalten?</value>
-    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>, </value>
     </data>

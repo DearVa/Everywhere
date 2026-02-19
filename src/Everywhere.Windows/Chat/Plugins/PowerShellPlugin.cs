@@ -36,7 +36,8 @@ public class PowerShellPlugin : BuiltInChatPlugin
             new NativeChatFunction(
                 ExecuteScriptAsync,
                 ChatFunctionPermissions.ShellExecute,
-                isAutoApproveAllowed: false));
+                isAutoApproveAllowed: false,
+                onPermissionConsent: _ => true));  // Always allow. The consent will be handled in the function implementation to support both single-line and multi-line scripts.
     }
 
     [KernelFunction("execute_script")]
@@ -131,8 +132,6 @@ public class PowerShellPlugin : BuiltInChatPlugin
                             {
                                 FileName = "taskkill",
                                 Arguments = $"/PID {pid} /T /F",
-                                RedirectStandardError = true,
-                                RedirectStandardOutput = true,
                                 UseShellExecute = false,
                                 CreateNoWindow = true,
                             });

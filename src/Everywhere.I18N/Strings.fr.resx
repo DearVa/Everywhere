@@ -1173,9 +1173,6 @@ Le prompt peut contenir des espaces réservés, inclus dans {}, qui seront rempl
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>Rejeter</value>
     </data>
-    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
-        <value>Faut-il accorder la permission à « {0} » pour {1} ?</value>
-    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>, </value>
     </data>

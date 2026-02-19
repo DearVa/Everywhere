@@ -2,7 +2,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Chat.Plugins;
 using Everywhere.Collections;
-using Everywhere.Utilities;
 
 namespace Everywhere.Configuration;
 
@@ -22,7 +21,6 @@ public partial class PluginSettings : ObservableObject
     /// Gets or sets the granted permissions for each plugin function.
     /// The key is in the format of "PluginKey.FunctionName".
     /// </summary>
-    [ObjectObserverIgnore]
     public ObservableDictionary<string, bool> IsPermissionGrantedRecords { get; set; } = new();
 
     /// <summary>
@@ -34,12 +32,6 @@ public partial class PluginSettings : ObservableObject
     /// Gets or sets the web search engine settings.
     /// </summary>
     public WebSearchEngineSettings WebSearchEngine { get; set; } = new();
-
-    public PluginSettings()
-    {
-        IsEnabledRecords.CollectionChanged += delegate { OnPropertyChanged(nameof(IsEnabledRecords)); };
-        IsPermissionGrantedRecords.CollectionChanged += delegate { OnPropertyChanged(nameof(IsPermissionGrantedRecords)); };
-    }
 }
 
 /// <summary>

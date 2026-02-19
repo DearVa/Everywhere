@@ -853,52 +853,22 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         {
             // Check permissions. If permissions are not granted, request user consent.
             var permissionKey = context.PermissionKey;
-            if (!context.IsPermissionGranted &&
-                (!_settings.Plugin.IsPermissionGrantedRecords.TryGetValue(permissionKey, out var isPermissionGranted) || !isPermissionGranted))
+            var consentDecision = await ProcessConsentAsync(permissionKey);
+            switch (consentDecision)
             {
-                // The function requires permissions that are not granted.
-                var promise = new TaskCompletionSource<ConsentDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-                FormattedDynamicResourceKey headerKey;
-                if (context.Plugin is McpChatPlugin)
+                case ConsentDecision.AlwaysAllow:
                 {
-                    headerKey = new FormattedDynamicResourceKey(
-                        LocaleKey.ChatPluginConsentRequest_MCP_Header,
-                        context.Function.HeaderKey);
+                    context.Function.AutoApprove = true;
+                    break;
                 }
-                else
+                case ConsentDecision.AllowSession:
                 {
-                    headerKey = new FormattedDynamicResourceKey(
-                        LocaleKey.ChatPluginConsentRequest_Common_Header,
-                        context.Function.HeaderKey,
-                        new DirectResourceKey(context.Function.Permissions.I18N(LocaleResolver.Common_Comma, true)));
+                    context.ChatContext.IsPermissionGrantedRecords[permissionKey] = true;
+                    break;
                 }
-
-                WeakReferenceMessenger.Default.Send(
-                    new ChatPluginConsentRequest(
-                        promise,
-                        headerKey,
-                        friendlyContent,
-                        true,
-                        cancellationToken));
-
-                var consentDecision = await promise.Task;
-                switch (consentDecision)
+                case ConsentDecision.Deny:
                 {
-                    case ConsentDecision.AlwaysAllow:
-                    {
-                        context.Function.AutoApprove = true;
-                        break;
-                    }
-                    case ConsentDecision.AllowSession:
-                    {
-                        context.ChatContext.IsPermissionGrantedRecords[permissionKey] = true;
-                        break;
-                    }
-                    case ConsentDecision.Deny:
-                    {
-                        return new FunctionResultContent(content, "Error: Function execution denied by user.");
-                    }
+                    return new FunctionResultContent(content, "Error: Function execution denied by user.");
                 }
             }
 
@@ -914,6 +884,67 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         }
 
         return resultContent;
+
+        Task<ConsentDecision> ProcessConsentAsync(string permissionKey)
+        {
+            // Check if the permission is already granted in the current chat context
+            if (!_settings.Plugin.IsPermissionGrantedRecords.TryGetValue(permissionKey, out var isPermissionGranted))
+            {
+                isPermissionGranted = context.IsPermissionGranted;
+            }
+
+            if (isPermissionGranted)
+            {
+                return Task.FromResult(ConsentDecision.AllowOnce);
+            }
+
+            FormattedDynamicResourceKey headerKey;
+            if (context.Plugin is McpChatPlugin)
+            {
+                headerKey = new FormattedDynamicResourceKey(
+                    LocaleKey.ChatPluginConsentRequest_MCP_Header,
+                    context.Function.HeaderKey);
+            }
+            else
+            {
+                if (context.Function is NativeChatFunction { OnPermissionConsent: { } onPermissionConsent })
+                {
+                    return onPermissionConsent(content) switch
+                    {
+                        true => Task.FromResult(ConsentDecision.AllowOnce),
+                        false => Task.FromResult(ConsentDecision.Deny),
+                        null => Task.FromResult(ConsentDecision.AllowOnce) // Default to allow once if the
+                    };
+                }
+
+                if (context.Function.Permissions == ChatFunctionPermissions.None)
+                {
+                    headerKey = new FormattedDynamicResourceKey(
+                        LocaleKey.ChatPluginConsentRequest_Common_Header,
+                        context.Function.HeaderKey);
+                }
+                else
+                {
+                    headerKey = new FormattedDynamicResourceKey(
+                        LocaleKey.ChatPluginConsentRequest_Common_Header,
+                        context.Function.HeaderKey,
+                        new DirectResourceKey(context.Function.Permissions.I18N(LocaleResolver.Common_Comma, true)));
+                }
+            }
+
+            // The function requires permissions that are not granted.
+            var promise = new TaskCompletionSource<ConsentDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
+            WeakReferenceMessenger.Default.Send(
+                new ChatPluginConsentRequest(
+                    promise,
+                    headerKey,
+                    friendlyContent,
+                    true,
+                    cancellationToken));
+
+            return promise.Task;
+
+        }
     }
 
     private async Task GenerateTitleAsync(

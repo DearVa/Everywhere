@@ -1173,9 +1173,6 @@ Se pueden usar marcadores de posición en la palabra clave, que están contenido
     <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
         <value>Descartar</value>
     </data>
-    <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
-        <value>¿Se debe otorgar permiso a “{0}” para {1}?</value>
-    </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>, </value>
     </data>

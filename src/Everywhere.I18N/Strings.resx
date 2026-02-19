@@ -1174,7 +1174,7 @@ Placeholders can be used in the prompt, enclosed in {}, which will be replaced w
         <value>Discard</value>
     </data>
     <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
-        <value>Should “{0}” be granted permission to {1}?</value>
+        <value />
     </data>
     <data name="Common_Comma" xml:space="preserve">
         <value>, </value>
@@ -2128,5 +2128,8 @@ Use scroll wheel or number keys to switch selection mode</value>
     </data>
     <data name="PreviewEndpointTextBox_Hint" xml:space="preserve">
         <value>Preview: {0}</value>
+    </data>
+    <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
+        <value />
     </data>
 </root>
