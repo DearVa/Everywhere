@@ -61,6 +61,12 @@ public static partial class ModelProviderSchemaExtensions
 
             endpoint = endpoint.Trim().TrimEnd('/');
 
+            // Don't normalize endpoint ending with #
+            if (endpoint.EndsWith('#'))
+            {
+                return endpoint[..^1].Trim().TrimEnd('/');
+            }
+
             // 1. Get prefix, version (v1, v2, v3, v1beta, etc.), and suffix (if any)
             var match = EndpointRegex().Match(endpoint);
             if (!match.Success)
