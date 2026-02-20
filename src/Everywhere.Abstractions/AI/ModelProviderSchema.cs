@@ -29,7 +29,7 @@ public static partial class ModelProviderSchemaExtensions
             {
                 ModelProviderSchema.OpenAI => "https://api.openai.com/v1",
                 ModelProviderSchema.OpenAIResponses => "https://api.openai.com/v1",
-                ModelProviderSchema.Anthropic => "https://api.anthropic.com/v1",
+                ModelProviderSchema.Anthropic => "https://api.anthropic.com",
                 ModelProviderSchema.Google => "https://generativelanguage.googleapis.com/v1beta",
                 ModelProviderSchema.Ollama => "http://localhost:11434",
                 ModelProviderSchema.DeepSeek => "https://api.deepseek.com/v1",
@@ -89,7 +89,7 @@ public static partial class ModelProviderSchemaExtensions
             {
                 ModelProviderSchema.OpenAI => $"{prefix}/v1",
                 ModelProviderSchema.OpenAIResponses => $"{prefix}/v1",
-                ModelProviderSchema.Anthropic => $"{prefix}/v1",
+                ModelProviderSchema.Anthropic => prefix,
                 ModelProviderSchema.Google => $"{prefix}/v1beta",
                 ModelProviderSchema.Ollama => prefix,
                 ModelProviderSchema.DeepSeek => $"{prefix}/v1",
@@ -112,7 +112,7 @@ public static partial class ModelProviderSchemaExtensions
             {
                 ModelProviderSchema.OpenAI => $"{prefix}/chat/completions",
                 ModelProviderSchema.OpenAIResponses => $"{prefix}/responses",
-                ModelProviderSchema.Anthropic => $"{prefix}/messages",
+                ModelProviderSchema.Anthropic => $"{prefix}/v1/messages",
                 ModelProviderSchema.Google => $"{prefix}/models",
                 ModelProviderSchema.Ollama => $"{prefix}/api/chat",
                 ModelProviderSchema.DeepSeek => $"{prefix}/chat/completions",

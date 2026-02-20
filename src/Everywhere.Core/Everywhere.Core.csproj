@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Anthropic" />
     <PackageReference Include="Avalonia"/>
     <PackageReference Include="Avalonia.Fonts.Inter"/>
     <PackageReference Include="Avalonia.Diagnostics">
@@ -54,7 +55,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\3rd\anthropic-sdk-csharp-patch\src\Anthropic\Anthropic.csproj" />
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Connectors.Google\Connectors.Google.csproj" />
     <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Plugins.Web\Plugins.Web.csproj" />

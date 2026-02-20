@@ -2,7 +2,6 @@
   "solution": {
     "path": "Everywhere.sln",
     "projects": [
-      "3rd\\anthropic-sdk-csharp-patch\\src\\Anthropic\\Anthropic.csproj",
       "3rd\\EverythingNetCore\\EverythingNet\\EverythingNet.csproj",
       "3rd\\MessagePack-CSharp\\src\\MessagePack.Analyzers.CodeFixes\\MessagePack.Analyzers.CodeFixes.csproj",
       "3rd\\MessagePack-CSharp\\src\\MessagePack.Analyzers\\MessagePack.Analyzers.csproj",
