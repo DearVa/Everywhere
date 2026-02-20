@@ -102,7 +102,8 @@ public static class NetworkExtension
         services
             .AddSingleton<DynamicWebProxy>()
             .AddSingleton<IWebProxy>(x => x.GetRequiredService<DynamicWebProxy>())
-            .AddTransient<ContentLengthBufferingHandler>()
+            .AddSingleton<UserAgentHandler>()
+            .AddSingleton<ContentLengthBufferingHandler>()
             .AddTransient<IAsyncInitializer, NetworkInitializer>();
 
         // Configure the default HttpClient to use the DynamicWebProxy.
@@ -113,10 +114,6 @@ public static class NetworkExtension
                 {
                     // Set a short timeout for HTTP requests.
                     client.Timeout = TimeSpan.FromSeconds(10);
-                    var version = typeof(NetworkExtension).Assembly.GetName().Version ?? new Version(0, 0, 0, 0);
-                    client.DefaultRequestHeaders.Add(
-                        "User-Agent",
-                        $"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Everywhere/{version}");
                 })
             .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
                 new HttpClientHandler
@@ -125,7 +122,8 @@ public static class NetworkExtension
                     Proxy = serviceProvider.GetRequiredService<IWebProxy>(),
                     UseProxy = true,
                     AllowAutoRedirect = true,
-                });
+                })
+            .AddHttpMessageHandler<UserAgentHandler>();
 
         // This is a workaround for JSON-RPC servers that do not support chunked transfer encoding.
         // e.g. MCP server of ModelScope
@@ -153,12 +151,29 @@ public static class NetworkExtension
     }
 
     /// <summary>
+    /// Force override the User-Agent before send
+    /// </summary>
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+    private sealed class UserAgentHandler : DelegatingHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Remove("User-Agent");
+            request.Headers.Add(
+                "User-Agent",
+                $"Chrome/142.0.0.0 Safari/537.36 Everywhere/{App.Version}");
+
+            return base.SendAsync(request, cancellationToken);
+        }
+    }
+
+    /// <summary>
     /// A delegating handler that buffers the request content to compute and set the
     /// Content-Length header. This is useful for servers that do not support
     /// chunked transfer encoding.
     /// </summary>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-    private class ContentLengthBufferingHandler : DelegatingHandler
+    private sealed class ContentLengthBufferingHandler : DelegatingHandler
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
