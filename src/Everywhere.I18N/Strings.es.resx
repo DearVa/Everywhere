@@ -527,6 +527,9 @@
     <data name="CustomAssistant_Endpoint_Header" xml:space="preserve">
         <value>URL</value>
     </data>
+    <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
+        <value>Debe comenzar con http:// o https://. Agregue # al final para evitar que se añada automáticamente el sufijo de versión.</value>
+    </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>Clave API</value>
     </data>

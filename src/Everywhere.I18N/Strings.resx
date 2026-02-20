@@ -528,7 +528,7 @@
         <value>URL</value>
     </data>
     <data name="CustomAssistant_Endpoint_Description" xml:space="preserve">
-        <value />
+        <value>Starts with http:// or https://. Add # at the end to prevent automatic version suffix.</value>
     </data>
     <data name="CustomAssistant_ApiKey_Header" xml:space="preserve">
         <value>API Key</value>
