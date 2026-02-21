@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AvaloniaEdit.Utils;
 using Everywhere.Chat.Permissions;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -33,6 +35,7 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
     private readonly IRuntimeConstantProvider _runtimeConstantProvider;
     private readonly IWatchdogManager _watchdogManager;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<WebBrowserPlugin> _logger;
     private readonly DebounceExecutor<WebBrowserPlugin, ThreadingTimerImpl> _browserDisposer;
@@ -65,12 +68,14 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
         IRuntimeConstantProvider runtimeConstantProvider,
         IWatchdogManager watchdogManager,
         IHttpClientFactory httpClientFactory,
+        IServiceProvider serviceProvider,
         ILoggerFactory loggerFactory) : base("web_browser")
     {
         _webSearchEngineSettings = settings.Plugin.WebSearchEngine;
         _runtimeConstantProvider = runtimeConstantProvider;
         _watchdogManager = watchdogManager;
         _httpClientFactory = httpClientFactory;
+        _serviceProvider = serviceProvider;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<WebBrowserPlugin>();
         _browserDisposer = new DebounceExecutor<WebBrowserPlugin, ThreadingTimerImpl>(
@@ -269,10 +274,10 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
         var browserFetcher = new BrowserFetcher
         {
             CacheDir = cachePath,
-            Browser = SupportedBrowser.Chromium
+            Browser = SupportedBrowser.Chromium,
+            WebProxy = _serviceProvider.GetService<IWebProxy>()
         };
-        const string buildId = "1499281";
-        var executablePath = browserFetcher.GetExecutablePath(buildId);
+        var executablePath = browserFetcher.GetInstalledBrowsers().FirstOrDefault()?.GetExecutablePath();
 
         // Try to launch again in case the browser was downloaded previously
         _browser = await TryLaunchBrowserAsync(executablePath, SupportedBrowser.Chrome);
@@ -280,9 +285,11 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
 
         // We use two different URLs to download the browser for better reliability
         _logger.LogDebug("Downloading Puppeteer browser to cache directory: {CachePath}", cachePath);
+        using var httpClient = _httpClientFactory.CreateClient();
+        httpClient.Timeout = TimeSpan.FromSeconds(10); // Set a reasonable timeout for the test connection
         browserFetcher.BaseUrl =
-            await TestUrlConnectionAsync("https://storage.googleapis.com/chromium-browser-snapshots") ??
-            await TestUrlConnectionAsync("https://cdn.npmmirror.com/binaries/chromium-browser-snapshots") ??
+            await TestUrlConnectionAsync(httpClient, "https://storage.googleapis.com/chromium-browser-snapshots") ??
+            await TestUrlConnectionAsync(httpClient, "https://cdn.npmmirror.com/binaries/chromium-browser-snapshots") ??
             throw new HandledException(
                 new HttpRequestException("Failed to connect to the Puppeteer browser download URL."),
                 new DynamicResourceKey(LocaleKey.BuiltInChatPlugin_WebBrowser_PuppeteerBrowserDownloadConnectionError_ErrorMessage),
@@ -290,7 +297,7 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
 
         try
         {
-            await browserFetcher.DownloadAsync(buildId);
+            await browserFetcher.DownloadAsync(BrowserTag.Latest);
         }
         catch (Exception e)
         {
@@ -339,10 +346,8 @@ public partial class WebBrowserPlugin : BuiltInChatPlugin
             }
         }
 
-        async ValueTask<string?> TestUrlConnectionAsync(string testUrl)
+        async ValueTask<string?> TestUrlConnectionAsync(HttpClient client, string testUrl)
         {
-            using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(10); // Set a reasonable timeout for the test connection
             try
             {
                 using var response = await client.GetAsync(testUrl, cancellationToken);
