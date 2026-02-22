@@ -102,8 +102,8 @@ public static class NetworkExtension
         services
             .AddSingleton<DynamicWebProxy>()
             .AddSingleton<IWebProxy>(x => x.GetRequiredService<DynamicWebProxy>())
-            .AddSingleton<UserAgentHandler>()
-            .AddSingleton<ContentLengthBufferingHandler>()
+            .AddTransient<UserAgentHandler>()
+            .AddTransient<ContentLengthBufferingHandler>()
             .AddTransient<IAsyncInitializer, NetworkInitializer>();
 
         // Configure the default HttpClient to use the DynamicWebProxy.
