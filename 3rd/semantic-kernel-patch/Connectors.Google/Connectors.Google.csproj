@@ -4,6 +4,7 @@
     <AssemblyName>Microsoft.SemanticKernel.Connectors.Google</AssemblyName>
     <RepoRoot>..\..\semantic-kernel</RepoRoot>
     <ProjectRoot>$(RepoRoot)\dotnet\src\Connectors\Connectors.Google</ProjectRoot>
+    <RootNamespace>Microsoft.SemanticKernel.Connectors.Google</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

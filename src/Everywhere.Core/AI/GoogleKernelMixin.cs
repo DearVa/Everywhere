@@ -33,7 +33,7 @@ public sealed class GoogleKernelMixin : KernelMixinBase
 
     public override PromptExecutionSettings GetPromptExecutionSettings(
         FunctionChoiceBehavior? functionChoiceBehavior = null,
-        ReasoningEffortLevel reasoningEffortLevel = ReasoningEffortLevel.Default)
+        ReasoningEffortLevel? reasoningEffortLevel = null)
     {
         double? temperature = _customAssistant.Temperature.IsCustomValueSet ? _customAssistant.Temperature.ActualValue : null;
         double? topP = _customAssistant.TopP.IsCustomValueSet ? _customAssistant.TopP.ActualValue : null;
@@ -56,7 +56,7 @@ public sealed class GoogleKernelMixin : KernelMixinBase
         // https://ai.google.dev/gemini-api/docs/thinking
         GeminiThinkingConfig? GetThinkingConfig()
         {
-            if (!IsDeepThinkingSupported) return null;
+            if (reasoningEffortLevel is null) return null;
 
             var thinkingConfig = new GeminiThinkingConfig
             {

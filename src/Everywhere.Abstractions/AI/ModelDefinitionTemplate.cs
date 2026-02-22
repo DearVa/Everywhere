@@ -5,7 +5,7 @@ namespace Everywhere.AI;
 /// <summary>
 /// Defines the properties of an AI model.
 /// </summary>
-public record ModelDefinitionTemplate
+public sealed record ModelDefinitionTemplate
 {
     /// <summary>
     /// Unique identifier for the model definition.
@@ -54,7 +54,7 @@ public record ModelDefinitionTemplate
     [JsonIgnore]
     public bool IsDefault { get; set; }
 
-    public virtual bool Equals(ModelDefinitionTemplate? other) => Id == other?.Id;
+    public bool Equals(ModelDefinitionTemplate? other) => Id == other?.Id;
 
     public override int GetHashCode() => Id.GetHashCode();
 

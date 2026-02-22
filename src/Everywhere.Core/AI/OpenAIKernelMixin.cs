@@ -1,5 +1,8 @@
 ﻿using System.ClientModel;
 using System.ClientModel.Primitives;
+using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.AI;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -17,7 +20,7 @@ namespace Everywhere.AI;
 /// <summary>
 /// An implementation of <see cref="IKernelMixin"/> for OpenAI models via Chat Completions.
 /// </summary>
-public class OpenAIKernelMixin : KernelMixinBase
+public sealed class OpenAIKernelMixin : KernelMixinBase
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
@@ -46,22 +49,37 @@ public class OpenAIKernelMixin : KernelMixinBase
     /// <summary>
     /// Hook called before sending a streaming chat request.
     /// </summary>
-    protected virtual Task BeforeStreamingRequestAsync(IList<ChatMessage> messages, ref ChatOptions? options)
+    private Task BeforeStreamingRequestAsync(IList<ChatMessage> messages, ref ChatOptions? options)
     {
         // If deep thinking is not supported, skip processing.
         if (!_customAssistant.IsDeepThinkingSupported) return Task.CompletedTask;
 
         var opt = options ??= new ChatOptions();
+        options.AdditionalProperties ??= new AdditionalPropertiesDictionary();
         options.RawRepresentationFactory ??= _ => RawRepresentationFactory(opt);
 
-        foreach (var assistantMessage in messages.AsValueEnumerable().Where(m => m.Role == ChatRole.Assistant))
+        var lastUserMessageIndex = messages.AsValueEnumerable()
+            .Select((m, i) => new { Message = m, Index = i })
+            .Where(x => x.Message.Role == ChatRole.User)
+            .Select(x => x.Index)
+            .LastOrDefault(-1);
+        if (lastUserMessageIndex == -1 || lastUserMessageIndex == messages.Count - 1) return Task.CompletedTask;
+
+        foreach (var assistantMessage in messages.AsValueEnumerable().Skip(lastUserMessageIndex + 1).Where(m => m.Role == ChatRole.Assistant))
         {
-            if (assistantMessage.RawRepresentation is not OpenAI.Chat.ChatMessage chatMessage ||
-                assistantMessage.AdditionalProperties?.TryGetValue("reasoning_content", out var reasoningObj) is not true ||
-                reasoningObj is not string { Length: > 0 } reasoningContent) continue;
+            Debug.Assert(assistantMessage.RawRepresentation is OpenAI.Chat.ChatMessage);
+            if (assistantMessage.RawRepresentation is not OpenAI.Chat.ChatMessage chatMessage) continue;
+
+            if (assistantMessage.AdditionalProperties?.TryGetValue("reasoning_content", out var reasoningObj) is not true ||
+                reasoningObj is not string reasoningContent)
+            {
+                reasoningContent = string.Empty; // Set to empty string if not provided, as the field is required
+            }
 
             var patch = new JsonPatch();
-            patch.Set("$.reasoning_content"u8.ToArray(), reasoningContent);
+            // patch.Set("$.reasoning_content"u8, string.Empty) will throw an exception: Empty encoded value
+            // It seems a bug in the JsonPatch implementation, so we need to encode the empty string to bytes manually.
+            patch.Set("$.reasoning_content"u8, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(reasoningContent)));
             chatMessage.Patch = patch;
         }
 
@@ -75,6 +93,10 @@ public class OpenAIKernelMixin : KernelMixinBase
 
         return new ChatCompletionOptions
         {
+            Metadata =
+            {
+                { "thinking", "enabled" }
+            },
             ReasoningEffortLevel = reasoningEffortLevel switch
             {
                 ReasoningEffortLevel.Minimal => ChatReasoningEffortLevel.Minimal,

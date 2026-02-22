@@ -14,7 +14,7 @@ namespace Everywhere.AI;
 /// Allowing users to define and manage their own custom AI assistants.
 /// </summary>
 [GeneratedSettingsItems]
-public partial class CustomAssistant : ObservableValidator
+public sealed partial class CustomAssistant : ObservableValidator
 {
     [HiddenSettingsItem]
     public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -511,7 +511,7 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
             OfficialWebsiteUrl = "https://www.deepseek.com",
             DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
             LightIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
-            Schema = ModelProviderSchema.DeepSeek,
+            Schema = ModelProviderSchema.OpenAI,
             ModelDefinitions =
             [
                 new ModelDefinitionTemplate

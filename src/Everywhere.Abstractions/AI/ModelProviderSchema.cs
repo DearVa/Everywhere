@@ -12,7 +12,6 @@ public enum ModelProviderSchema
     Anthropic,
     Google,
     Ollama,
-    DeepSeek
 }
 
 public static partial class ModelProviderSchemaExtensions
@@ -32,7 +31,6 @@ public static partial class ModelProviderSchemaExtensions
                 ModelProviderSchema.Anthropic => "https://api.anthropic.com",
                 ModelProviderSchema.Google => "https://generativelanguage.googleapis.com/v1beta",
                 ModelProviderSchema.Ollama => "http://localhost:11434",
-                ModelProviderSchema.DeepSeek => "https://api.deepseek.com/v1",
                 _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
             };
         }
@@ -92,7 +90,6 @@ public static partial class ModelProviderSchemaExtensions
                 ModelProviderSchema.Anthropic => prefix,
                 ModelProviderSchema.Google => $"{prefix}/v1beta",
                 ModelProviderSchema.Ollama => prefix,
-                ModelProviderSchema.DeepSeek => $"{prefix}/v1",
                 _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
             };
         }
@@ -115,7 +112,6 @@ public static partial class ModelProviderSchemaExtensions
                 ModelProviderSchema.Anthropic => $"{prefix}/v1/messages",
                 ModelProviderSchema.Google => $"{prefix}/models",
                 ModelProviderSchema.Ollama => $"{prefix}/api/chat",
-                ModelProviderSchema.DeepSeek => $"{prefix}/chat/completions",
                 _ => throw new ArgumentOutOfRangeException(nameof(schema), schema, null)
             };
         }

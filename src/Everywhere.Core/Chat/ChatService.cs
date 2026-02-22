@@ -492,7 +492,9 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             kernelMixin.IsFunctionCallingSupported && _persistentState.IsToolCallEnabled ?
                 FunctionChoiceBehavior.Auto(autoInvoke: false) :
                 null,
-            _persistentState.ReasoningEffortLevel);
+            kernelMixin.IsDeepThinkingSupported ?
+                _persistentState.ReasoningEffortLevel :
+                null);
 
         try
         {
@@ -920,7 +922,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                 if (context.Function.Permissions == ChatFunctionPermissions.None)
                 {
                     headerKey = new FormattedDynamicResourceKey(
-                        LocaleKey.ChatPluginConsentRequest_Common_Header,
+                        LocaleKey.ChatPluginConsentRequest_CommonNone_Header,
                         context.Function.HeaderKey);
                 }
                 else
@@ -989,7 +991,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
 
             await foreach (var content in kernelMixin.ChatCompletionService.GetStreamingChatMessageContentsAsync(
                                chatHistory,
-                               kernelMixin.GetPromptExecutionSettings(reasoningEffortLevel: ReasoningEffortLevel.Minimal),
+                               kernelMixin.GetPromptExecutionSettings(),
                                cancellationToken: cancellationToken))
             {
                 usage.Update(content);

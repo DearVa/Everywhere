@@ -7,7 +7,7 @@ namespace Everywhere.AI;
 /// <summary>
 /// A factory for creating instances of <see cref="IKernelMixin"/>.
 /// </summary>
-public class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory) : IKernelMixinFactory
+public sealed class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFactory loggerFactory) : IKernelMixinFactory
 {
     private readonly Lock _syncLock = new();
 
@@ -64,7 +64,6 @@ public class KernelMixinFactory(IHttpClientFactory httpClientFactory, ILoggerFac
             ModelProviderSchema.Anthropic => new AnthropicKernelMixin(customAssistant, httpClient),
             ModelProviderSchema.Google => new GoogleKernelMixin(customAssistant, httpClient, loggerFactory),
             ModelProviderSchema.Ollama => new OllamaKernelMixin(customAssistant, httpClient),
-            ModelProviderSchema.DeepSeek => new DeepSeekKernelMixin(customAssistant, httpClient, loggerFactory),
             _ => throw new HandledChatException(
                 new NotSupportedException($"Model provider schema '{customAssistant.Schema}' is not supported."),
                 HandledChatExceptionType.InvalidConfiguration,
