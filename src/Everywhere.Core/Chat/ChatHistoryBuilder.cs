@@ -47,10 +47,10 @@ public static class ChatHistoryBuilder
             }
             case AssistantChatMessage assistant:
             {
-                string? previousReasoningOutput = null;
+                var items = new ChatMessageContentItemCollection();
+                var metadata = new MetadataDictionary(1);
                 foreach (var span in assistant.Items)
                 {
-                    var items = new ChatMessageContentItemCollection();
                     switch (span)
                     {
                         case AssistantChatMessageTextSpan { Content: { Length: > 0 } content }:
@@ -60,41 +60,65 @@ public static class ChatHistoryBuilder
                         }
                         case AssistantChatMessageFunctionCallSpan { Items: { Count: > 0 } functionCalls }:
                         {
-                            // First, yield any accumulated items before the function calls.
-                            if (items.Count > 0)
-                            {
-                                var metadata = GetMetadataWithReasoning();
-                                yield return new ChatMessageContent(AuthorRole.Assistant, items, metadata: metadata);
+                            // 1. Add all function calls as content items.
+                            items.AddRange(functionCalls.SelectMany(f => f.Calls));
 
-                                // Clear items for function call contents.
-                                items = [];
-                            }
+                            // 2. Yield the assistant message with function call items first
+                            yield return new ChatMessageContent(AuthorRole.Assistant, items, metadata: metadata);
+                            items = [];
 
-                            foreach (var functionCallChatMessage in functionCalls)
+                            // 3. Yield the function call results as separate tool messages
+                            var extraToolCallResults = new List<ChatAttachment>();
+                            foreach (var functionCall in functionCalls)
                             {
-                                await foreach (var actionChatMessageContent in CreateChatMessageContentsAsync(
-                                                   functionCallChatMessage,
-                                                   cancellationToken))
+                                foreach (var call in functionCall.Calls)
                                 {
-                                    var metadata = GetMetadataWithReasoning();
-                                    if (metadata is not null)
+                                    var callId = call.Id;
+                                    if (callId.IsNullOrEmpty())
                                     {
-                                        actionChatMessageContent.Metadata ??= new MetadataDictionary();
-                                        var nestedMetadata = (MetadataDictionary)actionChatMessageContent.Metadata;
-                                        foreach (var (key, value) in metadata)
-                                        {
-                                            nestedMetadata[key] = value;
-                                        }
+                                        throw new InvalidOperationException("Function CallId cannot be null or empty.");
                                     }
 
-                                    yield return actionChatMessageContent;
+                                    var resultContent = functionCall.Results.AsValueEnumerable().FirstOrDefault(r => r.CallId == callId);
+                                    yield return resultContent?.ToChatMessage() ?? new ChatMessageContent(
+                                        AuthorRole.Tool,
+                                        [
+                                            new FunctionResultContent(
+                                                call,
+                                                $"Error: No result found for function call ID '{callId}'. " +
+                                                $"This may caused by an error during function execution or user cancellation.")
+                                        ]);
+
+                                    // If the function call result is a ChatAttachment, add it as extra attachment message(s).
+                                    if (resultContent?.Result is ChatAttachment extraToolCallResult)
+                                    {
+                                        extraToolCallResults.Add(extraToolCallResult);
+                                    }
                                 }
                             }
+
+                            // 4. Workaround for any function call results that are ChatAttachments
+                            // We put them as user message because tool message doesn't support attachments
+                            if (extraToolCallResults.Count > 0)
+                            {
+                                var attachmentItems = new ChatMessageContentItemCollection { new TextContent("<ExtraToolCallResultAttachments>") };
+                                foreach (var extraToolCallResult in extraToolCallResults)
+                                {
+                                    await PopulateKernelContentsAsync(extraToolCallResult, attachmentItems, cancellationToken);
+                                }
+
+                                // No valid attachment added, do nothing
+                                if (attachmentItems.Count == 1) break;
+
+                                attachmentItems.Add(new TextContent("</ExtraToolCallResultAttachments>"));
+                                yield return new ChatMessageContent(AuthorRole.User, attachmentItems);
+                            }
+
                             break;
                         }
                         case AssistantChatMessageReasoningSpan { ReasoningOutput: { Length: > 0 } reasoningOutput }:
                         {
-                            previousReasoningOutput = reasoningOutput;
+                            metadata["reasoning_content"] = reasoningOutput;
                             break;
                         }
                         case AssistantChatMessageImageSpan { ImageOutput: { } imageOutput }:
@@ -115,32 +139,11 @@ public static class ChatHistoryBuilder
                             break;
                         }
                     }
+                }
 
-                    if (items.Count > 0)
-                    {
-                        var metadata = GetMetadataWithReasoning();
-                        yield return new ChatMessageContent(AuthorRole.Assistant, items, metadata: metadata);
-                    }
-
-                    // If any span has reasoning output, add it to the assistant message metadata.
-                    // - Reasoning: I should look up the weather.
-                    // |-> [Tool call: get_weather]
-                    // - Reasoning: The weather returns error. I have make a mistake. Let me try again.
-                    // |-> [Tool call: get_weather_v2]
-                    MetadataDictionary? GetMetadataWithReasoning()
-                    {
-                        // Return assistant.Metadata directly if there's no reasoning output to add.
-                        if (previousReasoningOutput is null) return assistant.Metadata;
-
-                        var combinedMetadata = assistant.Metadata is { } existingMetadata ?
-                            new MetadataDictionary(existingMetadata) :
-                            new MetadataDictionary(1);
-
-                        combinedMetadata["reasoning_content"] = previousReasoningOutput;
-                        previousReasoningOutput = null;
-
-                        return combinedMetadata;
-                    }
+                if (items.Count > 0)
+                {
+                    yield return new ChatMessageContent(AuthorRole.Assistant, items, metadata: metadata);
                 }
                 break;
             }
@@ -169,45 +172,6 @@ public static class ChatHistoryBuilder
                 }
 
                 yield return new ChatMessageContent(AuthorRole.User, items);
-                break;
-            }
-            case FunctionCallChatMessage functionCall:
-            {
-                var functionCallMessage = new ChatMessageContent(AuthorRole.Assistant, content: null);
-                functionCallMessage.Items.AddRange(functionCall.Calls);
-                yield return functionCallMessage;
-
-                foreach (var call in functionCall.Calls)
-                {
-                    var callId = call.Id;
-                    if (callId.IsNullOrEmpty())
-                    {
-                        throw new InvalidOperationException("Function call ID cannot be null or empty when creating chat message contents.");
-                    }
-
-                    var resultContent = functionCall.Results.AsValueEnumerable().FirstOrDefault(r => r.CallId == callId);
-                    yield return resultContent?.ToChatMessage() ?? new ChatMessageContent(
-                        AuthorRole.Tool,
-                        [
-                            new FunctionResultContent(
-                                call,
-                                $"Error: No result found for function call ID '{callId}'. " +
-                                $"This may caused by an error during function execution or user cancellation.")
-                        ]);
-
-                    // If the function call result is a ChatAttachment, add it as extra attachment message(s).
-                    if (resultContent?.Result is not ChatAttachment extraToolCallResult) continue;
-
-                    var items = new ChatMessageContentItemCollection { new TextContent("<ExtraToolCallResultAttachments>") };
-                    await PopulateKernelContentsAsync(extraToolCallResult, items, cancellationToken);
-
-                    // No valid attachment added
-                    if (items.Count == 1) continue;
-
-                    items.Add(new TextContent("</ExtraToolCallResultAttachments>"));
-                    yield return new ChatMessageContent(AuthorRole.User, items);
-                }
-
                 break;
             }
             case { Role.Label: "system" or "user" or "developer" or "tool" }:
