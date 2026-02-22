@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using System.Text.Json.Serialization;
 using Avalonia.Reactive;
@@ -176,9 +177,21 @@ public partial class FormattedDynamicResourceKey(object key, params IReadOnlyLis
     public override string ToString()
     {
         var resolvedKey = Resolve(Key);
-        return string.IsNullOrEmpty(resolvedKey) ?
-            string.Empty :
-            string.Format(resolvedKey, Args.AsValueEnumerable().Select(object? (a) => a.ToString()).ToArray());
+        try
+        {
+            return string.IsNullOrEmpty(resolvedKey) ?
+                string.Empty :
+                string.Format(resolvedKey, Args.AsValueEnumerable().Select(object? (a) => a.ToString()).ToArray());
+        }
+        catch (FormatException e)
+        {
+            Debug.Fail("Failed to format resource key. Check if the number of arguments matches the placeholders in the resource string.");
+
+            // If formatting fails, return the resolved key without formatting to avoid breaking the UI.
+            // This can happen if the number of arguments does not match the placeholders in the resource string.
+            Console.Error.WriteLine($"Failed to format resource key '{resolvedKey}' with arguments [{string.Join(", ", Args)}]: {e}");
+            return resolvedKey;
+        }
     }
 
     public override bool Equals(object? obj) => obj is FormattedDynamicResourceKey other &&
