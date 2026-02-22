@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers.Text;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -57,14 +58,12 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
     private const string ServiceName = "com.sylinko.everywhere";
     private const string TokenDataKey = "oauth_token_data";
-    private const string ResponseRedirectUri = "sylinko-everywhere://callback";
 
     private const string AuthorizeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/authorize";
     private const string TokenEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/token";
     private const string UserInfoEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/userinfo";
     private const string RevokeEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/revoke";
-    private const string EndSessionEndpoint = $"{CloudConstants.OAuthBaseUrl}/api/auth/oauth2/end-session";
-    private const string RequestRedirectUri = $"{CloudConstants.OAuthBaseUrl}/oauth2/device-callback?redirect={ResponseRedirectUri}";
+    private const string RedirectUri = "sylinko-everywhere://callback";
     private const string Scopes = "openid profile email offline_access";
 
     private TokenData? _tokenData;
@@ -95,18 +94,16 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
         try
         {
-            // 1. Prepare for callback
             _authCodeTcs = new TaskCompletionSource<string>();
             _expectedState = Guid.NewGuid().ToString();
             var codeVerifier = GenerateCodeVerifier();
             var codeChallenge = GenerateCodeChallenge(codeVerifier);
 
-            // 2. Construct Authorization URL with PKCE
-            // Added: offline_access, profile, email to scopes
+            // Construct Authorization URL with PKCE
             var sb = new StringBuilder(AuthorizeEndpoint);
             sb.Append($"?response_type=code");
             sb.Append($"&client_id={CloudConstants.ClientId}");
-            sb.Append($"&redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}");
+            sb.Append($"&redirect_uri={Uri.EscapeDataString(RedirectUri)}");
             sb.Append($"&state={_expectedState}");
             sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
             sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
@@ -115,12 +112,10 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
             var authorizeUrl = sb.ToString();
             _logger.LogDebug("[AuthService] Starting login flow. Auth URL: {AuthorizeUrl}", authorizeUrl);
-
-            // 3. Open the system browser
             await _launcher.LaunchUriAsync(new Uri(authorizeUrl));
 
-            // 4. Wait for the callback
-            using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+            // Wait for the callback
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // No interaction required, so we can have a reasonable timeout
             string code;
             try
             {
@@ -131,18 +126,18 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
                 throw new TimeoutException("Login timed out.");
             }
 
-            // 5. Exchange Authorization Code for Access Token
+            // Exchange Authorization Code for Access Token
             var parameters = new Dictionary<string, string>
             {
                 { "grant_type", "authorization_code" },
                 { "code", code },
-                { "redirect_uri", RequestRedirectUri },
+                { "redirect_uri", RedirectUri },
                 { "client_id", CloudConstants.ClientId },
                 { "code_verifier", codeVerifier }
             };
             await RequestTokenAsync(parameters, cancellationToken);
 
-            // 6. Refresh UserProfile
+            // Refresh UserProfile
             await RefreshUserProfileAsync(cancellationToken);
             return true;
         }
@@ -169,9 +164,9 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
     /// <exception cref="HttpRequestException"></exception>
     private async Task RequestTokenAsync(Dictionary<string, string> parameters, CancellationToken cancellationToken)
     {
-        // Use the default client (without auth handler) to avoid circular dependency
         using var httpClient = _httpClientFactory.CreateClient();
 
+        // OAuth 2.0 token endpoint requires application/x-www-form-urlencoded (RFC 6749 Section 4.1.3)
         var request = new HttpRequestMessage(HttpMethod.Post, TokenEndpoint)
         {
             Content = new FormUrlEncodedContent(parameters)
@@ -207,31 +202,16 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
             using var httpClient = _httpClientFactory.CreateClient();
 
-            // 1. Revoke Access Token if exists
+            // Revoke Access Token if exists
             if (!_tokenData.AccessToken.IsNullOrEmpty())
             {
                 await RevokeTokenAsync(_tokenData.AccessToken, "access_token");
             }
 
-            // 2. Revoke Refresh Token if exists
+            // Revoke Refresh Token if exists
             if (!_tokenData.RefreshToken.IsNullOrEmpty())
             {
                 await RevokeTokenAsync(_tokenData.RefreshToken, "refresh_token");
-            }
-
-            // 3. Open RP-Initiated Logout if id_token exists
-            if (!_tokenData.IdToken.IsNullOrEmpty())
-            {
-                var url =
-                    $"{EndSessionEndpoint}?id_token_hint={_tokenData.IdToken}&post_logout_redirect_uri={Uri.EscapeDataString(RequestRedirectUri)}";
-                try
-                {
-                    await _launcher.LaunchUriAsync(new Uri(url));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogWarning(ex, "Failed to launch logout URL");
-                }
             }
 
             _tokenData = null;
@@ -280,7 +260,6 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
     public async Task RefreshUserProfileAsync(CancellationToken cancellationToken)
     {
-        // This client is configured with auth and auto refresh token
         using var httpClient = _httpClientFactory.CreateClient(nameof(ICloudClient));
 
         try
@@ -356,14 +335,6 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
         {
             var uri = new Uri(url);
 
-            // Check if it matches our redirect scheme/path
-            // Note: Simplistic check. Better to check Scheme and Path specifically.
-            if (!url.StartsWith(ResponseRedirectUri, StringComparison.OrdinalIgnoreCase))
-            {
-                _logger.LogDebug("[AuthService] URL does not match expected prefix. Ignoring.");
-                return;
-            }
-
             // Parse Query Parameters
             var query = HttpUtility.ParseQueryString(uri.Query);
             var code = query["code"];
@@ -402,26 +373,18 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
         }
     }
 
-    // PKCE Helper Methods
-    private static string GenerateCodeVerifier()
-    {
-        var bytes = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(bytes);
-        }
-        return Base64UrlEncode(bytes);
-    }
+    // PKCE Helper
+    private static string GenerateCodeVerifier() =>
+        Base64Url.EncodeToString(RandomNumberGenerator.GetBytes(32));
 
-    private static string GenerateCodeChallenge(string codeVerifier)
-        => Base64UrlEncode(SHA256.HashData(Encoding.UTF8.GetBytes(codeVerifier)));
-
-    private static string Base64UrlEncode(byte[] bytes)
+    private static unsafe string GenerateCodeChallenge(string codeVerifier)
     {
-        return Convert.ToBase64String(bytes)
-            .Replace("+", "-")
-            .Replace("/", "_")
-            .Replace("=", "");
+        Span<byte> verifierBytes = stackalloc byte[codeVerifier.Length];
+        var bytesWritten = Encoding.ASCII.GetBytes(codeVerifier, verifierBytes);
+        verifierBytes = verifierBytes[..bytesWritten];
+        Span<byte> hashBytes = stackalloc byte[SHA256.HashSizeInBytes];
+        SHA256.HashData(verifierBytes, hashBytes);
+        return Base64Url.EncodeToString(hashBytes);
     }
 
     #region IAsyncInitializer Implementation
