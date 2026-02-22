@@ -58,6 +58,8 @@ public sealed class NativeChatFunction : ChatFunction
 
     public override KernelFunction KernelFunction { get; }
 
+    public bool IsAllowedInSubagent { get; }
+
     /// <summary>
     /// An optional predicate that can be used to inspect the function call content before prompting the user for permission consent.
     /// This will be called only if the function call requires user consent and is not auto-approved.
@@ -76,6 +78,7 @@ public sealed class NativeChatFunction : ChatFunction
         LucideIconKind? icon = null,
         bool isAutoApproveAllowed = true,
         bool isExperimental = false,
+        bool isAllowedInSubagent = true,
         Func<FunctionCallContent, bool?>? onPermissionConsent = null)
     {
         if (method.Method.GetCustomAttributes<DynamicResourceKeyAttribute>(false).FirstOrDefault() is
@@ -101,6 +104,7 @@ public sealed class NativeChatFunction : ChatFunction
         Icon = icon;
         IsAutoApproveAllowed = isAutoApproveAllowed;
         IsExperimental = isExperimental;
+        IsAllowedInSubagent = isAllowedInSubagent;
         OnPermissionConsent = onPermissionConsent;
 
         if (method.Method.GetCustomAttributes<FriendlyFunctionCallContentRendererAttribute>(false).FirstOrDefault() is

@@ -378,9 +378,12 @@ public class ChatPluginManager : IChatPluginManager
         }
     }
 
-    public async Task<IChatPluginScope> CreateScopeAsync(CancellationToken cancellationToken)
+    public async Task<IChatPluginScope> CreateScopeAsync(bool isSubagent, CancellationToken cancellationToken)
     {
-        var builtInPlugins = _builtInPluginsSource.Items.AsValueEnumerable().Where(p => p.IsEnabled).ToList();
+        var builtInPlugins = _builtInPluginsSource.Items
+            .AsValueEnumerable()
+            .Where(p => p.IsEnabled && (!isSubagent || p.IsAllowedInSubagent))
+            .ToList();
 
         // Activate MCP plugins.
         var mcpPlugins = new List<McpChatPlugin>();
@@ -403,14 +406,13 @@ public class ChatPluginManager : IChatPluginManager
         }
 
         // Ensure that functions in the scope do not have the same name.
-        var functionNames = new HashSet<string>();
-
+        var functionNameDeduplicator = new HashSet<string>();
         return new ChatPluginScope(
             builtInPlugins
                 .AsValueEnumerable()
                 .Cast<ChatPlugin>()
                 .Concat(mcpPlugins)
-                .Select(p => new ChatPluginSnapshot(p, functionNames))
+                .Select(p => new ChatPluginSnapshot(p, functionNameDeduplicator, isSubagent))
                 .ToList());
     }
 
@@ -460,19 +462,21 @@ public class ChatPluginManager : IChatPluginManager
 
         public ChatPluginSnapshot(
             ChatPlugin originalChatPlugin,
-            HashSet<string> functionNames) : base(originalChatPlugin.Name)
+            HashSet<string> functionNameDeduplicator,
+            bool isSubagent) : base(originalChatPlugin.Name)
         {
             _originalChatPlugin = originalChatPlugin;
             AllowedPermissions = originalChatPlugin.AllowedPermissions.ActualValue;
             _functionsSource.AddRange(
                 originalChatPlugin
                     .GetEnabledFunctions()
+                    .Where(f => !isSubagent || f is not NativeChatFunction { IsAllowedInSubagent: false })
                     .Select(EnsureUniqueFunctionName));
 
             ChatFunction EnsureUniqueFunctionName(ChatFunction function)
             {
                 var metadata = function.KernelFunction.Metadata;
-                if (functionNames.Add(metadata.Name)) return function;
+                if (functionNameDeduplicator.Add(metadata.Name)) return function;
 
                 var postfix = 1;
                 string newName;
@@ -480,7 +484,7 @@ public class ChatPluginManager : IChatPluginManager
                 {
                     newName = $"{metadata.Name}_{postfix++}";
                 }
-                while (!functionNames.Add(newName));
+                while (!functionNameDeduplicator.Add(newName));
                 metadata.Name = newName;
                 return function;
             }

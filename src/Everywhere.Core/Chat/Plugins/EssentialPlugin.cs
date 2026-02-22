@@ -67,7 +67,8 @@ public class EssentialPlugin : BuiltInChatPlugin
             list.Add(
                 new NativeChatFunction(
                     RunSubagentAsync,
-                    ChatFunctionPermissions.None));
+                    ChatFunctionPermissions.None,
+                    isAllowedInSubagent: false));
             list.Add(
                 new NativeChatFunction(
                     ManageTodoList,
@@ -79,12 +80,13 @@ public class EssentialPlugin : BuiltInChatPlugin
     [Description(
         """
         Launch a new agent to handle complex, multi-step tasks autonomously, which is good for complex tasks that require decision-making and planning.
-        The agent can access tools as you can. After started, you will wait for the subagent to complete and return the final result as string.
+        The agent can access tools as you can, except it CANNOT call run_subagent to avoid infinite recursion.
+        After started, you will wait for the subagent to complete and return the final result as string.
         Each agent invocation is stateless, so make sure to provide all necessary context and instructions for the subagent to perform its task effectively.
         """)]
     [DynamicResourceKey(LocaleKey.BuiltInChatPlugin_Essential_RunSubagent_Header, LocaleKey.BuiltInChatPlugin_Essential_RunSubagent_Description)]
     private async Task<string> RunSubagentAsync(
-        [FromKernelServices] ChatService chatService,
+        [FromKernelServices] IChatService chatService,
         [FromKernelServices] CustomAssistant customAssistant,
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [Description("A detailed description of the task for the agent to perform")] string prompt,
@@ -106,7 +108,7 @@ public class EssentialPlugin : BuiltInChatPlugin
         // Display the chat context in the UI
         userInterface.DisplaySink.AppendChatContext(chatContext);
 
-        await chatService.GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
+        await chatService.RunSubagentAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
 
         if (assistantChatMessage.Count < 1)
         {

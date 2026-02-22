@@ -186,6 +186,12 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         await RunGenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken);
     }
 
+    public Task RunSubagentAsync(
+        ChatContext chatContext,
+        CustomAssistant customAssistant,
+        AssistantChatMessage assistantChatMessage,
+        CancellationToken cancellationToken) => GenerateAsync(chatContext, customAssistant, assistantChatMessage, true, cancellationToken);
+
     /// <summary>
     /// Ensures that a custom assistant is selected. If not, adds an error message to the chat context and throws an exception.
     /// We use an error message instead of throwing an exception so that user's message will not be lost and the user will know what happened in the chat UI.
@@ -279,6 +285,29 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         }
     }
 
+    /// <summary>
+    /// Runs the GenerateAsync method in a separate task.
+    /// This will clear the function call context stack before running.
+    /// Means a fresh generation.
+    /// </summary>
+    /// <param name="chatContext"></param>
+    /// <param name="customAssistant"></param>
+    /// <param name="assistantChatMessage"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    private Task RunGenerateAsync(
+        ChatContext chatContext,
+        CustomAssistant customAssistant,
+        AssistantChatMessage assistantChatMessage,
+        CancellationToken cancellationToken)
+    {
+        // Clear the function call context stack.
+        _functionCallContextStack.Clear();
+
+        return Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, false, cancellationToken), cancellationToken);
+    }
+
+
     private IKernelMixin CreateKernelMixin(CustomAssistant customAssistant)
     {
         using var activity = _activitySource.StartActivity();
@@ -309,13 +338,14 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         IKernelMixin kernelMixin,
         ChatContext chatContext,
         CustomAssistant customAssistant,
+        bool isSubagent,
         CancellationToken cancellationToken)
     {
         using var activity = _activitySource.StartActivity();
 
         var builder = Kernel.CreateBuilder();
 
-        builder.Services.AddSingleton(this);
+        builder.Services.AddSingleton<IChatService>(this);
         builder.Services.AddSingleton(kernelMixin.ChatCompletionService);
         builder.Services.AddSingleton(_chatContextManager);
         builder.Services.AddSingleton(chatContext);
@@ -327,7 +357,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             var needToStartMcp = _chatPluginManager.McpPlugins.AsValueEnumerable().Any(p => p is { IsEnabled: true, IsRunning: false });
             using var _ = needToStartMcp ? chatContext.SetBusyMessage(new DynamicResourceKey(LocaleKey.ChatContext_BusyMessage_StartingMcp)) : null;
 
-            var chatPluginScope = await _chatPluginManager.CreateScopeAsync(cancellationToken);
+            var chatPluginScope = await _chatPluginManager.CreateScopeAsync(isSubagent, cancellationToken);
             builder.Services.AddSingleton(chatPluginScope);
             activity?.SetTag("plugins.count", chatPluginScope.Plugins.AsValueEnumerable().Count());
 
@@ -341,38 +371,18 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     }
 
     /// <summary>
-    /// Runs the GenerateAsync method in a separate task.
-    /// This will clear the function call context stack before running.
-    /// Means a fresh generation.
-    /// </summary>
-    /// <param name="chatContext"></param>
-    /// <param name="customAssistant"></param>
-    /// <param name="assistantChatMessage"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    private Task RunGenerateAsync(
-        ChatContext chatContext,
-        CustomAssistant customAssistant,
-        AssistantChatMessage assistantChatMessage,
-        CancellationToken cancellationToken)
-    {
-        // Clear the function call context stack.
-        _functionCallContextStack.Clear();
-
-        return Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, cancellationToken), cancellationToken);
-    }
-
-    /// <summary>
     /// Generates a response for the given chat context and assistant chat message.
     /// </summary>
     /// <param name="chatContext"></param>
     /// <param name="customAssistant"></param>
     /// <param name="assistantChatMessage"></param>
+    /// <param name="isSubagent"></param>
     /// <param name="cancellationToken"></param>
-    public async Task GenerateAsync(
+    private async Task GenerateAsync(
         ChatContext chatContext,
         CustomAssistant customAssistant,
         AssistantChatMessage assistantChatMessage,
+        bool isSubagent,
         CancellationToken cancellationToken)
     {
         using var activity = StartChatActivity("chat", customAssistant);
@@ -383,7 +393,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             cancellationToken.ThrowIfCancellationRequested();
 
             var kernelMixin = CreateKernelMixin(customAssistant);
-            var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, cancellationToken);
+            var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, isSubagent, cancellationToken);
 
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
             _chatContextManager.PopulateSystemPrompt(chatContext, customAssistant.SystemPrompt);

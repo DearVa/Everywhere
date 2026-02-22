@@ -60,7 +60,7 @@ public interface IChatPluginManager
     /// Functions in the scope must not have the same name.
     /// </summary>
     /// <returns></returns>
-    Task<IChatPluginScope> CreateScopeAsync(CancellationToken cancellationToken);
+    Task<IChatPluginScope> CreateScopeAsync(bool isSubagent, CancellationToken cancellationToken);
 }
 
 /// <summary>

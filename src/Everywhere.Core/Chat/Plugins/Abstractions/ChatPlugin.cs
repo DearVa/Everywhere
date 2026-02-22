@@ -69,8 +69,7 @@ public abstract partial class ChatPlugin : KernelPlugin, IDisposable
             .BindEx(out _functionsConnection);
     }
 
-    public IReadOnlyList<ChatFunction> GetEnabledFunctions() =>
-        _functionsSource.Items.AsValueEnumerable().Where(f => f.IsEnabled).ToList();
+    public IEnumerable<ChatFunction> GetEnabledFunctions() => _functionsSource.Items.Where(f => f.IsEnabled);
 
     public override IEnumerator<KernelFunction> GetEnumerator() =>
         _functionsSource.Items.Where(f => f.IsEnabled).Select(f => f.KernelFunction).GetEnumerator();
@@ -99,6 +98,8 @@ public abstract class BuiltInChatPlugin(string name) : ChatPlugin(name)
     public override sealed string Key => $"builtin.{Name}";
 
     public virtual bool IsDefaultEnabled => false;
+
+    public virtual bool IsAllowedInSubagent => true;
 }
 
 /// <summary>
