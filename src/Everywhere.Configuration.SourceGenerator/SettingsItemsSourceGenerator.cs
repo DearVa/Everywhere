@@ -79,7 +79,16 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
             sb.AppendLine("[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
             sb.AppendLine("[global::System.Text.Json.Serialization.JsonIgnore]");
             sb.AppendLine("[field: global::System.Diagnostics.CodeAnalysis.AllowNull, global::System.Diagnostics.CodeAnalysis.MaybeNull]");
-            sb.AppendLine("public global::Everywhere.Configuration.SettingsItems SettingsItems").AppendLine("{");
+            sb.Append("public ");
+
+            // Append override modifier if the property is present in the base type with virtual or abstract modifier
+            var baseProperty = type.BaseType?.GetMembers().OfType<IPropertySymbol>().FirstOrDefault(p => p.Name == "SettingsItems");
+            if (baseProperty != null && (baseProperty.IsVirtual || baseProperty.IsAbstract))
+            {
+                sb.Append("override ");
+            }
+
+            sb.AppendLine("global::Everywhere.Configuration.SettingsItems SettingsItems").AppendLine("{");
 
             // Constructor
             using (sb.Indent())
@@ -339,7 +348,7 @@ public sealed class SettingsItemsSourceGenerator : IIncrementalGenerator
                 using (sb.Indent())
                 {
                     sb.AppendLine(
-                        $"var control_{itemName} = ((global::Everywhere.Configuration.ISettingsControl)this.{metadata.Name}).CreateControl(this);");
+                        $"var control_{itemName} = ((global::Everywhere.Configuration.ISettingsControl)this.{metadata.Name}).CreateControl();");
                     sb.AppendLine($"control_{itemName}.DataContext = this;");
                     sb.AppendLine($"return control_{itemName};");
                 }

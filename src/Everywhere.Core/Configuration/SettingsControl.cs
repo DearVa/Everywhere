@@ -6,7 +6,7 @@ namespace Everywhere.Configuration;
 
 public interface ISettingsControl
 {
-    Control CreateControl(object owner);
+    Control CreateControl();
 }
 
 /// <summary>
@@ -16,7 +16,7 @@ public interface ISettingsControl
 public class SettingsControl<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TControl> : ISettingsControl
     where TControl : Control
 {
-    private readonly Func<object, TControl>? _factory;
+    private readonly Func<IServiceProvider, TControl>? _factory;
 
     private TControl? _control;
 
@@ -27,15 +27,15 @@ public class SettingsControl<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
         _control = control;
     }
 
-    public SettingsControl(Func<object, TControl> factory)
+    public SettingsControl(Func<IServiceProvider, TControl> factory)
     {
         _factory = factory;
     }
 
-    public Control CreateControl(object owner)
+    public Control CreateControl()
     {
         if (_control is not null) return _control;
-        if (_factory is not null) return _control = _factory(owner);
+        if (_factory is not null) return _control = _factory(ServiceLocator.Resolve<IServiceProvider>());
         return _control = ServiceLocator.Resolve<TControl>();
     }
 }

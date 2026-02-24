@@ -106,7 +106,7 @@ public static class ChatHistoryBuilder
                                 var attachmentItems = new ChatMessageContentItemCollection { new TextContent("<ExtraToolCallResultAttachments>") };
                                 foreach (var extraToolCallResult in extraToolCallResults)
                                 {
-                                    await PopulateKernelContentsAsync(extraToolCallResult, attachmentItems, cancellationToken);
+                                    await PopulateKernelContentsAsync(extraToolCallResult, attachmentItems, supportedModalities, cancellationToken);
                                 }
 
                                 // No valid attachment added, do nothing

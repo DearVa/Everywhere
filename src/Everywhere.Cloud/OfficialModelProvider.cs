@@ -7,14 +7,16 @@ using System.Text.Json.Serialization;
 using DynamicData;
 using Everywhere.AI;
 using Everywhere.Common;
+using Everywhere.Configuration;
 using Everywhere.Extensions;
 using Microsoft.Extensions.Logging;
+using ZLinq;
 
 namespace Everywhere.Cloud;
 
 public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsyncInitializer, IDisposable
 {
-    public IReadOnlyList<ModelDefinitionTemplate> ModelDefinitions
+    public ReadOnlyObservableCollection<ModelDefinitionTemplate> ModelDefinitions
     {
         get
         {
@@ -26,6 +28,7 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
     }
 
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IKeyValueStorage _keyValueStorage;
     private readonly ILogger<OfficialModelProvider> _logger;
 
     private readonly SourceList<ModelDefinitionTemplate> _modelDefinitionsSource = new();
@@ -36,10 +39,19 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
     // State tracking (Optional, avoids reloading if data is fresh)
     private DateTimeOffset _lastFetchTime = DateTimeOffset.MinValue;
 
-    public OfficialModelProvider(IHttpClientFactory httpClientFactory, ILogger<OfficialModelProvider> logger)
+    private const string StorageKey = "OfficialModelProvider.ModelDefinitions";
+
+    public OfficialModelProvider(IHttpClientFactory httpClientFactory, IKeyValueStorage keyValueStorage, ILogger<OfficialModelProvider> logger)
     {
         _httpClientFactory = httpClientFactory;
+        _keyValueStorage = keyValueStorage;
         _logger = logger;
+
+        // Load cached definitions from storage on startup (if available)
+        if (keyValueStorage.Get<IReadOnlyList<ModelDefinitionTemplate>>(StorageKey) is { Count: > 0 } cachedDefinitions)
+        {
+            _modelDefinitionsSource.AddRange(cachedDefinitions);
+        }
 
         // Bind SourceList to ObservableCollection (Standard DynamicData pattern)
         var listSubscription = _modelDefinitionsSource.Connect()
@@ -52,7 +64,7 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
             .Throttle(TimeSpan.FromMilliseconds(300))
             .Where(_ => DateTimeOffset.Now - _lastFetchTime > TimeSpan.FromSeconds(10))
             // 'Select' projects the signal into an Async Task.
-            .Select(_ => Observable.FromAsync(RefreshModelDefinitionsAsync))
+            .Select(_ => Observable.FromAsync(RefreshImplAsync))
             // 'Switch' subscribes to the NEW task and DISPOSES (Cancels) the previous one if it's running.
             .Switch()
             .Subscribe();
@@ -60,7 +72,11 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
         _disposables = new CompositeDisposable(listSubscription, refreshSubscription, _refreshRequestSubject);
     }
 
-    public async Task RefreshModelDefinitionsAsync(CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Actually performs the refresh by calling the official API, parsing the response, and updating the internal list and cache.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    private async Task RefreshImplAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -68,15 +84,19 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
 
             using var httpClient = _httpClientFactory.CreateClient(nameof(ICloudClient));
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{CloudConstants.AIGatewayBaseUrl}/models");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{CloudConstants.AIGatewayBaseUrl}/v1/models");
             var response = await httpClient.SendAsync(request, cancellationToken);
             var payload = await ApiPayload<IReadOnlyList<CloudModelDefinition>>.EnsureSuccessFromHttpResponseJsonAsync(
                 response,
                 ModelsResponseJsonSerializerContext.Default.Options,
                 cancellationToken);
-            var cloudModelDefinitions = payload.EnsureData();
 
-            _modelDefinitionsSource.Edit(innerList => innerList.Reset(cloudModelDefinitions.Select(c => c.ToModelDefinitionTemplate())));
+            var cloudModelDefinitions = payload.EnsureData();
+            var modelDefinitions = cloudModelDefinitions.AsValueEnumerable().Select(m => m.ToModelDefinitionTemplate()).ToList();
+
+            _modelDefinitionsSource.Edit(innerList => innerList.Reset(modelDefinitions));
+            _keyValueStorage.Set(StorageKey, modelDefinitions); // Update cache in storage
+
             _lastFetchTime = DateTimeOffset.Now;
         }
         catch (OperationCanceledException)
@@ -90,6 +110,15 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
             // Avoid hammering the endpoint on failure, but allow retries sooner than the normal 10s.
             _lastFetchTime = DateTimeOffset.Now - TimeSpan.FromSeconds(7);
         }
+    }
+
+    /// <summary>
+    /// Triggers a refresh of the model definitions from the official source and waits for it to complete.
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    public async Task RefreshAsync(CancellationToken cancellationToken = default)
+    {
+
     }
 
     public void Dispose() => _disposables.Dispose();
@@ -109,7 +138,10 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
         [property: JsonPropertyName("name")] string Name,
         [property: JsonPropertyName("attachment")] bool Attachment,
         [property: JsonPropertyName("reasoning")] bool SupportsReasoning,
-        [property: JsonPropertyName("tool_call")] bool SupportsToolCall,
+        [property: JsonPropertyName("toolCall")] bool SupportsToolCall,
+        [property: JsonPropertyName("knowledge")] string? KnowledgeCutoff,
+        [property: JsonPropertyName("releaseDate")] string? ReleaseDate,
+        [property: JsonPropertyName("deprecationDate")] string? DeprecationDate,
         [property: JsonPropertyName("modalities")] CloudModelModalities Modalities,
         [property: JsonPropertyName("limit")] CloudModelLimitInfo LimitInfo
     )
@@ -121,12 +153,16 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
                 Name = Name,
                 SupportsReasoning = SupportsReasoning,
                 SupportsToolCall = SupportsToolCall,
+                KnowledgeCutoff = DateOnly.TryParse(KnowledgeCutoff, out var knowledgeDate) ? knowledgeDate : null,
+                ReleaseDate = DateOnly.TryParse(ReleaseDate, out var releaseDate) ? releaseDate : null,
+                DeprecationDate = DateOnly.TryParse(DeprecationDate, out var deprecationDate) ? deprecationDate : null,
                 InputModalities = ConvertModalities(Modalities.Input),
                 OutputModalities = ConvertModalities(Modalities.Output),
-                ContextLimit = LimitInfo.Context
+                ContextLimit = LimitInfo.Context,
+                OutputLimit = LimitInfo.Output
             };
 
-        private static Modalities ConvertModalities(IReadOnlyList<string> modalityStrings) => modalityStrings.Aggregate(
+        private static Modalities ConvertModalities(IReadOnlyList<string> modalityStrings) => modalityStrings.AsValueEnumerable().Aggregate(
             AI.Modalities.None,
             (current, modality) => current | modality.ToLower() switch
             {
@@ -155,7 +191,7 @@ public sealed partial class OfficialModelProvider : IOfficialModelProvider, IAsy
 
     #region Async Initializer Implementation
 
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Startup;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Startup;
 
     public Task InitializeAsync()
     {

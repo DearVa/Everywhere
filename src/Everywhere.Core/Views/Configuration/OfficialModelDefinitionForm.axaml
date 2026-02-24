@@ -6,7 +6,24 @@
     TargetType="v:OfficialModelDefinitionForm">
     <Setter Property="Template">
       <ControlTemplate>
-        <TextBlock Text="Templated Control"/>
+        <DockPanel
+          MinWidth="320" HorizontalAlignment="Left"
+          HorizontalSpacing="8" LastChildFill="True">
+          <Button
+            Classes="Ghost" DockPanel.Dock="Right"
+            Width="36" Padding="0"
+            Command="{Binding RefreshCommand, RelativeSource={RelativeSource TemplatedParent}}"
+            ToolTip.Tip="{I18N {x:Static LocaleKey.SettingsPage_Reset_Button_ToolTip}}">
+            <LucideIcon
+              Kind="RotateCcw"
+              Size="{DynamicResource FontSizeL}"/>
+          </Button>
+
+          <ComboBox
+            HorizontalAlignment="Left" HorizontalContentAlignment="Left"
+            ItemsSource="{TemplateBinding ItemsSource}"
+            SelectedItem="{TemplateBinding SelectedItem, Mode=TwoWay}"/>
+        </DockPanel>
       </ControlTemplate>
     </Setter>
   </ControlTheme>
