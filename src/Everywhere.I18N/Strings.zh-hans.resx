@@ -2200,4 +2200,13 @@
     <data name="Modalities_Video" xml:space="preserve">
         <value>视频</value>
     </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value>最大输出长度 (output_limit)</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value>对话的最大上下文长度。此项会影响模型请求的参数（尤其是 Anthropic），请尽可能设为真实值。</value>
+    </data>
+    <data name="UserProfile_CancelLogin" xml:space="preserve">
+        <value>登录中</value>
+    </data>
 </root>

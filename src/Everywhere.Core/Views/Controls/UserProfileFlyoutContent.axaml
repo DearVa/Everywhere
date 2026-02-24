@@ -36,9 +36,21 @@
       <Button
         Classes="Primary" HorizontalAlignment="Stretch"
         shadui:ButtonAssist.Icon="{LucideIconContent LogIn}"
-        Command="{Binding LoginCommand}">
+        Command="{Binding LoginCommand}"
+        IsVisible="{Binding !LoginCommand.IsRunning}">
         <Button.Content>
           <I18N Key="{x:Static LocaleKey.UserProfile_Login}"/>
+        </Button.Content>
+      </Button>
+
+      <Button
+        Classes="Secondary" HorizontalAlignment="Stretch"
+        shadui:ButtonAssist.Icon="{LucideIconContent LogIn}"
+        shadui:ButtonAssist.ShowProgress="True"
+        Command="{Binding LoginCommand.Cancel}"
+        IsVisible="{Binding LoginCommand.IsRunning}">
+        <Button.Content>
+          <I18N Key="{x:Static LocaleKey.UserProfile_CancelLogin}"/>
         </Button.Content>
       </Button>
     </StackPanel>

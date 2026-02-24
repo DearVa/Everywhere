@@ -2198,4 +2198,13 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="Modalities_Pdf" xml:space="preserve">
         <value />
     </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value />
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value />
+    </data>
+    <data name="UserProfile_CancelLogin" xml:space="preserve">
+        <value />
+    </data>
 </root>
