@@ -96,7 +96,7 @@ public class App : Application, IRecipient<ApplicationCommand>
         {
             foreach (var group in ServiceLocator
                          .Resolve<IEnumerable<IAsyncInitializer>>()
-                         .GroupBy(i => i.Priority)
+                         .GroupBy(i => i.Index)
                          .OrderBy(g => g.Key))
             {
                 Task.WhenAll(group.Select(i => i.InitializeAsync())).WaitOnDispatcherFrame();

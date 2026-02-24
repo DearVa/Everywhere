@@ -20,7 +20,7 @@ public class CloudChatDbSynchronizer(
     ILogger<CloudChatDbSynchronizer> logger
 ) : IChatDbSynchronizer, IAsyncInitializer
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Database + 1;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Database + 1;
 
     private readonly AsyncLock _syncLock = new();
     private const int PushBytesLimit = 5 * 1024 * 1024; // 5 MB

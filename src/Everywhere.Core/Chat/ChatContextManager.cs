@@ -680,7 +680,7 @@ public partial class ChatContextManager : ObservableObject, IChatContextManager,
         }
     }
 
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Startup;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Startup;
 
     public Task InitializeAsync() => LoadMetadataAsync(9, null);
 

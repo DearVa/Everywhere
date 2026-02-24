@@ -13,7 +13,7 @@ namespace Everywhere.Initialization;
 /// </summary>
 public class SettingsInitializer : IAsyncInitializer
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Settings;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Settings;
 
     private readonly Dictionary<string, object?> _saveBuffer = new();
     private readonly DebounceExecutor<Dictionary<string, object?>, DispatcherTimerImpl> _saveDebounceExecutor;

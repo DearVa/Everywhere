@@ -14,7 +14,7 @@ public class UpdaterInitializer(ISoftwareUpdater softwareUpdater, Settings setti
 {
     private readonly ReusableCancellationTokenSource _cancellationTokenSource = new();
 
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Startup;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Startup;
 
     public Task InitializeAsync()
     {

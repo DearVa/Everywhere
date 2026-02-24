@@ -11,7 +11,7 @@ namespace Everywhere.Configuration;
 /// </summary>
 public sealed class KeyValueStorage : IKeyValueStorage, IAsyncInitializer, IDisposable
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Settings;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Settings;
 
     private const string PrimaryExtension = ".bin";
     private const string TempExtension = ".tmp";

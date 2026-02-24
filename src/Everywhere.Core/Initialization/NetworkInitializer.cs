@@ -17,7 +17,7 @@ namespace Everywhere.Initialization;
 /// </summary>
 public sealed class NetworkInitializer : IAsyncInitializer
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.AfterSettings;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Settings + 1;
 
     private readonly ProxySettings _proxySettings;
     private readonly DynamicWebProxy _dynamicWebProxy;

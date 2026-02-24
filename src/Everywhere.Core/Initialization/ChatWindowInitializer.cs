@@ -23,7 +23,7 @@ public class ChatWindowInitializer(
     ILogger<ChatWindowInitializer> logger
 ) : IAsyncInitializer
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Startup;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Startup;
 
     private readonly Lock _syncLock = new();
 

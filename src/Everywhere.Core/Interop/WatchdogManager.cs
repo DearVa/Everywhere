@@ -16,7 +16,7 @@ namespace Everywhere.Interop;
 /// </summary>
 public class WatchdogManager : IWatchdogManager, IAsyncInitializer
 {
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Startup;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Startup;
 
     private readonly AsyncLock _mutex;
 
