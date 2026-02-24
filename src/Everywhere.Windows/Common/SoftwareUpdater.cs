@@ -201,7 +201,7 @@ public sealed partial class SoftwareUpdater(
         {
             try
             {
-                var updatesPath = runtimeConstantProvider.EnsureWritableDataFolderPath("updates");
+                var updatesPath = RuntimeConstants.EnsureWritableDataFolderPath("updates");
                 if (!Directory.Exists(updatesPath)) return;
 
                 foreach (var file in Directory.EnumerateFiles(updatesPath))

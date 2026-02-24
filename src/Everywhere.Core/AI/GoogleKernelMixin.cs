@@ -7,21 +7,22 @@ using Microsoft.SemanticKernel.Connectors.Google;
 namespace Everywhere.AI;
 
 /// <summary>
-/// An implementation of <see cref="IKernelMixin"/> for Google Gemini models.
+/// An implementation of <see cref="KernelMixin"/> for Google Gemini models.
 /// </summary>
-public sealed class GoogleKernelMixin : KernelMixinBase
+public sealed class GoogleKernelMixin : KernelMixin
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
     public GoogleKernelMixin(
         CustomAssistant customAssistant,
+        ModelConnection connection,
         HttpClient httpClient,
         ILoggerFactory loggerFactory
-    ) : base(customAssistant)
+    ) : base(customAssistant, connection)
     {
         var service = new GoogleAIGeminiChatCompletionService(
             ModelId,
-            EnsureApiKey(),
+            ApiKey ?? "NO_API_KEY",
             httpClient: httpClient,
             loggerFactory: loggerFactory,
             customEndpoint: new Uri(Endpoint, UriKind.Absolute));
@@ -35,9 +36,6 @@ public sealed class GoogleKernelMixin : KernelMixinBase
         FunctionChoiceBehavior? functionChoiceBehavior = null,
         ReasoningEffortLevel? reasoningEffortLevel = null)
     {
-        double? temperature = _customAssistant.Temperature.IsCustomValueSet ? _customAssistant.Temperature.ActualValue : null;
-        double? topP = _customAssistant.TopP.IsCustomValueSet ? _customAssistant.TopP.ActualValue : null;
-
         // Convert FunctionChoiceBehavior to GeminiToolCallBehavior
         GeminiToolCallBehavior? toolCallBehavior = null;
         if (functionChoiceBehavior is not null and not NoneFunctionChoiceBehavior)
@@ -47,8 +45,8 @@ public sealed class GoogleKernelMixin : KernelMixinBase
 
         return new GeminiPromptExecutionSettings
         {
-            Temperature = temperature,
-            TopP = topP,
+            Temperature = Temperature,
+            TopP = TopP,
             ToolCallBehavior = toolCallBehavior,
             ThinkingConfig = GetThinkingConfig()
         };

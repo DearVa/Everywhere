@@ -18,24 +18,28 @@ using TextContent = Microsoft.Extensions.AI.TextContent;
 namespace Everywhere.AI;
 
 /// <summary>
-/// An implementation of <see cref="IKernelMixin"/> for OpenAI models via Chat Completions.
+/// An implementation of <see cref="KernelMixin"/> for OpenAI models via Chat Completions.
 /// </summary>
-public sealed class OpenAIKernelMixin : KernelMixinBase
+public class OpenAIKernelMixin : KernelMixin
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
     public OpenAIKernelMixin(
         CustomAssistant customAssistant,
+        ModelConnection connection,
         HttpClient httpClient,
         ILoggerFactory loggerFactory
-    ) : base(customAssistant)
+    ) : base(customAssistant, connection)
     {
+        // Some models don't need API key (e.g. LM Studio, Official mode)
+        AuthenticationPolicy authenticationPolicy = ApiKey.IsNullOrWhiteSpace() ?
+            new NoneAuthenticationPolicy() :
+            ApiKeyAuthenticationPolicy.CreateBearerAuthorizationPolicy(new ApiKeyCredential(ApiKey));
+
         ChatCompletionService = new OptimizedOpenAIApiClient(
             new ChatClient(
                 ModelId,
-                // Some models don't need API key (e.g. LM Studio)
-                // So we set a dummy value when API key is not provided to avoid runtime exception in ChatClient constructor.
-                new ApiKeyCredential(ApiKey.IsNullOrWhiteSpace() ? "NO_API_KEY" : ApiKey),
+                authenticationPolicy,
                 new OpenAIClientOptions
                 {
                     Endpoint = new Uri(Endpoint, UriKind.Absolute),
@@ -52,7 +56,7 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
     private Task BeforeStreamingRequestAsync(IList<ChatMessage> messages, ref ChatOptions? options)
     {
         // If deep thinking is not supported, skip processing.
-        if (!_customAssistant.SupportsReasoning) return Task.CompletedTask;
+        if (!SupportsReasoning) return Task.CompletedTask;
 
         var opt = options ??= new ChatOptions();
         options.AdditionalProperties ??= new AdditionalPropertiesDictionary();
@@ -130,12 +134,11 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
             await owner.BeforeStreamingRequestAsync(messagesList, ref options).ConfigureAwait(false);
 
             // cache the value to avoid property changes during enumeration
-            var SupportsReasoning = owner.SupportsReasoning;
             await foreach (var update in base.GetStreamingResponseAsync(messagesList, options, cancellationToken))
             {
                 // Why you keep reasoning in the fucking internal properties, OpenAI???
                 // I'm not a thief, let me access the data! 😭😭😭😭
-                if (SupportsReasoning && update is { Text: not { Length: > 0 }, RawRepresentation: StreamingChatCompletionUpdate detail })
+                if (owner.SupportsReasoning && update is { Text: not { Length: > 0 }, RawRepresentation: StreamingChatCompletionUpdate detail })
                 {
                     // Get the value of the internal 'Choices' property.
                     if (GetChoices(detail) is not IEnumerable choices)
@@ -215,5 +218,14 @@ public sealed class OpenAIKernelMixin : KernelMixinBase
 
         [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_patch")]
         private extern static ref JsonPatch GetPatch([UnsafeAccessorType(FuckingInternalDeltaTypeName)] object delta);
+    }
+
+    private sealed class NoneAuthenticationPolicy : AuthenticationPolicy
+    {
+        public override void Process(PipelineMessage message, IReadOnlyList<PipelinePolicy> pipeline, int currentIndex) =>
+            ProcessNext(message, pipeline, currentIndex);
+
+        public override ValueTask ProcessAsync(PipelineMessage message, IReadOnlyList<PipelinePolicy> pipeline, int currentIndex) =>
+            ProcessNextAsync(message, pipeline, currentIndex);
     }
 }

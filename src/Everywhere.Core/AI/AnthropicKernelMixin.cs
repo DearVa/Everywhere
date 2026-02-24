@@ -7,9 +7,9 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace Everywhere.AI;
 
 /// <summary>
-/// An implementation of <see cref="IKernelMixin"/> for Anthropic models.
+/// An implementation of <see cref="KernelMixin"/> for Anthropic models.
 /// </summary>
-public sealed class AnthropicKernelMixin : KernelMixinBase
+public sealed class AnthropicKernelMixin : KernelMixin
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
@@ -18,7 +18,7 @@ public sealed class AnthropicKernelMixin : KernelMixinBase
     /// <summary>
     /// Initializes a new instance of the <see cref="AnthropicKernelMixin"/> class.
     /// </summary>
-    public AnthropicKernelMixin(CustomAssistant customAssistant, HttpClient httpClient) : base(customAssistant)
+    public AnthropicKernelMixin(CustomAssistant customAssistant, ModelConnection connection, HttpClient httpClient) : base(customAssistant, connection)
     {
         var anthropicClient = new AnthropicClient(
             new ClientOptions
@@ -54,9 +54,9 @@ public sealed class AnthropicKernelMixin : KernelMixinBase
 
             object? OptionsRawRepresentationFactory(IChatClient _)
             {
-                // TODO: fuck these shits
-                var maxTokens = modelId switch
+                var maxTokens = customAssistant.OutputLimit switch
                 {
+                    > 0 => customAssistant.OutputLimit,
                     _ when modelId.StartsWith("claude-3-haiku") => 4096,
                     _ when modelId.StartsWith("claude-3-5-haiku") => 8192,
                     _ when modelId.StartsWith("claude-opus-4") => 32000,
@@ -66,7 +66,7 @@ public sealed class AnthropicKernelMixin : KernelMixinBase
                 };
 
                 ThinkingConfigParam thinking;
-                if (customAssistant.IsDeepThinkingSupported)
+                if (customAssistant.SupportsReasoning)
                 {
                     int budgetTokens;
                     if (chatOptions.AdditionalProperties?.TryGetValue("reasoning_effort_level", out var reasoningEffortLevelObj) is not true ||

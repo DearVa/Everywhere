@@ -7,9 +7,9 @@ using TextContent = Microsoft.Extensions.AI.TextContent;
 namespace Everywhere.AI;
 
 /// <summary>
-/// An implementation of <see cref="IKernelMixin"/> for Ollama models.
+/// An implementation of <see cref="KernelMixin"/> for Ollama models.
 /// </summary>
-public sealed partial class OllamaKernelMixin : KernelMixinBase
+public sealed partial class OllamaKernelMixin : KernelMixin
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
@@ -18,7 +18,11 @@ public sealed partial class OllamaKernelMixin : KernelMixinBase
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaKernelMixin"/> class.
     /// </summary>
-    public OllamaKernelMixin(CustomAssistant customAssistant, HttpClient httpClient) : base(customAssistant)
+    public OllamaKernelMixin(
+        CustomAssistant customAssistant,
+        ModelConnection connection,
+        HttpClient httpClient
+    ) : base(customAssistant, connection)
     {
         httpClient.BaseAddress = new Uri(Endpoint, UriKind.Absolute);
         _client = new OllamaApiClient(httpClient, ModelId);

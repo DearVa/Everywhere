@@ -56,7 +56,7 @@ public sealed partial class CustomAssistant : ObservableValidator, IModelDefinit
 
     [JsonIgnore]
     [HiddenSettingsItem]
-    public IModelProviderConfigurator Configurator => GetConfigurator(ConfiguratorType);
+    public ModelProviderConfigurator Configurator => GetConfigurator(ConfiguratorType);
 
     [JsonIgnore]
     [DynamicResourceKey(LocaleKey.CustomAssistant_ConfiguratorSelector_Header)]
@@ -115,6 +115,10 @@ public sealed partial class CustomAssistant : ObservableValidator, IModelDefinit
     public partial int ContextLimit { get; set; }
 
     [ObservableProperty]
+    [HiddenSettingsItem]
+    public partial int OutputLimit { get; set; }
+
+    [ObservableProperty]
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_RequestTimeoutSeconds_Header,
         LocaleKey.CustomAssistant_RequestTimeoutSeconds_Description)]
@@ -146,12 +150,52 @@ public sealed partial class CustomAssistant : ObservableValidator, IModelDefinit
         _advancedConfigurator = new AdvancedModelProviderConfigurator(this);
     }
 
-    public IModelProviderConfigurator GetConfigurator(ModelProviderConfiguratorType type) => type switch
+    public ModelProviderConfigurator GetConfigurator(ModelProviderConfiguratorType type) => type switch
     {
         ModelProviderConfiguratorType.Official => _officialConfigurator,
         ModelProviderConfiguratorType.PresetBased => _presetBasedConfigurator,
         _ => _advancedConfigurator
     };
+
+    public void ApplyTemplate(ModelProviderTemplate? modelProviderTemplate)
+    {
+        if (modelProviderTemplate is not null)
+        {
+            Endpoint = modelProviderTemplate.Endpoint;
+            Schema = modelProviderTemplate.Schema;
+            RequestTimeoutSeconds = modelProviderTemplate.RequestTimeoutSeconds;
+        }
+        else
+        {
+            Endpoint = string.Empty;
+            Schema = ModelProviderSchema.OpenAI;
+            RequestTimeoutSeconds = 20;
+        }
+    }
+
+    public void ApplyTemplate(ModelDefinitionTemplate? modelDefinitionTemplate)
+    {
+        if (modelDefinitionTemplate is not null)
+        {
+            ModelId = modelDefinitionTemplate.ModelId;
+            SupportsReasoning = modelDefinitionTemplate.SupportsReasoning;
+            SupportsToolCall = modelDefinitionTemplate.SupportsToolCall;
+            InputModalities = modelDefinitionTemplate.InputModalities;
+            OutputModalities = modelDefinitionTemplate.OutputModalities;
+            ContextLimit = modelDefinitionTemplate.ContextLimit;
+            OutputLimit = modelDefinitionTemplate.OutputLimit;
+        }
+        else
+        {
+            ModelId = string.Empty;
+            SupportsReasoning = false;
+            SupportsToolCall = false;
+            InputModalities = default;
+            OutputModalities = default;
+            ContextLimit = 0;
+            OutputLimit = 0;
+        }
+    }
 }
 
 public enum ModelProviderConfiguratorType
@@ -164,20 +208,29 @@ public enum ModelProviderConfiguratorType
     Official,
 }
 
-public interface IModelProviderConfigurator
+public abstract class ModelProviderConfigurator : ObservableValidator
 {
     [HiddenSettingsItem]
-    SettingsItems SettingsItems { get; }
+    public abstract SettingsItems SettingsItems { get; }
 
     /// <summary>
     /// Called before switching to another configurator type to backup necessary values.
     /// </summary>
-    void Backup();
+    public abstract void Backup();
 
     /// <summary>
     /// Called to apply the configuration to the associated CustomAssistant.
     /// </summary>
-    void Apply();
+    public abstract void Apply();
+
+    /// <summary>
+    /// Initializes the configurator by applying the current configuration values.
+    /// </summary>
+    public void Initialize()
+    {
+        Backup();
+        Apply();
+    }
 
     /// <summary>
     /// Validate the current configuration and show UI feedback if invalid.
@@ -185,33 +238,81 @@ public interface IModelProviderConfigurator
     /// <returns>
     /// True if the configuration is valid; otherwise, false.
     /// </returns>
-    bool Validate();
+    public bool Validate()
+    {
+        ValidateAllProperties();
+        return !HasErrors;
+    }
+
+    /// <summary>
+    /// Backups of the original customizable values before switching to advanced configurator.
+    /// Key: Property name
+    /// Value: (DefaultValue, CustomValue)
+    /// </summary>
+    private readonly Dictionary<string, object?> _backups = new();
+
+    /// <summary>
+    /// When the user switches configurator types, we need to preserve the values set in the advanced configurator.
+    /// This method helps to return the original customizable, while keeping a backup if needed.
+    /// </summary>
+    /// <param name="property"></param>
+    /// <param name="propertyName"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    protected void Backup<T>(T property, [CallerArgumentExpression("property")] string propertyName = "")
+    {
+        _backups[propertyName] = property;
+    }
+
+    /// <summary>
+    /// Restores the original customizable value if exists in backup, otherwise returns the provided property.
+    /// </summary>
+    /// <param name="property"></param>
+    /// <param name="propertyName"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    protected T? Restore<T>(T property, [CallerArgumentExpression("property")] string propertyName = "")
+    {
+        return _backups.TryGetValue(propertyName, out var backup) ? (T?)backup : property;
+    }
 }
 
 /// <summary>
 /// Configurator for the Everywhere official model provider.
 /// </summary>
 [GeneratedSettingsItems]
-public sealed partial class OfficialModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
+public sealed partial class OfficialModelProviderConfigurator : ModelProviderConfigurator
 {
     [DynamicResourceKey("123")]
-    public SettingsControl<OfficialModelDefinitionForm> ModelDefinitionForm { get; } = new();
+    public SettingsControl<OfficialModelDefinitionForm> ModelDefinitionForm { get; }
 
-    public void Backup()
+    private readonly CustomAssistant _owner;
+    private readonly OfficialModelDefinitionForm _form;
+
+    /// <summary>
+    /// Configurator for the Everywhere official model provider.
+    /// </summary>
+    public OfficialModelProviderConfigurator(CustomAssistant owner)
     {
+        _owner = owner;
+
+        ModelDefinitionForm = new SettingsControl<OfficialModelDefinitionForm>(x => new OfficialModelDefinitionForm(x, owner));
+        _form = (OfficialModelDefinitionForm)ModelDefinitionForm.CreateControl();
     }
 
-    public void Apply()
+    public override void Backup()
     {
-        owner.Endpoint = null;
-        owner.Schema = ModelProviderSchema.Official;
-        owner.RequestTimeoutSeconds = 20;
+        Backup(_owner.ModelId);
     }
 
-    public bool Validate()
+    public override void Apply()
     {
-        ValidateAllProperties();
-        return !HasErrors;
+        _owner.ModelProviderTemplateId = null;
+        _owner.Endpoint = null;
+        _owner.Schema = ModelProviderSchema.Official;
+        _owner.RequestTimeoutSeconds = 20;
+
+        _owner.ModelId = Restore(_owner.ModelId);
     }
 }
 
@@ -219,7 +320,7 @@ public sealed partial class OfficialModelProviderConfigurator(CustomAssistant ow
 /// Configurator for preset-based model providers.
 /// </summary>
 [GeneratedSettingsItems]
-public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
+public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant owner) : ModelProviderConfigurator
 {
     /// <summary>
     /// The ID of the model provider to use for this custom assistant.
@@ -234,7 +335,7 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
             if (value == owner.ModelProviderTemplateId) return;
             owner.ModelProviderTemplateId = value;
 
-            ApplyModelProvider();
+            owner.ApplyTemplate(ModelProviderTemplate);
             ModelDefinitionTemplateId = null;
 
             OnPropertyChanged();
@@ -264,7 +365,6 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
             if (owner.ApiKey == value) return;
 
             owner.ApiKey = value;
-            _apiKeyBackup = value;
             OnPropertyChanged();
         }
     }
@@ -300,7 +400,7 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
             if (value == owner.ModelDefinitionTemplateId) return;
             owner.ModelDefinitionTemplateId = value;
 
-            ApplyModelDefinition();
+            owner.ApplyTemplate(ModelDefinitionTemplate);
 
             OnPropertyChanged();
             OnPropertyChanged(nameof(ModelDefinitionTemplate));
@@ -320,63 +420,21 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
         set => ModelDefinitionTemplateId = value?.ModelId;
     }
 
-    private Guid _apiKeyBackup;
-
-    public void Backup()
+    public override void Backup()
     {
-        _apiKeyBackup = owner.ApiKey;
+        Backup(owner.ApiKey);
+        Backup(owner.ModelProviderTemplateId);
+        Backup(owner.ModelDefinitionTemplateId);
     }
 
-    public void Apply()
+    public override void Apply()
     {
-        owner.ApiKey = _apiKeyBackup;
+        owner.ApiKey = Restore(owner.ApiKey);
+        owner.ModelProviderTemplateId = Restore(owner.ModelProviderTemplateId);
+        owner.ModelDefinitionTemplateId = Restore(owner.ModelDefinitionTemplateId);
 
-        ApplyModelProvider();
-        ApplyModelDefinition();
-    }
-
-    private void ApplyModelProvider()
-    {
-        if (ModelProviderTemplate is { } modelProviderTemplate)
-        {
-            owner.Endpoint = modelProviderTemplate.Endpoint;
-            owner.Schema = modelProviderTemplate.Schema;
-            owner.RequestTimeoutSeconds = modelProviderTemplate.RequestTimeoutSeconds;
-        }
-        else
-        {
-            owner.Endpoint = string.Empty;
-            owner.Schema = ModelProviderSchema.OpenAI;
-            owner.RequestTimeoutSeconds = 20;
-        }
-    }
-
-    private void ApplyModelDefinition()
-    {
-        if (ModelDefinitionTemplate is { } modelDefinitionTemplate)
-        {
-            owner.ModelId = modelDefinitionTemplate.ModelId;
-            owner.SupportsReasoning = modelDefinitionTemplate.SupportsReasoning;
-            owner.SupportsToolCall = modelDefinitionTemplate.SupportsToolCall;
-            owner.InputModalities = modelDefinitionTemplate.InputModalities;
-            owner.OutputModalities = modelDefinitionTemplate.OutputModalities;
-            owner.ContextLimit = modelDefinitionTemplate.ContextLimit;
-        }
-        else
-        {
-            owner.ModelId = string.Empty;
-            owner.SupportsReasoning = false;
-            owner.SupportsToolCall = false;
-            owner.InputModalities = default;
-            owner.OutputModalities = default;
-            owner.ContextLimit = 0;
-        }
-    }
-
-    public bool Validate()
-    {
-        ValidateAllProperties();
-        return !HasErrors;
+        owner.ApplyTemplate(ModelProviderTemplate);
+        owner.ApplyTemplate(ModelDefinitionTemplate);
     }
 }
 
@@ -384,7 +442,7 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
 /// Configurator for advanced model providers.
 /// </summary>
 [GeneratedSettingsItems]
-public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant owner) : ObservableValidator, IModelProviderConfigurator
+public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant owner) : ModelProviderConfigurator
 {
     [HiddenSettingsItem]
     [CustomValidation(typeof(AdvancedModelProviderConfigurator), nameof(ValidateEndpoint))]
@@ -404,20 +462,21 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_Endpoint_Header,
         LocaleKey.CustomAssistant_Endpoint_Description)]
-    public SettingsControl<PreviewEndpointTextBox> PreviewEndpointControl => new(new PreviewEndpointTextBox
-    {
-        MinWidth = 320d,
-        [!PreviewEndpointTextBox.EndpointProperty] = new Binding(nameof(Endpoint))
+    public SettingsControl<PreviewEndpointTextBox> PreviewEndpointControl => new(
+        new PreviewEndpointTextBox
         {
-            Source = this,
-            Mode = BindingMode.TwoWay
-        },
-        [!PreviewEndpointTextBox.SchemaProperty] = new Binding(nameof(Schema))
-        {
-            Source = this,
-            Mode = BindingMode.OneWay
-        }
-    });
+            MinWidth = 320d,
+            [!PreviewEndpointTextBox.EndpointProperty] = new Binding(nameof(Endpoint))
+            {
+                Source = this,
+                Mode = BindingMode.TwoWay
+            },
+            [!PreviewEndpointTextBox.SchemaProperty] = new Binding(nameof(Schema))
+            {
+                Source = this,
+                Mode = BindingMode.OneWay
+            }
+        });
 
     [HiddenSettingsItem]
     public Guid ApiKey
@@ -492,14 +551,15 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
     [DynamicResourceKey(
         LocaleKey.CustomAssistant_InputModalities_Header,
         LocaleKey.CustomAssistant_InputModalities_Description)]
-    public SettingsControl<ModalitiesSelector> InputModalitiesSelector => new(new ModalitiesSelector
-    {
-        [!ModalitiesSelector.ModalitiesProperty] = new Binding(nameof(owner.InputModalities))
+    public SettingsControl<ModalitiesSelector> InputModalitiesSelector => new(
+        new ModalitiesSelector
         {
-            Source = owner,
-            Mode = BindingMode.TwoWay
-        }
-    });
+            [!ModalitiesSelector.ModalitiesProperty] = new Binding(nameof(owner.InputModalities))
+            {
+                Source = owner,
+                Mode = BindingMode.TwoWay
+            }
+        });
 
     /// <summary>
     /// Maximum number of tokens that the model can process in a single request.
@@ -515,13 +575,19 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
     }
 
     /// <summary>
-    /// Backups of the original customizable values before switching to advanced configurator.
-    /// Key: Property name
-    /// Value: (DefaultValue, CustomValue)
+    /// Maximum number of tokens that the model can output in a single request.
     /// </summary>
-    private readonly Dictionary<string, object?> _backups = new();
+    [DynamicResourceKey(
+        LocaleKey.CustomAssistant_OutputLimit_Header,
+        LocaleKey.CustomAssistant_OutputLimit_Description)]
+    [SettingsIntegerItem(IsSliderVisible = false)]
+    public int OutputLimit
+    {
+        get => owner.OutputLimit;
+        set => owner.OutputLimit = value;
+    }
 
-    public void Backup()
+    public override void Backup()
     {
         Backup(Endpoint);
         Backup(Schema);
@@ -531,10 +597,14 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
         Backup(owner.InputModalities);
         Backup(owner.OutputModalities);
         Backup(ContextLimit);
+        Backup(OutputLimit);
     }
 
-    public void Apply()
+    public override void Apply()
     {
+        owner.ModelProviderTemplateId = null;
+        owner.ModelDefinitionTemplateId = null;
+
         Endpoint = Restore(Endpoint);
         Schema = Restore(Schema);
         ModelId = Restore(ModelId);
@@ -543,30 +613,7 @@ public sealed partial class AdvancedModelProviderConfigurator(CustomAssistant ow
         owner.InputModalities = Restore(owner.InputModalities);
         owner.OutputModalities = Restore(owner.OutputModalities);
         ContextLimit = Restore(ContextLimit);
-    }
-
-    public bool Validate()
-    {
-        ValidateAllProperties();
-        return !HasErrors;
-    }
-
-    /// <summary>
-    /// When the user switches configurator types, we need to preserve the values set in the advanced configurator.
-    /// This method helps to return the original customizable, while keeping a backup if needed.
-    /// </summary>
-    /// <param name="property"></param>
-    /// <param name="propertyName"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    private void Backup<T>(T property, [CallerArgumentExpression("property")] string propertyName = "")
-    {
-        _backups[propertyName] = property;
-    }
-
-    private T? Restore<T>(T property, [CallerArgumentExpression("property")] string propertyName = "")
-    {
-        return _backups.TryGetValue(propertyName, out var backup) ? (T?)backup : property;
+        OutputLimit = Restore(OutputLimit);
     }
 
     public static ValidationResult? ValidateEndpoint(string? endpoint)

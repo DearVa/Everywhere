@@ -1,47 +1,53 @@
 ﻿using Everywhere.Common;
-using Everywhere.Configuration;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Everywhere.AI;
 
-public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernelMixin
+public abstract class KernelMixin(CustomAssistant customAssistant, ModelConnection connection) : IModelDefinition, IDisposable
 {
-    // cache properties for comparison
-    public ModelProviderSchema Schema { get; } = customAssistant.Schema;
+    /// <summary>
+    /// The resolved connection parameters for cache comparison and SDK initialization.
+    /// </summary>
+    public ModelConnection Connection { get; } = connection;
 
-    public virtual string Endpoint { get; } = customAssistant.Schema.NormalizeEndpoint(customAssistant.Endpoint) ??
-        throw new HandledChatException(
-            new InvalidOperationException("Endpoint cannot be empty."),
-            HandledChatExceptionType.InvalidEndpoint);
+    /// <summary>
+    /// Convenience accessor for the resolved endpoint (already normalized, never null).
+    /// </summary>
+    protected string Endpoint => Connection.Endpoint;
 
-    public virtual string? ApiKey { get; } = Configuration.ApiKey.GetKey(customAssistant.ApiKey);
-
-    protected string EnsureApiKey() => ApiKey ??
-        throw new HandledChatException(
-            new InvalidOperationException("API Key cannot be empty."),
-            HandledChatExceptionType.InvalidApiKey);
+    /// <summary>
+    /// Convenience accessor for the resolved API key (null means no key needed / handled by HttpClient).
+    /// </summary>
+    protected string? ApiKey => Connection.ApiKey;
 
     public string ModelId { get; } = customAssistant.ModelId ??
         throw new HandledChatException(
             new InvalidOperationException("Model ID cannot be empty."),
             HandledChatExceptionType.InvalidConfiguration);
 
+    public string? Name { get; } = customAssistant.Name;
+
     public int RequestTimeoutSeconds { get; } = customAssistant.RequestTimeoutSeconds;
 
-    public bool SupportsReasoning => _customAssistant.SupportsReasoning;
+    public bool SupportsReasoning => customAssistant.SupportsReasoning;
 
-    public bool SupportsToolCall => _customAssistant.SupportsToolCall;
+    public bool SupportsToolCall => customAssistant.SupportsToolCall;
 
-    public int ContextLimit => _customAssistant.ContextLimit;
+    public Modalities InputModalities => customAssistant.InputModalities;
+
+    public Modalities OutputModalities => customAssistant.OutputModalities;
+
+    public int ContextLimit => customAssistant.ContextLimit;
+
+    public int OutputLimit => customAssistant.OutputLimit;
+
+    protected double? Temperature => customAssistant.Temperature.IsCustomValueSet ? customAssistant.Temperature.ActualValue : null;
+
+    protected double? TopP => customAssistant.TopP.IsCustomValueSet ? customAssistant.TopP.ActualValue : null;
 
     public abstract IChatCompletionService ChatCompletionService { get; }
-
-    /// <summary>
-    /// WARNING: properties are mutable!
-    /// </summary>
-    protected readonly CustomAssistant _customAssistant = customAssistant;
 
     /// <summary>
     /// indicates whether the model is reasoning
@@ -61,24 +67,6 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
         if (dictionary is null) return ReasoningProperties;
         dictionary["reasoning"] = true;
         return dictionary;
-    }
-
-    /// <summary>
-    /// Sets a customizable property's actual value into the extension data of the prompt execution settings if it has a custom value set.
-    /// </summary>
-    /// <param name="settings"></param>
-    /// <param name="customizable"></param>
-    /// <param name="propertyName"></param>
-    /// <typeparam name="T"></typeparam>
-    protected static void SetPromptExecutionSettingsExtensionData<T>(
-        PromptExecutionSettings settings,
-        Customizable<T> customizable,
-        string propertyName) where T : struct
-    {
-        if (!customizable.IsCustomValueSet) return;
-
-        settings.ExtensionData ??= new Dictionary<string, object>();
-        settings.ExtensionData[propertyName] = customizable.ActualValue;
     }
 
     public virtual bool IsPersistentMessageMetadataKey(string key) => false;
@@ -108,10 +96,18 @@ public abstract class KernelMixinBase(CustomAssistant customAssistant) : IKernel
             };
         }
 
-        SetPromptExecutionSettingsExtensionData(result, _customAssistant.Temperature, "temperature");
-        SetPromptExecutionSettingsExtensionData(result, _customAssistant.TopP, "top_p");
+        SetPromptExecutionSettingsExtensionData(result, Temperature, "temperature");
+        SetPromptExecutionSettingsExtensionData(result, TopP, "top_p");
 
         return result;
+
+        static void SetPromptExecutionSettingsExtensionData(PromptExecutionSettings settings, double? value, string propertyName)
+        {
+            if (!value.HasValue) return;
+
+            settings.ExtensionData ??= new Dictionary<string, object>();
+            settings.ExtensionData[propertyName] = value.Value;
+        }
     }
 
     public async Task CheckConnectivityAsync(CancellationToken cancellationToken = default)

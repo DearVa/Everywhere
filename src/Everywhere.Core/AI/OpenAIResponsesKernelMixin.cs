@@ -11,22 +11,23 @@ using TextContent = Microsoft.Extensions.AI.TextContent;
 namespace Everywhere.AI;
 
 /// <summary>
-/// An implementation of <see cref="IKernelMixin"/> for OpenAI models via Responses API.
+/// An implementation of <see cref="KernelMixin"/> for OpenAI models via Responses API.
 /// </summary>
-public sealed class OpenAIResponsesKernelMixin : KernelMixinBase
+public sealed class OpenAIResponsesKernelMixin : KernelMixin
 {
     public override IChatCompletionService ChatCompletionService { get; }
 
     public OpenAIResponsesKernelMixin(
         CustomAssistant customAssistant,
+        ModelConnection connection,
         HttpClient httpClient,
         ILoggerFactory loggerFactory
-    ) : base(customAssistant)
+    ) : base(customAssistant, connection)
     {
         ChatCompletionService = new OptimizedOpenAIApiClient(
             new ResponsesClient(
                 ModelId,
-                new ApiKeyCredential(ApiKey.IsNullOrWhiteSpace() ? "NO_API_KEY" : ApiKey),
+                new ApiKeyCredential(ApiKey ?? "NO_API_KEY"),
                 new OpenAIClientOptions
                 {
                     Endpoint = new Uri(Endpoint, UriKind.Absolute),

@@ -37,4 +37,9 @@ public interface IModelDefinition
     /// Maximum number of tokens that the model can process in a single request.
     /// </summary>
     int ContextLimit { get; }
+
+    /// <summary>
+    /// Maximum number of tokens that the model can generate in a single response.
+    /// </summary>
+    int OutputLimit { get; }
 }

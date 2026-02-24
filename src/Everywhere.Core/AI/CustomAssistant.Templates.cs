@@ -32,7 +32,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 400_000,
-                    // OutputLimit = 128_000,
+                    OutputLimit = 128_000,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -45,7 +45,7 @@ partial class PresetBasedModelProviderConfigurator
                     OutputModalities = Modalities.Text,
                     ContextLimit = 400_000,
                     // InputLimit = 272_000,
-                    // OutputLimit = 128_000,
+                    OutputLimit = 128_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -57,7 +57,7 @@ partial class PresetBasedModelProviderConfigurator
                     OutputModalities = Modalities.Text,
                     ContextLimit = 400_000,
                     // InputLimit = 272_000,
-                    // OutputLimit = 128_000,
+                    OutputLimit = 128_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -69,7 +69,7 @@ partial class PresetBasedModelProviderConfigurator
                     OutputModalities = Modalities.Text,
                     ContextLimit = 400_000,
                     // InputLimit = 272_000,
-                    // OutputLimit = 128_000
+                    OutputLimit = 128_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -80,7 +80,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 100_000
+                    OutputLimit = 100_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -91,7 +91,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_047_576,
-                    // OutputLimit = 32_768
+                    OutputLimit = 32_768
                 },
                 new ModelDefinitionTemplate
                 {
@@ -102,7 +102,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_047_576,
-                    // OutputLimit = 32_768
+                    OutputLimit = 32_768
                 },
                 new ModelDefinitionTemplate
                 {
@@ -113,7 +113,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 128_000,
-                    // OutputLimit = 16_384
+                    OutputLimit = 16_384
                 }
             ]
         },
@@ -137,7 +137,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 128_000
+                    OutputLimit = 128_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -148,7 +148,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 64_000
+                    OutputLimit = 64_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -159,7 +159,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 64_000,
+                    OutputLimit = 64_000,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -171,7 +171,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 64_000
+                    OutputLimit = 64_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -182,7 +182,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 32_000
+                    OutputLimit = 32_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -193,7 +193,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 32_000
+                    OutputLimit = 32_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -204,7 +204,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 64_000
+                    OutputLimit = 64_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -215,7 +215,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 64_000
+                    OutputLimit = 64_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -226,7 +226,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 8_192
+                    OutputLimit = 8_192
                 },
                 new ModelDefinitionTemplate
                 {
@@ -237,7 +237,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 200_000,
-                    // OutputLimit = 4_096
+                    OutputLimit = 4_096
                 }
             ]
         },
@@ -261,7 +261,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_000_000,
-                    // OutputLimit = 64_000
+                    OutputLimit = 64_000
                 },
                 new ModelDefinitionTemplate
                 {
@@ -272,7 +272,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_536,
+                    OutputLimit = 65_536,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -284,7 +284,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_536
+                    OutputLimit = 65_536
                 },
                 new ModelDefinitionTemplate
                 {
@@ -295,7 +295,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_536
+                    OutputLimit = 65_536
                 },
                 new ModelDefinitionTemplate
                 {
@@ -306,7 +306,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_536
+                    OutputLimit = 65_536
                 }
             ]
         },
@@ -318,7 +318,7 @@ partial class PresetBasedModelProviderConfigurator
             OfficialWebsiteUrl = "https://www.deepseek.com",
             DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
             LightIconUrl = "avares://Everywhere.Core/Assets/Icons/deepseek-color.svg",
-            Schema = ModelProviderSchema.DeepSeek,
+            Schema = ModelProviderSchema.OpenAI,
             ModelDefinitions =
             [
                 new ModelDefinitionTemplate
@@ -330,7 +330,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 128_000,
-                    // OutputLimit = 8_192
+                    OutputLimit = 8_192
                 },
                 new ModelDefinitionTemplate
                 {
@@ -341,7 +341,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 128_000,
-                    // OutputLimit = 128_000,
+                    OutputLimit = 128_000,
                     IsDefault = true
                 }
             ]
@@ -366,7 +366,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Video,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -378,7 +378,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -389,7 +389,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -400,7 +400,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -411,7 +411,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                 }
             ]
         },
@@ -435,7 +435,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_144,
-                    // OutputLimit = 262_144,
+                    OutputLimit = 262_144,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -446,7 +446,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_535,
+                    OutputLimit = 65_535,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -457,7 +457,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Audio | Modalities.Video | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_048_576,
-                    // OutputLimit = 65_535,
+                    OutputLimit = 65_535,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -468,7 +468,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 2_000_000,
-                    // OutputLimit = 32_000,
+                    OutputLimit = 32_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -479,7 +479,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image | Modalities.Pdf,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 1_000_000,
-                    // OutputLimit = 64_000,
+                    OutputLimit = 64_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -490,7 +490,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 163_840,
-                    // OutputLimit = 65_536,
+                    OutputLimit = 65_536,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -501,7 +501,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 131_072,
-                    // OutputLimit = 32_768,
+                    OutputLimit = 32_768,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -512,7 +512,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 2_000_000,
-                    // OutputLimit = 30_000,
+                    OutputLimit = 30_000,
                     IsDefault = true
                 }
             ]
@@ -537,7 +537,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 131_000,
-                    // OutputLimit = 131_000,
+                    OutputLimit = 131_000,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -549,7 +549,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text | Modalities.Image,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 131_000,
-                    // OutputLimit = 131_000,
+                    OutputLimit = 131_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -560,7 +560,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 262_000,
-                    // OutputLimit = 262_000,
+                    OutputLimit = 262_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -571,7 +571,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 197_000,
-                    // OutputLimit = 131_000,
+                    OutputLimit = 131_000,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -582,7 +582,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 164_000,
-                    // OutputLimit = 164_000,
+                    OutputLimit = 164_000,
                 }
             ]
         },
@@ -607,7 +607,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 64_000,
-                    // OutputLimit = 4_096,
+                    OutputLimit = 4_096,
                 },
                 new ModelDefinitionTemplate
                 {
@@ -618,7 +618,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 64_000,
-                    // OutputLimit = 4_096,
+                    OutputLimit = 4_096,
                     IsDefault = true
                 },
                 new ModelDefinitionTemplate
@@ -630,7 +630,7 @@ partial class PresetBasedModelProviderConfigurator
                     InputModalities = Modalities.Text,
                     OutputModalities = Modalities.Text,
                     ContextLimit = 64_000,
-                    // OutputLimit = 4_096,
+                    OutputLimit = 4_096,
                 }
             ]
         }

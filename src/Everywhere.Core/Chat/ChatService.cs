@@ -307,25 +307,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         return Task.Run(() => GenerateAsync(chatContext, customAssistant, assistantChatMessage, false, cancellationToken), cancellationToken);
     }
 
-    private IKernelMixin CreateKernelMixin(CustomAssistant customAssistant)
-    {
-        using var activity = _activitySource.StartActivity();
-
-        try
-        {
-            var kernelMixin = _kernelMixinFactory.GetOrCreate(customAssistant);
-            activity?.SetTag("llm.model.id", customAssistant.ModelId);
-            activity?.SetTag("llm.model.max_embedding", customAssistant.ContextLimit);
-            return kernelMixin;
-        }
-        catch (Exception e)
-        {
-            // This method may throw if the model settings are invalid.
-            activity?.SetStatus(ActivityStatusCode.Error, e.Message.Trim());
-            throw;
-        }
-    }
-
     /// <summary>
     /// Kernel is very cheap to create, so we can create a new kernel for each request.
     /// This method builds the kernel based on the current settings.
@@ -334,7 +315,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="NotSupportedException"></exception>
     private async Task<Kernel> BuildKernelAsync(
-        IKernelMixin kernelMixin,
+        KernelMixin kernelMixin,
         ChatContext chatContext,
         CustomAssistant customAssistant,
         bool isSubagent,
@@ -343,7 +324,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         using var activity = _activitySource.StartActivity();
 
         var builder = Kernel.CreateBuilder();
-
         builder.Services.AddSingleton<IChatService>(this);
         builder.Services.AddSingleton(kernelMixin.ChatCompletionService);
         builder.Services.AddSingleton(_chatContextManager);
@@ -391,7 +371,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var kernelMixin = CreateKernelMixin(customAssistant);
+            var kernelMixin = _kernelMixinFactory.GetOrCreate(customAssistant);
             var kernel = await BuildKernelAsync(kernelMixin, chatContext, customAssistant, isSubagent, cancellationToken);
 
             // Because the custom assistant maybe changed, we need to re-render the system prompt.
@@ -423,7 +403,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                     // If the chat history only contains one user message and one assistant message,
                     // we can generate a title for the chat context.
                     GenerateTitleAsync(
-                        customAssistant,
                         kernelMixin,
                         userMessage,
                         chatContext.Metadata,
@@ -433,7 +412,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                 // Process streaming chat message contents (thinking, text, function calls, etc.)
                 // It will return the function call contents for further processing.
                 var functionCallContents = await GetStreamingChatMessageContentsAsync(
-                    customAssistant,
                     kernel,
                     kernelMixin,
                     chatContext,
@@ -444,8 +422,8 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
 
                 // Invoke the functions specified in the function call contents.
                 await InvokeFunctionsAsync(
-                    customAssistant,
                     kernel,
+                    kernelMixin,
                     chatContext,
                     assistantChatMessage,
                     functionCallContents,
@@ -473,7 +451,6 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     /// <summary>
     /// Gets streaming chat message contents from the chat completion service.
     /// </summary>
-    /// <param name="customAssistant"></param>
     /// <param name="kernel"></param>
     /// <param name="kernelMixin"></param>
     /// <param name="chatContext"></param>
@@ -482,15 +459,14 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     private async Task<IReadOnlyList<FunctionCallContent>> GetStreamingChatMessageContentsAsync(
-        CustomAssistant customAssistant,
         Kernel kernel,
-        IKernelMixin kernelMixin,
+        KernelMixin kernelMixin,
         ChatContext chatContext,
         ChatHistory chatHistory,
         AssistantChatMessage assistantChatMessage,
         CancellationToken cancellationToken)
     {
-        using var activity = StartChatActivity("invoke_agent", customAssistant);
+        using var activity = StartChatActivity("invoke_agent", kernelMixin);
         activity?.SetTag("gen_ai.messages.count", chatHistory.Count);
 
         AuthorRole? authorRole = null;
@@ -525,7 +501,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                     isFirstToken = false;
                     var ttftSeconds = (DateTimeOffset.UtcNow - startTime).TotalSeconds;
                     activity?.SetTag("gen_ai.request.ttft", ttftSeconds);
-                    _timeToFirstTokenHistogram.Record(ttftSeconds, GetModelTag(customAssistant.ModelId));
+                    _timeToFirstTokenHistogram.Record(ttftSeconds, GetModelTag(kernelMixin.ModelId));
                 }
 
                 // Add persistent message-level metadata to the assistant chat message.
@@ -620,7 +596,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
         {
             assistantChatMessage.UsageDetails.Accumulate(usage); // Accumulate usage details.
             SetChatUsageTags(activity, usage);
-            RecordChatUsageMetrics(usage, customAssistant.ModelId);
+            RecordChatUsageMetrics(usage, kernelMixin.ModelId);
 
             span?.FinishedAt ??= DateTimeOffset.UtcNow;
             callingToolsBusyMessage?.Dispose();
@@ -657,16 +633,16 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     /// Invokes the functions specified in the function call contents.
     /// This will group the function calls by plugin and function, and invoke them sequentially.
     /// </summary>
-    /// <param name="customAssistant"></param>
     /// <param name="kernel"></param>
+    /// <param name="kernelMixin"></param>
     /// <param name="chatContext"></param>
     /// <param name="assistantChatMessage"></param>
     /// <param name="functionCallContents"></param>
     /// <param name="cancellationToken"></param>
     /// <exception cref="InvalidOperationException"></exception>
     private async Task InvokeFunctionsAsync(
-        CustomAssistant customAssistant,
         Kernel kernel,
+        KernelMixin kernelMixin,
         ChatContext chatContext,
         AssistantChatMessage assistantChatMessage,
         IReadOnlyList<FunctionCallContent> functionCallContents,
@@ -801,7 +777,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                     if (friendlyContent is not null) functionCallChatMessage.DisplaySink.AppendBlock(friendlyContent);
 
                     var resultContent = await InvokeFunctionAsync(
-                        customAssistant,
+                        kernelMixin,
                         functionCallContent,
                         _currentFunctionCallContext,
                         friendlyContent,
@@ -845,13 +821,13 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     }
 
     private async Task<FunctionResultContent> InvokeFunctionAsync(
-        CustomAssistant customAssistant,
+        KernelMixin kernelMixin,
         FunctionCallContent content,
         FunctionCallContext context,
         ChatPluginDisplayBlock? friendlyContent,
         CancellationToken cancellationToken)
     {
-        using var activity = StartChatActivity("execute_tool", customAssistant);
+        using var activity = StartChatActivity("execute_tool", kernelMixin);
         activity?.SetTag("gen_ai.tool.plugin", content.PluginName);
         activity?.SetTag("gen_ai.tool.name", content.FunctionName);
         activity?.SetTag("gen_ai.tool.input", content.Arguments?.ToString());
@@ -963,8 +939,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     }
 
     private async Task GenerateTitleAsync(
-        CustomAssistant customAssistant,
-        IKernelMixin kernelMixin,
+        KernelMixin kernelMixin,
         string userMessage,
         ChatContextMetadata metadata,
         CancellationToken cancellationToken)
@@ -975,8 +950,8 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             return;
         }
 
-        _chatTopicsCounter.Add(1, GetModelTag(customAssistant.ModelId));
-        using var activity = StartChatActivity("invoke_agent", customAssistant);
+        _chatTopicsCounter.Add(1, GetModelTag(kernelMixin.ModelId));
+        using var activity = StartChatActivity("invoke_agent", kernelMixin);
         try
         {
             var language = _settings.Common.Language.ToEnglishName();
@@ -1016,7 +991,7 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             }
 
             SetChatUsageTags(activity, usage);
-            RecordChatUsageMetrics(usage, customAssistant.ModelId);
+            RecordChatUsageMetrics(usage, kernelMixin.ModelId);
 
             ReadOnlySpan<char> punctuationChars = ['.', ',', '!', '?', '。', '，', '！', '？'];
             titleBuilder.Length = Math.Min(50, titleBuilder.Length); // Limit the title length to 50 characters to avoid excessively long titles.
@@ -1048,24 +1023,22 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
     /// Starts a chat activity for telemetry.
     /// </summary>
     /// <param name="operationName"></param>
-    /// <param name="customAssistant"></param>
+    /// <param name="modelDefinition"></param>
     /// <param name="displayName"></param>
     /// <returns></returns>
-    private Activity? StartChatActivity(string operationName, CustomAssistant? customAssistant, [CallerMemberName] string displayName = "")
+    private Activity? StartChatActivity(string operationName, IModelDefinition? modelDefinition, [CallerMemberName] string displayName = "")
     {
-        IEnumerable<KeyValuePair<string, object?>> tags = customAssistant is null ?
+        IEnumerable<KeyValuePair<string, object?>> tags = modelDefinition is null ?
             [
                 new KeyValuePair<string, object?>("gen_ai.operation.name", operationName)
             ] :
             [
                 new KeyValuePair<string, object?>("gen_ai.operation.name", operationName),
-                new KeyValuePair<string, object?>("gen_ai.request.model", customAssistant.ModelId),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_image", customAssistant.InputModalities.SupportsImage),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", customAssistant.SupportsReasoning),
-                new KeyValuePair<string, object?>("gen_ai.request.supports_tool", customAssistant.SupportsToolCall),
-                new KeyValuePair<string, object?>("gen_ai.request.context_limit", customAssistant.ContextLimit),
-                new KeyValuePair<string, object?>("gen_ai.request.temperature", customAssistant.Temperature),
-                new KeyValuePair<string, object?>("gen_ai.request.top_p", customAssistant.TopP)
+                new KeyValuePair<string, object?>("gen_ai.request.model", modelDefinition.ModelId),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_image", modelDefinition.InputModalities.SupportsImage),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_reasoning", modelDefinition.SupportsReasoning),
+                new KeyValuePair<string, object?>("gen_ai.request.supports_tool", modelDefinition.SupportsToolCall),
+                new KeyValuePair<string, object?>("gen_ai.request.context_limit", modelDefinition.ContextLimit),
             ];
         return _activitySource.StartActivity(
             $"gen_ai.{operationName}",
