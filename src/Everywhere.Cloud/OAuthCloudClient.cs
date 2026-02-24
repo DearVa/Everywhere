@@ -108,14 +108,14 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             sb.Append($"&scope={Uri.EscapeDataString(Scopes)}");
             sb.Append($"&code_challenge={Uri.EscapeDataString(codeChallenge)}");
             sb.Append($"&code_challenge_method=S256");
-            sb.Append($"&audience=sylinko-everywhere-api");
 
             var authorizeUrl = sb.ToString();
-            _logger.LogDebug("[AuthService] Starting login flow. Auth URL: {AuthorizeUrl}", authorizeUrl);
+            _logger.LogDebug("Starting login flow. Auth URL: {AuthorizeUrl}", authorizeUrl);
             await _launcher.LaunchUriAsync(new Uri(authorizeUrl));
 
             // Wait for the callback
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)); // No interaction required, so we can have a reasonable timeout
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromMinutes(30)); // Give time for sign in/up
             string code;
             try
             {
@@ -123,7 +123,8 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             }
             catch (OperationCanceledException)
             {
-                throw new TimeoutException("Login timed out.");
+                _logger.LogInformation("User cancelled the login process or it timed out.");
+                return false;
             }
 
             // Exchange Authorization Code for Access Token
@@ -258,13 +259,21 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
         }
     }
 
-    public async Task RefreshUserProfileAsync(CancellationToken cancellationToken)
+    private async Task RefreshUserProfileAsync(CancellationToken cancellationToken)
     {
-        using var httpClient = _httpClientFactory.CreateClient(nameof(ICloudClient));
+        // According to BetterAuth docs, this call needs to be authenticated with the access token (Opaque token), not the ID token (JWT).
+        if (_tokenData is not { AccessToken: { Length: > 0 } accessToken })
+        {
+            throw new InvalidOperationException("Cannot refresh user profile without an access token.");
+        }
+
+        using var httpClient = _httpClientFactory.CreateClient();
 
         try
         {
             var request = new HttpRequestMessage(HttpMethod.Get, UserInfoEndpoint);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
             var response = await httpClient.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
@@ -322,12 +331,12 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
         if (message is not UrlProtocolCallbackCommand oauth) return;
 
         var url = oauth.Url;
-        _logger.LogDebug("[AuthService] Received URL callback: {url}", url);
+        _logger.LogDebug("Received URL callback: {url}", url);
 
         // Only process if we are expecting a callback
         if (_authCodeTcs == null || _authCodeTcs.Task.IsCompleted)
         {
-            _logger.LogDebug("[AuthService] Not expecting callback or task already completed. Ignoring.");
+            _logger.LogDebug("Not expecting callback or task already completed. Ignoring.");
             return;
         }
 
@@ -342,7 +351,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             var error = query["error"];
             var errorDesc = query["error_description"];
 
-            _logger.LogDebug("[AuthService] Extracted - Code: '{code}', State: '{state}', Error: '{error}'", code, state, error);
+            _logger.LogDebug("Extracted - Code: '{code}', State: '{state}', Error: '{error}'", code, state, error);
 
             if (!string.IsNullOrEmpty(error))
             {
@@ -352,7 +361,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
             if (state != _expectedState)
             {
-                _logger.LogDebug("[AuthService] State mismatch!");
+                _logger.LogDebug("State mismatch!");
                 _authCodeTcs.TrySetException(new Exception($"Invalid state received. Expected: {_expectedState}, Received: {state}"));
                 return;
             }
@@ -368,7 +377,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
         }
         catch (Exception ex)
         {
-            _logger.LogDebug("[AuthService] Exception in OnUrlDropped: {exception}", ex);
+            _logger.LogDebug("Exception in OnUrlDropped: {exception}", ex);
             _authCodeTcs.TrySetException(ex);
         }
     }
@@ -389,7 +398,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
 
     #region IAsyncInitializer Implementation
 
-    public AsyncInitializerPriority Priority => AsyncInitializerPriority.Highest;
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Highest;
 
     /// <summary>
     /// Initializes the client by attempting a silent login using stored tokens.
@@ -469,7 +478,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (cloudClient._tokenData?.AccessToken is not { Length: > 0 } token)
+            if (cloudClient._tokenData?.IdToken is not { Length: > 0 } token)
             {
                 // No token available, proceed without adding Authorization header
                 return await base.SendAsync(request, cancellationToken);
@@ -493,7 +502,7 @@ public partial class OAuthCloudClient : ObservableObject, ICloudClient, IAsyncIn
             var refreshed = await TryRefreshTokenWithLockAsync(cloudClient, cancellationToken);
             if (!refreshed) return response;
 
-            if (cloudClient._tokenData?.AccessToken is not { Length: > 0 } newToken)
+            if (cloudClient._tokenData?.IdToken is not { Length: > 0 } newToken)
             {
                 return response; // Refresh succeeded, but we don't have a new token, give up
             }
