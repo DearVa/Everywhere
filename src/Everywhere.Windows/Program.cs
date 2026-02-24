@@ -4,8 +4,6 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using Avalonia;
 using Avalonia.Controls;
-using Everywhere.AI;
-using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Cloud;
 using Everywhere.Common;
@@ -69,26 +67,14 @@ public static class Program
                 .AddViewsAndViewModels()
                 .AddDatabaseAndStorage()
                 .AddCloudClient()
+                .AddChatEssentials()
 
                 #endregion
 
                 #region Chat Plugins
 
-                .AddTransient<BuiltInChatPlugin, EssentialPlugin>()
-                .AddTransient<BuiltInChatPlugin, VisualContextPlugin>()
-                .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
-                .AddTransient<BuiltInChatPlugin, FileSystemPlugin>()
                 .AddTransient<BuiltInChatPlugin, PowerShellPlugin>()
                 .AddTransient<BuiltInChatPlugin, EverythingPlugin>()
-
-                #endregion
-
-                #region Chat
-
-                .AddSingleton<IKernelMixinFactory, KernelMixinFactory>()
-                .AddSingleton<IChatPluginManager, ChatPluginManager>()
-                .AddSingleton<IChatService, ChatService>()
-                .AddChatContextManager()
 
                 #endregion
 

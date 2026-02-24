@@ -1,5 +1,8 @@
 ﻿using Avalonia.Input.Platform;
 using Avalonia.Platform.Storage;
+using Everywhere.AI;
+using Everywhere.Chat;
+using Everywhere.Chat.Plugins;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Database;
@@ -59,5 +62,19 @@ public static class ServiceExtension
                 .AddSingleton<IBlobStorage, BlobStorage>()
                 .AddSingleton<IChatContextStorage, ChatContextStorage>()
                 .AddTransient<IAsyncInitializer, ChatDbInitializer>();
+
+        public IServiceCollection AddChatEssentials() =>
+            services
+                .AddSingleton<IKernelMixinFactory, KernelMixinFactory>()
+                .AddSingleton<IChatPluginManager, ChatPluginManager>()
+                .AddSingleton<IChatService, ChatService>()
+                .AddChatContextManager()
+
+                // Add built-in plugins
+                .AddTransient<BuiltInChatPlugin, EssentialPlugin>()
+                .AddTransient<BuiltInChatPlugin, VisualContextPlugin>()
+                .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
+                .AddTransient<BuiltInChatPlugin, FileSystemPlugin>();
+
     }
 }

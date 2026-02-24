@@ -1,7 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Everywhere.AI;
-using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -48,33 +46,19 @@ public static class Program
                 .AddAvaloniaBasicServices()
                 .AddViewsAndViewModels()
                 .AddDatabaseAndStorage()
+                .AddChatEssentials()
 
                 #endregion
 
                 #region Chat Plugins
-
-                .AddTransient<BuiltInChatPlugin, EssentialPlugin>()
-                .AddTransient<BuiltInChatPlugin, VisualContextPlugin>()
-                .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
-                .AddTransient<BuiltInChatPlugin, FileSystemPlugin>()
                 .AddTransient<BuiltInChatPlugin, SystemPlugin>()
                 .AddTransient<BuiltInChatPlugin, ZshPlugin>()
-
-                #endregion
-
-                #region Chat
-
-                .AddSingleton<IKernelMixinFactory, KernelMixinFactory>()
-                .AddSingleton<IChatPluginManager, ChatPluginManager>()
-                .AddSingleton<IChatService, ChatService>()
-                .AddChatContextManager()
 
                 #endregion
 
                 #region Initialize
 
                 .AddTransient<IAsyncInitializer, ChatWindowInitializer>()
-                .AddTransient<IAsyncInitializer, SettingsInitializer>()
                 .AddTransient<IAsyncInitializer, UpdaterInitializer>()
 
             #endregion
