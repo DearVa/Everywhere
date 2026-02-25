@@ -233,9 +233,9 @@
 
 ## 📄 许可证
 
-© DearVa、AuroraZiling、feast107 和贡献者们。保留所有权利。
+版权所有 © 2026 Sylinko Inc. 保留所有权利。
 
-本项目基于 Apache 2.0 许可证发布，详情请查阅 [LICENSE](LICENSE)。
+根据商业源代码许可证 1.1 版本发布。更多信息请参见 [LICENSE](LICENSE)。
 
 第三方许可证：参见 [ThirdPartyNotices.txt](ThirdPartyNotices.txt)。
 

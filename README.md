@@ -233,9 +233,9 @@ We welcome issues, feature ideas, and PRs! See [CONTRIBUTING.md](CONTRIBUTING.md
 
 ## 📄 License
 
-© DearVa, AuroraZiling, feast107 and contributors. All rights reserved.
+Copyright © 2026 Sylinko Inc. All rights reserved.
 
-Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for more information.
+Released under the Business Source License 1.1. See [LICENSE](LICENSE) for more information.
 
 Third-Party Licenses: See [ThirdPartyNotices.txt](ThirdPartyNotices.txt) for details.
 
