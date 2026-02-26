@@ -101,15 +101,15 @@
             </TextBlock>
             <TextBlock
               Classes="Caption Muted" Grid.Column="1">
-              <Run Text="{Binding CloudClient.CurrentUser.Subscription.UsedCredits, StringFormat={}{0:N0}, FallbackValue=0}"/>
+              <Run Text="{Binding CloudClient.CurrentUser.Subscription.PlanCredits, StringFormat={}{0:N0}, FallbackValue=0}"/>
               <Run Text="/"/>
-              <Run Text="{Binding CloudClient.CurrentUser.Subscription.TotalCredits, StringFormat={}{0:N0}, FallbackValue=0}"/>
+              <Run Text="{Binding CloudClient.CurrentUser.Subscription.TotalPlanCredits, StringFormat={}{0:N0}, FallbackValue=0}"/>
             </TextBlock>
           </Grid>
           <ProgressBar
             Height="6"
-            Maximum="{Binding CloudClient.CurrentUser.Subscription.TotalCredits, FallbackValue=1}"
-            Value="{Binding CloudClient.CurrentUser.Subscription.UsedCredits, FallbackValue=0}"/>
+            Maximum="{Binding CloudClient.CurrentUser.Subscription.TotalPlanCredits, FallbackValue=1}"
+            Value="{Binding CloudClient.CurrentUser.Subscription.PlanCredits, FallbackValue=0}"/>
         </StackPanel>
       </Border>
 
