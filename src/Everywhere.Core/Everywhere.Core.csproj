@@ -6,11 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <IgnoresAccessChecksTo Include="Avalonia.Base"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <AvaloniaResource Include="Assets\**"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Anthropic" />
+    <PackageReference Include="Anthropic"/>
     <PackageReference Include="Avalonia"/>
     <PackageReference Include="Avalonia.Fonts.Inter"/>
     <PackageReference Include="Avalonia.Diagnostics">
@@ -21,7 +25,12 @@
     <PackageReference Include="AvaloniaEdit.TextMate"/>
     <PackageReference Include="FuzzySharp"/>
     <PackageReference Include="GnomeStack.Os.Secrets"/>
+    <PackageReference Include="IgnoresAccessChecksToGenerator">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api"/>
+    <PackageReference Include="Lib.Harmony"/>
     <PackageReference Include="LiveMarkdown.Avalonia"/>
     <PackageReference Include="LiveMarkdown.Avalonia.Math"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
@@ -56,8 +65,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
-    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Connectors.Google\Connectors.Google.csproj" />
-    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Plugins.Web\Plugins.Web.csproj" />
+    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Connectors.Google\Connectors.Google.csproj"/>
+    <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Plugins.Web\Plugins.Web.csproj"/>
     <ProjectReference Include="..\..\3rd\shad-ui\src\ShadUI\ShadUI.csproj"/>
     <ProjectReference Include="..\..\3rd\WritableJsonConfiguration\src\WritableJsonConfiguration\WritableJsonConfiguration.csproj"/>
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj"/>

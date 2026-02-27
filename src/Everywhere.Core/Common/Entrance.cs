@@ -7,6 +7,8 @@ using System.IO.Pipes;
 using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.Interop;
 using Everywhere.Views;
+using Everywhere.Patches;
+using HarmonyLib;
 using MessagePack;
 using OpenTelemetry.Trace;
 using PuppeteerSharp;
@@ -50,6 +52,7 @@ public static partial class Entrance
         InitializeTelemetry();
         InitializeLogger();
         InitializeErrorHandling();
+        InitializeHarmony();
     }
 
     /// <summary>
@@ -255,6 +258,12 @@ public static partial class Entrance
             Log.Logger.Error(e.Exception, "Unobserved Task Exception");
             e.SetObserved();
         };
+    }
+
+    private static void InitializeHarmony()
+    {
+        var harmony = new Harmony("com.sylinko.everywhere.patches");
+        TextLeadingPrefixCharacterEllipsisPatch.Patch(harmony);
     }
 
     private sealed class ActivityEnricher : ILogEventEnricher
