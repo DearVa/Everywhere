@@ -121,6 +121,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Cloud", "src\Eve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Abstractions.Tests", "tests\Everywhere.Abstractions.Tests\Everywhere.Abstractions.Tests.csproj", "{9561A317-E9E5-4B18-9A3B-17D9BE54592A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Patches", "src\Everywhere.Patches\Everywhere.Patches.csproj", "{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +229,10 @@ Global
 		{9561A317-E9E5-4B18-9A3B-17D9BE54592A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9561A317-E9E5-4B18-9A3B-17D9BE54592A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9561A317-E9E5-4B18-9A3B-17D9BE54592A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

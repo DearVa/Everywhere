@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia"/>
+    <PackageReference Include="IgnoresAccessChecksToGenerator">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <IgnoresAccessChecksTo Include="Avalonia.Base"/>
+    <IgnoresAccessChecksTo Include="Avalonia.Controls"/>
+  </ItemGroup>
+
+</Project>

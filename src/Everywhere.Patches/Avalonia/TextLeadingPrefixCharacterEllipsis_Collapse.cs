@@ -1,27 +1,28 @@
-﻿using Avalonia.Media;
+﻿// resharper disable InconsistentNaming
+using System.Runtime.CompilerServices;
+using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using HarmonyLib;
 
-namespace Everywhere.Patches;
+namespace Everywhere.Patches.Avalonia;
 
 /// <summary>
 /// This fixes https://github.com/DearVa/Everywhere/issues/313
 /// Since TextLeadingPrefixCharacterEllipsis.Collapse is not virtual, we have to patch the method body to change the behavior of the collapsing logic.
 /// It also calls internal class and methods that we cannot access directly.
 /// </summary>
-public static class TextLeadingPrefixCharacterEllipsisPatch
+internal static class TextLeadingPrefixCharacterEllipsis_Collapse
 {
     public static void Patch(Harmony harmony)
     {
         var original = AccessTools.Method(typeof(TextLeadingPrefixCharacterEllipsis), nameof(TextLeadingPrefixCharacterEllipsis.Collapse));
-        harmony.Patch(original, new HarmonyMethod(Collapse_Patch));
+        harmony.Patch(original, new HarmonyMethod(Prefix));
     }
 
     [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_prefixLength")]
     private static extern ref int GetPrefixLength(TextLeadingPrefixCharacterEllipsis @this);
 
-    // resharper disable InconsistentNaming
-    private static bool Collapse_Patch(TextLeadingPrefixCharacterEllipsis __instance, ref TextLine textLine, ref TextRun[]? __result)
+    private static bool Prefix(TextLeadingPrefixCharacterEllipsis __instance, ref TextLine textLine, ref TextRun[]? __result)
     {
         var shapedSymbol = TextFormatter.CreateSymbol(__instance.Symbol, FlowDirection.LeftToRight);
 
@@ -150,5 +151,4 @@ public static class TextLeadingPrefixCharacterEllipsisPatch
         __result = null;
         return false;
     }
-    // resharper restore InconsistentNaming
 }

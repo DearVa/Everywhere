@@ -6,9 +6,8 @@ using System.Diagnostics.Metrics;
 using System.IO.Pipes;
 using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.Interop;
-using Everywhere.Views;
 using Everywhere.Patches;
-using HarmonyLib;
+using Everywhere.Views;
 using MessagePack;
 using OpenTelemetry.Trace;
 using PuppeteerSharp;
@@ -262,8 +261,7 @@ public static partial class Entrance
 
     private static void InitializeHarmony()
     {
-        var harmony = new Harmony("com.sylinko.everywhere.patches");
-        TextLeadingPrefixCharacterEllipsisPatch.Patch(harmony);
+        Patcher.PatchAll();
     }
 
     private sealed class ActivityEnricher : ILogEventEnricher

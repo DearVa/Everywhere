@@ -7,7 +7,7 @@
     <SemanticKernelVersion>1.68.0</SemanticKernelVersion>
     <OpenTelemetryVersion>1.14.0</OpenTelemetryVersion>
     <SentryVersion>6.1.0</SentryVersion>
-    <AvaloniaVersion>11.3.10</AvaloniaVersion>
+    <AvaloniaVersion>11.3.12</AvaloniaVersion>
     <AvaloniaEditVersion>11.3.0</AvaloniaEditVersion>
     <LiveMarkdownVersion>1.7.0</LiveMarkdownVersion>
     <SkiaSharpVersion>3.119.1</SkiaSharpVersion>

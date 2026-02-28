@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <IgnoresAccessChecksTo Include="Avalonia.Base"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <AvaloniaResource Include="Assets\**"/>
   </ItemGroup>
 
@@ -25,12 +21,7 @@
     <PackageReference Include="AvaloniaEdit.TextMate"/>
     <PackageReference Include="FuzzySharp"/>
     <PackageReference Include="GnomeStack.Os.Secrets"/>
-    <PackageReference Include="IgnoresAccessChecksToGenerator">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api"/>
-    <PackageReference Include="Lib.Harmony"/>
     <PackageReference Include="LiveMarkdown.Avalonia"/>
     <PackageReference Include="LiveMarkdown.Avalonia.Math"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore"/>
@@ -72,6 +63,7 @@
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj"/>
     <ProjectReference Include="..\Everywhere.Configuration.SourceGenerator\Everywhere.Configuration.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\Everywhere.I18N\Everywhere.I18N.csproj"/>
+    <ProjectReference Include="..\Everywhere.Patches\Everywhere.Patches.csproj" />
   </ItemGroup>
 
   <ItemGroup>
