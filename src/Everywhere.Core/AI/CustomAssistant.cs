@@ -452,9 +452,9 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
             [
                 new ModelDefinitionTemplate
                 {
-                    Id = "gemini-3-pro-preview",
-                    ModelId = "gemini-3-pro-preview",
-                    DisplayName = "Gemini 3 Pro Preview",
+                    Id = "gemini-3.1-pro-preview",
+                    ModelId = "gemini-3.1-pro-preview",
+                    DisplayName = "Gemini 3.1 Pro Preview",
                     MaxTokens = 1_048_576,
                     IsImageInputSupported = true,
                     IsFunctionCallingSupported = true,
