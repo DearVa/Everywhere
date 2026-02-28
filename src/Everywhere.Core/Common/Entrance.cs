@@ -324,7 +324,7 @@ public static partial class Entrance
             }
         }
 
-        private void OnMeasurement<T>(
+        private static void OnMeasurement<T>(
             Instrument instrument,
             T measurement,
             ReadOnlySpan<KeyValuePair<string, object?>> tags,

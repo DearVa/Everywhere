@@ -12,15 +12,15 @@ namespace Everywhere.Patches.Avalonia;
 /// </summary>
 /// <remarks>
 /// System.ArgumentOutOfRangeException: Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')
-/// at void Grid.MeasureCellsGroup(int cellsHead, bool ignoreDesiredSizeU, bool forceInfinityV, out bool hasDesiredSizeUChanged)()
-/// at Size Grid.MeasureOverride(Size constraint)()
-/// at Size Layoutable.MeasureCore(Size availableSize)()
-/// at void Layoutable.Measure(Size availableSize)()
-/// at bool LayoutManager.Measure(Layoutable control)()
-/// at void LayoutManager.ExecuteLayoutPass()()
-/// at void MediaContext.FireInvokeOnRenderCallbacks()()
-/// at void MediaContext.RenderCore()()
-/// at void DispatcherOperation.InvokeCore()()
+///   at void Grid.MeasureCellsGroup(int cellsHead, bool ignoreDesiredSizeU, bool forceInfinityV, out bool hasDesiredSizeUChanged)()
+///   at Size Grid.MeasureOverride(Size constraint)()
+///   at Size Layoutable.MeasureCore(Size availableSize)()
+///   at void Layoutable.Measure(Size availableSize)()
+///   at bool LayoutManager.Measure(Layoutable control)()
+///   at void LayoutManager.ExecuteLayoutPass()()
+///   at void MediaContext.FireInvokeOnRenderCallbacks()()
+///   at void MediaContext.RenderCore()()
+///   at void DispatcherOperation.InvokeCore()()
 /// </remarks>
 internal static class Grid_MeasureCellsGroup
 {

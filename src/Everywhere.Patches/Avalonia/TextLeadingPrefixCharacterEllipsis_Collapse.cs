@@ -11,6 +11,23 @@ namespace Everywhere.Patches.Avalonia;
 /// Since TextLeadingPrefixCharacterEllipsis.Collapse is not virtual, we have to patch the method body to change the behavior of the collapsing logic.
 /// It also calls internal class and methods that we cannot access directly.
 /// </summary>
+/// <remarks>
+/// System.ArgumentOutOfRangeException: length must be greater than zero. (Parameter 'length')
+///   at SplitResult{ShapedTextRun} ShapedTextRun.Split(int length)()
+///   at TextRun[] TextLeadingPrefixCharacterEllipsis.Collapse(TextLine textLine)()
+///   at TextLine TextLineImpl.Collapse(params TextCollapsingProperties[] collapsingPropertiesList)()
+///   at TextLine[] TextLayout.CreateTextLines()()
+///   at new TextLayout(ITextSource textSource, TextParagraphProperties paragraphProperties, TextTrimming textTrimming, double maxWidth, double maxHeight, int maxLines)()
+///   at TextLayout TextBlock.CreateTextLayout(string text)()
+///   at void TextBlock.RenderCore(DrawingContext context)()
+///   at void CompositingRenderer.UpdateCore()()
+///   at CompositionBatch Compositor.CommitCore()()
+///   at CompositionBatch MediaContext.CommitCompositor(Compositor compositor)()
+///   at void TopLevel.HandlePaint(Rect rect)()
+///   at IntPtr WindowImpl.AppWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)()
+///   at IntPtr PopupImpl.WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)()
+///   at IntPtr WindowImpl.WndProcMessageHandler(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)()
+/// </remarks>
 internal static class TextLeadingPrefixCharacterEllipsis_Collapse
 {
     public static void Patch(Harmony harmony)
