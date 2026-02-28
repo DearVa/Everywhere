@@ -100,6 +100,12 @@ public sealed class ScreenSelectionMaskWindow : ScreenSelectionTransparentWindow
     public void SetMask(PixelRect rect)
     {
         var maskRect = rect.Translate(-(PixelVector)_screenBounds.Position).ToRect(_scale);
+        if (maskRect.Width < 0 || maskRect.Height < 0)
+        {
+            // Sometimes the rect can be invalid due to DPI scaling and rounding, so we need to handle that case.
+            maskRect = default;
+        }
+
         _maskBorder.Clip = new CombinedGeometry(GeometryCombineMode.Exclude, new RectangleGeometry(Bounds), new RectangleGeometry(maskRect));
         _elementBoundsBorder.Margin = new Thickness(maskRect.X, maskRect.Y, 0, 0);
         _elementBoundsBorder.Width = maskRect.Width;
