@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Reflection;
 using System.Text;
 using DynamicData;
 using Everywhere.Chat.Permissions;
@@ -16,6 +15,7 @@ using Everywhere.Utilities;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol;
 using ZLinq;
 
 namespace Everywhere.Chat.Plugins;
@@ -306,10 +306,8 @@ public class ChatPluginManager : IChatPluginManager
                 // Add the underlying process to the watchdog to ensure it is cleaned up properly.
                 // We need reflection here because StdioClientTransport does not expose the process directly.
                 // client is `ModelContextProtocol.Client.McpClientImpl`
-                var transportFieldInfo = client.GetType().GetField("_transport", BindingFlags.Instance | BindingFlags.NonPublic);
-                var transport = transportFieldInfo?.GetValue(client); // StdioClientSessionTransport : ITransport
-                var processFieldInfo = transport?.GetType().GetField("_process", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (processFieldInfo?.GetValue(transport) is Process { HasExited: false, Id: > 0 } process)
+                var transport = GetMcpClientTransport(client);
+                if (GetStdioClientSessionTransportProcess(transport) is { HasExited: false, Id: > 0 } process)
                 {
                     process.Exited += HandleProcessExited;
 
@@ -337,17 +335,16 @@ public class ChatPluginManager : IChatPluginManager
             }
         }
 
+        var tools = await client.ListToolsAsync(cancellationToken: cancellationToken);
+
         var isEnabledRecords = _settings.Plugin.IsEnabledRecords;
         var isPermissionGrantedRecords = _settings.Plugin.IsPermissionGrantedRecords;
         mcpChatPlugin.SetFunctions(
-            await client
-                .EnumerateToolsAsync(cancellationToken: cancellationToken)
-                .Select(t => new McpChatFunction(t)
-                {
-                    IsEnabled = !isEnabledRecords.TryGetValue(t.Name, out var isEnabled) || isEnabled, // true if not set
-                    AutoApprove = isPermissionGrantedRecords.TryGetValue(t.Name, out var isGranted) && isGranted, // false if not set
-                })
-                .ToListAsync(cancellationToken));
+            tools.Select(t => new McpChatFunction(t)
+            {
+                IsEnabled = !isEnabledRecords.TryGetValue(t.Name, out var isEnabled) || isEnabled, // true if not set
+                AutoApprove = isPermissionGrantedRecords.TryGetValue(t.Name, out var isGranted) && isGranted, // false if not set
+            }));
 
         string EnsureWorkingDirectory(string? workingDirectory)
         {
@@ -415,6 +412,14 @@ public class ChatPluginManager : IChatPluginManager
                 .Select(p => new ChatPluginSnapshot(p, functionNameDeduplicator, isSubagent))
                 .ToList());
     }
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_transport")]
+    private static extern ref ITransport GetMcpClientTransport(
+        [UnsafeAccessorType("ModelContextProtocol.Client.McpClientImpl, ModelContextProtocol.Core")] object client);
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_process")]
+    private static extern ref Process GetStdioClientSessionTransportProcess(
+        [UnsafeAccessorType("ModelContextProtocol.Client.StdioClientSessionTransport, ModelContextProtocol.Core")] object transport);
 
     private class ChatPluginScope(List<ChatPluginSnapshot> pluginSnapshots) : IChatPluginScope
     {
