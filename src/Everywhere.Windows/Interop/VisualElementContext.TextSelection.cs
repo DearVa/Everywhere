@@ -439,8 +439,13 @@ partial class VisualElementContext
             }
             catch (Exception ex)
             {
+                var isExpected = ex is
+                    COMException { ErrorCode: unchecked((int)0x80040201) } or // COMException: 事件无法调用任何订户 (0x80040201)
+                    InvalidOperationException or
+                    TimeoutException;
+
                 // Ignore errors during detection
-                Log.ForContext<TextSelectionDetector>().Error(ex, "Error during text selection detection");
+                if (!isExpected) Log.ForContext<TextSelectionDetector>().Error(ex, "Error during text selection detection");
             }
             finally
             {
