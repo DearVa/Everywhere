@@ -78,6 +78,11 @@ public partial class VisualElementContext(
         return ElementFromPoint(point, mode);
     }
 
+    public IVisualElement? ElementFromWindowHandle(IntPtr windowHandle)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IVisualElement?> PickElementAsync(ScreenSelectionMode? initialMode)
     {
         if (Application.Current is not { ApplicationLifetime: ClassicDesktopStyleApplicationLifetime desktopLifetime })
@@ -92,18 +97,18 @@ public partial class VisualElementContext(
         return result;
     }
 
-    public async Task<Avalonia.Media.Imaging.Bitmap?> ScreenshotAsync(ScreenSelectionMode? initialMode)
+    public async Task<Bitmap?> ScreenshotAsync(ScreenSelectionMode? initialMode)
     {
-         if (Application.Current is not { ApplicationLifetime: ClassicDesktopStyleApplicationLifetime desktopLifetime })
+        if (Application.Current is not { ApplicationLifetime: ClassicDesktopStyleApplicationLifetime desktopLifetime })
         {
             return null;
         }
 
         var windows = desktopLifetime.Windows.AsValueEnumerable().Where(w => w.IsVisible).ToList();
         foreach (var window in windows) window.Hide();
-        
+
         var result = await ScreenshotPicker.ScreenshotAsync(this, backend, initialMode);
-        
+
         foreach (var window in windows) window.IsVisible = true;
         return result;
     }

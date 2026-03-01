@@ -66,6 +66,11 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         return point is null ? null : ElementFromPoint(point.Value, mode);
     }
 
+    public IVisualElement? ElementFromWindowHandle(IntPtr windowHandle)
+    {
+        return AXUIElement.ElementFromWindowId((uint)windowHandle);
+    }
+
     public Task<IVisualElement?> PickElementAsync(ScreenSelectionMode? initialMode)
     {
         return PickerSession.PickAsync(windowHelper, initialMode);

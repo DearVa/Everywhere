@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using System.Text;
 using System.Text.Json.Serialization;
 using Avalonia.Input;
 using Everywhere.Chat.Permissions;
 using Everywhere.Common;
+using Everywhere.Configuration;
 using Everywhere.Database;
 using Everywhere.Interop;
 using Everywhere.Storage;
@@ -24,48 +26,53 @@ public class VisualContextPlugin : BuiltInChatPlugin
 
     private readonly IBlobStorage _blobStorage;
     private readonly IVisualElementContext _visualElementContext;
+    private readonly PersistentState _persistentState;
 
-    public VisualContextPlugin(IBlobStorage blobStorage, IVisualElementContext visualElementContext) : base("visual_context")
+    public VisualContextPlugin(
+        IBlobStorage blobStorage,
+        IVisualElementContext visualElementContext,
+        PersistentState persistentState) : base("visual_context")
     {
         _blobStorage = blobStorage;
         _visualElementContext = visualElementContext;
+        _persistentState = persistentState;
         _functionsSource.Edit(list =>
         {
             list.Add(
                 new NativeChatFunction(
-                    ListWindows,
+                    ListTopLevels,
                     ChatFunctionPermissions.ScreenRead));
             list.Add(
                 new NativeChatFunction(
-                    CaptureVisualElementByIdAsync,
+                    CaptureVisualElementAsync,
+                    ChatFunctionPermissions.ScreenRead));
+            list.Add(
+                new NativeChatFunction(
+                    GetVisualTree,
                     ChatFunctionPermissions.ScreenRead));
             list.Add(
                 new NativeChatFunction(
                     ExecuteVisualActionsAsync,
-                    ChatFunctionPermissions.ScreenAccess,
-                    isExperimental: true));
+                    ChatFunctionPermissions.ScreenAccess));
         });
     }
 
-    [KernelFunction("list_windows")]
-    [Description("Lists all top-level windows with their IDs, titles, process information, and status.")]
+    [KernelFunction("list_toplevels")]
+    [Description("Lists all top-levels with their hwnd, title, process information, and state.")]
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_ListWindows_Header,
         LocaleKey.BuiltInChatPlugin_VisualContext_ListWindows_Description)]
-    private string ListWindows()
+    private string ListTopLevels([FromKernelServices] ChatContext chatContext)
     {
         var xmlBuilder = new StringBuilder();
         foreach (var screen in _visualElementContext.Screens.AsValueEnumerable())
         {
-            var boundingRect = screen.BoundingRectangle;
-            xmlBuilder.Append("<Screen ")
-                .Append(" pos=\"")
-                .Append(boundingRect.X).Append(',').Append(boundingRect.Y)
-                .Append('"')
-                .Append(" size=\"")
-                .Append(boundingRect.Width).Append('x').Append(boundingRect.Height)
-                .Append('"')
-                .AppendLine(">");
+            var bounds = screen.BoundingRectangle;
+            xmlBuilder.Append(" box=\"")
+                .Append(bounds.X).Append(',')
+                .Append(bounds.Y).Append(',')
+                .Append(bounds.Width).Append(',')
+                .Append(bounds.Height).Append('"');
 
             foreach (var window in screen.Children.AsValueEnumerable().Where(v => v.Type == VisualElementType.TopLevel))
             {
@@ -76,14 +83,12 @@ public class VisualContextPlugin : BuiltInChatPlugin
                     xmlBuilder.Append(" name=\"").Append(SecurityElement.Escape(name)).Append('"');
                 }
 
-                var bounds = window.BoundingRectangle;
-                xmlBuilder
-                    .Append(" pos=\"")
-                    .Append(bounds.X).Append(',').Append(bounds.Y)
-                    .Append('"')
-                    .Append(" size=\"")
-                    .Append(bounds.Width).Append('x').Append(bounds.Height)
-                    .Append('"');
+                bounds = window.BoundingRectangle;
+                xmlBuilder.Append(" box=\"")
+                    .Append(bounds.X).Append(',')
+                    .Append(bounds.Y).Append(',')
+                    .Append(bounds.Width).Append(',')
+                    .Append(bounds.Height).Append('"');
 
                 var processId = window.ProcessId;
                 if (processId > 0)
@@ -92,7 +97,7 @@ public class VisualContextPlugin : BuiltInChatPlugin
                     try
                     {
                         using var process = Process.GetProcessById(processId);
-                        xmlBuilder.Append(" processName=\"").Append(SecurityElement.Escape(process.ProcessName)).Append('"');
+                        xmlBuilder.Append(" process=\"").Append(SecurityElement.Escape(process.ProcessName)).Append('"');
                     }
                     catch
                     {
@@ -107,7 +112,6 @@ public class VisualContextPlugin : BuiltInChatPlugin
                 }
 
                 xmlBuilder.Append(" state=\"").Append(window.States.ToString()).Append('"');
-
                 xmlBuilder.AppendLine("/>");
             }
 
@@ -117,22 +121,18 @@ public class VisualContextPlugin : BuiltInChatPlugin
         return xmlBuilder.TrimEnd().ToString();
     }
 
-    [KernelFunction("capture_visual_element_by_id")]
+    [KernelFunction("capture_visual_element")]
     [Description("Captures a screenshot of the specified visual element by Id. Use when XML content is inaccessible or element is image-like.")]
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Header,
         LocaleKey.BuiltInChatPlugin_VisualContext_CaptureVisualElementById_Description)]
-    private Task<ChatFileAttachment> CaptureVisualElementByIdAsync(
+    private async Task<ChatFileAttachment> CaptureVisualElementAsync(
         [FromKernelServices] ChatContext chatContext,
-        int elementId,
+        [Description("ElementId, or hwnd startswith 0x")] string target,
         CancellationToken cancellationToken = default)
     {
-        return CaptureVisualElementAsync(ResolveVisualElement(chatContext, elementId, nameof(elementId)), cancellationToken);
-    }
-
-    private async Task<ChatFileAttachment> CaptureVisualElementAsync(IVisualElement visualElement, CancellationToken cancellationToken)
-    {
-        var bitmap = await visualElement.CaptureAsync(cancellationToken);
+        var element = ResolveTargetElement(chatContext, target);
+        var bitmap = await element.CaptureAsync(cancellationToken);
 
         BlobEntity blob;
         using (var stream = new MemoryStream())
@@ -148,13 +148,69 @@ public class VisualContextPlugin : BuiltInChatPlugin
             blob.MimeType);
     }
 
+    [KernelFunction("get_visual_tree")]
+    [Description(
+        """
+        Read the visual tree of a target element and its surroundings. This is the primary tool for perceiving on-screen UI content — use it like a 'read_file' but for visual elements.
+
+        Target selection:
+        - id: An existing element id from the current visual tree. Use to expand 'omitted' regions, refresh stale content, or drill into a known element.
+        - hwnd: A window handle (hex string like "0x1A2B3C") obtained from list_windows or former visual tree.
+
+        Navigation direction:
+        Defines the approximate area to read around the target element. 
+        'parent' and 'child' are for hierarchical navigation, while 'previous' and 'next' are for siblings in the visual tree. 
+        Use 'all' to read everything available from the target element. Combine multiple directions with commas, e.g. "parent,child" or "siblings".
+
+        Common scenarios:
+        1. No visual context attached → call list_windows, then get_visual_tree(hwnd="0x...") to read a window.
+        2. Visual tree has 'omitted' markers → get_visual_tree(elementId=N, direction="child") to expand.
+        3. UI may have changed → re-read with the same elementId or hwnd to get fresh content.
+        4. Need parent context → get_visual_tree(elementId=N, direction="parent").
+        5. Navigate siblings → get_visual_tree(elementId=N, direction="next,previous").
+        """)]
+    [DynamicResourceKey(
+        LocaleKey.BuiltInChatPlugin_VisualContext_GetVisualTree_Header,
+        LocaleKey.BuiltInChatPlugin_VisualContext_GetVisualTree_Description)]
+    private string GetVisualTree(
+        [FromKernelServices] ChatContext chatContext,
+        [Description("ElementId, or hwnd startswith 0x")] string target,
+        [Description("Available values: all, parent, child, previous, next")] string directions = "all",
+        CancellationToken cancellationToken = default)
+    {
+        // --- Resolve the target element ---
+        var element = ResolveTargetElement(chatContext, target);
+
+        // Parse direction string into flags
+        var traverseDirections = ParseTraverseDirections(directions);
+
+        // Use a generous token limit so the expanded result is not truncated again
+        var tokenLimit = VisualTreeLengthLimit.Detailed.ToTokenLimit();
+        var detailLevel = _persistentState.VisualTreeDetailLevel;
+        var nextId = chatContext.VisualElements.Count + 1;
+
+        var builder = new VisualTreeBuilder(
+            [element],
+            tokenLimit,
+            nextId,
+            detailLevel,
+            traverseDirections);
+
+        var result = builder.Build(cancellationToken);
+
+        // Merge newly built elements into the chat context so they can be referenced later
+        chatContext.VisualElements.AddRange(builder.BuiltVisualElements);
+
+        return result;
+    }
+
     [KernelFunction("execute_visual_actions")]
     [Description(
         "Executes UI automation actions as a queue. Supports clicking elements, entering text, sending shortcuts (e.g., Ctrl+V), and waiting.")]
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Header,
         LocaleKey.BuiltInChatPlugin_VisualContext_ExecuteVisualActions_Description)]
-    private async static Task<string> ExecuteVisualActionsAsync(
+    private async Task<string> ExecuteVisualActionsAsync(
         [FromKernelServices] ChatContext chatContext,
         IReadOnlyList<VisualElementAction> actions,
         CancellationToken cancellationToken = default)
@@ -177,19 +233,19 @@ public class VisualContextPlugin : BuiltInChatPlugin
             {
                 case VisualActionType.Click:
                 {
-                    var element = ResolveVisualElement(chatContext, action.EnsureElementId(), nameof(actions));
+                    var element = ResolveTargetElement(chatContext, action.EnsureTarget());
                     element.Invoke();
                     break;
                 }
                 case VisualActionType.SetText:
                 {
-                    var element = ResolveVisualElement(chatContext, action.EnsureElementId(), nameof(actions));
+                    var element = ResolveTargetElement(chatContext, action.EnsureTarget());
                     element.SetText(action.Text ?? string.Empty);
                     break;
                 }
                 case VisualActionType.SendKey:
                 {
-                    var element = ResolveVisualElement(chatContext, action.EnsureElementId(), nameof(actions));
+                    var element = ResolveTargetElement(chatContext, action.EnsureTarget());
                     var shortcut = action.ResolveShortcut();
                     element.SendShortcut(shortcut);
                     break;
@@ -223,19 +279,84 @@ public class VisualContextPlugin : BuiltInChatPlugin
         return $"{actions.Count} action(s) executed successfully.";
     }
 
-    private static IVisualElement ResolveVisualElement(ChatContext chatContext, int elementId, string? argumentName = null)
+    /// <summary>
+    /// Resolves the target <see cref="IVisualElement"/> from either an elementId or a window handle string.
+    /// Validates that exactly one of the two identifiers is provided and throws descriptive exceptions for invalid input or if the target element cannot be found.
+    /// This ensures robust handling of user input and clear error messages for troubleshooting.
+    /// </summary>
+    private IVisualElement ResolveTargetElement(ChatContext chatContext, string target)
     {
+        if (target.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+        {
+            return ResolveVisualElementByHwnd(target);
+        }
+
+        if (!int.TryParse(target, out var elementId))
+        {
+            throw new HandledFunctionInvokingException(
+                HandledFunctionInvokingExceptionType.ArgumentError,
+                nameof(target),
+                new ArgumentException(
+                    $"Invalid target format: '{target}'. Expected either an elementId (integer) or a window handle (hex string like '0x1A2B3C')."));
+        }
+
         if (!chatContext.VisualElements.TryGetValue(elementId, out var visualElement))
         {
             throw new HandledFunctionInvokingException(
                 HandledFunctionInvokingExceptionType.ArgumentError,
-                argumentName ?? nameof(elementId),
+                nameof(target),
                 new ArgumentException(
                     $"Visual element with id '{elementId}' is not found or has been destroyed.",
-                    argumentName ?? nameof(elementId)));
+                    nameof(target)));
         }
 
         return visualElement;
+    }
+
+    /// <summary>
+    /// Finds a top-level window by its native window handle across all screens.
+    /// </summary>
+    private IVisualElement ResolveVisualElementByHwnd(string hwndString)
+    {
+        if (!long.TryParse(hwndString.AsSpan(2), System.Globalization.NumberStyles.HexNumber, null, out var hwndValue))
+        {
+            throw new HandledFunctionInvokingException(
+                HandledFunctionInvokingExceptionType.ArgumentError,
+                nameof(hwndString),
+                new ArgumentException($"Invalid window handle format: '{hwndString}'. Expected hex format like '0x1A2B3C'."));
+        }
+
+        var window = _visualElementContext.ElementFromWindowHandle((nint)hwndValue);
+        return window ??
+            throw new HandledFunctionInvokingException(
+                HandledFunctionInvokingExceptionType.ArgumentError,
+                nameof(hwndString),
+                new ArgumentException(
+                    $"No top-level window with handle '{hwndString}' was found. The window may have been closed. " +
+                    "Use list_windows to get the current list of available windows."));
+    }
+
+    /// <summary>
+    /// Parses a comma-separated direction string into <see cref="VisualTreeTraverseDirections"/> flags.
+    /// Supports individual values (parent, child, previous, next) and combinations (parent,child).
+    /// </summary>
+    private static VisualTreeTraverseDirections ParseTraverseDirections(string direction)
+    {
+        var parts = direction.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length == 0) return VisualTreeTraverseDirections.All;
+
+        return parts.AsValueEnumerable().Aggregate(
+            VisualTreeTraverseDirections.Core,
+            (current, part) => current | part.ToLowerInvariant() switch
+            {
+                "parent" => VisualTreeTraverseDirections.Parent,
+                "child" or "children" => VisualTreeTraverseDirections.Child,
+                "previous" or "prev" => VisualTreeTraverseDirections.PreviousSibling,
+                "next" => VisualTreeTraverseDirections.NextSibling,
+                "sibling" or "siblings" => VisualTreeTraverseDirections.PreviousSibling | VisualTreeTraverseDirections.NextSibling,
+                "all" => VisualTreeTraverseDirections.All,
+                _ => VisualTreeTraverseDirections.Core // unknown tokens are ignored
+            });
     }
 
     /// <summary>
@@ -253,19 +374,20 @@ public class VisualContextPlugin : BuiltInChatPlugin
     /// <summary>
     /// Represents a single action in the visual automation queue.
     /// </summary>
-    public sealed record VisualElementAction
+    [Serializable]
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+    private sealed record VisualElementAction
     {
         /// <summary>
         /// The type of action
         /// </summary>
-        [Description("Type of action")]
         public VisualActionType Type { get; init; }
 
         /// <summary>
         /// The ID of the target visual element
         /// </summary>
-        [Description("ID of the target visual element (optional for wait action)")]
-        public int? ElementId { get; init; }
+        [Description("ID (decimal) or HWND (hex startswith 0x) of the target visual element (optional for wait action)")]
+        public string? Target { get; init; }
 
         /// <summary>
         /// The text to input (for SetText actions)
@@ -291,10 +413,10 @@ public class VisualContextPlugin : BuiltInChatPlugin
         [Description("Delay in milliseconds for wait action")]
         public int? DelayMs { get; init; }
 
-        public int EnsureElementId() => ElementId ?? throw new HandledFunctionInvokingException(
+        public string EnsureTarget() => Target ?? throw new HandledFunctionInvokingException(
             HandledFunctionInvokingExceptionType.ArgumentError,
-            nameof(ElementId),
-            new ArgumentException($"{nameof(ElementId)} is required for this action.", nameof(ElementId)));
+            nameof(Target),
+            new ArgumentException($"{nameof(Target)} is required for this action.", nameof(Target)));
 
         public int EnsureDelayMs() => DelayMs ?? throw new HandledFunctionInvokingException(
             HandledFunctionInvokingExceptionType.ArgumentError,

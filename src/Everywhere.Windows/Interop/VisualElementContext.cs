@@ -60,6 +60,11 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         return !PInvoke.GetCursorPos(out var point) ? null : ElementFromPoint(new PixelPoint(point.X, point.Y), mode);
     }
 
+    public IVisualElement? ElementFromWindowHandle(IntPtr windowHandle)
+    {
+        return TryCreateVisualElement(() => Automation.FromHandle(windowHandle));
+    }
+
     public Task<IVisualElement?> PickElementAsync(ScreenSelectionMode? initialMode) => PickerSession.PickAsync(windowHelper, initialMode);
 
     public Task<Bitmap?> ScreenshotAsync(ScreenSelectionMode? initialMode) => ScreenshotSession.ScreenshotAsync(windowHelper, initialMode);

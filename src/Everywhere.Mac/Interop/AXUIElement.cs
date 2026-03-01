@@ -277,9 +277,6 @@ public partial class AXUIElement : NSObject, IVisualElement
             var screen = NSScreen.Screens.FirstOrDefault(s => s.Frame.IntersectsWith(rect));
             var scale = screen?.BackingScaleFactor ?? 1.0;
 
-            var targetWidth = rect.Width * scale;
-            var targetHeight = rect.Height * scale;
-
             // cgImage captures the window content starting at (0,0) in Window Local Coordinates.
             // rect contains Screen Coordinates (including Dock/Menu bar offsets).
             // To crop correctly, we must transform rect to Window-Relative coordinates.
@@ -303,7 +300,8 @@ public partial class AXUIElement : NSObject, IVisualElement
 
             // Check if captured image approximately matches target size (allowing for rounding/shadows).
             // If it matches, we assume full window capture and start at 0,0.
-            bool isFullWindow = cgImage.Width >= targetWidth - 2 && cgImage.Width <= targetWidth + 100;
+            var targetWidth = rect.Width * scale;
+            var isFullWindow = cgImage.Width >= targetWidth - 2 && cgImage.Width <= targetWidth + 100;
 
             // If full window, offset is 0. 
             // If partial (element inside window), offset is (ElementScreenPos - WindowScreenPos).
@@ -404,6 +402,70 @@ public partial class AXUIElement : NSObject, IVisualElement
     {
         var handle = CreateApplication(pid);
         return handle != 0 ? new AXUIElement(handle) : null;
+    }
+
+    /// <summary>
+    /// Gets the AXUIElement corresponding to the specified CGWindowID.
+    /// This is a reverse lookup using _AXUIElementGetWindow under the hood.
+    /// </summary>
+    /// <param name="cgWindowId">The target CGWindowID.</param>
+    /// <returns>The matching AXUIElement, or null if not found.</returns>
+    public static AXUIElement? ElementFromWindowId(uint cgWindowId)
+    {
+        if (cgWindowId == 0) return null;
+
+        // 1. Get the owner PID from the CGWindowID using CoreGraphics
+        var ownerPid = 0;
+        var windowInfoArrayPtr = CGInterop.CGWindowListCopyWindowInfo(CGWindowListOption.IncludingWindow, cgWindowId);
+
+        if (windowInfoArrayPtr != 0)
+        {
+            // Take ownership of the CFArray returned by Create/Copy rule
+            using var windowInfoArray = Runtime.GetNSObject<NSArray>(windowInfoArrayPtr, owns: true);
+            if (windowInfoArray is { Count: > 0 })
+            {
+                using var windowInfo = windowInfoArray.GetItem<NSDictionary>(0);
+                using var pidKey = new NSString("kCGWindowOwnerPID");
+
+                if (windowInfo?.ObjectForKey(pidKey) is NSNumber pidNumber)
+                {
+                    ownerPid = pidNumber.Int32Value;
+                }
+            }
+        }
+
+        if (ownerPid == 0) return null;
+
+        // 2. Create the AXApplication element from the PID
+        using var appElement = ElementFromPid(ownerPid);
+        if (appElement is null) return null;
+
+        // 3. Get all windows of the application
+        // Note: Replace with AXAttributeConstants.Windows if you have it defined.
+        using var windowsKey = new NSString("AXWindows");
+        using var windows = appElement.GetAttribute<NSArray>(windowsKey);
+
+        if (windows is null) return null;
+
+        // 4. Iterate through the windows and find the matching CGWindowID
+        for (nuint i = 0; i < windows.Count; i++)
+        {
+            var windowElement = FromCopyArray(windows, i);
+            if (windowElement is null) continue;
+
+            // Use your existing property which correctly handles the _AXUIElementGetWindow P/Invoke
+            if (windowElement.NativeWindowHandle == (nint)cgWindowId)
+            {
+                // Found it! Return the retained element.
+                return windowElement;
+            }
+
+            // Not a match: explicitly dispose to release the CFRetain applied in FromCopyArray,
+            // avoiding memory leaks during traversal.
+            windowElement.Dispose();
+        }
+
+        return null;
     }
 
     [LibraryImport(AppServices, EntryPoint = "AXUIElementCreateSystemWide")]

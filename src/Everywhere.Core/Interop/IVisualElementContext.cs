@@ -80,6 +80,13 @@ public interface IVisualElementContext : IObservable<TextSelectionData>
     IVisualElement? ElementFromPointer(ScreenSelectionMode mode = ScreenSelectionMode.Element);
 
     /// <summary>
+    /// Get the element from a native window handle.
+    /// </summary>
+    /// <param name="windowHandle"></param>
+    /// <returns></returns>
+    IVisualElement? ElementFromWindowHandle(nint windowHandle);
+
+    /// <summary>
     /// Let the user pick an element from the screen.
     /// </summary>
     /// <param name="initialMode">

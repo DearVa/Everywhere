@@ -138,23 +138,24 @@ public partial class VisualTreeDebugger : UserControl
         }
     }
 
-    private async void HandleBuildXmlButtonClicked(object? sender, RoutedEventArgs e)
+    private async void HandleBuildButtonClicked(object? sender, RoutedEventArgs e)
     {
         try
         {
+            const VisualTreeDetailLevel level = VisualTreeDetailLevel.Compact;
             var tokenLimit = int.Parse(TokenLimitTextBox.Text ?? "8000");
             var builder = new VisualTreeBuilder(
                 VisualTreeView.SelectedItems.AsValueEnumerable().OfType<IVisualElement>().ToList(),
                 tokenLimit,
                 0,
-                VisualTreeDetailLevel.Compact);
+                level);
 #if DEBUG
-            // use profiler to measure xml building time in debug mode
-            var xml = await Task.Run(() =>
+            // use profiler to measure building time in debug mode
+            var visualTree = await Task.Run(() =>
             {
                 var originalThreadName = Thread.CurrentThread.Name;
-                Thread.CurrentThread.Name = "XML Builder Thread";
-                MeasureProfiler.StartCollectingData("BuildXml");
+                Thread.CurrentThread.Name = "Visual Tree Builder Thread";
+                MeasureProfiler.StartCollectingData("BuildVisualTree");
 
                 try
                 {
@@ -162,22 +163,35 @@ public partial class VisualTreeDebugger : UserControl
                 }
                 finally
                 {
-                    MeasureProfiler.SaveData("BuildXml");
+                    MeasureProfiler.SaveData("BuildVisualTree");
                     Thread.CurrentThread.Name = originalThreadName;
                 }
             });
 #else
-            var xml = await Task.Run(() => builder.Build(CancellationToken.None));
+            var visualTree = await Task.Run(() => builder.Build(CancellationToken.None));
 #endif
             var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var filename = $"visual_tree_{timestamp}.xml";
-            var xmlPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
-            await File.WriteAllTextAsync(xmlPath, xml);
-            await ServiceLocator.Resolve<ILauncher>().LaunchFileInfoAsync(new FileInfo(xmlPath));
+            var extension = level switch
+            {
+                VisualTreeDetailLevel.Compact => "json",
+                VisualTreeDetailLevel.Detailed => "xml",
+                _ => "toon"
+            };
+            var filename = $"visual_tree_{timestamp}.{extension}";
+            var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
+            await File.WriteAllTextAsync(filePath, visualTree);
+            await ServiceLocator.Resolve<ILauncher>().LaunchFileInfoAsync(new FileInfo(filePath));
         }
+#if DEBUG
+        catch (Exception ex)
+        {
+            _ = ex;
+            Debugger.Break();
+#else
         catch
         {
             // ignored
+#endif
         }
     }
 }
