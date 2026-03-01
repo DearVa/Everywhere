@@ -1147,7 +1147,9 @@ public partial class VisualTreeBuilder(
 
         // Handle child elements
         foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
+        {
             BuildXml(sb, child, indentLevel + 1);
+        }
 
         // Add omission hint for the LLM
         if (elementNode.HasOmittedChildren)

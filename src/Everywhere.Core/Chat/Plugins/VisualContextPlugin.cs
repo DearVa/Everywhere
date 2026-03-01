@@ -152,22 +152,21 @@ public class VisualContextPlugin : BuiltInChatPlugin
     [Description(
         """
         Read the visual tree of a target element and its surroundings. This is the primary tool for perceiving on-screen UI content — use it like a 'read_file' but for visual elements.
+        Best-First Search from core element(s).
+        Starting from the specified element(s), the algorithm expands outward in all allowed directions using a priority queue:
+        1. distance from the core element — closer nodes rank higher;
+        2. direction weight — Parent > Child > Sibling;
+        3. element type weight — text/document > containers > interactive controls > decorative. 
+        The traversal consumes a token budget; when exhausted, remaining branches are marked as omitted. 
+        Non-informative containers (no text, not interactive) are collapsed — their children are promoted to the parent level. 
 
         Target selection:
         - id: An existing element id from the current visual tree. Use to expand 'omitted' regions, refresh stale content, or drill into a known element.
         - hwnd: A window handle (hex string like "0x1A2B3C") obtained from list_windows or former visual tree.
 
-        Navigation direction:
-        Defines the approximate area to read around the target element. 
-        'parent' and 'child' are for hierarchical navigation, while 'previous' and 'next' are for siblings in the visual tree. 
+        Navigation direction: Defines the approximate area to read around the target element.
+        'parent' and 'child' are for hierarchical navigation, while 'previous' and 'next' are for siblings in the visual tree.
         Use 'all' to read everything available from the target element. Combine multiple directions with commas, e.g. "parent,child" or "siblings".
-
-        Common scenarios:
-        1. No visual context attached → call list_windows, then get_visual_tree(hwnd="0x...") to read a window.
-        2. Visual tree has 'omitted' markers → get_visual_tree(elementId=N, direction="child") to expand.
-        3. UI may have changed → re-read with the same elementId or hwnd to get fresh content.
-        4. Need parent context → get_visual_tree(elementId=N, direction="parent").
-        5. Navigate siblings → get_visual_tree(elementId=N, direction="next,previous").
         """)]
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_GetVisualTree_Header,
