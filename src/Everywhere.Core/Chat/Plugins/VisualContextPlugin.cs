@@ -40,7 +40,7 @@ public class VisualContextPlugin : BuiltInChatPlugin
         {
             list.Add(
                 new NativeChatFunction(
-                    ListTopLevels,
+                    ListWindows,
                     ChatFunctionPermissions.ScreenRead));
             list.Add(
                 new NativeChatFunction(
@@ -59,12 +59,12 @@ public class VisualContextPlugin : BuiltInChatPlugin
         });
     }
 
-    [KernelFunction("list_toplevels")]
-    [Description("Lists all top-levels with their hwnd, title, process information, and state.")]
+    [KernelFunction("list_windows")]
+    [Description("Lists all windows with their hwnd, title, process information, and state.")]
     [DynamicResourceKey(
         LocaleKey.BuiltInChatPlugin_VisualContext_ListWindows_Header,
         LocaleKey.BuiltInChatPlugin_VisualContext_ListWindows_Description)]
-    private string ListTopLevels([FromKernelServices] ChatContext chatContext)
+    private string ListWindows([FromKernelServices] ChatContext chatContext)
     {
         var xmlBuilder = new StringBuilder();
         foreach (var screen in _visualElementContext.Screens.AsValueEnumerable())
