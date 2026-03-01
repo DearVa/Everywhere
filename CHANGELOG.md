@@ -1,7 +1,7 @@
 ## [v0.6.7](https://github.com/DearVa/Everywhere/releases/tag/v0.6.7) - 2026-03-01
 
 ### ✨ Features
-- **Visual Context Supercharged**: Introducing `get_visual_tree` tool. Your assistant can now call this tool to fetch on-screen elements freely, massively boosting its contextual comprehension and self-awareness capabilities.
+- **Visual Context Supercharged**: Introducing `get_visual_tree` tool. Your assistant can now call this tool to fetch on-screen elements freely, massively boosting its contextual comprehension and self-awareness capabilities. Note: This is an experimental feature and may not work perfectly with all secenarios. Feedback is highly appreciated!
 - **Model Update**: Removed the deprecated Gemini 3 Pro Preview model and added the newly released Gemini 3.1 Pro Preview.
 
 ### 🚀 Improvements

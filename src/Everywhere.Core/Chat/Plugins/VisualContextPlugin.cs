@@ -49,7 +49,8 @@ public class VisualContextPlugin : BuiltInChatPlugin
             list.Add(
                 new NativeChatFunction(
                     GetVisualTree,
-                    ChatFunctionPermissions.ScreenRead));
+                    ChatFunctionPermissions.ScreenRead,
+                    isExperimental: true));
             list.Add(
                 new NativeChatFunction(
                     ExecuteVisualActionsAsync,
