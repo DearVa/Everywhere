@@ -684,7 +684,7 @@ public partial class VisualElementContext
                 AutomationElement? sibling;
                 try
                 {
-                    sibling = TreeWalker.GetNextSibling(visualElement._element);
+                    sibling = TreeWalker.GetPreviousSibling(visualElement._element);
                 }
                 catch
                 {
