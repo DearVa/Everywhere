@@ -2132,4 +2132,10 @@
     <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
         <value>“{0}”을(를) 실행해도 괜찮나요?</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Header" xml:space="preserve">
+        <value>비주얼 트리 읽기</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
+        <value>화면의 창이나 요소의 비주얼 트리를 읽습니다.</value>
+    </data>
 </root>
