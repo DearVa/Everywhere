@@ -837,7 +837,7 @@ public partial class VisualTreeBuilder(
 #if DEBUG_VISUAL_TREE_BUILDER
     private void PropagateNode(
 #else
-    private static void PropagateNode(
+    private void PropagateNode(
 #endif
         PriorityQueue<TraversalNode, float> priorityQueue,
         in TraversalNode node)
