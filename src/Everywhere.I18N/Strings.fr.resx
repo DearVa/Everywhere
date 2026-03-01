@@ -2132,4 +2132,10 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
         <value>Autoriser « {0} » à s'exécuter ?</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Header" xml:space="preserve">
+        <value>Lire l'Arbre Visuel</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
+        <value>Lire l'arbre visuel des fenêtres ou éléments à l'écran.</value>
+    </data>
 </root>

@@ -2132,4 +2132,10 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="ChatPluginConsentRequest_CommonNone_Header" xml:space="preserve">
         <value>È consentito a “{0}” di eseguire?</value>
     </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Header" xml:space="preserve">
+        <value>Leggi Albero Visivo</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
+        <value>Leggi l'albero visivo di finestre o elementi sullo schermo.</value>
+    </data>
 </root>
