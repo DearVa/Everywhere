@@ -53,7 +53,8 @@ public class VisualContextPlugin : BuiltInChatPlugin
             list.Add(
                 new NativeChatFunction(
                     ExecuteVisualActionsAsync,
-                    ChatFunctionPermissions.ScreenAccess));
+                    ChatFunctionPermissions.ScreenAccess,
+                    isExperimental: true));
         });
     }
 

@@ -1,3 +1,21 @@
+## [v0.6.7](https://github.com/DearVa/Everywhere/releases/tag/v0.6.7) - 2026-03-01
+
+### ✨ Features
+- **Visual Context Supercharged**: Introducing `get_visual_tree` tool. Your assistant can now call this tool to fetch on-screen elements freely, massively boosting its contextual comprehension and self-awareness capabilities.
+- **Model Update**: Removed the deprecated Gemini 3 Pro Preview model and added the newly released Gemini 3.1 Pro Preview.
+
+### 🚀 Improvements
+- **Framework Upgrade**: Updated the underlying MCP (Model Context Protocol) framework version, which may resolve previously reported edge-case issues (#232).
+
+### 🐛 Bug Fixes
+- **Critical Context Fix (Windows)**: Fixed a fatal typo in the visual context extraction algorithm on Windows. This bug previously caused premature truncation of complex contexts, hiding crucial information below the selected element from the assistant.
+- Resolved a rendering crash that could occur after enabling the text selection feature (#313).
+- Fixed a random crash bug related to Grid layout calculations, bringing further stability to the application.
+
+**Full Changelog**:  https://github.com/DearVa/Everywhere/compare/v0.6.6...v0.6.7
+
+
+
 ## [v0.6.6](https://github.com/DearVa/Everywhere/releases/tag/v0.6.6) - 2026-02-22
 
 ### ✨ Features
