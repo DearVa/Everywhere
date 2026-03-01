@@ -1,15 +1,17 @@
 ﻿#if DEBUG
-// #define DEBUG_VISUAL_TREE_BUILDER
+#define DEBUG_VISUAL_TREE_BUILDER
 #endif
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Everywhere.Interop;
 using ZLinq;
 #if DEBUG_VISUAL_TREE_BUILDER
-using System.Diagnostics;
 using Everywhere.Chat.Debugging;
 #endif
 
@@ -63,6 +65,41 @@ public enum VisualTreeLengthLimit
     Unlimited = 4
 }
 
+/// <summary>
+/// Defines the direction of traversal in the visual element tree.
+/// It determines how a queued node is expanded.
+/// </summary>
+[Flags]
+public enum VisualTreeTraverseDirections
+{
+    /// <summary>
+    /// Core elements
+    /// </summary>
+    Core = 0,
+
+    /// <summary>
+    /// parent, previous sibling, next sibling
+    /// </summary>
+    Parent = 0x1,
+
+    /// <summary>
+    /// previous sibling, child
+    /// </summary>
+    PreviousSibling = 0x2,
+
+    /// <summary>
+    /// next sibling, child
+    /// </summary>
+    NextSibling = 0x4,
+
+    /// <summary>
+    /// next child, child
+    /// </summary>
+    Child = 0x8,
+
+    All = Parent | PreviousSibling | NextSibling | Child
+}
+
 public static class VisualTreeLengthLimitExtension
 {
     public static int ToTokenLimit(this VisualTreeLengthLimit limit)
@@ -89,7 +126,8 @@ public partial class VisualTreeBuilder(
     IReadOnlyList<IVisualElement> coreElements,
     int approximateTokenLimit,
     int startingId,
-    VisualTreeDetailLevel detailLevel
+    VisualTreeDetailLevel detailLevel,
+    VisualTreeTraverseDirections allowedTraverseDirections = VisualTreeTraverseDirections.All
 )
 {
     private static readonly ActivitySource ActivitySource = new(typeof(VisualTreeBuilder).FullName.NotNull());
@@ -216,45 +254,13 @@ public partial class VisualTreeBuilder(
     }
 
     /// <summary>
-    /// Defines the direction of traversal in the visual element tree.
-    /// It determines how a queued node is expanded.
-    /// </summary>
-    private enum TraverseDirection
-    {
-        /// <summary>
-        /// Core elements
-        /// </summary>
-        Core,
-
-        /// <summary>
-        /// parent, previous sibling, next sibling
-        /// </summary>
-        Parent,
-
-        /// <summary>
-        /// previous sibling, child
-        /// </summary>
-        PreviousSibling,
-
-        /// <summary>
-        /// next sibling, child
-        /// </summary>
-        NextSibling,
-
-        /// <summary>
-        /// next child, child
-        /// </summary>
-        Child
-    }
-
-    /// <summary>
     /// Represents a node in the traversal queue with a calculated priority score.
     /// </summary>
     private readonly record struct TraversalNode(
         IVisualElement Element,
         IVisualElement? Previous,
         TraverseDistance Distance,
-        TraverseDirection Direction,
+        VisualTreeTraverseDirections Direction,
         int SiblingIndex,
         IEnumerator<IVisualElement> Enumerator
     )
@@ -305,15 +311,15 @@ public partial class VisualTreeBuilder(
         public float GetScore()
         {
             // Core elements have the highest priority
-            if (Direction == TraverseDirection.Core) return float.NegativeInfinity;
+            if (Direction == VisualTreeTraverseDirections.Core) return float.NegativeInfinity;
 
             // 1. Base score based on topology
             var score = Direction switch
             {
-                TraverseDirection.Parent => 2000.0f,
-                TraverseDirection.PreviousSibling => 10000f,
-                TraverseDirection.NextSibling => 10000f,
-                TraverseDirection.Child => 1000.0f,
+                VisualTreeTraverseDirections.Parent => 2000.0f,
+                VisualTreeTraverseDirections.PreviousSibling => 10000f,
+                VisualTreeTraverseDirections.NextSibling => 10000f,
+                VisualTreeTraverseDirections.Child => 1000.0f,
                 _ => throw new ArgumentOutOfRangeException()
             };
             if (Distance.Local > 0) score /= Distance.Local; // Linear decay with local distance
@@ -323,8 +329,8 @@ public partial class VisualTreeBuilder(
             // because when enumerating siblings, a small weighted element will "block" subsequent siblings.
             var weightedElement = Direction switch
             {
-                TraverseDirection.Parent => Element,
-                TraverseDirection.Child => Previous,
+                VisualTreeTraverseDirections.Parent => Element,
+                VisualTreeTraverseDirections.Child => Previous,
                 _ => null
             };
             if (weightedElement is not null)
@@ -332,24 +338,29 @@ public partial class VisualTreeBuilder(
                 // 2. Intrinsic Score (Type Weight)
                 score *= GetTypeWeight(weightedElement.Type);
 
-                // 3. Intrinsic Score (Size Weight)
-                // Logarithmic scale for area: log(Area + 1)
-                // Larger elements are usually more important containers or focal points.
-                var rect = weightedElement.BoundingRectangle;
-                if (rect is { Width: > 0, Height: > 0 })
-                {
-                    var area = (float)rect.Width * rect.Height;
-                    // Normalize against a reference screen size (e.g., 1920x1080)
-                    const float screenArea = 1920f * 1080;
-                    var sizeFactor = 1.0f + (area / screenArea);
-                    score *= sizeFactor;
-                }
+                // Sometimes the visual element's BoundingRectangle is invalid,
+                // but it actually has a valid size that can be obtained from its children.
+                // So the following algorithm is not used for now, but we may consider adding it back in the future with some safeguards
+                // (e.g., only apply size weight to Panels and TopLevels, and cap the maximum size weight) to prevent potential abuse from noisy bounding rectangles.
 
-                // 4. Penalty for tiny elements (likely noise or invisible)
-                if (rect.Width is > 0 and < 5 || rect.Height is > 0 and < 5)
-                {
-                    score *= 0.1f;
-                }
+                // // 3. Intrinsic Score (Size Weight)
+                // // Logarithmic scale for area: log(Area + 1)
+                // // Larger elements are usually more important containers or focal points.
+                // var rect = weightedElement.BoundingRectangle;
+                // if (rect is { Width: > 0, Height: > 0 })
+                // {
+                //     var area = (float)rect.Width * rect.Height;
+                //     // Normalize against a reference screen size (e.g., 1920x1080)
+                //     const float screenArea = 1920f * 1080;
+                //     var sizeFactor = 1.0f + (area / screenArea);
+                //     score *= sizeFactor;
+                // }
+                //
+                // // 4. Penalty for tiny elements (likely noise or invisible)
+                // if (rect.Width is > 0 and < 5 || rect.Height is > 0 and < 5)
+                // {
+                //     score *= 0.1f;
+                // }
             }
 
             // PriorityQueue is a min-heap, so we return negative score to make high scores come first.
@@ -399,10 +410,10 @@ public partial class VisualTreeBuilder(
         int siblingIndex,
         string? description,
         IReadOnlyList<string> contentLines,
-        int selfTokenCount,
+        int tokenCount,
         int contentTokenCount,
         bool isSelfInformative,
-        bool isCoreElement
+        bool isImportant
     )
     {
         public IVisualElement Element { get; } = element;
@@ -420,7 +431,7 @@ public partial class VisualTreeBuilder(
         /// <summary>
         /// The token cost of the element's structure (tags, attributes, ID) excluding content text.
         /// </summary>
-        public int SelfTokenCount { get; } = selfTokenCount;
+        public int TokenCount { get; } = tokenCount;
 
         /// <summary>
         /// The token cost of the element's content text (Description, Contents).
@@ -444,9 +455,9 @@ public partial class VisualTreeBuilder(
         public bool IsSelfInformative { get; } = isSelfInformative;
 
         /// <summary>
-        /// Indicates whether this element is a core element.
+        /// Indicates whether this element is an important element.
         /// </summary>
-        public bool IsCoreElement { get; } = isCoreElement;
+        public bool IsImportant { get; } = isImportant;
 
         /// <summary>
         /// The number of children that have informative content (either self-informative or have informative descendants).
@@ -457,7 +468,35 @@ public partial class VisualTreeBuilder(
         /// Indicates whether this element has any informative descendants.
         /// </summary>
         public bool HasInformativeDescendants { get; set; }
+
+        /// <summary>
+        /// Indicates that some children of this element were omitted due to the token budget being exhausted.
+        /// Set during the BFS cleanup phase when remaining queue items are discarded.
+        /// </summary>
+        public bool HasOmittedChildren { get; set; }
+
+        /// <summary>
+        /// Indicates that the text content of this element was truncated to fit the remaining token budget.
+        /// </summary>
+        public bool IsContentTruncated { get; set; }
     }
+
+    /// <summary>
+    /// Hierarchical DTO for JSON / TOON serialization.
+    /// Property names are deliberately short to minimise token usage.
+    /// Null fields are omitted by <see cref="CompactJsonOptions"/>.
+    /// </summary>
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
+    private readonly record struct VisualElementDto(
+        [property: JsonPropertyName("id")] int Id,
+        [property: JsonPropertyName("type"), JsonConverter(typeof(JsonStringEnumConverter))] VisualElementType Type,
+        [property: JsonPropertyName("name")] string? Name,
+        [property: JsonPropertyName("text")] string? Text,
+        [property: JsonPropertyName("box")] string? Box,
+        [property: JsonPropertyName("extra")] string? Extra,
+        [property: JsonPropertyName("children")] List<VisualElementDto>? Children,
+        [property: JsonPropertyName("omitted")] string? Omitted
+    );
 
     /// <summary>
     ///     The mapping from original element ID to the built sequential ID starting from <see cref="startingId"/>.
@@ -469,11 +508,18 @@ public partial class VisualTreeBuilder(
         .Where(id => !string.IsNullOrEmpty(id))
         .ToHashSet(StringComparer.Ordinal);
 
-    private StringBuilder? _stringBuilder;
+    private string? _cachedResult;
 
 #if DEBUG_VISUAL_TREE_BUILDER
     private VisualTreeRecorder? _debugRecorder;
 #endif
+
+    private static readonly JsonSerializerOptions CompactJsonOptions = new()
+    {
+        WriteIndented = false,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
 
     private const VisualElementStates InteractiveStates = VisualElementStates.Focused | VisualElementStates.Selected;
 
@@ -487,7 +533,7 @@ public partial class VisualTreeBuilder(
     {
         if (coreElements.Count == 0) throw new InvalidOperationException("No core elements to build.");
 
-        if (_stringBuilder != null) return _stringBuilder.ToString();
+        if (_cachedResult != null) return _cachedResult;
         cancellationToken.ThrowIfCancellationRequested();
 
 #if DEBUG_VISUAL_TREE_BUILDER
@@ -499,63 +545,43 @@ public partial class VisualTreeBuilder(
         var visitedElements = new Dictionary<string, VisualElementNode>();
 
         // 1. Enqueue core nodes
-        TryEnqueueTraversalNode(priorityQueue, null, 0, TraverseDirection.Core, coreElements.GetEnumerator());
+        TryEnqueueTraversalNode(priorityQueue, null, 0, VisualTreeTraverseDirections.Core, coreElements.GetEnumerator());
 
         // 2. Process the Queue
         ProcessTraversalQueue(priorityQueue, visitedElements, cancellationToken);
 
-        // 3. Dispose remaining enumerators
+        // 3. Dispose remaining enumerators and mark omitted parents.
+        // Any node still in the queue was discarded due to token budget exhaustion.
+        // If its parent was already visited, that parent has omitted children.
         while (priorityQueue.Count > 0)
         {
             if (priorityQueue.TryDequeue(out var node, out _))
             {
+                if (node.ParentId is not null && visitedElements.TryGetValue(node.ParentId, out var parentNode))
+                {
+                    parentNode.HasOmittedChildren = true;
+                }
+
                 node.Enumerator.Dispose();
             }
         }
 
-        // 4. Generate
-        return detailLevel == VisualTreeDetailLevel.Minimal ?
-            GenerateMarkdownString(visitedElements) :
-            GenerateXmlString(visitedElements);
-    }
-
-    /// <summary>
-    /// Builds the Markdown representation of the visual tree for the core elements.
-    /// Markdown is a more compact format than XML, suitable for LLM consumption.
-    /// </summary>
-    /// <param name="cancellationToken">Cancellation token for the operation.</param>
-    /// <returns>A Markdown string representing the visual tree.</returns>
-    public string BuildMarkdown(CancellationToken cancellationToken)
-    {
-        if (coreElements.Count == 0) throw new InvalidOperationException("No core elements to build Markdown from.");
-
-        cancellationToken.ThrowIfCancellationRequested();
+        // 4. Generate output based on detail level
+        _cachedResult = detailLevel switch
+        {
+            VisualTreeDetailLevel.Detailed => GenerateXmlString(visitedElements),
+            VisualTreeDetailLevel.Compact => GenerateJsonString(visitedElements),
+            _ => GenerateToonString(visitedElements),
+        };
 
 #if DEBUG_VISUAL_TREE_BUILDER
-        _debugRecorder ??= new VisualTreeRecorder(coreElements, approximateTokenLimit, "WeightedPriority");
+        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        var filename = $"visual_tree_debug_{timestamp}.json";
+        var debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
+        _debugRecorder?.SaveSession(debugPath);
 #endif
 
-        // Priority Queue for Best-First Search
-        var priorityQueue = new PriorityQueue<TraversalNode, float>();
-        var visitedElements = new Dictionary<string, VisualElementNode>();
-
-        // 1. Enqueue core nodes
-        TryEnqueueTraversalNode(priorityQueue, null, 0, TraverseDirection.Core, coreElements.GetEnumerator());
-
-        // 2. Process the Queue
-        ProcessTraversalQueue(priorityQueue, visitedElements, cancellationToken);
-
-        // 3. Dispose remaining enumerators
-        while (priorityQueue.Count > 0)
-        {
-            if (priorityQueue.TryDequeue(out var node, out _))
-            {
-                node.Enumerator.Dispose();
-            }
-        }
-
-        // 4. Generate Markdown
-        return GenerateMarkdownString(visitedElements);
+        return _cachedResult;
     }
 
 #if DEBUG_VISUAL_TREE_BUILDER
@@ -566,7 +592,7 @@ public partial class VisualTreeBuilder(
         PriorityQueue<TraversalNode, float> priorityQueue,
         in TraversalNode? previous,
         in TraverseDistance distance,
-        TraverseDirection direction,
+        VisualTreeTraverseDirections direction,
         IEnumerator<IVisualElement> enumerator)
     {
         if (!enumerator.MoveNext())
@@ -582,8 +608,8 @@ public partial class VisualTreeBuilder(
             direction,
             direction switch
             {
-                TraverseDirection.PreviousSibling => previous?.SiblingIndex - 1 ?? 0,
-                TraverseDirection.NextSibling => previous?.SiblingIndex + 1 ?? 0,
+                VisualTreeTraverseDirections.PreviousSibling => previous?.SiblingIndex - 1 ?? 0,
+                VisualTreeTraverseDirections.NextSibling => previous?.SiblingIndex + 1 ?? 0,
                 _ => 0
             },
             enumerator);
@@ -591,6 +617,7 @@ public partial class VisualTreeBuilder(
         priorityQueue.Enqueue(node, score);
 
 #if DEBUG_VISUAL_TREE_BUILDER
+        _debugRecorder?.RegisterNode(node.Element, node.GetScore());
         _debugRecorder?.RecordStep(
             node.Element,
             "Enqueue",
@@ -635,10 +662,6 @@ public partial class VisualTreeBuilder(
             var element = node.Element;
             var id = element.Id;
 
-#if DEBUG_VISUAL_TREE_BUILDER
-            _debugRecorder?.RegisterNode(element, node.GetScore());
-#endif
-
             if (visitedElements.ContainsKey(id))
             {
 #if DEBUG_VISUAL_TREE_BUILDER
@@ -647,8 +670,8 @@ public partial class VisualTreeBuilder(
                 continue;
             }
 
-            // Process the current node and create the XmlVisualElement
-            CreateXmlVisualElement(visitedElements, node, remainingTokenCount, ref accumulatedTokenCount);
+            // Process the current node and create the VisualElementNode
+            CreateVisualElementNode(visitedElements, node, remainingTokenCount, ref accumulatedTokenCount);
 
 #if DEBUG_VISUAL_TREE_BUILDER
             _debugRecorder?.RecordStep(
@@ -668,7 +691,7 @@ public partial class VisualTreeBuilder(
         }
     }
 
-    private void CreateXmlVisualElement(
+    private void CreateVisualElementNode(
         Dictionary<string, VisualElementNode> visitedElements,
         TraversalNode traversalNode,
         int remainingTokenCount,
@@ -681,20 +704,27 @@ public partial class VisualTreeBuilder(
         // --- Determine Content and Self-Informativeness ---
         string? description = null;
         string? content = null;
+        var isContentTruncated = false;
         var isTextElement = type is VisualElementType.Label or VisualElementType.TextEdit or VisualElementType.Document;
         var text = element.GetText();
         if (element.Name is { Length: > 0 } name)
         {
             if (isTextElement && string.IsNullOrEmpty(text))
             {
-                content = TruncateIfNeeded(name, remainingTokenCount);
+                content = TruncateIfNeeded(name, remainingTokenCount, out var truncated);
+                isContentTruncated |= truncated;
             }
             else if (!isTextElement || name != text)
             {
-                description = TruncateIfNeeded(name, remainingTokenCount);
+                description = TruncateIfNeeded(name, remainingTokenCount, out var truncated);
+                isContentTruncated |= truncated;
             }
         }
-        content ??= text is { Length: > 0 } ? TruncateIfNeeded(text, remainingTokenCount) : null;
+        if (content is null && text is { Length: > 0 })
+        {
+            content = TruncateIfNeeded(text, remainingTokenCount, out var truncated);
+            isContentTruncated |= truncated;
+        }
         var contentLines = content?.Split(Environment.NewLine) ?? [];
 
         var hasTextContent = contentLines.Length > 0;
@@ -704,22 +734,45 @@ public partial class VisualTreeBuilder(
         var isSelfInformative = hasTextContent || hasDescription || interactive || isCoreElement;
 
         // --- Calculate Token Costs ---
-        // Base cost: indentation (approx 2), start tag (<Type), id attribute ( id="..."), end tag (</Type>)
-        // We approximate this as 8 tokens.
-        var selfTokenCount = ShouldIncludeId(detailLevel, type) ? 8 : 6;
+        // Cost varies by output format: XML is verbose, JSON is compact, TOON is tabular (header amortized).
+        var selfTokenCount = detailLevel switch
+        {
+            VisualTreeDetailLevel.Detailed => 8, // XML: <Type id="N">...</Type>
+            VisualTreeDetailLevel.Compact => 5, // JSON: {"t":"Type","id":N,...}
+            _ => 2 // TOON: row values only (header amortized)
+        };
 
         // Add cost for bounds attributes if applicable (x, y, width, height)
         if (ShouldIncludeBounds(detailLevel, type))
         {
-            selfTokenCount += 20; // Approximate cost for pos="..." size="..."
+            selfTokenCount += detailLevel switch
+            {
+                VisualTreeDetailLevel.Detailed => 20, // pos="x,y" size="wxh"
+                VisualTreeDetailLevel.Compact => 10, // ,"pos":"x,y","size":"wxh"
+                _ => 4 // ,x,y,wxh
+            };
         }
 
+        var attrOverhead = detailLevel switch
+        {
+            VisualTreeDetailLevel.Detailed => 3, // description="..."
+            VisualTreeDetailLevel.Compact => 2, // ,"desc":"..."
+            _ => 1 // ,value
+        };
+        var lineOverhead = detailLevel == VisualTreeDetailLevel.Detailed ? 4 : 0; // XML indentation per line; JSON/TOON join with \n
+        var blockOverhead = detailLevel switch
+        {
+            VisualTreeDetailLevel.Detailed => 8, // end tag
+            VisualTreeDetailLevel.Compact => 2, // ,"content":"..."
+            _ => 1 // ,value
+        };
+
         var contentTokenCount = 0;
-        if (description != null) contentTokenCount += EstimateTokenCount(description) + 3; // +3 for description="..."
+        if (description != null) contentTokenCount += EstimateTokenCount(description) + attrOverhead;
         contentTokenCount += contentLines.Length switch
         {
             > 0 and < 3 => contentLines.Sum(EstimateTokenCount),
-            >= 3 => contentLines.Sum(line => EstimateTokenCount(line) + 4) + 8, // >= 3, +4 for the indentation, +8 for the end tag
+            >= 3 => contentLines.Sum(line => EstimateTokenCount(line) + lineOverhead) + blockOverhead,
             _ => 0
         };
 
@@ -734,14 +787,17 @@ public partial class VisualTreeBuilder(
             selfTokenCount,
             contentTokenCount,
             isSelfInformative,
-            traversalNode.Direction == TraverseDirection.Core);
+            traversalNode.Direction == VisualTreeTraverseDirections.Core)
+        {
+            IsContentTruncated = isContentTruncated
+        };
 
         // --- Update Token Count and Propagate ---
 
         // If the element is self-informative, it is active immediately.
         if (elementNode.IsVisible || type is not VisualElementType.TopLevel and not VisualElementType.Screen)
         {
-            accumulatedTokenCount += elementNode.SelfTokenCount + elementNode.ContentTokenCount;
+            accumulatedTokenCount += elementNode.TokenCount + elementNode.ContentTokenCount;
         }
 
         // Link to parent and propagate updates
@@ -760,7 +816,7 @@ public partial class VisualTreeBuilder(
             }
         }
         // If we traversed from parent direction, above method cannot link parent-child.
-        else if (traversalNode is { Direction: TraverseDirection.Parent })
+        else if (traversalNode is { Direction: VisualTreeTraverseDirections.Parent })
         {
             foreach (var childXmlElement in visitedElements.Values
                          .AsValueEnumerable()
@@ -793,140 +849,149 @@ public partial class VisualTreeBuilder(
         var elementType = node.Element.Type;
         switch (node.Direction)
         {
-            case TraverseDirection.Core:
+            case VisualTreeTraverseDirections.Core:
             {
                 // In this case, node.Enumerator is the core element enumerator
                 TryEnqueueTraversalNode(
                     priorityQueue,
                     node,
                     0,
-                    TraverseDirection.Core,
+                    VisualTreeTraverseDirections.Core,
                     node.Enumerator);
 
                 // Only enqueue parent and siblings if not top-level
                 if (elementType != VisualElementType.TopLevel)
                 {
-                    TryEnqueueTraversalNode(
-                        priorityQueue,
-                        node,
-                        1,
-                        TraverseDirection.Parent,
-                        node.Element.GetAncestors().GetEnumerator());
-
-                    var siblingAccessor = node.Element.SiblingAccessor;
+                    if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Parent))
+                        TryEnqueueTraversalNode(
+                            priorityQueue,
+                            node,
+                            1,
+                            VisualTreeTraverseDirections.Parent,
+                            node.Element.GetAncestors().GetEnumerator());
 
                     // Get two enumerators together, prohibited to dispose one before the other, causing resource reallocation.
-                    var previousSiblingEnumerator = siblingAccessor.BackwardEnumerator;
-                    var nextSiblingEnumerator = siblingAccessor.ForwardEnumerator;
+                    var siblingAccessor = node.Element.SiblingAccessor;
 
-                    TryEnqueueTraversalNode(
-                        priorityQueue,
-                        node,
-                        1,
-                        TraverseDirection.PreviousSibling,
-                        previousSiblingEnumerator);
-                    TryEnqueueTraversalNode(
-                        priorityQueue,
-                        node,
-                        1,
-                        TraverseDirection.NextSibling,
-                        nextSiblingEnumerator);
+                    if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.PreviousSibling))
+                        TryEnqueueTraversalNode(
+                            priorityQueue,
+                            node,
+                            1,
+                            VisualTreeTraverseDirections.PreviousSibling,
+                            siblingAccessor.BackwardEnumerator);
+
+                    if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.NextSibling))
+                        TryEnqueueTraversalNode(
+                            priorityQueue,
+                            node,
+                            1,
+                            VisualTreeTraverseDirections.NextSibling,
+                            siblingAccessor.ForwardEnumerator);
                 }
 
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    1,
-                    TraverseDirection.Child,
-                    node.Element.Children.GetEnumerator());
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Child))
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        1,
+                        VisualTreeTraverseDirections.Child,
+                        node.Element.Children.GetEnumerator());
                 break;
             }
-            case TraverseDirection.Parent when elementType != VisualElementType.TopLevel:
+            case VisualTreeTraverseDirections.Parent when elementType != VisualElementType.TopLevel:
             {
-                // In this case, node.Enumerator is the Ancestors enumerator
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Step(),
-                    TraverseDirection.Parent,
-                    node.Enumerator);
-
-                var siblingAccessor = node.Element.SiblingAccessor;
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Parent))
+                    // In this case, node.Enumerator is the Ancestors enumerator
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Step(),
+                        VisualTreeTraverseDirections.Parent,
+                        node.Enumerator);
 
                 // Get two enumerators together, prohibited to dispose one before the other, causing resource reallocation.
-                var previousSiblingEnumerator = siblingAccessor.BackwardEnumerator;
-                var nextSiblingEnumerator = siblingAccessor.ForwardEnumerator;
+                var siblingAccessor = node.Element.SiblingAccessor;
 
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Reset(),
-                    TraverseDirection.PreviousSibling,
-                    previousSiblingEnumerator);
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Reset(),
-                    TraverseDirection.NextSibling,
-                    nextSiblingEnumerator);
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.PreviousSibling))
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Reset(),
+                        VisualTreeTraverseDirections.PreviousSibling,
+                        siblingAccessor.BackwardEnumerator);
+
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.NextSibling))
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Reset(),
+                        VisualTreeTraverseDirections.NextSibling,
+                        siblingAccessor.ForwardEnumerator);
                 break;
             }
-            case TraverseDirection.PreviousSibling:
+            case VisualTreeTraverseDirections.PreviousSibling:
             {
-                // In this case, node.Enumerator is the Previous Sibling enumerator
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Step(),
-                    TraverseDirection.PreviousSibling,
-                    node.Enumerator);
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.PreviousSibling))
+                    // In this case, node.Enumerator is the Previous Sibling enumerator
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Step(),
+                        VisualTreeTraverseDirections.PreviousSibling,
+                        node.Enumerator);
 
-                // Also enqueue the children of this sibling
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Reset(),
-                    TraverseDirection.Child,
-                    node.Element.Children.GetEnumerator());
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Child))
+                    // Also enqueue the children of this sibling
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Reset(),
+                        VisualTreeTraverseDirections.Child,
+                        node.Element.Children.GetEnumerator());
                 break;
             }
-            case TraverseDirection.NextSibling:
+            case VisualTreeTraverseDirections.NextSibling:
             {
-                // In this case, node.Enumerator is the Next Sibling enumerator
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Step(),
-                    TraverseDirection.NextSibling,
-                    node.Enumerator);
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.NextSibling))
+                    // In this case, node.Enumerator is the Next Sibling enumerator
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Step(),
+                        VisualTreeTraverseDirections.NextSibling,
+                        node.Enumerator);
 
-                // Also enqueue the children of this sibling
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Reset(),
-                    TraverseDirection.Child,
-                    node.Element.Children.GetEnumerator());
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Child))
+                    // Also enqueue the children of this sibling
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Reset(),
+                        VisualTreeTraverseDirections.Child,
+                        node.Element.Children.GetEnumerator());
                 break;
             }
-            case TraverseDirection.Child:
+            case VisualTreeTraverseDirections.Child:
             {
-                // In this case, node.Enumerator is the Children enumerator
-                // But note that these children are actually descendants of the original node's sibling.
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Step(),
-                    TraverseDirection.NextSibling,
-                    node.Enumerator);
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.NextSibling))
+                    // In this case, node.Enumerator is the Children enumerator
+                    // But note that these children are actually descendants of the original node's sibling.
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Step(),
+                        VisualTreeTraverseDirections.NextSibling,
+                        node.Enumerator);
 
-                // Also enqueue the children of this child
-                TryEnqueueTraversalNode(
-                    priorityQueue,
-                    node,
-                    node.Distance.Reset(),
-                    TraverseDirection.Child,
-                    node.Element.Children.GetEnumerator());
+                if (allowedTraverseDirections.HasFlag(VisualTreeTraverseDirections.Child))
+                    // Also enqueue the children of this child
+                    TryEnqueueTraversalNode(
+                        priorityQueue,
+                        node,
+                        node.Distance.Reset(),
+                        VisualTreeTraverseDirections.Child,
+                        node.Element.Children.GetEnumerator());
                 break;
             }
         }
@@ -934,7 +999,7 @@ public partial class VisualTreeBuilder(
 
     private string GenerateXmlString(Dictionary<string, VisualElementNode> visualElements)
     {
-        _stringBuilder = new StringBuilder();
+        var sb = new StringBuilder();
         foreach (var rootElement in visualElements.Values.AsValueEnumerable().Where(e => e.Parent is null))
         {
             if (rootElement.Type is not VisualElementType.TopLevel and not VisualElementType.Screen)
@@ -963,25 +1028,18 @@ public partial class VisualTreeBuilder(
                     {
                         Children = { rootElement }
                     };
-                    InternalBuildXml(_stringBuilder, actualRootElement, 0);
+                    BuildXml(sb, actualRootElement, 0);
                     continue;
                 }
             }
 
-            InternalBuildXml(_stringBuilder, rootElement, 0);
+            BuildXml(sb, rootElement, 0);
         }
 
-#if DEBUG_VISUAL_TREE_BUILDER
-        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        var filename = $"visual_tree_debug_{timestamp}.json";
-        var debugPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, filename);
-        _debugRecorder?.SaveSession(debugPath);
-#endif
-
-        return _stringBuilder.TrimEnd().ToString();
+        return sb.TrimEnd().ToString();
     }
 
-    private void InternalBuildXml(StringBuilder sb, VisualElementNode elementNode, int indentLevel)
+    private void BuildXml(StringBuilder sb, VisualElementNode elementNode, int indentLevel)
     {
         var element = elementNode.Element;
         var elementType = elementNode.Type;
@@ -994,7 +1052,7 @@ public partial class VisualTreeBuilder(
         {
             foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
             {
-                InternalBuildXml(sb, child, indentLevel);
+                BuildXml(sb, child, indentLevel);
             }
 
             return;
@@ -1003,18 +1061,15 @@ public partial class VisualTreeBuilder(
         // Start tag
         sb.Append(indent).Append('<').Append(elementType);
 
-        // Add ID if needed
-        if (ShouldIncludeId(detailLevel, elementType))
-        {
-            var id = BuiltVisualElements.Count + startingId;
-            BuiltVisualElements[id] = element;
-            sb.Append(" id=\"").Append(id).Append('"');
-        }
+        // Add ID
+        var id = BuiltVisualElements.Count + startingId;
+        BuiltVisualElements[id] = element;
+        sb.Append(" id=\"").Append(id).Append('"');
 
         // Add coreElement attribute if applicable
-        if (elementNode.IsCoreElement)
+        if (elementNode.IsImportant)
         {
-            sb.Append(" coreElement=\"true\"");
+            sb.Append(" important=\"true\"");
         }
 
         // Add bounds if needed
@@ -1022,12 +1077,11 @@ public partial class VisualTreeBuilder(
         {
             // for containers, include the element's size
             var bounds = element.BoundingRectangle;
-            sb.Append(" pos=\"")
-                .Append(bounds.X).Append(',').Append(bounds.Y)
-                .Append('"')
-                .Append(" size=\"")
-                .Append(bounds.Width).Append('x').Append(bounds.Height)
-                .Append('"');
+            sb.Append(" box=\"")
+                .Append(bounds.X).Append(',')
+                .Append(bounds.Y).Append(',')
+                .Append(bounds.Width).Append(',')
+                .Append(bounds.Height).Append('"');
         }
 
         // For top-level elements, add pid, process name and WindowHandle attributes
@@ -1040,7 +1094,7 @@ public partial class VisualTreeBuilder(
                 try
                 {
                     using var process = Process.GetProcessById(processId);
-                    sb.Append(" processName=\"").Append(SecurityElement.Escape(process.ProcessName)).Append('"');
+                    sb.Append(" process=\"").Append(SecurityElement.Escape(process.ProcessName)).Append('"');
                 }
                 catch
                 {
@@ -1051,7 +1105,7 @@ public partial class VisualTreeBuilder(
             var windowHandle = elementNode.Element.NativeWindowHandle;
             if (windowHandle > 0)
             {
-                sb.Append(" handle=\"0x").Append(windowHandle.ToString("X")).Append('"');
+                sb.Append(" hwnd=\"0x").Append(windowHandle.ToString("X")).Append('"');
             }
         }
 
@@ -1066,9 +1120,9 @@ public partial class VisualTreeBuilder(
             sb.Append(" content=\"").Append(SecurityElement.Escape(string.Join('\n', elementNode.ContentLines))).Append('"');
         }
 
-        if (elementNode.Children.Count == 0 && elementNode.ContentLines.Count < 3)
+        if (elementNode.Children.Count == 0 && elementNode.ContentLines.Count < 3 && !elementNode.HasOmittedChildren)
         {
-            // Self-closing tag if no children and no content
+            // Self-closing tag if no children, no content, and nothing omitted
             sb.Append("/>").AppendLine();
             return;
         }
@@ -1093,7 +1147,14 @@ public partial class VisualTreeBuilder(
 
         // Handle child elements
         foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
-            InternalBuildXml(sb, child, indentLevel + 1);
+            BuildXml(sb, child, indentLevel + 1);
+
+        // Add omission hint for the LLM
+        if (elementNode.HasOmittedChildren)
+        {
+            sb.Append(indent).Append("  <!-- more children omitted, use get_visual_tree(elementId=").Append(id).Append(") to expand -->").AppendLine();
+        }
+
         if (xmlLengthBeforeContent == sb.Length)
         {
             // No content or children were added, so we can convert to self-closing tag
@@ -1106,40 +1167,85 @@ public partial class VisualTreeBuilder(
         sb.Append(indent).Append("</").Append(element.Type).Append('>').AppendLine();
     }
 
-    private static bool ShouldIncludeId(VisualTreeDetailLevel detailLevel, VisualElementType type) => detailLevel switch
+    /// <summary>
+    /// Generates a compact minified JSON string from the visual tree using <see cref="VisualElementDto"/>.
+    /// The output preserves the full tree hierarchy via nested <c>ch</c> (children) arrays.
+    /// Null fields are omitted to minimize token usage.
+    /// </summary>
+    private string GenerateJsonString(Dictionary<string, VisualElementNode> visitedElements)
     {
-        VisualTreeDetailLevel.Detailed => true,
-        VisualTreeDetailLevel.Compact => type is not VisualElementType.Label,
-        VisualTreeDetailLevel.Minimal when type is
-            VisualElementType.TextEdit or
-            VisualElementType.Button or
-            VisualElementType.CheckBox or
-            VisualElementType.ListView or
-            VisualElementType.TreeView or
-            VisualElementType.DataGrid or
-            VisualElementType.TabControl or
-            VisualElementType.Table or
-            VisualElementType.Document or
-            VisualElementType.TopLevel or
-            VisualElementType.Screen => true,
-        _ => false
-    };
+        var tree = BuildElementDtoTree(visitedElements);
+        return JsonSerializer.Serialize(tree, CompactJsonOptions);
+    }
 
     /// <summary>
-    /// Generates a Markdown representation of the visual tree as a more compact alternative to XML.
-    /// Markdown is designed to be readable by LLMs while preserving interactive element IDs.
-    /// TopLevel and Screen elements are kept in XML format for metadata preservation.
+    /// Generates a TOON (Token-Oriented Object Notation) string from the visual tree.
+    /// The output preserves the full tree hierarchy.
     /// </summary>
-    /// <param name="visualElements">The dictionary of visual element nodes built during traversal.</param>
-    /// <returns>A Markdown string representing the visual tree.</returns>
-    private string GenerateMarkdownString(Dictionary<string, VisualElementNode> visualElements)
+    private string GenerateToonString(Dictionary<string, VisualElementNode> visitedElements)
     {
-        var mdBuilder = new StringBuilder();
-        foreach (var rootElement in visualElements.Values.AsValueEnumerable().Where(e => e.Parent is null))
+        var tree = BuildElementDtoTree(visitedElements);
+
+        var sb = new StringBuilder("{id,type,name,text,box,extra,children,omitted}[");
+        sb.Append(tree.Count).Append(']').AppendLine();
+
+        foreach (var root in tree)
+        {
+            EncodeToonString(sb, root, 0);
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Encodes a single <see cref="VisualElementDto"/> and its children into TOON format.
+    /// </summary>
+    /// <example>
+    /// 12|Label|"System.Net.Http.HttpRequestException: Response status code does not indicate success: 500 (Internal Server Error). — sylinko — everywhere - 内存使用率 - 393 MB"||||0
+    /// </example>
+    /// <param name="sb"></param>
+    /// <param name="dto"></param>
+    /// <param name="indentLevel"></param>
+    private static void EncodeToonString(StringBuilder sb, VisualElementDto dto, int indentLevel)
+    {
+        if (indentLevel > 0) sb.Append(new string(' ', indentLevel * 2));
+
+        sb.Append(dto.Id).Append('|').Append(dto.Type).Append('|');
+        if (!string.IsNullOrEmpty(dto.Name)) sb.Append(JsonSerializer.Serialize(dto.Name, CompactJsonOptions));
+        sb.Append('|');
+        if (!string.IsNullOrEmpty(dto.Text)) sb.Append(JsonSerializer.Serialize(dto.Text, CompactJsonOptions));
+        sb.Append('|');
+        if (!string.IsNullOrEmpty(dto.Box)) sb.Append(JsonSerializer.Serialize(dto.Box, CompactJsonOptions));
+        sb.Append('|');
+        if (!string.IsNullOrEmpty(dto.Extra)) sb.Append(JsonSerializer.Serialize(dto.Extra, CompactJsonOptions));
+        sb.Append("|[").Append(dto.Children?.Count ?? 0).Append(']');
+        sb.Append('|');
+        if (!string.IsNullOrEmpty(dto.Omitted)) sb.Append(JsonSerializer.Serialize(dto.Omitted, CompactJsonOptions));
+        sb.AppendLine();
+
+        if (dto.Children is { Count: > 0 } children)
+        {
+            foreach (var child in children)
+            {
+                EncodeToonString(sb, child, indentLevel + 1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Builds a hierarchical list of root <see cref="VisualElementDto"/> trees from the visited elements.
+    /// Non-visible containers are skipped (passthrough) — their children are promoted to the parent level,
+    /// replicating the same structural semantics as <see cref="BuildXml"/>.
+    /// Synthetic TopLevel/Screen roots are created when the actual root is a non-top-level element.
+    /// </summary>
+    private List<VisualElementDto> BuildElementDtoTree(Dictionary<string, VisualElementNode> visitedElements)
+    {
+        var roots = new List<VisualElementDto>();
+        foreach (var rootElement in visitedElements.Values.AsValueEnumerable().Where(e => e.Parent is null))
         {
             if (rootElement.Type is not VisualElementType.TopLevel and not VisualElementType.Screen)
             {
-                // Append a synthetic root for non-top-level elements
+                // Walk up to find the actual TopLevel/Screen ancestor
                 var topLevelOrScreenElement = rootElement.Element.Parent;
                 while (topLevelOrScreenElement is { Type: not VisualElementType.TopLevel and not VisualElementType.Screen, Parent: { } parent })
                 {
@@ -1148,307 +1254,254 @@ public partial class VisualTreeBuilder(
 
                 if (topLevelOrScreenElement is not null)
                 {
-                    // Create a synthetic root element and build its Markdown
-                    var actualRootElement = new VisualElementNode(
-                        topLevelOrScreenElement,
-                        topLevelOrScreenElement.Type,
-                        null,
-                        0,
-                        null,
-                        ["(children omitted)"],
-                        8,
-                        0,
-                        true,
-                        false)
-                    {
-                        Children = { rootElement }
-                    };
-                    InternalBuildMarkdown(mdBuilder, actualRootElement, 0);
+                    var syntheticId = BuiltVisualElements.Count + startingId;
+                    BuiltVisualElements[syntheticId] = topLevelOrScreenElement;
+
+                    // Collect children from the rootElement subtree
+                    var childDtos = new List<VisualElementDto>();
+                    CollectVisibleDtos(childDtos, rootElement);
+                    childDtos = MergeConsecutiveLabels(childDtos);
+
+                    roots.Add(
+                        CreateElementDto(
+                            topLevelOrScreenElement,
+                            topLevelOrScreenElement.Type,
+                            syntheticId,
+                            description: null,
+                            contentLines: null,
+                            isImportant: false,
+                            children: childDtos.Count > 0 ? childDtos : null,
+                            omitted: "children")); // Synthetic roots always have omitted children
                     continue;
                 }
             }
 
-            InternalBuildMarkdown(mdBuilder, rootElement, 0);
+            CollectVisibleDtos(roots, rootElement);
         }
 
-        return mdBuilder.TrimEnd().ToString();
+        return MergeConsecutiveLabels(roots);
     }
 
     /// <summary>
-    /// Internal recursive method to build Markdown for a visual element node.
-    /// Design principles:
-    /// - TopLevel/Screen: XML format with attributes
-    /// - Panel/Document with content: Markdown headers (# to ########, max 8 levels)
-    /// - Panel without content: skip, don't increase heading level
-    /// - Hyperlink: standard Markdown [text](url), no ID needed
-    /// - Interactive elements: &lt;type#id&gt; description
-    /// - Consecutive simple Labels: concatenate into a paragraph
-    /// - ListViewItem: use - prefix
+    /// Recursively builds <see cref="VisualElementDto"/> nodes for the tree.
+    /// Visible elements produce a DTO whose <see cref="VisualElementDto.Children"/> contains
+    /// their own visible descendants. Non-visible containers are transparent — their children
+    /// are promoted directly into <paramref name="output"/> (passthrough semantics).
     /// </summary>
-    /// <param name="sb">The StringBuilder to append to.</param>
-    /// <param name="elementNode">The current element node to render.</param>
-    /// <param name="headingLevel">The current heading level (1-8 for containers).</param>
-    private void InternalBuildMarkdown(StringBuilder sb, VisualElementNode elementNode, int headingLevel)
+    private void CollectVisibleDtos(List<VisualElementDto> output, VisualElementNode elementNode)
     {
         var element = elementNode.Element;
         var elementType = elementNode.Type;
 
-        // If not visible, skip this element's representation but render its children.
+        // Non-visible non-top-level elements pass through: skip self, promote children.
         if (!elementNode.IsVisible && elementType is not VisualElementType.TopLevel and not VisualElementType.Screen)
         {
             foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
             {
-                InternalBuildMarkdown(sb, child, headingLevel);
+                CollectVisibleDtos(output, child);
             }
+
             return;
         }
 
-        // TopLevel and Screen elements are rendered as XML for metadata preservation
-        if (elementType is VisualElementType.TopLevel or VisualElementType.Screen)
+        // Visible node: assign sequential ID and recurse children.
+        var id = BuiltVisualElements.Count + startingId;
+        BuiltVisualElements[id] = element;
+
+        var childDtos = new List<VisualElementDto>();
+        foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
         {
-            var id = BuiltVisualElements.Count + startingId;
-            BuiltVisualElements[id] = element;
-            BuildTopLevelXmlTag(sb, elementNode, id);
-            return;
+            CollectVisibleDtos(childDtos, child);
         }
 
-        // Check if this is a container that should become a heading
-        var isContainerType = elementType is
-            VisualElementType.Panel or
-            VisualElementType.Document or
-            VisualElementType.TabControl or
-            VisualElementType.ListView or
-            VisualElementType.TreeView;
-        var hasContainerContent = !string.IsNullOrEmpty(elementNode.Description) || elementNode.ContentLines.Count > 0;
+        childDtos = MergeConsecutiveLabels(childDtos);
 
-        if (isContainerType && hasContainerContent)
-        {
-            // Render as Markdown heading (max 8 levels)
-            var effectiveLevel = Math.Min(headingLevel + 1, 8);
-            var headerPrefix = new string('#', effectiveLevel);
-            var content = !string.IsNullOrEmpty(elementNode.Description) ? elementNode.Description : string.Join(" ", elementNode.ContentLines);
+        // Compute omission marker
+        var omitted = GetOmittedMarker(elementNode.HasOmittedChildren, elementNode.IsContentTruncated);
 
-            sb.AppendLine();
-            sb.Append(headerPrefix).Append(' ');
-
-            // For containers that need ID (like Document, TabControl, ListView)
-            if (ShouldIncludeId(detailLevel, elementType))
-            {
-                var id = BuiltVisualElements.Count + startingId;
-                BuiltVisualElements[id] = element;
-                sb.Append('<').Append(elementType).Append('#').Append(id).Append("> ");
-            }
-
-            sb.Append(EscapeMarkdown(TruncateDescription(content)));
-            if (elementNode.IsCoreElement) sb.Append(" ⭐");
-            sb.AppendLine();
-
-            // Render children with increased heading level
-            RenderChildrenWithLabelMerging(sb, elementNode, effectiveLevel);
-            return;
-        }
-
-        if (isContainerType && !hasContainerContent)
-        {
-            // Container without content: skip, don't increase heading level
-            foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
-            {
-                InternalBuildMarkdown(sb, child, headingLevel);
-            }
-            return;
-        }
-
-        // Handle Hyperlink specially: use standard Markdown link format, no ID
-        if (elementType == VisualElementType.Hyperlink)
-        {
-            var linkText = !string.IsNullOrEmpty(elementNode.Description) ? elementNode.Description : "link";
-            var linkUrl = elementNode.ContentLines.Count > 0 ? elementNode.ContentLines[0] : "#";
-            sb.Append('[').Append(EscapeMarkdownLinkText(linkText)).Append("](").Append(linkUrl).Append(')').AppendLine();
-            // Hyperlinks typically don't have children, but handle just in case
-            RenderChildrenWithLabelMerging(sb, elementNode, headingLevel);
-            return;
-        }
-
-        // Handle ListViewItem/TreeViewItem with - prefix
-        if (elementType is VisualElementType.ListViewItem or VisualElementType.TreeViewItem or VisualElementType.DataGridItem)
-        {
-            var shortTag = GetShortTag(elementType);
-            var id = BuiltVisualElements.Count + startingId;
-            BuiltVisualElements[id] = element;
-            sb.Append("- <").Append(shortTag).Append('#').Append(id).Append("> ");
-            if (!string.IsNullOrEmpty(elementNode.Description))
-            {
-                sb.Append(EscapeMarkdown(elementNode.Description));
-            }
-            else if (elementNode.ContentLines.Count > 0)
-            {
-                sb.Append(EscapeMarkdown(string.Join(" ", elementNode.ContentLines)));
-            }
-            if (elementNode.IsCoreElement) sb.Append(" ⭐");
-            sb.AppendLine();
-
-            // Children of list items are indented
-            foreach (var child in elementNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex))
-            {
-                sb.Append("  "); // Indent for list item children
-                InternalBuildMarkdown(sb, child, headingLevel);
-            }
-            return;
-        }
-
-        // Handle other interactive elements
-        if (ShouldIncludeId(detailLevel, elementType))
-        {
-            var id = BuiltVisualElements.Count + startingId;
-            BuiltVisualElements[id] = element;
-
-            // Interactive element: <btn#3> description
-            var tag = GetShortTag(elementType) ?? elementType.ToString();
-            sb.Append('<').Append(tag).Append('#').Append(id).Append("> ");
-        }
-
-        // Add content
-        if (!string.IsNullOrEmpty(elementNode.Description))
-        {
-            sb.Append(EscapeMarkdown(TruncateDescription(elementNode.Description)));
-            if (elementNode.ContentLines.Count > 0)
-            {
-                sb.Append(": ").Append(EscapeMarkdown(string.Join(" ", elementNode.ContentLines)));
-            }
-        }
-        else if (elementNode.ContentLines.Count > 0)
-        {
-            sb.Append(EscapeMarkdown(string.Join(" ", elementNode.ContentLines)));
-        }
-
-        if (elementNode.IsCoreElement) sb.Append(" ⭐");
-
-        // Add position/size for detailed mode
-        if (ShouldIncludeBounds(detailLevel, elementType))
-        {
-            var bounds = element.BoundingRectangle;
-            sb.Append(" @").Append(bounds.X).Append(',').Append(bounds.Y)
-                .Append(' ').Append(bounds.Width).Append('x').Append(bounds.Height);
-        }
-
-        sb.AppendLine();
-
-        // Handle multi-line content (3+ lines) as code block
-        // if (elementNode.ContentLines.Count >= 3)
-        // {
-        //     sb.AppendLine("```");
-        //     foreach (var line in elementNode.ContentLines)
-        //     {
-        //         sb.AppendLine(line);
-        //     }
-        //     sb.AppendLine("```");
-        // }
-
-        // Render children
-        RenderChildrenWithLabelMerging(sb, elementNode, headingLevel);
+        output.Add(
+            CreateElementDto(
+                element,
+                elementType,
+                id,
+                elementNode.Description,
+                elementNode.ContentLines,
+                elementNode.IsImportant,
+                children: childDtos.Count > 0 ? childDtos : null,
+                omitted: omitted));
     }
 
     /// <summary>
-    /// Renders children of a node, merging consecutive simple Labels into paragraphs.
+    /// Merges runs of consecutive childless <see cref="VisualElementType.Label"/> DTOs into
+    /// a single DTO to reduce token waste. The merged element keeps the first label's ID,
+    /// concatenates names and texts, unions bounding boxes, and combines extras.
     /// </summary>
-    private void RenderChildrenWithLabelMerging(StringBuilder sb, VisualElementNode parentNode, int headingLevel)
+    private static List<VisualElementDto> MergeConsecutiveLabels(List<VisualElementDto> dtos)
     {
-        var orderedChildren = parentNode.Children.AsValueEnumerable().OrderBy(x => x.SiblingIndex).ToList();
-        var labelBuffer = new List<string>();
+        if (dtos.Count < 2) return dtos;
 
-        foreach (var child in orderedChildren)
+        var result = new List<VisualElementDto>(dtos.Count);
+        var i = 0;
+
+        while (i < dtos.Count)
         {
-            // Check if this is a simple Label (no children, has content, not interactive, not core)
-            if (IsSimpleLabel(child))
+            var current = dtos[i];
+            if (current.Type != VisualElementType.Label || current.Children is { Count: > 0 })
             {
-                // Accumulate label content
-                var content = child.ContentLines.Count > 0 ? string.Join(" ", child.ContentLines) : child.Description ?? "";
+                result.Add(current);
+                i++;
+                continue;
+            }
 
-                if (string.IsNullOrEmpty(content)) continue;
+            // Scan for the end of the consecutive-label run.
+            var j = i + 1;
+            while (j < dtos.Count && dtos[j].Type == VisualElementType.Label && dtos[j].Children is null or { Count: 0 })
+            {
+                j++;
+            }
 
-                if (child.IsCoreElement)
+            if (j - i == 1)
+            {
+                // Single label — no merging needed.
+                result.Add(current);
+                i++;
+                continue;
+            }
+
+            result.Add(MergeLabelRange(dtos, i, j));
+            i = j;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Produces a single merged <see cref="VisualElementDto"/> from the label DTOs in
+    /// <paramref name="dtos"/>[<paramref name="start"/> .. <paramref name="end"/>).
+    /// </summary>
+    private static VisualElementDto MergeLabelRange(List<VisualElementDto> dtos, int start, int end)
+    {
+        var first = dtos[start];
+
+        StringBuilder? nameBuilder = null;
+        StringBuilder? textBuilder = null;
+        StringBuilder? extraBuilder = null;
+        StringBuilder? omittedBuilder = null;
+
+        int? minX = null, minY = null, maxX2 = null, maxY2 = null;
+
+        for (var k = start; k < end; k++)
+        {
+            var dto = dtos[k];
+
+            if (dto.Name is { Length: > 0 } name)
+            {
+                nameBuilder ??= new StringBuilder();
+                if (nameBuilder.Length > 0) nameBuilder.Append(' ');
+                nameBuilder.Append(name);
+            }
+
+            if (dto.Text is { Length: > 0 } text)
+            {
+                textBuilder ??= new StringBuilder();
+                if (textBuilder.Length > 0) textBuilder.Append(' ');
+                textBuilder.Append(text);
+            }
+
+            if (dto.Extra is { Length: > 0 } extra)
+            {
+                extraBuilder ??= new StringBuilder();
+                if (extraBuilder.Length > 0) extraBuilder.Append(',');
+                extraBuilder.Append(extra);
+            }
+
+            // Merge omitted markers from individual labels (union of all flags)
+            if (dto.Omitted is { Length: > 0 } omitted)
+            {
+                if (omittedBuilder is null)
                 {
-                    // Core element labels get special treatment - flush buffer first
-                    FlushLabelBuffer(sb, labelBuffer);
-                    sb.Append(EscapeMarkdown(content)).Append(" ⭐").AppendLine();
+                    omittedBuilder = new StringBuilder(omitted);
                 }
                 else
                 {
-                    labelBuffer.Add(content);
+                    foreach (var part in omitted.Split(','))
+                    {
+                        if (!omittedBuilder.ToString().Contains(part, StringComparison.Ordinal))
+                        {
+                            omittedBuilder.Append(',').Append(part);
+                        }
+                    }
                 }
             }
-            else
+
+            if (dto.Box is not null)
             {
-                // Non-label element: flush accumulated labels first
-                FlushLabelBuffer(sb, labelBuffer);
-                InternalBuildMarkdown(sb, child, headingLevel);
+                var parts = dto.Box.Split(',');
+                if (parts.Length == 4
+                    && int.TryParse(parts[0], out var x)
+                    && int.TryParse(parts[1], out var y)
+                    && int.TryParse(parts[2], out var w)
+                    && int.TryParse(parts[3], out var h))
+                {
+                    var x2 = x + w;
+                    var y2 = y + h;
+                    minX = minX is null ? x : Math.Min(minX.Value, x);
+                    minY = minY is null ? y : Math.Min(minY.Value, y);
+                    maxX2 = maxX2 is null ? x2 : Math.Max(maxX2.Value, x2);
+                    maxY2 = maxY2 is null ? y2 : Math.Max(maxY2.Value, y2);
+                }
             }
         }
 
-        // Flush any remaining labels
-        FlushLabelBuffer(sb, labelBuffer);
-    }
-
-    /// <summary>
-    /// Checks if a node is a simple Label that can be merged with others.
-    /// </summary>
-    private static bool IsSimpleLabel(VisualElementNode node)
-    {
-        return node.Element.Type == VisualElementType.Label
-            && node.Children.Count == 0
-            && node is { IsVisible: true, IsCoreElement: false };
-    }
-
-    /// <summary>
-    /// Flushes accumulated label content as a single paragraph.
-    /// </summary>
-    private static void FlushLabelBuffer(StringBuilder sb, List<string> labelBuffer)
-    {
-        if (labelBuffer.Count == 0) return;
-
-        // Join labels without spaces (as requested)
-        foreach (var label in labelBuffer)
+        return new VisualElementDto
         {
-            sb.Append(EscapeMarkdown(label));
-        }
-        sb.AppendLine();
-        labelBuffer.Clear();
+            Id = first.Id,
+            Type = first.Type,
+            Name = nameBuilder?.ToString(),
+            Text = textBuilder?.ToString(),
+            Box = minX is not null ? $"{minX},{minY},{maxX2!.Value - minX.Value},{maxY2!.Value - minY!.Value}" : null,
+            Extra = extraBuilder?.ToString(),
+            Children = null,
+            Omitted = omittedBuilder?.ToString()
+        };
     }
 
     /// <summary>
-    /// Builds XML opening and closing tags for TopLevel/Screen elements in Markdown output.
-    /// These elements retain full XML format to preserve important metadata (pid, processName, handle).
+    /// Creates a single <see cref="VisualElementDto"/> for the given visual element.
+    /// Secondary metadata (importance flag, TopLevel process info, window handle)
+    /// is assembled into the compact <see cref="VisualElementDto.Extra"/> string.
     /// </summary>
-    private void BuildTopLevelXmlTag(StringBuilder sb, VisualElementNode elementNode, int id)
+    private VisualElementDto CreateElementDto(
+        IVisualElement element,
+        VisualElementType elementType,
+        int id,
+        string? description,
+        IReadOnlyList<string>? contentLines,
+        bool isImportant,
+        List<VisualElementDto>? children,
+        string? omitted = null)
     {
-        var element = elementNode.Element;
-        var elementType = element.Type;
-
-        // Build opening tag with all attributes
-        sb.Append('<').Append(elementType);
-        sb.Append(" id=\"").Append(id).Append('"');
-
-        if (elementNode.IsCoreElement)
+        // Build Box
+        string? box = null;
+        if (ShouldIncludeBounds(detailLevel, elementType))
         {
-            sb.Append(" coreElement=\"true\"");
+            var bounds = element.BoundingRectangle;
+            box = $"{bounds.X},{bounds.Y},{bounds.Width},{bounds.Height}";
         }
 
-        // Add bounds
-        var bounds = element.BoundingRectangle;
-        sb.Append(" pos=\"").Append(bounds.X).Append(',').Append(bounds.Y).Append('"');
-        sb.Append(" size=\"").Append(bounds.Width).Append('x').Append(bounds.Height).Append('"');
-
-        // For TopLevel, add process info
+        // Build Extra — assemble all secondary metadata into a compact string
+        var extraPartsBuilder = new StringBuilder();
+        if (isImportant) extraPartsBuilder.Append("!important");
         if (elementType == VisualElementType.TopLevel)
         {
             var processId = element.ProcessId;
             if (processId > 0)
             {
-                sb.Append(" pid=\"").Append(processId).Append('"');
+                AppendExtraPart("pid:").Append(processId);
                 try
                 {
                     using var process = Process.GetProcessById(processId);
-                    sb.Append(" processName=\"").Append(SecurityElement.Escape(process.ProcessName)).Append('"');
+                    AppendExtraPart("process:").Append(process.ProcessName);
                 }
                 catch
                 {
@@ -1457,85 +1510,24 @@ public partial class VisualTreeBuilder(
             }
 
             var windowHandle = element.NativeWindowHandle;
-            if (windowHandle > 0)
-            {
-                sb.Append(" handle=\"0x").Append(windowHandle.ToString("X")).Append('"');
-            }
+            if (windowHandle > 0) AppendExtraPart("hwnd:0x").Append(windowHandle.ToString("X"));
         }
 
-        if (!string.IsNullOrEmpty(elementNode.Description))
+        return new VisualElementDto(
+            id,
+            elementType,
+            description,
+            contentLines is { Count: > 0 } ? string.Join('\n', contentLines) : null,
+            box,
+            extraPartsBuilder.Length > 0 ? extraPartsBuilder.ToString() : null,
+            children,
+            omitted);
+
+        StringBuilder AppendExtraPart(string part)
         {
-            sb.Append(" description=\"").Append(SecurityElement.Escape(TruncateDescription(elementNode.Description))).Append('"');
+            if (extraPartsBuilder.Length > 0) extraPartsBuilder.Append(',');
+            return extraPartsBuilder.Append(part);
         }
-
-        sb.Append('>').AppendLine();
-
-        // Render children starting at heading level 1
-        RenderChildrenWithLabelMerging(sb, elementNode, 0);
-
-        // Closing tag
-        sb.Append("</").Append(elementType).Append('>').AppendLine();
-    }
-
-    /// <summary>
-    /// Gets the short tag notation for interactive element types.
-    /// Returns null for elements that don't have a short tag.
-    /// </summary>
-    private static string? GetShortTag(VisualElementType type) => type switch
-    {
-        VisualElementType.Button => "btn",
-        VisualElementType.TextEdit => "edit",
-        VisualElementType.CheckBox => "chk",
-        VisualElementType.RadioButton => "radio",
-        VisualElementType.ComboBox => "sel",
-        VisualElementType.TabItem => "tab",
-        VisualElementType.MenuItem => "menu",
-        VisualElementType.ListViewItem => "item",
-        VisualElementType.TreeViewItem => "node",
-        VisualElementType.DataGridItem => "row",
-        VisualElementType.Slider => "slider",
-        _ => null
-    };
-
-    /// <summary>
-    /// Truncates description to a reasonable length for display.
-    /// </summary>
-    private static string TruncateDescription(string description, int maxLength = 80)
-    {
-        if (string.IsNullOrEmpty(description) || description.Length <= maxLength)
-            return description;
-        return description[..(maxLength - 3)] + "...";
-    }
-
-    /// <summary>
-    /// Escapes special Markdown characters in text to prevent formatting issues.
-    /// Only escapes characters that would significantly alter rendering.
-    /// </summary>
-    private static string EscapeMarkdown(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return text;
-
-        // Minimal escaping for LLM consumption - only escape critical characters
-        return text
-            .Replace("\\", "\\\\")
-            .Replace("`", "\\`")
-            .Replace("*", "\\*")
-            .Replace("_", "\\_")
-            .Replace("<", "\\<")
-            .Replace(">", "\\>");
-    }
-
-    /// <summary>
-    /// Escapes text for use in Markdown link text [text](url).
-    /// </summary>
-    private static string EscapeMarkdownLinkText(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return text;
-
-        return text
-            .Replace("\\", "\\\\")
-            .Replace("[", "\\[")
-            .Replace("]", "\\]");
     }
 
     private static bool ShouldIncludeBounds(VisualTreeDetailLevel detailLevel, VisualElementType type) => detailLevel switch
@@ -1559,15 +1551,32 @@ public partial class VisualTreeBuilder(
         _ => false
     };
 
-    private static string TruncateIfNeeded(string text, int maxLength)
+    private static string TruncateIfNeeded(string text, int maxLength, out bool wasTruncated)
     {
         var tokenCount = EstimateTokenCount(text);
         if (maxLength <= 0 || tokenCount <= maxLength)
+        {
+            wasTruncated = false;
             return text;
+        }
 
+        wasTruncated = true;
         var approximateLength = text.Length * maxLength / tokenCount;
         return text[..Math.Max(0, approximateLength - 2)] + "...omitted";
     }
+
+    /// <summary>
+    /// Computes the omission marker string for a visual element based on its omission state.
+    /// Returns <c>null</c> when nothing is omitted (no overhead in serialized output).
+    /// </summary>
+    private static string? GetOmittedMarker(bool hasOmittedChildren, bool isContentTruncated) =>
+        (hasOmittedChildren, isContentTruncated) switch
+        {
+            (true, true) => "children,content",
+            (true, false) => "children",
+            (false, true) => "content",
+            _ => null
+        };
 
     /// <summary>
     /// Propagates the information that a child is informative up the tree.
@@ -1590,7 +1599,7 @@ public partial class VisualTreeBuilder(
             if (!wasActive && parent.IsVisible)
             {
                 // Parent just became active, so we must pay for its structure tokens.
-                accumulatedTokenCount += parent.SelfTokenCount;
+                accumulatedTokenCount += parent.TokenCount;
                 // Note: ContentTokenCount is 0 for non-self-informative elements, so we don't add it.
             }
 
