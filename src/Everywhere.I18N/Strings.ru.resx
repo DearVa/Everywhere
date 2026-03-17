@@ -536,6 +536,12 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Для онлайн-моделей необходимо получить у соответствующего официального представителя, пожалуйста, обратитесь к руководству для получения подробной информации.</value>
     </data>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value>Входные Модальности</value>
+    </data>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value>Поддерживаемые моделью входные модальности. Неправильный выбор может привести к сбоям.</value>
+    </data>
     <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Поддержка использования инструментов</value>
     </data>
@@ -547,6 +553,12 @@
     </data>
     <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Поддержка глубокого мышления</value>
+    </data>
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
+        <value>Максимальная длина контекста диалога (context_limit). Это повлияет на стратегию построения визуального контекста, постарайтесь установить реальное значение.</value>
+    </data>
+    <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
+        <value>Максимальный Контекст</value>
     </data>
     <data name="Common_Reset" xml:space="preserve">
         <value>Сброс</value>
@@ -711,6 +723,9 @@
     </data>
     <data name="WelcomeView_LetsStartButton_Content" xml:space="preserve">
         <value>Начнем!</value>
+    </data>
+    <data name="WelcomeView_SkipButton_Content" xml:space="preserve">
+        <value>Пропустить Все Введение</value>
     </data>
     <data name="WelcomeView_PreviousStepButton_Content" xml:space="preserve">
         <value>Предыдущий шаг</value>
@@ -2122,5 +2137,156 @@
     </data>
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>Считывает визуальное дерево окна или элемента на экране.</value>
+    </data>
+    <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
+        <value>Зарегистрируйтесь и получите бесплатные кредиты, чтобы использовать популярные модели. Функции, такие как облачная синхронизация, будут добавлены в дальнейшем...</value>
+    </data>
+    <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
+        <value>Войти</value>
+    </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Войти в облачные сервисы Everywhere</value>
+    </data>
+    <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
+        <value>Выйти</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsTextBlock_Text" xml:space="preserve">
+        <value>Подписочные Кредиты</value>
+    </data>
+    <data name="UserProfilePresenter_ManageSubscriptionButton_Content" xml:space="preserve">
+        <value>Управлять Подпиской</value>
+    </data>
+    <data name="UserProfilePresenter_GetSupportButton_Content" xml:space="preserve">
+        <value>Получить Поддержку</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>Официальная Модель</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>Официальный управляемый сервис. Не требуется API-ключ, готов к использованию.</value>
+    </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value>Критическая Ошибка</value>
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value>Не удалось инициализировать каталог данных, убедитесь, что у вас есть права на запись в каталог данных.
+{0}</value>
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value>Аудио</value>
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>Изображение</value>
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>Текст</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>Видео</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value>Максимальная длина вывода</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value>Максимальная длина вывода для диалога (output_limit). Это повлияет на параметры запроса модели (особенно Anthropic), пожалуйста, установите максимально точное значение.</value>
+    </data>
+    <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
+        <value>Продолжить в браузере</value>
+    </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>Продление {0} и сброс баллов подписки</value>
+    </data>
+    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
+        <value>Пробный период до {0}</value>
+    </data>
+    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
+        <value>Действительно до {0}</value>
+    </data>
+    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
+        <value>Истекло {0} дней назад</value>
+    </data>
+    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
+        <value>Бонусные баллы</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsUsagePercentageTextBlock_Text" xml:space="preserve">
+        <value>Осталось {0}</value>
+    </data>
+    <data name="UserProfilePresenter_UnpaidToast_Title" xml:space="preserve">
+        <value>Есть незавершенные платежи, пожалуйста, обработайте их как можно скорее</value>
+    </data>
+    <data name="UserProfilePresenter_OpenDashboardButton_Content" xml:space="preserve">
+        <value>Личный кабинет</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggleTextBlock_Text" xml:space="preserve">
+        <value>Облачная синхронизация диалогов</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggle_Tip" xml:space="preserve">
+        <value>После включения ваши чаты будут автоматически синхронизироваться между устройствами</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizedTextBlock_Text" xml:space="preserve">
+        <value>Последняя успешная синхронизация {0}</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizationErrorTextBlock_Text" xml:space="preserve">
+        <value>Ошибка последней синхронизации</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>Не сейчас</value>
+    </data>
+    <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
+        <value>Сервис не поддерживает запросы из вашего региона или местоположения.</value>
+    </data>
+    <data name="HandledChatException_JsonError" xml:space="preserve">
+        <value>Ошибка при разборе ответа сервера, обычно это означает неожиданный формат или содержимое JSON.</value>
+    </data>
+    <data name="Common_Refresh" xml:space="preserve">
+        <value>Обновить</value>
+    </data>
+    <data name="CustomAssistant_OutputModalities_Header" xml:space="preserve">
+        <value>Выходные Модальности</value>
+    </data>
+    <data name="CustomAssistant_ReleaseDate_Header" xml:space="preserve">
+        <value>Дата Выпуска</value>
+    </data>
+    <data name="CustomAssistant_KnowledgeCutoff_Header" xml:space="preserve">
+        <value>Дата Окончания Знаний</value>
+    </data>
+    <data name="CustomAssistant_InputPrice_Header" xml:space="preserve">
+        <value>Цена Ввода</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
+        <value>Цена Вывода</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>Выбрать Модель</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
+        <value>Детали Модели</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_ToolTip" xml:space="preserve">
+        <value>Включает токены размышления</value>
+    </data>
+    <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
+        <value>Каждые миллион токенов {0} долларов</value>
+    </data>
+    <data name="ModelPricingUnit_CreditPerToken" xml:space="preserve">
+        <value>Каждый токен {0} кредитов</value>
+    </data>
+    <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
+        <value>Когда количество токенов ≤ {1}, {0}</value>
+    </data>
+    <data name="ModelPricing_BetweenTiersDescription" xml:space="preserve">
+        <value>{1} &lt; количество токенов ≤ {2}, {0}</value>
+    </data>
+    <data name="ModelPricing_GreaterThanTierDescription" xml:space="preserve">
+        <value>Когда количество токенов &gt; {1}, {0}</value>
+    </data>
+    <data name="Common_Undo" xml:space="preserve">
+        <value>Отменить</value>
+    </data>
+    <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
+        <value>Удалено {0} бесед</value>
     </data>
 </root>

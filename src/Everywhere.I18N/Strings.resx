@@ -537,10 +537,10 @@
         <value>For online models, you need to get from the corresponding official, please refer to the guide for details.</value>
     </data>
     <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
-        <value />
+        <value>Input Modalities</value>
     </data>
     <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
-        <value />
+        <value>Supported input modalities for the model; selecting incorrectly may lead to invocation failure.</value>
     </data>
     <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Tools Usage Support</value>
@@ -555,7 +555,7 @@
         <value>Deep Thinking Support</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
-        <value />
+        <value>Maximum context length for the conversation (context_limit). This will affect the strategy for building visual context, so please set it to a realistic value.</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>Context Length</value>
@@ -725,7 +725,7 @@ Tip: You can reopen this message by clicking “About - What's new”.</value>
         <value>Let's start!</value>
     </data>
     <data name="WelcomeView_SkipButton_Content" xml:space="preserve">
-        <value />
+        <value>Skip All Guidance</value>
     </data>
     <data name="WelcomeView_PreviousStepButton_Content" xml:space="preserve">
         <value>Previous step</value>
@@ -2139,13 +2139,13 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Read the visual tree of a window or element on screen.</value>
     </data>
     <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Sign up for free credits and get access to popular models right out of the box. More features like cloud sync are coming soon...</value>
     </data>
     <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
         <value>Login</value>
     </data>
     <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Log in to Everywhere Cloud Service</value>
     </data>
     <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
         <value>Logout</value>
@@ -2166,79 +2166,74 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Official managed service. No API key setup needed—it's ready when you are.</value>
     </data>
     <data name="Common_CriticalError" xml:space="preserve">
-        <value />
+        <value>Critical Error</value>
     </data>
     <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
-        <value />
-    </data>
-    <data name="Modalities_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="Modalities_Image" xml:space="preserve">
-        <value />
+        <value>Failed to initialize data directory; please ensure you have write permissions for the data directory.
+{0}</value>
     </data>
     <data name="Modalities_Audio" xml:space="preserve">
-        <value />
+        <value>Audio</value>
     </data>
-    <data name="Modalities_Video" xml:space="preserve">
-        <value />
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>Image</value>
     </data>
     <data name="Modalities_Pdf" xml:space="preserve">
-        <value />
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>Text</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>Video</value>
     </data>
     <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
-        <value />
+        <value>Maximum Output Length</value>
     </data>
     <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
-        <value />
+        <value>Maximum output length for the conversation (output_limit). This will affect the parameters for model requests (especially Anthropic), so please set it to a realistic value.</value>
     </data>
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
-        <value />
-    </data>
-    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Continue in Browser</value>
     </data>
     <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>{0} Renews and Resets Subscription Credits</value>
+    </data>
+    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
+        <value>Trial Until {0}</value>
+    </data>
+    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
+        <value>Valid Until {0}</value>
+    </data>
+    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
+        <value>Expired {0} Days Ago</value>
+    </data>
+    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
+        <value>Bonus Credits</value>
     </data>
     <data name="UserProfilePresenter_PlanCreditsUsagePercentageTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Remaining {0}</value>
     </data>
     <data name="UserProfilePresenter_UnpaidToast_Title" xml:space="preserve">
-        <value />
+        <value>You have pending payments, please address them soon</value>
     </data>
     <data name="UserProfilePresenter_OpenDashboardButton_Content" xml:space="preserve">
-        <value />
+        <value>Profile Dashboard</value>
     </data>
     <data name="UserProfilePresenter_CloudSyncToggleTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Chat Cloud Sync</value>
     </data>
     <data name="UserProfilePresenter_CloudSyncToggle_Tip" xml:space="preserve">
-        <value />
+        <value>Enabling this will automatically sync your chat history across devices</value>
     </data>
     <data name="UserProfilePresenter_LastSynchronizedTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Last synchronized {0}</value>
     </data>
     <data name="UserProfilePresenter_LastSynchronizationErrorTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
-        <value />
-    </data>
-    <data name="WelcomeView_SoftLoginStep_Message2" xml:space="preserve">
-        <value />
+        <value>Last synchronization error</value>
     </data>
     <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
-        <value />
+        <value>No, thanks</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>Service does not support requests from current region or location.</value>
@@ -2247,60 +2242,51 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>An error occurred while parsing the response from the service, indicating an unexpected JSON format or content.</value>
     </data>
     <data name="Common_Refresh" xml:space="preserve">
-        <value />
+        <value>Refresh</value>
     </data>
     <data name="CustomAssistant_OutputModalities_Header" xml:space="preserve">
-        <value />
+        <value>Output Modalities</value>
     </data>
     <data name="CustomAssistant_ReleaseDate_Header" xml:space="preserve">
-        <value />
+        <value>Release Date</value>
     </data>
     <data name="CustomAssistant_KnowledgeCutoff_Header" xml:space="preserve">
-        <value />
+        <value>Knowledge Cutoff Date</value>
     </data>
     <data name="CustomAssistant_InputPrice_Header" xml:space="preserve">
-        <value />
+        <value>Input Price</value>
     </data>
     <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
-        <value />
-    </data>
-    <data name="OfficialModelDefinitionForm_TotalContextLimitRun_Text" xml:space="preserve">
-        <value />
+        <value>Output Price</value>
     </data>
     <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Select Model</value>
     </data>
     <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="CustomAssistant_InputPrice_ToolTip" xml:space="preserve">
-        <value />
+        <value>Model Details</value>
     </data>
     <data name="CustomAssistant_OutputPrice_ToolTip" xml:space="preserve">
-        <value />
+        <value>Includes thinking tokens</value>
     </data>
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>USD</value>
     </data>
     <data name="ModelPricingUnit_CreditPerToken" xml:space="preserve">
-        <value />
-    </data>
-    <data name="ModelPricing_SingleTierDescription" xml:space="preserve">
-        <value />
+        <value>Per token {0} credits</value>
     </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
-        <value />
+        <value>When token count ≤ {1}, {0}</value>
     </data>
     <data name="ModelPricing_BetweenTiersDescription" xml:space="preserve">
-        <value />
+        <value>When {1} &lt; Token Count ≤ {2}, {0}</value>
     </data>
     <data name="ModelPricing_GreaterThanTierDescription" xml:space="preserve">
-        <value />
+        <value>When Token Count &gt; {1}, {0}</value>
     </data>
     <data name="Common_Undo" xml:space="preserve">
-        <value />
+        <value>Undo</value>
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
-        <value />
+        <value>Removed {0} conversations</value>
     </data>
 </root>

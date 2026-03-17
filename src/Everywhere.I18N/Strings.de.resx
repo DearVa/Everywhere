@@ -535,6 +535,12 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>Bei Online-Modellen müssen Sie dies vom entsprechenden Anbieter erhalten. Bitte beachten Sie die Anleitung für weitere Details.</value>
     </data>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value>Eingabemodi</value>
+    </data>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value>Unterstützte Eingabemodi des Modells. Eine falsche Auswahl kann zu einem Fehler beim Aufruf führen.</value>
+    </data>
     <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>Unterstützung für die Nutzung von Tools</value>
     </data>
@@ -546,6 +552,9 @@
     </data>
     <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>Unterstützung für tiefes Denken</value>
+    </data>
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
+        <value>Maximale Kontextlänge der Konversation (context_limit). Dies beeinflusst die Strategie zum Aufbau des visuellen Kontexts, bitte so realistisch wie möglich einstellen.</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>Maximale Kontextlänge</value>
@@ -711,6 +720,9 @@
     </data>
     <data name="WelcomeView_LetsStartButton_Content" xml:space="preserve">
         <value>Los geht's!</value>
+    </data>
+    <data name="WelcomeView_SkipButton_Content" xml:space="preserve">
+        <value>Alle Anleitungen überspringen</value>
     </data>
     <data name="WelcomeView_PreviousStepButton_Content" xml:space="preserve">
         <value>Vorheriger Schritt</value>
@@ -2122,5 +2134,156 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     </data>
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>Liest den visuellen Baum von Fenstern oder Elementen auf dem Bildschirm.</value>
+    </data>
+    <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
+        <value>Registrieren Sie sich für kostenlose Credits und erhalten Sie sofort einsatzbereite gängige Modelle. Weitere Funktionen wie Cloud-Synchronisierung werden kontinuierlich hinzugefügt...</value>
+    </data>
+    <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
+        <value>Anmelden</value>
+    </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Bei Everywhere Cloud-Diensten anmelden</value>
+    </data>
+    <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
+        <value>Abmelden</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsTextBlock_Text" xml:space="preserve">
+        <value>Abonnement-Credits</value>
+    </data>
+    <data name="UserProfilePresenter_ManageSubscriptionButton_Content" xml:space="preserve">
+        <value>Abonnement verwalten</value>
+    </data>
+    <data name="UserProfilePresenter_GetSupportButton_Content" xml:space="preserve">
+        <value>Unterstützung erhalten</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>Native Modus</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>Offizieller gehosteter Dienst. Kein API-Schlüssel erforderlich, sofort einsatzbereit</value>
+    </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value>Kritischer Fehler</value>
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value>Fehler beim Initialisieren des Datenverzeichnisses. Bitte stellen Sie sicher, dass Sie Schreibzugriff auf das Datenverzeichnis haben.
+{0}</value>
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value>Audio</value>
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>Bild</value>
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>Text</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>Video</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value>Maximale Ausgabelänge</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value>Maximale Ausgabelänge für den Dialog (output_limit). Dies beeinflusst die Parameter der Modellanfrage (insbesondere bei Anthropic), bitte so realistisch wie möglich einstellen.</value>
+    </data>
+    <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
+        <value>Im Browser fortfahren</value>
+    </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} Abonnement erneuern und Punkte zurücksetzen</value>
+    </data>
+    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
+        <value>Testversion bis {0}</value>
+    </data>
+    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
+        <value>Gültig bis {0}</value>
+    </data>
+    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
+        <value>Vor {0} Tagen abgelaufen</value>
+    </data>
+    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
+        <value>Bonuspunkte</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsUsagePercentageTextBlock_Text" xml:space="preserve">
+        <value>Verbleibend {0}</value>
+    </data>
+    <data name="UserProfilePresenter_UnpaidToast_Title" xml:space="preserve">
+        <value>Es gibt ausstehende Zahlungen, bitte schnellstmöglich erledigen</value>
+    </data>
+    <data name="UserProfilePresenter_OpenDashboardButton_Content" xml:space="preserve">
+        <value>Persönliches Dashboard</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggleTextBlock_Text" xml:space="preserve">
+        <value>Cloud-Synchronisierung</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggle_Tip" xml:space="preserve">
+        <value>Aktiviert, um deine Chatverläufe automatisch zwischen mehreren Geräten zu synchronisieren</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizedTextBlock_Text" xml:space="preserve">
+        <value>Zuletzt erfolgreich synchronisiert {0}</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizationErrorTextBlock_Text" xml:space="preserve">
+        <value>Letzte Synchronisierung fehlgeschlagen</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>Nein danke</value>
+    </data>
+    <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
+        <value>Der Dienst unterstützt keine Anfragen aus der aktuellen Region oder dem Standort.</value>
+    </data>
+    <data name="HandledChatException_JsonError" xml:space="preserve">
+        <value>Fehler beim Parsen der Serverantwort, was normalerweise auf ein unerwartetes JSON-Format oder -Inhalt hinweist.</value>
+    </data>
+    <data name="Common_Refresh" xml:space="preserve">
+        <value>Aktualisieren</value>
+    </data>
+    <data name="CustomAssistant_OutputModalities_Header" xml:space="preserve">
+        <value>Ausgabemodalitäten</value>
+    </data>
+    <data name="CustomAssistant_ReleaseDate_Header" xml:space="preserve">
+        <value>Veröffentlichungsdatum</value>
+    </data>
+    <data name="CustomAssistant_KnowledgeCutoff_Header" xml:space="preserve">
+        <value>Wissensstand</value>
+    </data>
+    <data name="CustomAssistant_InputPrice_Header" xml:space="preserve">
+        <value>Eingabepreis</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
+        <value>Ausgabepreis</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>Modell auswählen</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
+        <value>Modell Details</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_ToolTip" xml:space="preserve">
+        <value>Inklusive Denk-Tokens</value>
+    </data>
+    <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
+        <value>Pro Million Tokens {0} USD</value>
+    </data>
+    <data name="ModelPricingUnit_CreditPerToken" xml:space="preserve">
+        <value>Pro Token {0} Credits</value>
+    </data>
+    <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
+        <value>Tokens ≤ {1}, {0}</value>
+    </data>
+    <data name="ModelPricing_BetweenTiersDescription" xml:space="preserve">
+        <value>{1} &lt; Tokens ≤ {2}, {0}</value>
+    </data>
+    <data name="ModelPricing_GreaterThanTierDescription" xml:space="preserve">
+        <value>Tokens &gt; {1}, {0}</value>
+    </data>
+    <data name="Common_Undo" xml:space="preserve">
+        <value>Rückgängig</value>
+    </data>
+    <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
+        <value>{0} Gespräche entfernt</value>
     </data>
 </root>

@@ -536,6 +536,12 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>オンラインモデルの場合、対応する公式から取得する必要があります。詳細はガイドを参照してください。</value>
     </data>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value>入力モダリティ</value>
+    </data>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value>モデルがサポートする入力モダリティ。誤った選択は呼び出しの失敗を引き起こす可能性があります。</value>
+    </data>
     <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>ツール使用サポート</value>
     </data>
@@ -547,6 +553,9 @@
     </data>
     <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>深い思考サポート</value>
+    </data>
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
+        <value>対話の最大コンテキスト長 (context_limit)。これは視覚的コンテキストを構築する戦略に影響を与えるため、できるだけ実際の値に設定してください。</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>最大コンテキスト長</value>
@@ -714,6 +723,9 @@
     </data>
     <data name="WelcomeView_LetsStartButton_Content" xml:space="preserve">
         <value>始めましょう！</value>
+    </data>
+    <data name="WelcomeView_SkipButton_Content" xml:space="preserve">
+        <value>すべてのガイドをスキップ</value>
     </data>
     <data name="WelcomeView_PreviousStepButton_Content" xml:space="preserve">
         <value>前のステップ</value>
@@ -2125,5 +2137,156 @@
     </data>
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>画面上のウィンドウや要素の視覚ツリーを取得します。</value>
+    </data>
+    <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
+        <value>登録すると無料ポイントがもらえ、すぐに使える主流モデルを手に入れられます。さらに、クラウド同期などの機能も続々登場中……</value>
+    </data>
+    <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
+        <value>ログイン</value>
+    </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Everywhere クラウドサービスにログイン</value>
+    </data>
+    <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
+        <value>ログアウト</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsTextBlock_Text" xml:space="preserve">
+        <value>サブスクリプションポイント</value>
+    </data>
+    <data name="UserProfilePresenter_ManageSubscriptionButton_Content" xml:space="preserve">
+        <value>サブスクリプションを管理</value>
+    </data>
+    <data name="UserProfilePresenter_GetSupportButton_Content" xml:space="preserve">
+        <value>サポートを受ける</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>ネイティブモード</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>公式ホスティングサービス。APIキーは不要で、すぐに使えます</value>
+    </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value>重大なエラー</value>
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value>データディレクトリの初期化に失敗しました。データディレクトリへの書き込み権限があることを確認してください。
+{0}</value>
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value>音声</value>
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>画像</value>
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>テキスト</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>動画</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value>出力制限</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value>対話の最大出力長 (output_limit)。この設定はモデルリクエストのパラメータに影響します（特にAnthropic）。可能な限り実際の値を設定してください。</value>
+    </data>
+    <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
+        <value>ブラウザで続行</value>
+    </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} にて更新およびサブスクリプションポイントのリセット</value>
+    </data>
+    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
+        <value>試用期間: {0} まで</value>
+    </data>
+    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
+        <value>有効期限: {0}</value>
+    </data>
+    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
+        <value>{0} 日前に期限切れ</value>
+    </data>
+    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
+        <value>ボーナスポイント</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsUsagePercentageTextBlock_Text" xml:space="preserve">
+        <value>残り: {0}</value>
+    </data>
+    <data name="UserProfilePresenter_UnpaidToast_Title" xml:space="preserve">
+        <value>未払いの支払いがあります。早めに処理してください。</value>
+    </data>
+    <data name="UserProfilePresenter_OpenDashboardButton_Content" xml:space="preserve">
+        <value>ダッシュボード</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggleTextBlock_Text" xml:space="preserve">
+        <value>対話のクラウド同期</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggle_Tip" xml:space="preserve">
+        <value>有効にすると、複数のデバイス間でチャット履歴が自動的に同期されます。</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizedTextBlock_Text" xml:space="preserve">
+        <value>最後の同期: {0}</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizationErrorTextBlock_Text" xml:space="preserve">
+        <value>最近の同期でエラーが発生しました。</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>いいえ</value>
+    </data>
+    <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
+        <value>サービスは現在の地域または位置でのリクエストをサポートしていません。</value>
+    </data>
+    <data name="HandledChatException_JsonError" xml:space="preserve">
+        <value>サーバーの応答を解析中にエラーが発生しました。通常、予期しないJSON形式または内容を意味します。</value>
+    </data>
+    <data name="Common_Refresh" xml:space="preserve">
+        <value>更新</value>
+    </data>
+    <data name="CustomAssistant_OutputModalities_Header" xml:space="preserve">
+        <value>出力モダリティ</value>
+    </data>
+    <data name="CustomAssistant_ReleaseDate_Header" xml:space="preserve">
+        <value>リリース日</value>
+    </data>
+    <data name="CustomAssistant_KnowledgeCutoff_Header" xml:space="preserve">
+        <value>知識のカットオフ日</value>
+    </data>
+    <data name="CustomAssistant_InputPrice_Header" xml:space="preserve">
+        <value>入力価格</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
+        <value>出力価格</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>モデルを選択</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
+        <value>モデルの詳細</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_ToolTip" xml:space="preserve">
+        <value>思考トークンを含む</value>
+    </data>
+    <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
+        <value>百万トークンあたり {0} ドル</value>
+    </data>
+    <data name="ModelPricingUnit_CreditPerToken" xml:space="preserve">
+        <value>トークンあたり {0} クレジット</value>
+    </data>
+    <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
+        <value>トークン数 ≤ {1} の場合、{0}</value>
+    </data>
+    <data name="ModelPricing_BetweenTiersDescription" xml:space="preserve">
+        <value>{1} &lt; トークン数 ≤ {2} の場合、{0}</value>
+    </data>
+    <data name="ModelPricing_GreaterThanTierDescription" xml:space="preserve">
+        <value>トークン数 &gt; {1} の場合、{0}</value>
+    </data>
+    <data name="Common_Undo" xml:space="preserve">
+        <value>元に戻す</value>
+    </data>
+    <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
+        <value>{0} 件の会話を削除しました</value>
     </data>
 </root>

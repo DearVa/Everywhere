@@ -536,6 +536,12 @@
     <data name="CustomAssistant_ApiKey_Description" xml:space="preserve">
         <value>對於在線模型，您需要從相應的官方獲取，詳情請參考指南。</value>
     </data>
+    <data name="CustomAssistant_InputModalities_Header" xml:space="preserve">
+        <value>輸入模態</value>
+    </data>
+    <data name="CustomAssistant_InputModalities_Description" xml:space="preserve">
+        <value>模型支持的輸入模態，選擇錯誤可能導致調用失敗。</value>
+    </data>
     <data name="CustomAssistant_SupportsToolCall_Header" xml:space="preserve">
         <value>支援工具使用</value>
     </data>
@@ -547,6 +553,9 @@
     </data>
     <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
         <value>支援深度思考</value>
+    </data>
+    <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
+        <value>對話的最大上下文長度 (context_limit)。此項會影響構建視覺上下文的策略，請盡可能設為真實值。</value>
     </data>
     <data name="CustomAssistant_ContextLimit_Header" xml:space="preserve">
         <value>最大上下文長度 (context_limit)</value>
@@ -714,6 +723,9 @@
     </data>
     <data name="WelcomeView_LetsStartButton_Content" xml:space="preserve">
         <value>開始吧！</value>
+    </data>
+    <data name="WelcomeView_SkipButton_Content" xml:space="preserve">
+        <value>跳過全部引導</value>
     </data>
     <data name="WelcomeView_PreviousStepButton_Content" xml:space="preserve">
         <value>上一步</value>
@@ -2057,6 +2069,9 @@
     <data name="ChatWindowViewModel_ExportMarkdown_ReasoningOutput" xml:space="preserve">
         <value>深度思考</value>
     </data>
+    <data name="PersistentState_VisualTreeLengthLimit_Description" xml:space="preserve">
+        <value>採集視覺上下文的長度上限，單位為詞元。此項為估算，無法保證精確限制。對於簡單的上下文，消耗的詞元往往會小於這個數；對於複雜的上下文，超出的部分會被截斷。</value>
+    </data>
     <data name="ChatInputArea_ToolCallButton_Header" xml:space="preserve">
         <value>開啟工具調用</value>
     </data>
@@ -2122,5 +2137,156 @@
     </data>
     <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Description" xml:space="preserve">
         <value>讀取螢幕上窗口或元素的視覺樹。</value>
+    </data>
+    <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
+        <value>註冊即享免費積分，獲得開箱即用的主流模型。更有雲同步等功能持續上線中……</value>
+    </data>
+    <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
+        <value>登錄</value>
+    </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>登錄 Everywhere 雲服務</value>
+    </data>
+    <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
+        <value>退出登錄</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsTextBlock_Text" xml:space="preserve">
+        <value>訂閱積分</value>
+    </data>
+    <data name="UserProfilePresenter_ManageSubscriptionButton_Content" xml:space="preserve">
+        <value>管理訂閱</value>
+    </data>
+    <data name="UserProfilePresenter_GetSupportButton_Content" xml:space="preserve">
+        <value>獲取支持</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Header" xml:space="preserve">
+        <value>原生模式</value>
+    </data>
+    <data name="ModelProviderConfiguratorSelector_OfficialConfiguratorModel_Description" xml:space="preserve">
+        <value>官方托管服務。無需 API 密鑰，開箱即用</value>
+    </data>
+    <data name="Common_CriticalError" xml:space="preserve">
+        <value>嚴重錯誤</value>
+    </data>
+    <data name="Entrance_FailedToInitializeRuntimeConstants" xml:space="preserve">
+        <value>初始化數據目錄失敗，請確保你有對數據目錄的寫入權限。
+{0}</value>
+    </data>
+    <data name="Modalities_Audio" xml:space="preserve">
+        <value>音頻</value>
+    </data>
+    <data name="Modalities_Image" xml:space="preserve">
+        <value>圖像</value>
+    </data>
+    <data name="Modalities_Pdf" xml:space="preserve">
+        <value>PDF</value>
+    </data>
+    <data name="Modalities_Text" xml:space="preserve">
+        <value>文本</value>
+    </data>
+    <data name="Modalities_Video" xml:space="preserve">
+        <value>視頻</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Header" xml:space="preserve">
+        <value>最大輸出長度</value>
+    </data>
+    <data name="CustomAssistant_OutputLimit_Description" xml:space="preserve">
+        <value>對話的最大輸出長度 (output_limit)。此項會影響模型請求的參數（尤其是 Anthropic），請盡可能設為真實值。</value>
+    </data>
+    <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
+        <value>請在瀏覽器繼續</value>
+    </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} 續訂並重置訂閱積分</value>
+    </data>
+    <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
+        <value>試用至 {0}</value>
+    </data>
+    <data name="UserProfilePresenter_EndsOnTextBlock_Text" xml:space="preserve">
+        <value>有效至 {0}</value>
+    </data>
+    <data name="UserProfilePresenter_ExpiredDaysAgoTextBlock_Text" xml:space="preserve">
+        <value>已過期 {0} 天</value>
+    </data>
+    <data name="UserProfilePresenter_BonusCreditsTextBlock_Text" xml:space="preserve">
+        <value>加量包積分</value>
+    </data>
+    <data name="UserProfilePresenter_PlanCreditsUsagePercentageTextBlock_Text" xml:space="preserve">
+        <value>剩餘 {0}</value>
+    </data>
+    <data name="UserProfilePresenter_UnpaidToast_Title" xml:space="preserve">
+        <value>有未完成的支付，請盡快處理</value>
+    </data>
+    <data name="UserProfilePresenter_OpenDashboardButton_Content" xml:space="preserve">
+        <value>個人主頁</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggleTextBlock_Text" xml:space="preserve">
+        <value>對話雲同步</value>
+    </data>
+    <data name="UserProfilePresenter_CloudSyncToggle_Tip" xml:space="preserve">
+        <value>開啟後將會自動在多個設備間同步你的聊天記錄</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizedTextBlock_Text" xml:space="preserve">
+        <value>上次成功同步 {0}</value>
+    </data>
+    <data name="UserProfilePresenter_LastSynchronizationErrorTextBlock_Text" xml:space="preserve">
+        <value>最近一次同步出錯</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>不用了</value>
+    </data>
+    <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
+        <value>服務不支持當前所在區域或位置的請求。</value>
+    </data>
+    <data name="HandledChatException_JsonError" xml:space="preserve">
+        <value>解析伺服器響應時出錯，通常意味著意料之外的 JSON 格式或內容。</value>
+    </data>
+    <data name="Common_Refresh" xml:space="preserve">
+        <value>刷新</value>
+    </data>
+    <data name="CustomAssistant_OutputModalities_Header" xml:space="preserve">
+        <value>輸出模態</value>
+    </data>
+    <data name="CustomAssistant_ReleaseDate_Header" xml:space="preserve">
+        <value>發佈日期</value>
+    </data>
+    <data name="CustomAssistant_KnowledgeCutoff_Header" xml:space="preserve">
+        <value>知識截止日期</value>
+    </data>
+    <data name="CustomAssistant_InputPrice_Header" xml:space="preserve">
+        <value>輸入價格</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
+        <value>輸出價格</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>選擇模型</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
+        <value>模型詳情</value>
+    </data>
+    <data name="CustomAssistant_OutputPrice_ToolTip" xml:space="preserve">
+        <value>包含思考詞元</value>
+    </data>
+    <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
+        <value>每百萬詞元 {0} 美元</value>
+    </data>
+    <data name="ModelPricingUnit_CreditPerToken" xml:space="preserve">
+        <value>每詞元 {0} 積分</value>
+    </data>
+    <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
+        <value>詞元數 ≤ {1} 時，{0}</value>
+    </data>
+    <data name="ModelPricing_BetweenTiersDescription" xml:space="preserve">
+        <value>{1} &lt; 詞元數 ≤ {2} 時，{0}</value>
+    </data>
+    <data name="ModelPricing_GreaterThanTierDescription" xml:space="preserve">
+        <value>詞元數 &gt; {1} 時，{0}</value>
+    </data>
+    <data name="Common_Undo" xml:space="preserve">
+        <value>撤銷</value>
+    </data>
+    <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
+        <value>移除了 {0} 個對話</value>
     </data>
 </root>
