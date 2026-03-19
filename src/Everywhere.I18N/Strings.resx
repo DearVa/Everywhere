@@ -2093,6 +2093,18 @@ Use scroll wheel or number keys to switch selection mode</value>
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>Reasoning Effort</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>Maximum Context Rounds</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>Limits how many recent API invocation rounds are kept in context. A round is one API call.</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>Current message only</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>Unlimited</value>
+    </data>
     <data name="VisualTreeLengthLimit_Balanced" xml:space="preserve">
         <value>Balanced (~4096, Recommended)</value>
     </data>

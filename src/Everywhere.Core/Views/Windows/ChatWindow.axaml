@@ -767,6 +767,40 @@
                 <Separator/>
               </StackPanel>
 
+              <StackPanel
+                Margin="0,4,0,0" Orientation="Vertical"
+                Spacing="4">
+                <StackPanel
+                  Orientation="Horizontal" Spacing="4">
+                  <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="{DynamicResource FontSizeS}"
+                    Text="{I18N {x:Static LocaleKey.PersistentState_MaxContextRounds_Header}}"/>
+                  <LucideIcon
+                    Kind="CircleQuestionMark"
+                    Size="{DynamicResource FontSizeS}"
+                    ToolTip.Placement="Right"
+                    ToolTip.Tip="{I18N {x:Static LocaleKey.PersistentState_MaxContextRounds_Description}}"/>
+                </StackPanel>
+
+                <TextBlock
+                  Classes="Muted" VerticalAlignment="Center"
+                  Height="16"
+                  FontSize="{DynamicResource FontSizeS}">
+                  <TextBlock.Text>
+                    <I18N Key="{Binding PersistentState.MaxContextRounds, Converter={x:Static vc:MaxContextRoundsConverters.ToDisplayKey}}"/>
+                  </TextBlock.Text>
+                </TextBlock>
+
+                <Slider
+                  MinWidth="160" IsSnapToTickEnabled="True"
+                  Maximum="30" Minimum="-1"
+                  TickFrequency="1"
+                  Value="{Binding PersistentState.MaxContextRounds, Mode=TwoWay}"/>
+
+                <Separator/>
+              </StackPanel>
+
               <Button
                 Classes="Secondary Compact" Margin="0,4,0,0"
                 shadui:ButtonAssist.Icon="{LucideIconContent Settings2}"

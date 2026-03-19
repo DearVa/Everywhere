@@ -75,6 +75,12 @@ public class PersistentState(IKeyValueStorage storage) : ObservableObject
         set => Set(value);
     }
 
+    public int MaxContextRounds
+    {
+        get => Get(-1);
+        set => Set(Math.Clamp(value, -1, 30));
+    }
+
     public bool IsCloudSyncEnabled
     {
         get => Get(false);
