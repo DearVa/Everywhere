@@ -15,14 +15,17 @@ public static class ChatHistoryBuilder
 {
     public static async ValueTask<ChatHistory> BuildChatHistoryAsync(
         string systemPrompt,
-        IEnumerable<ChatMessage> chatMessages,
+        IReadOnlyList<ChatMessage> chatMessages,
+        int maxContextRounds,
         Modalities supportedModalities,
         CancellationToken cancellationToken = default)
     {
         var chatHistory = new ChatHistory();
         chatHistory.AddSystemMessage(systemPrompt);
 
-        foreach (var chatMessage in chatMessages)
+        var startIndex = ResolveStartIndex(chatMessages, maxContextRounds);
+
+        foreach (var chatMessage in chatMessages.Skip(startIndex))
         {
             await foreach (var chatMessageContent in CreateChatMessageContentsAsync(chatMessage, supportedModalities, cancellationToken))
             {
@@ -31,6 +34,32 @@ public static class ChatHistoryBuilder
         }
 
         return chatHistory;
+    }
+
+    private static int ResolveStartIndex(IReadOnlyList<ChatMessage> chatMessages, int maxContextRounds)
+    {
+        if (chatMessages.Count == 0 || maxContextRounds <= -1)
+        {
+            return 0;
+        }
+
+        var matchedUserRounds = 0;
+
+        for (var i = chatMessages.Count - 1; i >= 0; i--)
+        {
+            if (chatMessages[i] is not UserChatMessage)
+            {
+                continue;
+            }
+
+            matchedUserRounds++;
+            if (matchedUserRounds - 1 == maxContextRounds)
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 
     /// <summary>

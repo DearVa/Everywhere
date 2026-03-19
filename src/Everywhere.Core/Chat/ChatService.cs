@@ -380,14 +380,10 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
             // This can save prompt tokens because they may be cached by LLM providers.
             var systemPrompt = _chatContextManager.RenderSystemPrompt(chatContext, customAssistant.SystemPrompt);
 
-            int? fixedContextStartIndex = null;
-
             while (true)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // Build the chat history for the current generation.
-                var fullChatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
+                cancellationToken.ThrowIfCancellationRequested();                // Build the chat history for the current generation.
+                var chatHistory = await ChatHistoryBuilder.BuildChatHistoryAsync(
                     systemPrompt,
                     chatContext
                         .Items
@@ -395,21 +391,14 @@ public sealed partial class ChatService : IChatService, IChatPluginUserInterface
                         .Select(n => n.Message)
                         .Where(m => m.Role.Label is "assistant" or "user" or "tool")
                         .ToList(),
+                    _persistentState.MaxContextRounds,
                     customAssistant.InputModalities,
                     cancellationToken);
 
-                // Keep the context window start fixed within the same generation task.
-                var historyWindow = ChatHistoryRoundWindowBuilder.Build(
-                    fullChatHistory,
-                    _persistentState.MaxContextRounds,
-                    fixedContextStartIndex);
-                fixedContextStartIndex ??= historyWindow.StartIndex;
-                var chatHistory = historyWindow.ChatHistory;
-
                 if (!chatContext.Metadata.IsTemporary && // Do not generate titles for temporary contexts.
                     chatContext.Metadata.Topic.IsNullOrEmpty() &&
-                    fullChatHistory.Count(c => c.Role == AuthorRole.User) == 1 && // Only try when there's one user message.
-                    fullChatHistory.FirstOrDefault(c => c.Role == AuthorRole.User)?.Content is { Length: > 0 } userMessage)
+                    chatHistory.Count(c => c.Role == AuthorRole.User) == 1 && // Only try when there's one user message.
+                    chatHistory.FirstOrDefault(c => c.Role == AuthorRole.User)?.Content is { Length: > 0 } userMessage)
                 {
                     // If the chat history only contains one user message and one assistant message,
                     // we can generate a title for the chat context.

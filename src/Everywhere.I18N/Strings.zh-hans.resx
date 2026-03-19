@@ -2095,10 +2095,10 @@
         <value>推理强度</value>
     </data>
     <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
-        <value>最大上下文数量</value>
+        <value>最大上下文轮次</value>
     </data>
     <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
-        <value>限制保留到上下文中的最近 API 调用轮次，1 轮表示 1 次 API 调用。</value>
+        <value>限制保留到上下文中的最近用户消息轮次。一问一答视为一个轮次。</value>
     </data>
     <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
         <value>仅当前消息</value>

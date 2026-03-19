@@ -2097,7 +2097,7 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Maximum Context Rounds</value>
     </data>
     <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
-        <value>Limits how many recent API invocation rounds are kept in context. A round is one API call.</value>
+        <value>Limits how many recent user-message rounds are kept in context. One round consists of one user message and the corresponding assistant response.</value>
     </data>
     <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
         <value>Current message only</value>
