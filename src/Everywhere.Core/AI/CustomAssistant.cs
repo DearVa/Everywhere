@@ -603,6 +603,50 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
         },
         new()
         {
+            Id = "minimax",
+            DisplayName = "MiniMax",
+            Endpoint = "https://api.minimax.io/v1",
+            OfficialWebsiteUrl = "https://www.minimaxi.com",
+            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/minimax-color.svg",
+            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/minimax-color.svg",
+            Schema = ModelProviderSchema.OpenAI,
+            ModelDefinitions =
+            [
+                new ModelDefinitionTemplate
+                {
+                    Id = "MiniMax-M2.7",
+                    ModelId = "MiniMax-M2.7",
+                    DisplayName = "MiniMax M2.7",
+                    MaxTokens = 1_000_000,
+                    IsImageInputSupported = false,
+                    IsFunctionCallingSupported = true,
+                    IsDeepThinkingSupported = true,
+                    IsDefault = true
+                },
+                new ModelDefinitionTemplate
+                {
+                    Id = "MiniMax-M2.7-highspeed",
+                    ModelId = "MiniMax-M2.7-highspeed",
+                    DisplayName = "MiniMax M2.7 Highspeed",
+                    MaxTokens = 1_000_000,
+                    IsImageInputSupported = false,
+                    IsFunctionCallingSupported = true,
+                    IsDeepThinkingSupported = true,
+                },
+                new ModelDefinitionTemplate
+                {
+                    Id = "MiniMax-M2.5-highspeed",
+                    ModelId = "MiniMax-M2.5-highspeed",
+                    DisplayName = "MiniMax M2.5 Highspeed",
+                    MaxTokens = 204_800,
+                    IsImageInputSupported = false,
+                    IsFunctionCallingSupported = true,
+                    IsDeepThinkingSupported = false,
+                }
+            ]
+        },
+        new()
+        {
             Id = "openrouter",
             DisplayName = "OpenRouter",
             OfficialWebsiteUrl = "https://openrouter.ai",
@@ -739,10 +783,10 @@ public sealed partial class PresetBasedModelProviderConfigurator(CustomAssistant
                 },
                 new ModelDefinitionTemplate
                 {
-                    Id = "MiniMaxAI/MiniMax-M2",
-                    ModelId = "MiniMaxAI/MiniMax-M2",
-                    DisplayName = "MiniMax M2",
-                    MaxTokens = 192_000,
+                    Id = "MiniMaxAI/MiniMax-M2.7",
+                    ModelId = "MiniMaxAI/MiniMax-M2.7",
+                    DisplayName = "MiniMax M2.7",
+                    MaxTokens = 1_000_000,
                     IsImageInputSupported = false,
                     IsFunctionCallingSupported = true,
                     IsDeepThinkingSupported = true
