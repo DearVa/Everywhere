@@ -488,6 +488,7 @@ public sealed partial class ChatService : IChatService
         var usage = new ChatUsageDetails(); // Each generation has its own usage details.
         var functionCallContentBuilder = new FunctionCallContentBuilder();
         var startTime = DateTimeOffset.UtcNow;
+        DateTimeOffset? firstTokenAt = null;
         var isFirstToken = true;
         var promptExecutionSettings = kernelMixin.GetPromptExecutionSettings(
             kernelMixin.SupportsToolCall && _persistentState.IsToolCallEnabled ?
@@ -511,7 +512,8 @@ public sealed partial class ChatService : IChatService
                 if (isFirstToken)
                 {
                     isFirstToken = false;
-                    var ttftSeconds = (DateTimeOffset.UtcNow - startTime).TotalSeconds;
+                    firstTokenAt = DateTimeOffset.UtcNow;
+                    var ttftSeconds = (firstTokenAt.Value - startTime).TotalSeconds;
                     activity?.SetTag("gen_ai.request.ttft", ttftSeconds);
                     _timeToFirstTokenHistogram.Record(ttftSeconds, GetModelTag(kernelMixin.ModelId));
                 }
@@ -593,10 +595,17 @@ public sealed partial class ChatService : IChatService
         finally
         {
             assistantChatMessage.UsageDetails.Accumulate(usage); // Accumulate usage details.
+
+            var generationEndTime = DateTimeOffset.UtcNow;
+            var generationSeconds = firstTokenAt.HasValue ? Math.Max((generationEndTime - firstTokenAt.Value).TotalSeconds, 0) : 0;
+            assistantChatMessage.TokensPerSecond = generationSeconds > 0
+                ? Math.Round(usage.TotalTokenCount / generationSeconds, 1)
+                : 0;
+
             SetChatUsageTags(activity, usage);
             RecordChatUsageMetrics(usage, kernelMixin.ModelId);
 
-            span?.FinishedAt ??= DateTimeOffset.UtcNow;
+            span?.FinishedAt ??= generationEndTime;
             callingToolsBusyMessage?.Dispose();
         }
 
