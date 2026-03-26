@@ -173,6 +173,7 @@ public sealed partial class AssistantChatMessage :
 
     [Key(11)]
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TokensPerSecond))]
     public partial ChatUsageDetails UsageDetails { get; private set; } = new();
 
     [IgnoreMember]
@@ -191,7 +192,34 @@ public sealed partial class AssistantChatMessage :
             .ObserveOnDispatcher()
             .DisposeMany()
             .BindEx(out _spansConnection);
+        
+        // Subscribe to usage details changes to notify TokensPerSecond
+        _usageDetailsSubscription = UsageDetails.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(ChatUsageDetails.TotalTokenCount) or
+                             nameof(ChatUsageDetails.InputTokenCount) or
+                             nameof(ChatUsageDetails.OutputTokenCount))
+            {
+                OnPropertyChanged(nameof(TokensPerSecond));
+            }
+        };
     }
+
+    /// <summary>
+    /// Gets the tokens generated per second.
+    /// </summary>
+    [IgnoreMember]
+    [JsonIgnore]
+    public double TokensPerSecond => ElapsedSeconds > 0 ? Math.Round(UsageDetails.TotalTokenCount / ElapsedSeconds, 1) : 0;
+
+    public override void Dispose()
+    {
+        _usageDetailsSubscription?.Dispose();
+        _spansSource.Dispose();
+        _spansConnection.Dispose();
+    }
+
+    private IDisposable? _usageDetailsSubscription;
 
     public void AddSpan(AssistantChatMessageSpan span)
     {
@@ -207,12 +235,6 @@ public sealed partial class AssistantChatMessage :
         }
 
         return builder.TrimEnd().ToString();
-    }
-
-    public void Dispose()
-    {
-        _spansSource.Dispose();
-        _spansConnection.Dispose();
     }
 
     #region ISourceList<AssistantChatMessageSpan> Implementation
