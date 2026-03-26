@@ -51,7 +51,8 @@ public partial class SystemChatMessage(string systemPrompt) : ChatMessage
 public sealed partial class AssistantChatMessage :
     ChatMessage,
     IHaveChatAttachments,
-    ISourceList<AssistantChatMessageSpan>
+    ISourceList<AssistantChatMessageSpan>,
+    IDisposable
 {
     public override AuthorRole Role => AuthorRole.Assistant;
 
@@ -173,8 +174,11 @@ public sealed partial class AssistantChatMessage :
 
     [Key(11)]
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(TokensPerSecond))]
     public partial ChatUsageDetails UsageDetails { get; private set; } = new();
+
+    [Key(12)]
+    [ObservableProperty]
+    public partial double TokensPerSecond { get; set; }
 
     [IgnoreMember]
     public IEnumerable<ChatAttachment> Attachments => _spansSource.Items.OfType<IHaveChatAttachments>().SelectMany(s => s.Attachments);
@@ -192,34 +196,13 @@ public sealed partial class AssistantChatMessage :
             .ObserveOnDispatcher()
             .DisposeMany()
             .BindEx(out _spansConnection);
-        
-        // Subscribe to usage details changes to notify TokensPerSecond
-        _usageDetailsSubscription = UsageDetails.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName is nameof(ChatUsageDetails.TotalTokenCount) or
-                             nameof(ChatUsageDetails.InputTokenCount) or
-                             nameof(ChatUsageDetails.OutputTokenCount))
-            {
-                OnPropertyChanged(nameof(TokensPerSecond));
-            }
-        };
     }
 
-    /// <summary>
-    /// Gets the tokens generated per second.
-    /// </summary>
-    [IgnoreMember]
-    [JsonIgnore]
-    public double TokensPerSecond => ElapsedSeconds > 0 ? Math.Round(UsageDetails.TotalTokenCount / ElapsedSeconds, 1) : 0;
-
-    public override void Dispose()
+    public void Dispose()
     {
-        _usageDetailsSubscription?.Dispose();
         _spansSource.Dispose();
         _spansConnection.Dispose();
     }
-
-    private IDisposable? _usageDetailsSubscription;
 
     public void AddSpan(AssistantChatMessageSpan span)
     {
