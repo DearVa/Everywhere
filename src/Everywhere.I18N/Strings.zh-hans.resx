@@ -816,7 +816,7 @@
         <value>总计</value>
     </data>
     <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>用时</value>
+        <value>总用时</value>
     </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>模型配置不正确，模型提供商或模型 ID 缺失或无效，或当前模型不支持图像输入/工具调用。</value>

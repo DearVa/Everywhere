@@ -800,9 +800,6 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Всего</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>Прошло</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>Конфигурация модели неверна, поставщик модели или ID модели отсутствует или недействителен, или текущая модель не поддерживает ввод изображений/вызовы инструментов.</value>
     </data>

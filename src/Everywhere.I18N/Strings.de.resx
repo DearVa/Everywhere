@@ -797,9 +797,6 @@ Meine Intelligenz wird von einem großen Sprachmodell bereitgestellt, und ich be
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Gesamt</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>Verstrichen</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>Modellkonfiguration ist falsch, Modellanbieter oder Modell-ID fehlt oder ist ungültig, oder das aktuelle Modell unterstützt keine Bild-Eingabe/Werkzeugaufrufe.</value>
     </data>

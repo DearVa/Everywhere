@@ -800,9 +800,6 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>총계</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>경과 시간</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>모델 구성이 올바르지 않습니다. 모델 제공자 또는 모델 ID가 누락되었거나 유효하지 않거나, 현재 모델이 이미지 입력/도구 호출을 지원하지 않습니다.</value>
     </data>

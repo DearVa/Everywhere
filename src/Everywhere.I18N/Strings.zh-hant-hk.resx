@@ -800,9 +800,6 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>總計</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>經過</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>模型配置不正確，模型提供商或模型 ID 缺失或無效，或當前模型不支持圖像輸入/工具調用。</value>
     </data>

@@ -816,7 +816,7 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Total</value>
     </data>
     <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>Elapsed</value>
+        <value>Total Time</value>
     </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>Model configuration is incorrect, model provider or model ID is missing or invalid, or the current model does not support image input/tool calls.</value>

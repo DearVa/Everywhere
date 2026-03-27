@@ -800,9 +800,6 @@ La mia intelligenza è fornita da un grande modello linguistico e ho bisogno del
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Totale</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>Trascorso</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>La configurazione del modello è errata, il fornitore del modello o l'ID del modello mancano o sono invalidi, oppure il modello corrente non supporta l'input di immagini/chiamate di strumenti.</value>
     </data>

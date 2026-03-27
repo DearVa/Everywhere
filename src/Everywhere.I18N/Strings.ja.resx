@@ -800,9 +800,6 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>合計</value>
     </data>
-    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
-        <value>経過時間</value>
-    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>モデル構成が正しくありません。モデルプロバイダーまたはモデルIDが欠落または無効であるか、現在のモデルが画像入力/ツール呼び出しをサポートしていません。</value>
     </data>
