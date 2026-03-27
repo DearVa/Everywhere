@@ -172,10 +172,6 @@ public sealed partial class AssistantChatMessage :
     [ObservableProperty]
     public partial ChatUsageDetails UsageDetails { get; private set; } = new();
 
-    [Key(12)]
-    [ObservableProperty]
-    public partial double TokensPerSecond { get; set; }
-
     [IgnoreMember]
     public IEnumerable<ChatAttachment> Attachments => _spansSource.Items.OfType<IHaveChatAttachments>().SelectMany(s => s.Attachments);
 

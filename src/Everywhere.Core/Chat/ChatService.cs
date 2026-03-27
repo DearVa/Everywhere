@@ -594,13 +594,10 @@ public sealed partial class ChatService : IChatService
         }
         finally
         {
-            assistantChatMessage.UsageDetails.Accumulate(usage); // Accumulate usage details.
-
             var generationEndTime = DateTimeOffset.UtcNow;
             var generationSeconds = firstTokenAt.HasValue ? Math.Max((generationEndTime - firstTokenAt.Value).TotalSeconds, 0) : 0;
-            assistantChatMessage.TokensPerSecond = generationSeconds > 0
-                ? Math.Round(usage.TotalTokenCount / generationSeconds, 1)
-                : 0;
+
+            assistantChatMessage.UsageDetails.Accumulate(usage, generationSeconds); // Accumulate usage details.
 
             SetChatUsageTags(activity, usage);
             RecordChatUsageMetrics(usage, kernelMixin.ModelId);

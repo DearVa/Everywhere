@@ -356,7 +356,7 @@
               <Run Text="{Binding UsageDetails.TotalTokenCount}"/>
               <Run Text="·"/>
               <Run Text="tokens/s"/>
-              <Run Text="{Binding TokensPerSecond, StringFormat='{}{0:F1}', Mode=OneWay}"/>
+              <Run Text="{Binding UsageDetails.TokensPerSecond, StringFormat='{}{0:F1}', Mode=OneWay}"/>
               <Run Text="·"/>
               <Run Text="{I18N {x:Static LocaleKey.ChatWindow_ChatStatisticsTextBlock_ElapsedRun}}"/>
               <Run Text="{Binding ElapsedSeconds, StringFormat='{}{0:F1}s', Mode=OneWay}"/>

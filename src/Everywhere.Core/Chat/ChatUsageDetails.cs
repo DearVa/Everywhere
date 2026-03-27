@@ -28,6 +28,7 @@ public partial class ChatUsageDetails : ObservableObject
     /// </summary>
     [Key(2)]
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TokensPerSecond))]
     public partial long OutputTokenCount { get; set; }
 
     /// <summary>
@@ -43,6 +44,17 @@ public partial class ChatUsageDetails : ObservableObject
     [Key(4)]
     [ObservableProperty]
     public partial long TotalTokenCount { get; set; }
+
+    /// <summary>
+    /// Gets the total generation time in seconds. Time before first token and function invoking are not included.
+    /// </summary>
+    [Key(5)]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TokensPerSecond))]
+    public partial double TotalGenerationSeconds { get; set; }
+
+    [IgnoreMember]
+    public double TokensPerSecond => TotalGenerationSeconds > 0d ? OutputTokenCount / TotalGenerationSeconds : 0d;
 
     /// <summary>
     /// Updates the usage details from the given <see cref="StreamingKernelContent"/>. Used in streaming scenarios.
@@ -72,13 +84,16 @@ public partial class ChatUsageDetails : ObservableObject
     /// Accumulates the maximum token counts from another <see cref="ChatUsageDetails"/> instance. Used to aggregate usage across multiple calls.
     /// </summary>
     /// <param name="other"></param>
-    public void Accumulate(ChatUsageDetails other)
+    /// <param name="generationSeconds"></param>
+    public void Accumulate(ChatUsageDetails other, double generationSeconds)
     {
         InputTokenCount += other.InputTokenCount;
         CachedInputTokenCount += other.CachedInputTokenCount;
         OutputTokenCount += other.OutputTokenCount;
         ReasoningTokenCount += other.ReasoningTokenCount;
         TotalTokenCount += other.TotalTokenCount;
+
+        TotalGenerationSeconds += generationSeconds;
     }
 
     private void Update(object? usage)
