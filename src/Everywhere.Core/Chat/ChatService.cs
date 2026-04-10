@@ -838,6 +838,34 @@ public sealed partial class ChatService : IChatService
 
             resultContent = await content.InvokeAsync(context.Kernel, cancellationToken);
         }
+        catch (Exception ex) when (context.ChatFunction is McpChatFunction && IsMcpSessionExpiredException(ex))
+        {
+
+            try
+            {
+                var mcpPlugin = _chatPluginManager.McpPlugins
+                    .AsValueEnumerable()
+                    .FirstOrDefault(p => p.Name == context.ChatPlugin.Name) ?? throw new InvalidOperationException($"MCP plugin '{context.ChatPlugin.Name}' not found for session recovery.");
+
+                await _chatPluginManager.StopMcpClientAsync(mcpPlugin);
+                await _chatPluginManager.StartMcpClientAsync(mcpPlugin, cancellationToken);
+
+                var newFunction = mcpPlugin.GetEnabledFunctions()
+                    .OfType<McpChatFunction>()
+                    .FirstOrDefault(f => f.KernelFunction.Name == content.FunctionName) ?? throw new InvalidOperationException($"Function '{content.FunctionName}' not found after MCP client restart.");
+                    
+                var kernelArgs = content.Arguments != null ? new KernelArguments(content.Arguments) : [];
+                var retryResult = await newFunction.KernelFunction.InvokeAsync(context.Kernel, kernelArgs, cancellationToken);
+                resultContent = new FunctionResultContent(content, retryResult);
+            }
+            catch (Exception retryEx)
+            {
+                retryEx = HandledFunctionInvokingException.Handle(retryEx);
+                activity?.SetStatus(ActivityStatusCode.Error, retryEx.Message);
+                _logger.LogError(retryEx, "MCP session recovery failed for function '{FunctionName}'", content.FunctionName);
+                resultContent = new FunctionResultContent(content, $"Error: {retryEx.Message}") { InnerContent = retryEx };
+            }
+        }
         catch (Exception ex)
         {
             ex = HandledFunctionInvokingException.Handle(ex);
@@ -909,6 +937,24 @@ public sealed partial class ChatService : IChatService
             return promise.Task;
 
         }
+    }
+
+    /// <summary>
+    /// Checks whether the exception indicates an MCP session has expired.
+    /// </summary>
+    private static bool IsMcpSessionExpiredException(Exception ex)
+    {
+        for (var current = ex; current != null; current = current.InnerException)
+        {
+            var message = current.Message;
+            if (message.Contains("Session", StringComparison.OrdinalIgnoreCase) &&
+                message.Contains("Expired", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private async Task GenerateTitleAsync(
