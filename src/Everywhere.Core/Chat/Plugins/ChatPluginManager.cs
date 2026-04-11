@@ -1,21 +1,17 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
-using System.Text;
 using DynamicData;
 using Everywhere.Chat.Permissions;
+using Everywhere.Chat.Plugins.McpExtensions;
 using Everywhere.Collections;
 using Everywhere.Common;
 using Everywhere.Configuration;
-using Everywhere.Initialization;
 using Everywhere.Interop;
 using Everywhere.Utilities;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
-using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 using ZLinq;
 
 namespace Everywhere.Chat.Plugins;
@@ -35,7 +31,7 @@ public class ChatPluginManager : IChatPluginManager
     private readonly CompositeDisposable _disposables = new();
     private readonly SourceList<BuiltInChatPlugin> _builtInPluginsSource = new();
     private readonly SourceList<McpChatPlugin> _mcpPluginsSource = new();
-    private readonly ConcurrentDictionary<Guid, McpClient> _runningMcpClients = [];
+    private readonly ConcurrentDictionary<Guid, ManagedMcpClient> _runningMcpClients = [];
 
     public ChatPluginManager(
         IEnumerable<BuiltInChatPlugin> builtInPlugins,
@@ -248,101 +244,15 @@ public class ChatPluginManager : IChatPluginManager
 
         if (_runningMcpClients.ContainsKey(mcpChatPlugin.Id)) return; // Just return without error if already running.
 
-        var loggerFactory = new McpLoggerFactory(mcpChatPlugin, _loggerFactory);
-        IClientTransport clientTransport = transportConfiguration switch
-        {
-            StdioMcpTransportConfiguration stdio => new StdioClientTransport(
-                new StdioClientTransportOptions
-                {
-                    Name = stdio.Name,
-                    Command = stdio.Command,
-                    Arguments = stdio.Arguments
-                        .AsValueEnumerable()
-                        .Select(x => x.Value)
-                        .Where(x => !x.IsNullOrWhiteSpace())
-                        .ToList(),
-                    WorkingDirectory = EnsureWorkingDirectory(stdio.WorkingDirectory),
-                    EnvironmentVariables = EnsureLatestPath(
-                        stdio.EnvironmentVariables
-                            .AsValueEnumerable()
-                            .Where(kv => !kv.Key.IsNullOrWhiteSpace())
-                            .DistinctBy(
-                                kv => kv.Key,
-                                OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal)
-                            .ToDictionary(
-                                kv => kv.Key,
-                                kv => kv.Value,
-                                OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal)),
-                },
-                loggerFactory),
-            HttpMcpTransportConfiguration sse => new HttpClientTransport(
-                new HttpClientTransportOptions
-                {
-                    Name = sse.Name,
-                    Endpoint = new Uri(sse.Endpoint, UriKind.Absolute),
-                    AdditionalHeaders = sse.Headers
-                        .AsValueEnumerable()
-                        .Where(kv => !kv.Key.IsNullOrWhiteSpace() && !kv.Value.IsNullOrWhiteSpace())
-                        .DistinctBy(kv => kv.Key)
-                        .ToDictionary(kv => kv.Key, kv => kv.Value),
-                    TransportMode = sse.TransportMode
-                },
-                _httpClientFactory.CreateClient(NetworkExtension.JsonRpcClientName),
-                loggerFactory),
-            _ =>
-                throw new HandledException(
-                    new InvalidOperationException("Unsupported MCP transport configuration type."),
-                    new DynamicResourceKey(LocaleKey.ChatPluginManager_Common_InvalidMcpTransportConfiguration))
-        };
+        var client = new ManagedMcpClient(
+            mcpChatPlugin, _httpClientFactory, _watchdogManager, _loggerFactory);
 
-        var client = await McpClient.CreateAsync(
-            clientTransport,
-            null,
-            loggerFactory,
-            cancellationToken);
+        await client.StartAsync(cancellationToken);
 
-        // Store the running client.
         _runningMcpClients[mcpChatPlugin.Id] = client;
         mcpChatPlugin.IsRunning = true;
 
-        var processId = -1;
-        try
-        {
-            if (clientTransport is StdioClientTransport)
-            {
-                // Add the underlying process to the watchdog to ensure it is cleaned up properly.
-                // We need reflection here because StdioClientTransport does not expose the process directly.
-                // client is `ModelContextProtocol.Client.McpClientImpl`
-                var transport = GetMcpClientTransport(client);
-                if (GetStdioClientSessionTransportProcess(transport) is { HasExited: false, Id: > 0 } process)
-                {
-                    process.Exited += HandleProcessExited;
-
-                    void HandleProcessExited(object? sender, EventArgs e)
-                    {
-                        mcpChatPlugin.IsRunning = false;
-                        _runningMcpClients.TryRemove(mcpChatPlugin.Id, out _);
-                        process.Exited -= HandleProcessExited;
-                    }
-
-                    await _watchdogManager.RegisterProcessAsync(process.Id);
-                    processId = process.Id;
-                }
-            }
-        }
-        finally
-        {
-            if (processId == -1 && transportConfiguration is StdioMcpTransportConfiguration stdio)
-            {
-                _logger.LogWarning(
-                    "MCP started with stdio transport, but failed to get the underlying process ID for watchdog registration. " +
-                    "Command: {Command}, Arguments: {Arguments}",
-                    stdio.Command,
-                    stdio.Arguments);
-            }
-        }
-
-        var tools = await client.ListToolsAsync(cancellationToken: cancellationToken);
+        var tools = await client.ListToolsAsync(cancellationToken);
 
         var isEnabledRecords = _settings.Plugin.IsEnabledRecords;
         var isPermissionGrantedRecords = _settings.Plugin.IsPermissionGrantedRecords;
@@ -352,33 +262,6 @@ public class ChatPluginManager : IChatPluginManager
                 IsEnabled = !isEnabledRecords.TryGetValue(t.Name, out var isEnabled) || isEnabled, // true if not set
                 AutoApprove = isPermissionGrantedRecords.TryGetValue(t.Name, out var isGranted) && isGranted, // false if not set
             }));
-
-        string EnsureWorkingDirectory(string? workingDirectory)
-        {
-            if (Directory.Exists(workingDirectory)) return workingDirectory;
-
-            // If not exists, fall back to Everywhere\cache\plugins\mcp\<plugin-id>
-            var fallbackDir = RuntimeConstants.EnsureWritableDataFolderPath("plugins", "mcp", mcpChatPlugin.Id.ToString("N"));
-            return fallbackDir;
-        }
-
-        Dictionary<string, string?> EnsureLatestPath(Dictionary<string, string?> environmentVariables)
-        {
-            var latestPath = EnvironmentVariableUtilities.GetLatestPathVariable();
-            if (latestPath.IsNullOrEmpty()) return environmentVariables;
-
-            // Put our latest PATH at the front.
-            var pathBuilder = new StringBuilder(latestPath);
-
-            // Append existing PATH variable if any.
-            if (environmentVariables.TryGetValue("PATH", out var existingPath) && !existingPath.IsNullOrEmpty())
-            {
-                pathBuilder.Append(Path.PathSeparator).Append(existingPath);
-            }
-
-            environmentVariables["PATH"] = pathBuilder.ToString();
-            return environmentVariables;
-        }
     }
 
     public async Task<IChatPluginScope> CreateScopeAsync(bool isSubagent, CancellationToken cancellationToken)
@@ -418,14 +301,6 @@ public class ChatPluginManager : IChatPluginManager
                 .Select(p => new ChatPluginSnapshot(p, functionNameDeduplicator, isSubagent))
                 .ToList());
     }
-
-    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_transport")]
-    private static extern ref ITransport GetMcpClientTransport(
-        [UnsafeAccessorType("ModelContextProtocol.Client.McpClientImpl, ModelContextProtocol.Core")] object client);
-
-    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "_process")]
-    private static extern ref Process GetStdioClientSessionTransportProcess(
-        [UnsafeAccessorType("ModelContextProtocol.Client.StdioClientSessionTransport, ModelContextProtocol.Core")] object transport);
 
     private class ChatPluginScope(List<ChatPluginSnapshot> pluginSnapshots) : IChatPluginScope
     {
@@ -518,46 +393,5 @@ public class ChatPluginManager : IChatPluginManager
             }
         });
         _disposables.Dispose();
-    }
-
-    /// <summary>
-    /// Used to create ILogger instances for MCP clients.
-    /// It logs to both the Everywhere logging system and the <see cref="McpChatPlugin"/>'s log entries.
-    /// </summary>
-    private sealed class McpLoggerFactory(McpChatPlugin mcpChatPlugin, ILoggerFactory innerLoggerFactory) : ILoggerFactory
-    {
-        public void AddProvider(ILoggerProvider provider)
-        {
-            innerLoggerFactory.AddProvider(provider);
-        }
-
-        public ILogger CreateLogger(string categoryName)
-        {
-            var innerLogger = innerLoggerFactory.CreateLogger(categoryName);
-            return new McpLogger(mcpChatPlugin, innerLogger);
-        }
-
-        public void Dispose()
-        {
-            innerLoggerFactory.Dispose();
-        }
-
-        private sealed class McpLogger(ILogger mcpChatPlugin, ILogger innerLogger) : ILogger
-        {
-            public IDisposable? BeginScope<TState>(TState state) where TState : notnull => innerLogger.BeginScope(state);
-
-            public bool IsEnabled(LogLevel logLevel) => true;
-
-            public void Log<TState>(
-                LogLevel logLevel,
-                EventId eventId,
-                TState state,
-                Exception? exception,
-                Func<TState, Exception?, string> formatter)
-            {
-                mcpChatPlugin.Log(logLevel, eventId, state, exception, formatter);
-                innerLogger.Log(logLevel, eventId, state, exception, formatter);
-            }
-        }
     }
 }

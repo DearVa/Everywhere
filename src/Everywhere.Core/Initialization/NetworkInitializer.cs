@@ -103,7 +103,6 @@ public static class NetworkExtension
             .AddSingleton<DynamicWebProxy>()
             .AddSingleton<IWebProxy>(x => x.GetRequiredService<DynamicWebProxy>())
             .AddTransient<UserAgentHandler>()
-            .AddTransient<ContentLengthBufferingHandler>()
             .AddTransient<IAsyncInitializer, NetworkInitializer>();
 
         // Configure the default HttpClient to use the DynamicWebProxy.
@@ -124,28 +123,6 @@ public static class NetworkExtension
                     AllowAutoRedirect = true,
                 })
             .AddHttpMessageHandler<UserAgentHandler>();
-
-        // This is a workaround for JSON-RPC servers that do not support chunked transfer encoding.
-        // e.g. MCP server of ModelScope
-        // We create a named HttpClient that includes a custom DelegatingHandler to buffer
-        // the request content and set the Content-Length header explicitly.
-        services
-            .AddHttpClient(
-                JsonRpcClientName,
-                client =>
-                {
-                    // You can copy or customize headers from the default client if needed.
-                    client.Timeout = TimeSpan.FromSeconds(30); // Maybe a longer timeout for RPC calls
-                })
-            .ConfigurePrimaryHttpMessageHandler(serviceProvider =>
-                new HttpClientHandler
-                {
-                    Proxy = serviceProvider.GetRequiredService<IWebProxy>(),
-                    UseProxy = true,
-                    AllowAutoRedirect = true,
-                })
-            // Add our custom handler to the pipeline for this named client.
-            .AddHttpMessageHandler<ContentLengthBufferingHandler>();
 
         return services;
     }
@@ -173,7 +150,7 @@ public static class NetworkExtension
     /// chunked transfer encoding.
     /// </summary>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-    private sealed class ContentLengthBufferingHandler : DelegatingHandler
+    internal sealed class ContentLengthBufferingHandler : DelegatingHandler
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
