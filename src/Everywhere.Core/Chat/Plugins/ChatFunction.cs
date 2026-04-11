@@ -2,7 +2,7 @@
 using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Chat.Permissions;
-using Everywhere.Chat.Plugins.McpExtensions;
+using Everywhere.Chat.Plugins.Mcp;
 using Lucide.Avalonia;
 using Microsoft.SemanticKernel;
 using ZLinq;

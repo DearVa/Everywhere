@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Http.Headers;
 using Avalonia.Threading;
 using Everywhere.Common;
 using Everywhere.Configuration;
@@ -83,12 +82,6 @@ public sealed class NetworkInitializer : IAsyncInitializer
 public static class NetworkExtension
 {
     /// <summary>
-    /// The name for the HttpClient configured to handle JSON-RPC requests
-    /// by ensuring Content-Length is set, avoiding chunked encoding.
-    /// </summary>
-    public const string JsonRpcClientName = "JsonRpcClient";
-
-    /// <summary>
     /// Configures network services with proxy settings from the application settings.
     /// This method registers a singleton <see cref="DynamicWebProxy"/> to handle proxying HTTP requests.
     /// It also configures the default <see cref="HttpClient"/> to use this dynamic proxy.
@@ -141,30 +134,6 @@ public static class NetworkExtension
                 $"Chrome/142.0.0.0 Safari/537.36 Everywhere/{App.Version}");
 
             return base.SendAsync(request, cancellationToken);
-        }
-    }
-
-    /// <summary>
-    /// A delegating handler that buffers the request content to compute and set the
-    /// Content-Length header. This is useful for servers that do not support
-    /// chunked transfer encoding.
-    /// </summary>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-    internal sealed class ContentLengthBufferingHandler : DelegatingHandler
-    {
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            if (request.Content is not null)
-            {
-                // By calling LoadIntoBufferAsync, we force the content to be buffered in memory.
-                // This allows the HttpContent instance to calculate its length, which then gets
-                // automatically set as the Content-Length header when the request is sent.
-                // This effectively disables chunked transfer encoding.
-                await request.Content.LoadIntoBufferAsync(cancellationToken).ConfigureAwait(false);
-                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            }
-
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
     }
 }

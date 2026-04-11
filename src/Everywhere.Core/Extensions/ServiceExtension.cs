@@ -2,7 +2,7 @@
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Chat.Plugins.BuiltIn;
-using Everywhere.Chat.Plugins.McpExtensions;
+using Everywhere.Chat.Plugins.Mcp;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Database;
@@ -59,11 +59,11 @@ public static class ServiceExtension
 
         public IServiceCollection AddChatEssentials() =>
             services
-                .AddManagedMcp()
                 .AddSingleton<IKernelMixinFactory, KernelMixinFactory>()
                 .AddSingleton<IChatPluginManager, ChatPluginManager>()
                 .AddSingleton<IChatService, ChatService>()
                 .AddChatContextManager()
+                .AddManagedMcp()
 
                 // Add built-in plugins
                 .AddTransient<BuiltInChatPlugin, EssentialPlugin>()

@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.Extensions.AI;
 using ModelContextProtocol.Client;
 
-namespace Everywhere.Chat.Plugins.McpExtensions;
+namespace Everywhere.Chat.Plugins.Mcp;
 
 /// <summary>
 /// An <see cref="AIFunction"/> wrapper around <see cref="McpClientTool"/> that intercepts invocations,
@@ -10,16 +10,12 @@ namespace Everywhere.Chat.Plugins.McpExtensions;
 /// </summary>
 public sealed class ManagedMcpClientTool : AIFunction
 {
-    private readonly ManagedMcpClient _managedClient;
-    private readonly string _escapedName;
-    private McpClientTool _innerTool;
-
     /// <summary>
     /// The original (unescaped) protocol tool name for matching after reconnection.
     /// </summary>
     public string ProtocolToolName => _innerTool.ProtocolTool.Name;
 
-    public override string Name => _escapedName;
+    public override string Name { get; }
 
     public override string Description => _innerTool.Description;
 
@@ -29,11 +25,14 @@ public sealed class ManagedMcpClientTool : AIFunction
 
     public override JsonSerializerOptions JsonSerializerOptions => _innerTool.JsonSerializerOptions;
 
+    private readonly ManagedMcpClient _managedClient;
+    private McpClientTool _innerTool;
+
     internal ManagedMcpClientTool(McpClientTool innerTool, ManagedMcpClient managedClient, string escapedName)
     {
         _innerTool = innerTool;
         _managedClient = managedClient;
-        _escapedName = escapedName;
+        Name = escapedName;
     }
 
     protected override async ValueTask<object?> InvokeCoreAsync(

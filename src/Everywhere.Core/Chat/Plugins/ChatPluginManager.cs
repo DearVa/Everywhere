@@ -4,12 +4,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Disposables;
 using DynamicData;
 using Everywhere.Chat.Permissions;
-using Everywhere.Chat.Plugins.McpExtensions;
+using Everywhere.Chat.Plugins.Mcp;
 using Everywhere.Collections;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Utilities;
+using FuzzySharp;
 using Lucide.Avalonia;
 using Microsoft.Extensions.Logging;
 using ZLinq;
@@ -26,7 +27,6 @@ public class ChatPluginManager : IChatPluginManager
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILoggerFactory _loggerFactory;
     private readonly Settings _settings;
-    private readonly ILogger<ChatPluginManager> _logger;
 
     private readonly CompositeDisposable _disposables = new();
     private readonly SourceList<BuiltInChatPlugin> _builtInPluginsSource = new();
@@ -45,7 +45,6 @@ public class ChatPluginManager : IChatPluginManager
         _httpClientFactory = httpClientFactory;
         _loggerFactory = loggerFactory;
         _settings = settings;
-        _logger = loggerFactory.CreateLogger<ChatPluginManager>();
 
         // Load MCP plugins from settings.
         _mcpPluginsSource.AddRange(settings.Plugin.McpChatPlugins.Select(m => m.ToMcpChatPlugin()).OfType<McpChatPlugin>());
@@ -244,9 +243,7 @@ public class ChatPluginManager : IChatPluginManager
 
         if (_runningMcpClients.ContainsKey(mcpChatPlugin.Id)) return; // Just return without error if already running.
 
-        var client = new ManagedMcpClient(
-            mcpChatPlugin, _httpClientFactory, _watchdogManager, _loggerFactory);
-
+        var client = new ManagedMcpClient(mcpChatPlugin, _httpClientFactory, _watchdogManager, _loggerFactory);
         await client.StartAsync(cancellationToken);
 
         _runningMcpClients[mcpChatPlugin.Id] = client;
@@ -325,7 +322,7 @@ public class ChatPluginManager : IChatPluginManager
 
             plugin = null;
             function = null;
-            similarFunctionNames = FuzzySharp.Process.ExtractTop(
+            similarFunctionNames = Process.ExtractTop(
                     functionName,
                     pluginSnapshots.SelectMany(p => p.Functions).Select(f => f.KernelFunction.Name),
                     limit: 5)
