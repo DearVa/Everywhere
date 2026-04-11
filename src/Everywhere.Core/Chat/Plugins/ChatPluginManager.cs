@@ -31,7 +31,7 @@ public class ChatPluginManager : IChatPluginManager
     private readonly CompositeDisposable _disposables = new();
     private readonly SourceList<BuiltInChatPlugin> _builtInPluginsSource = new();
     private readonly SourceList<McpChatPlugin> _mcpPluginsSource = new();
-    private readonly ConcurrentDictionary<Guid, ManagedMcpClient> _runningMcpClients = [];
+    private readonly ConcurrentDictionary<Guid, ManagedMcpClient> _startedMcpClients = [];
 
     public ChatPluginManager(
         IEnumerable<BuiltInChatPlugin> builtInPlugins,
@@ -212,10 +212,9 @@ public class ChatPluginManager : IChatPluginManager
 
     public async Task StopMcpClientAsync(McpChatPlugin mcpChatPlugin)
     {
-        if (_runningMcpClients.TryRemove(mcpChatPlugin.Id, out var runningClient))
+        if (_startedMcpClients.TryRemove(mcpChatPlugin.Id, out var runningClient))
         {
             await runningClient.DisposeAsync();
-            mcpChatPlugin.IsRunning = false;
         }
     }
 
@@ -241,16 +240,10 @@ public class ChatPluginManager : IChatPluginManager
                 new DynamicResourceKey(LocaleKey.ChatPluginManager_Common_InvalidMcpTransportConfiguration));
         }
 
-        if (_runningMcpClients.ContainsKey(mcpChatPlugin.Id)) return; // Just return without error if already running.
-
-        var client = new ManagedMcpClient(mcpChatPlugin, _httpClientFactory, _watchdogManager, _loggerFactory);
-        await client.StartAsync(cancellationToken);
-
-        _runningMcpClients[mcpChatPlugin.Id] = client;
-        mcpChatPlugin.IsRunning = true;
+        var client = await ManagedMcpClient.StartAsync(mcpChatPlugin, _httpClientFactory, _watchdogManager, _loggerFactory, cancellationToken);
+        _startedMcpClients[mcpChatPlugin.Id] = client;
 
         var tools = await client.ListToolsAsync(cancellationToken);
-
         var isEnabledRecords = _settings.Plugin.IsEnabledRecords;
         var isPermissionGrantedRecords = _settings.Plugin.IsPermissionGrantedRecords;
         mcpChatPlugin.SetFunctions(
@@ -376,11 +369,11 @@ public class ChatPluginManager : IChatPluginManager
 
     public void Dispose()
     {
-        foreach (var mcpClient in _runningMcpClients.Values)
+        foreach (var mcpClient in _startedMcpClients.Values)
         {
             mcpClient.DisposeAsync().Detach(IExceptionHandler.DangerouslyIgnoreAllException);
         }
-        _runningMcpClients.Clear();
+        _startedMcpClients.Clear();
 
         _mcpPluginsSource.Edit(items =>
         {

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
@@ -14,33 +15,66 @@ namespace Everywhere.Chat.Plugins.Mcp;
 /// Manages the lifecycle of an <see cref="McpClient"/>, including creation, reconnection on session expiry, and disposal.
 /// Encapsulates transport creation logic (Stdio / HTTP) and watchdog registration.
 /// </summary>
-internal sealed class ManagedMcpClient(
-    McpChatPlugin mcpChatPlugin,
-    IHttpClientFactory httpClientFactory,
-    IWatchdogManager watchdogManager,
-    ILoggerFactory loggerFactory
-) : IAsyncDisposable
+public sealed class ManagedMcpClient : IAsyncDisposable
 {
+    private static readonly ConcurrentDictionary<Guid, ManagedMcpClient> RunningClients = [];
+
+    public static async ValueTask<ManagedMcpClient> StartAsync(
+        McpChatPlugin mcpChatPlugin,
+        IHttpClientFactory httpClientFactory,
+        IWatchdogManager watchdogManager,
+        ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken)
+    {
+        if (RunningClients.TryGetValue(mcpChatPlugin.Id, out var existingClient))
+        {
+            return existingClient;
+        }
+
+        var client = new ManagedMcpClient(mcpChatPlugin, httpClientFactory, watchdogManager, loggerFactory);
+        await client.StartAsync(cancellationToken);
+
+        RunningClients[mcpChatPlugin.Id] = client;
+        mcpChatPlugin.IsRunning = true;
+        return client;
+    }
+
     /// <summary>
     /// Gets whether the current session has been marked as expired.
     /// </summary>
     public bool IsSessionExpired { get; private set; }
 
-    private readonly ILogger _logger = loggerFactory.CreateLogger<ManagedMcpClient>();
-    private readonly McpLoggerFactory _mcpLoggerFactory = new(mcpChatPlugin, loggerFactory);
+    private readonly ILogger _logger;
+    private readonly McpLoggerFactory _mcpLoggerFactory;
     private readonly SemaphoreSlim _reconnectLock = new(1, 1);
 
     private McpClient? _mcpClient;
     private IClientTransport? _clientTransport;
     private List<ManagedMcpClientTool>? _tools;
+    private readonly McpChatPlugin _mcpChatPlugin;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IWatchdogManager _watchdogManager;
+
+    private ManagedMcpClient(
+        McpChatPlugin mcpChatPlugin,
+        IHttpClientFactory httpClientFactory,
+        IWatchdogManager watchdogManager,
+        ILoggerFactory loggerFactory)
+    {
+        _mcpChatPlugin = mcpChatPlugin;
+        _httpClientFactory = httpClientFactory;
+        _watchdogManager = watchdogManager;
+        _mcpLoggerFactory = new McpLoggerFactory(mcpChatPlugin, loggerFactory);
+        _logger = _mcpLoggerFactory.CreateLogger<ManagedMcpClient>();
+    }
 
     /// <summary>
     /// Starts the MCP client by creating a transport and connecting.
     /// Sets up process watchdog for stdio transports.
     /// </summary>
-    public async Task StartAsync(CancellationToken cancellationToken)
+    private async Task StartAsync(CancellationToken cancellationToken)
     {
-        var transportConfiguration = mcpChatPlugin.TransportConfiguration
+        var transportConfiguration = _mcpChatPlugin.TransportConfiguration
             ?? throw new InvalidOperationException("MCP transport configuration is not set.");
 
         _clientTransport = CreateTransport(transportConfiguration);
@@ -84,12 +118,12 @@ internal sealed class ManagedMcpClient(
         try
         {
             // Only HTTP transports should attempt reconnection.
-            if (mcpChatPlugin.TransportConfiguration is not HttpMcpTransportConfiguration)
+            if (_mcpChatPlugin.TransportConfiguration is not HttpMcpTransportConfiguration)
             {
                 throw new InvalidOperationException("Reconnection is only supported for HTTP MCP transports.");
             }
 
-            _logger.LogInformation("Reconnecting MCP client for plugin {PluginName}...", mcpChatPlugin.Name);
+            _logger.LogInformation("Reconnecting MCP client for plugin {PluginName}...", _mcpChatPlugin.Name);
 
             // Dispose old client.
             if (_mcpClient is not null)
@@ -98,7 +132,7 @@ internal sealed class ManagedMcpClient(
                 _mcpClient = null;
             }
 
-            var transportConfiguration = mcpChatPlugin.TransportConfiguration
+            var transportConfiguration = _mcpChatPlugin.TransportConfiguration
                 ?? throw new InvalidOperationException("MCP transport configuration is not set.");
 
             _clientTransport = CreateTransport(transportConfiguration);
@@ -127,7 +161,7 @@ internal sealed class ManagedMcpClient(
                 }
             }
 
-            _logger.LogInformation("MCP client reconnected for plugin {PluginName}.", mcpChatPlugin.Name);
+            _logger.LogInformation("MCP client reconnected for plugin {PluginName}.", _mcpChatPlugin.Name);
         }
         finally
         {
@@ -141,7 +175,7 @@ internal sealed class ManagedMcpClient(
     internal bool IsSessionExpiredError(Exception ex)
     {
         // Only attempt reconnection for HTTP transports.
-        if (mcpChatPlugin.TransportConfiguration is not HttpMcpTransportConfiguration)
+        if (_mcpChatPlugin.TransportConfiguration is not HttpMcpTransportConfiguration)
             return false;
 
         if (CheckCompletionForSessionExpiry())
@@ -174,6 +208,9 @@ internal sealed class ManagedMcpClient(
 
     public async ValueTask DisposeAsync()
     {
+        RunningClients.TryRemove(_mcpChatPlugin.Id, out _);
+        _mcpChatPlugin.IsRunning = false;
+
         if (_mcpClient is not null)
         {
             await _mcpClient.DisposeAsync();
@@ -267,7 +304,7 @@ internal sealed class ManagedMcpClient(
                         .ToDictionary(kv => kv.Key, kv => kv.Value),
                     TransportMode = sse.TransportMode
                 },
-                httpClientFactory.CreateClient(McpServiceExtension.McpClientName),
+                _httpClientFactory.CreateClient(McpServiceExtension.McpClientName),
                 _mcpLoggerFactory),
             _ => throw new InvalidOperationException("Unsupported MCP transport configuration type.")
         };
@@ -287,17 +324,17 @@ internal sealed class ManagedMcpClient(
 
                 void HandleProcessExited(object? sender, EventArgs e)
                 {
-                    mcpChatPlugin.IsRunning = false;
                     process.Exited -= HandleProcessExited;
+                    DisposeAsync().Detach(_logger.ToExceptionHandler());
                 }
 
-                await watchdogManager.RegisterProcessAsync(process.Id);
+                await _watchdogManager.RegisterProcessAsync(process.Id);
                 processId = process.Id;
             }
         }
         finally
         {
-            if (processId == -1 && mcpChatPlugin.TransportConfiguration is StdioMcpTransportConfiguration stdio)
+            if (processId == -1 && _mcpChatPlugin.TransportConfiguration is StdioMcpTransportConfiguration stdio)
             {
                 _logger.LogWarning(
                     "MCP started with stdio transport, but failed to get the underlying process ID for watchdog registration. " +
@@ -319,11 +356,11 @@ internal sealed class ManagedMcpClient(
                     if (task.Result is HttpClientCompletionDetails { HttpStatusCode: HttpStatusCode.NotFound })
                     {
                         IsSessionExpired = true;
-                        _logger.LogWarning("MCP session expired for plugin {PluginName}.", mcpChatPlugin.Name);
+                        _logger.LogWarning("MCP session expired for plugin {PluginName}.", _mcpChatPlugin.Name);
                     }
                     else if (details.Exception is not null)
                     {
-                        _logger.LogWarning(details.Exception, "MCP client completed with error for plugin {PluginName}.", mcpChatPlugin.Name);
+                        _logger.LogWarning(details.Exception, "MCP client completed with error for plugin {PluginName}.", _mcpChatPlugin.Name);
                     }
 
                     return;
@@ -331,11 +368,11 @@ internal sealed class ManagedMcpClient(
 
                 if (task.IsFaulted)
                 {
-                    _logger.LogWarning(task.Exception, "MCP client completion task faulted for plugin {PluginName}.", mcpChatPlugin.Name);
+                    _logger.LogWarning(task.Exception, "MCP client completion task faulted for plugin {PluginName}.", _mcpChatPlugin.Name);
                 }
                 else if (task.IsCanceled)
                 {
-                    _logger.LogWarning("MCP client completion task was canceled for plugin {PluginName}.", mcpChatPlugin.Name);
+                    _logger.LogWarning("MCP client completion task was canceled for plugin {PluginName}.", _mcpChatPlugin.Name);
                 }
             },
             TaskContinuationOptions.ExecuteSynchronously).Detach(_logger.ToExceptionHandler());
@@ -345,7 +382,7 @@ internal sealed class ManagedMcpClient(
     {
         if (Directory.Exists(workingDirectory)) return workingDirectory;
 
-        var fallbackDir = RuntimeConstants.EnsureWritableDataFolderPath("plugins", "mcp", mcpChatPlugin.Id.ToString("N"));
+        var fallbackDir = RuntimeConstants.EnsureWritableDataFolderPath("plugins", "mcp", _mcpChatPlugin.Id.ToString("N"));
         return fallbackDir;
     }
 
