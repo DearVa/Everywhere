@@ -2139,6 +2139,9 @@
     <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
         <value>Войти</value>
     </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Облачные сервисы Everywhere</value>
+    </data>
     <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
         <value>Выйти</value>
     </data>

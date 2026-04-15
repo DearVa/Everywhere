@@ -2138,6 +2138,9 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
         <value>Anmelden</value>
     </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Everywhere Cloud-Dienste</value>
+    </data>
     <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
         <value>Abmelden</value>
     </data>

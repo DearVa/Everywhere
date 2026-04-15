@@ -2139,6 +2139,9 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
         <value>Accedi</value>
     </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>Servizi Cloud di Everywhere</value>
+    </data>
     <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
         <value>Disconnetti</value>
     </data>
