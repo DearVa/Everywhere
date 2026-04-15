@@ -19,6 +19,9 @@
     <data name="DisplaySettings_Language_Header" xml:space="preserve">
         <value>語言</value>
     </data>
+    <data name="SettingsPage_Title" xml:space="preserve">
+        <value>設定</value>
+    </data>
     <data name="DisplaySettings_Language_Description" xml:space="preserve">
         <value>選擇軟體的顯示語言。</value>
     </data>
@@ -82,8 +85,26 @@
     <data name="ProxySettings_Password_Description" xml:space="preserve">
         <value>代理伺服器的密碼。</value>
     </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Header" xml:space="preserve">
+        <value>聊天視窗</value>
+    </data>
+    <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
+        <value>聊天視窗</value>
+    </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>設置快捷鍵以隨時調出聊天視窗。</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
+        <value>temperature（“創意活躍度”）</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
+        <value>通常情況下，數值越高，回答越具創造力和想像力，數值越低則越趨嚴謹。部分模型數值超過 1.0 可能導致輸出亂碼。通常建議不要同時更改 top_p。如果遇到錯誤，請嘗試還原預設值。</value>
+    </data>
+    <data name="CustomAssistant_TopP_Header" xml:space="preserve">
+        <value>top_p（“思維開放度”）</value>
+    </data>
+    <data name="CustomAssistant_TopP_Description" xml:space="preserve">
+        <value>用於控制模型輸出文本的多樣性。通常情況下，數值越高，模型會接受更多潛在回答，數值越低則更傾向於最可能的回答。通常建議不要同時更改 temperature。如果遇到錯誤，請嘗試還原預設值。</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>選擇網頁搜尋引擎的服務提供者。</value>
@@ -536,6 +557,12 @@
     <data name="SoftwareSettings_IsStartupEnabled_Description" xml:space="preserve">
         <value>Everywhere 會在開機後自動運行。如果啟用了「以管理員身份啟動」，則只能在管理員模式下禁用當前選項。</value>
     </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Header" xml:space="preserve">
+        <value>以管理員身份自啟動</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
+        <value>開機時 Everywhere 會以管理員身份自啟動。只有在管理員模式下才能開關當前選項。</value>
+    </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>由於操作系統限制，當以管理員身份（提升權限）運行任何應用程式時，Everywhere 可能無法在提升的應用程式處於焦點或嘗試與 Everywhere 功能（如「選擇元素」）互動時正常運行。這可以通過以管理員身份運行 Everywhere 來解決。</value>
     </data>
@@ -659,6 +686,9 @@
     <data name="MainViewModel_UpgradeSuccessfulToast_Title" xml:space="preserve">
         <value>Everywhere 已更新至最新版本 🎉</value>
     </data>
+    <data name="ChangeLogView_Title" xml:space="preserve">
+        <value>更新日誌</value>
+    </data>
     <data name="WelcomeView_QQGroupHyperlinkButton_Content" xml:space="preserve">
         <value>QQ 群組</value>
     </data>
@@ -771,6 +801,9 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>總計</value>
     </data>
+    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
+        <value>總用時</value>
+    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>模型配置不正確，模型提供商或模型 ID 缺失或無效，或當前模型不支持圖像輸入/工具調用。</value>
     </data>
@@ -821,12 +854,6 @@
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>啟用後，打開聊天窗口時會自動將焦點元素作為附件添加。</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>允許在背景運行</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>啟用後，關閉聊天窗口將不會終止當前任務。</value>
     </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>操作已取消。</value>
@@ -887,6 +914,9 @@
     </data>
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>預設助理</value>
+    </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>助手</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>建立</value>
@@ -1032,6 +1062,9 @@
     </data>
     <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
         <value>無法建立 SSL 連線。請檢查您的網路設定或證書。</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>連接被伺服器拒絕，請檢查網路連接和代理設定。</value>
     </data>
     <data name="HandledSystemException_HostNotFound" xml:space="preserve">
         <value>找不到主機。請檢查地址和您的網路連線。</value>
@@ -1242,6 +1275,9 @@
     </data>
     <data name="ChatWindow_BackAllHistoryButton_Content" xml:space="preserve">
         <value>返回</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Header" xml:space="preserve">
+        <value>網路代理</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>PowerShell 腳本執行失敗: {0}</value>
@@ -1793,6 +1829,21 @@
     <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
         <value>{0} 輸入 · {1} 輸出 · {2} 總計</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Header" xml:space="preserve">
+        <value>詢問使用者</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Description" xml:space="preserve">
+        <value>允許助手透過互動式對話框向使用者提問並收集輸入。</value>
+    </data>
+    <data name="AskQuestionCard_NextButton_Content" xml:space="preserve">
+        <value>下一個</value>
+    </data>
+    <data name="AskQuestionCard_PreviousButton_Content" xml:space="preserve">
+        <value>上一個</value>
+    </data>
+    <data name="AskQuestionCard_FreeformTextBox_Watermark" xml:space="preserve">
+        <value>輸入你的回答…</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
@@ -1926,6 +1977,9 @@
         <value>按住左鍵框選，右鍵或 Esc 退出
 滾輪或數字鍵切換選擇模式</value>
     </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_TakeScreenshot" xml:space="preserve">
+        <value>捕獲螢幕截圖</value>
+    </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
         <value>自動添加選取文字</value>
     </data>
@@ -2031,6 +2085,18 @@
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>推理強度</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>最大上下文輪次</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>限制保留到上下文中的最近用戶消息輪次。一問一答視為一個輪次。</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>僅當前消息</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>無限制</value>
+    </data>
     <data name="VisualContextLengthLimit_Balanced" xml:space="preserve">
         <value>平衡 (~4096，推薦)</value>
     </data>
@@ -2069,6 +2135,15 @@
     </data>
     <data name="UserProfilePresenter_CloudDescriptionTextBlock_Text" xml:space="preserve">
         <value>註冊即享免費積分，獲得開箱即用的主流模型。更有雲同步等功能持續上線中……</value>
+    </data>
+    <data name="UserProfilePresenter_LoginButton_Content" xml:space="preserve">
+        <value>登入</value>
+    </data>
+    <data name="UserProfilePresenter_LoginToCloudTextBlock_Text" xml:space="preserve">
+        <value>登入 Everywhere 雲服務</value>
+    </data>
+    <data name="UserProfilePresenter_LogoutButton_Content" xml:space="preserve">
+        <value>退出帳號</value>
     </data>
     <data name="UserProfilePresenter_PlanCreditsTextBlock_Text" xml:space="preserve">
         <value>訂閱積分</value>
@@ -2116,6 +2191,9 @@
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
         <value>請在瀏覽器繼續</value>
     </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} 重置訂閱積分</value>
+    </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>試用至 {0}</value>
     </data>
@@ -2151,6 +2229,9 @@
     </data>
     <data name="UserProfilePresenter_SynchronizingTextBlock_Text" xml:space="preserve">
         <value>正在同步...</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>我要自己配置模型</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>服務不支持當前所在區域或位置的請求。</value>
@@ -2205,5 +2286,356 @@
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
         <value>移除了 {0} 個對話</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
+        <value>顯示</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Header" xml:space="preserve">
+        <value>通用</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Header" xml:space="preserve">
+        <value>快捷鍵</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Header" xml:space="preserve">
+        <value>系統助手</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
+        <value>配置 Everywhere 所需的關鍵助手，用於標題總結、上下文壓縮等。如果沒有配置，Everywhere 會使用當前最佳模型作為所需助手。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
+        <value>配置 Everywhere 如何顯示界面內容，如語言、主題、字體大小等。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
+        <value>配置網絡代理，配置之後 Everywhere 的所有網絡請求都會經過此代理。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
+        <value>配置 Everywhere 所使用的全局快捷鍵，自定義符合個人習慣的體驗。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
+        <value>配置和 Everywhere 運行相關的設置。</value>
+    </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
+        <value>配置聊天窗口的行為。</value>
+    </data>
+    <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
+        <value>所選助手不支持當前文件類型</value>
+    </data>
+    <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
+        <value>總是置頂</value>
+    </data>
+    <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
+        <value>輸入時置頂</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
+        <value>選擇視覺元素</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
+        <value>設置一個快捷鍵，隨時按下即可選擇視覺元素，之後會喚起聊天窗口。</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
+        <value>捕獲螢幕截圖</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
+        <value>設置一個快捷鍵，隨時按下即可捕獲螢幕截圖，之後會喚起聊天窗口。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
+        <value>瀏覽器助手</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Description" xml:space="preserve">
+        <value>網頁瀏覽器上下文命令</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Name" xml:space="preserve">
+        <value>翻譯</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Description" xml:space="preserve">
+        <value>翻譯當前頁面的內容</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Name" xml:space="preserve">
+        <value>總結</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Description" xml:space="preserve">
+        <value>對頁面進行快速總結</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Name" xml:space="preserve">
+        <value>提取要點信息</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Description" xml:space="preserve">
+        <value>提取並總結關鍵信息</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Name" xml:space="preserve">
+        <value>解釋</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Description" xml:space="preserve">
+        <value>解釋當前頁面的內容</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Name" xml:space="preserve">
+        <value>事實核查</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Description" xml:space="preserve">
+        <value>核查頁面中的聲明</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Name" xml:space="preserve">
+        <value>代碼編輯器助手</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Description" xml:space="preserve">
+        <value>代碼編輯器上下文命令</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Name" xml:space="preserve">
+        <value>解釋</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Description" xml:space="preserve">
+        <value>解釋當前代碼的功能</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Name" xml:space="preserve">
+        <value>審查</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Description" xml:space="preserve">
+        <value>審查當前代碼並給出建議</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Name" xml:space="preserve">
+        <value>生成文檔</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Description" xml:space="preserve">
+        <value>為當前代碼生成文檔註釋</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Name" xml:space="preserve">
+        <value>查找 bug</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Description" xml:space="preserve">
+        <value>查找當前代碼中的潛在 bug 或問題</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Name" xml:space="preserve">
+        <value>優化</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Description" xml:space="preserve">
+        <value>優化當前代碼的性能</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Name" xml:space="preserve">
+        <value>劃詞助手</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Description" xml:space="preserve">
+        <value>劃詞文本命令</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Name" xml:space="preserve">
+        <value>翻譯</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Description" xml:space="preserve">
+        <value>翻譯選中的文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Name" xml:space="preserve">
+        <value>解釋/定義</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Description" xml:space="preserve">
+        <value>解釋或定義選中的文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Name" xml:space="preserve">
+        <value>總結</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Description" xml:space="preserve">
+        <value>總結選中的文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Name" xml:space="preserve">
+        <value>改寫/改進</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Description" xml:space="preserve">
+        <value>改寫或改進選中的文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Name" xml:space="preserve">
+        <value>調查</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Description" xml:space="preserve">
+        <value>調查選中的文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Name" xml:space="preserve">
+        <value>檢查語法</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Description" xml:space="preserve">
+        <value>檢查並糾正選中文本中的語法錯誤</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Name" xml:space="preserve">
+        <value>全局助手</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Description" xml:space="preserve">
+        <value>在所有上下文都可用的命令</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Name" xml:space="preserve">
+        <value>這是什麼？</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Description" xml:space="preserve">
+        <value>解釋當前選中的內容或上下文</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Name" xml:space="preserve">
+        <value>總結</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Description" xml:space="preserve">
+        <value>總結當前內容</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Name" xml:space="preserve">
+        <value>幫我解決這個問題</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Description" xml:space="preserve">
+        <value>獲取當前上下文的幫助</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Name" xml:space="preserve">
+        <value>文件助手</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Description" xml:space="preserve">
+        <value>文件附件命令</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Name" xml:space="preserve">
+        <value>總結文件</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Description" xml:space="preserve">
+        <value>總結文件內容</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Name" xml:space="preserve">
+        <value>提取要點</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Description" xml:space="preserve">
+        <value>提取並列出文檔中的主要觀點</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Name" xml:space="preserve">
+        <value>翻譯文檔</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Description" xml:space="preserve">
+        <value>翻譯文檔內容</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Name" xml:space="preserve">
+        <value>描述圖像</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Description" xml:space="preserve">
+        <value>詳細描述圖像</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Name" xml:space="preserve">
+        <value>提取文本 (OCR)</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Description" xml:space="preserve">
+        <value>從圖像中提取文本</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Name" xml:space="preserve">
+        <value>分析數據</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Description" xml:space="preserve">
+        <value>分析數據並提供見解</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Name" xml:space="preserve">
+        <value>提供可視化建議</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Description" xml:space="preserve">
+        <value>建議如何可視化這些數據</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Name" xml:space="preserve">
+        <value>比較文件</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Description" xml:space="preserve">
+        <value>比較這些文件的內容</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
+        <value>為了方便你立即開始體驗，我為你準備了一些免費額度。</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
+        <value>歡迎使用原生模式。你需要先進行身份驗證以使用我們提供的雲服務。</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
+        <value>請登入以獲取你的積分數據，或返回上一步選擇其他模式。</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
+        <value>請選擇一個模型來查看詳細資訊。我會持續更新來跟進最新模型。</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
+        <value>當前模型預計於 {0} 下架</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
+        <value>元素飛入特效</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Description" xml:space="preserve">
+        <value>在聊天窗口拾取螢幕視覺元素時，使用帶有物理反饋的動畫將其拋入聊天窗口。</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
+        <value>上下文分析特效</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
+        <value>分析上下文時，使用掃描動畫高亮顯示被處理的元素。</value>
+    </data>
+    <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
+        <value>工具的返回結果有誤：{0}</value>
+    </data>
+    <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
+        <value>臨時聊天：開啟後當前聊天不會被保存，切換或新建對話時即刪除。</value>
+    </data>
+    <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
+        <value>(可選) {0}</value>
+    </data>
+    <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
+        <value>更新到最新版本</value>
+    </data>
+    <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
+        <value>當前</value>
+    </data>
+    <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
+        <value>配置用於對話標題自動命名的模型</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>標題生成助手</value>
+    </data>
+    <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
+        <value>自動選擇</value>
+    </data>
+    <data name="ChatWindow_TodoList_Header" xml:space="preserve">
+        <value>待辦事項 ({0}/{1})</value>
+    </data>
+    <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
+        <value>(多選)</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
+        <value>自動總結標題</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
+        <value>啟用後，自動根據第一條消息總結對話標題。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
+        <value>翻譯的目標語言，默認為當前語言</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
+        <value>分析代碼</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
+        <value>解釋代碼並分析潛在問題</value>
+    </data>
+    <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
+        <value>你尚未登入，請登入後再使用 Everywhere 雲服務。</value>
+    </data>
+    <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
+        <value>拒絕並輸入原因</value>
+    </data>
+    <data name="Common_Submit" xml:space="preserve">
+        <value>提交</value>
+    </data>
+    <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
+        <value>輸入拒絕原因</value>
+    </data>
+    <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
+        <value>模型不支持 temperature 參數，或者參數超出模型範圍。恢復到默認值可以解決此問題。</value>
+    </data>
+    <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
+        <value>模型不支持 top_p 參數，或者參數超出模型範圍。恢復到默認值可以解決此問題。</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>在左側選擇一個項目查看詳情</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
+        <value>助手列表為空，創建一個並開始使用</value>
+    </data>
+    <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>在左側選擇一個項目查看詳情</value>
+    </data>
+    <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
+        <value>搜尋...</value>
+    </data>
+    <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
+        <value>無法登入到雲服務</value>
+    </data>
+    <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
+        <value>正在登入</value>
     </data>
 </root>

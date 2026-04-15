@@ -19,6 +19,9 @@
     <data name="DisplaySettings_Language_Header" xml:space="preserve">
         <value>Idioma</value>
     </data>
+    <data name="SettingsPage_Title" xml:space="preserve">
+        <value>Configuración</value>
+    </data>
     <data name="DisplaySettings_Language_Description" xml:space="preserve">
         <value>Selecciona el idioma de visualización para el software.</value>
     </data>
@@ -82,8 +85,26 @@
     <data name="ProxySettings_Password_Description" xml:space="preserve">
         <value>Contraseña para el servidor proxy.</value>
     </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Header" xml:space="preserve">
+        <value>Ventana de Chat</value>
+    </data>
+    <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
+        <value>Ventana de Chat</value>
+    </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>Establece un atajo para invocar la ventana de chat en cualquier momento.</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
+        <value>Temperatura (“Creatividad”)</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
+        <value>Generalmente, un valor más alto resulta en respuestas más creativas e imaginativas, mientras que un valor más bajo tiende a ser más riguroso. Algunos modelos con valores superiores a 1.0 pueden producir salidas ilegibles. Se recomienda no cambiar top_p al mismo tiempo. Si encuentras errores, intenta restaurar los valores predeterminados.</value>
+    </data>
+    <data name="CustomAssistant_TopP_Header" xml:space="preserve">
+        <value>top_p (“Apertura Mental”)</value>
+    </data>
+    <data name="CustomAssistant_TopP_Description" xml:space="preserve">
+        <value>Controla la diversidad del texto de salida del modelo. Generalmente, un valor más alto permite más respuestas potenciales, mientras que un valor más bajo se inclina hacia la respuesta más probable. Se recomienda no cambiar la temperatura al mismo tiempo. Si encuentras errores, intenta restaurar los valores predeterminados.</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>Seleccione el proveedor de servicios para los motores de búsqueda web.</value>
@@ -512,6 +533,9 @@
     <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>El modelo admite pensar antes de responder. Si el modelo no lo admite, activar esta opción puede causar errores durante la conversación.</value>
     </data>
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
+        <value>Pensamiento Profundo</value>
+    </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>Longitud máxima del contexto de la conversación (context_limit). Esto afectará la estrategia para construir el contexto visual, por favor establece un valor real si es posible.</value>
     </data>
@@ -532,6 +556,12 @@
     </data>
     <data name="SoftwareSettings_IsStartupEnabled_Description" xml:space="preserve">
         <value>Everywhere se ejecutará automáticamente después del inicio. Si “Iniciar como Administrador” está habilitado, la opción actual solo se puede desactivar en modo administrador.</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Header" xml:space="preserve">
+        <value>Inicio Automático como Administrador</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
+        <value>Everywhere se iniciará automáticamente como administrador al encender el equipo. Solo se puede activar o desactivar esta opción en modo administrador.</value>
     </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>Debido a restricciones del sistema operativo, al ejecutar cualquier aplicación como administrador (permisos elevados), Everywhere puede no funcionar correctamente cuando las aplicaciones elevadas están en foco o intentan interactuar con una función de Everywhere como &quot;Seleccionar Elemento&quot;. Esto se puede solucionar ejecutando Everywhere como administrador.</value>
@@ -656,6 +686,9 @@
     <data name="MainViewModel_UpgradeSuccessfulToast_Title" xml:space="preserve">
         <value>Everywhere se ha actualizado a la última versión 🎉</value>
     </data>
+    <data name="ChangeLogView_Title" xml:space="preserve">
+        <value>Registro de Cambios</value>
+    </data>
     <data name="WelcomeView_QQGroupHyperlinkButton_Content" xml:space="preserve">
         <value>Grupo QQ</value>
     </data>
@@ -768,6 +801,9 @@ Mi inteligencia está impulsada por un modelo de lenguaje grande, y necesito que
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Total</value>
     </data>
+    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
+        <value>Tiempo Total</value>
+    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>La configuración del modelo es incorrecta, el proveedor del modelo o el ID del modelo faltan o son inválidos, o el modelo actual no soporta entrada de imagen/llamadas de herramientas.</value>
     </data>
@@ -818,12 +854,6 @@ Mi inteligencia está impulsada por un modelo de lenguaje grande, y necesito que
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>Cuando está habilitado, agrega automáticamente el elemento enfocado como adjunto al abrir la ventana de chat.</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>Permitir Ejecución en Segundo Plano</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>Cuando está habilitado, cerrar la ventana de chat no terminará la tarea actual.</value>
     </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>Operación cancelada.</value>
@@ -884,6 +914,9 @@ Mi inteligencia está impulsada por un modelo de lenguaje grande, y necesito que
     </data>
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>Asistente predeterminado</value>
+    </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>Asistente</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Crear</value>
@@ -1029,6 +1062,9 @@ Se pueden usar marcadores de posición en la palabra clave, que están contenido
     </data>
     <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
         <value>No se pudo establecer la conexión SSL. Por favor, verifica tu configuración de red o el certificado.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>Conexión rechazada por el servidor, verifica la conexión a internet y la configuración del proxy.</value>
     </data>
     <data name="HandledSystemException_HostNotFound" xml:space="preserve">
         <value>No se pudo encontrar el host. Por favor, verifica la dirección y tu conexión de red.</value>
@@ -1239,6 +1275,9 @@ Se pueden usar marcadores de posición en la palabra clave, que están contenido
     </data>
     <data name="ChatWindow_BackAllHistoryButton_Content" xml:space="preserve">
         <value>Atrás</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Header" xml:space="preserve">
+        <value>Proxy de Red</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>La ejecución del script de PowerShell falló: {0}</value>
@@ -1790,6 +1829,21 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
         <value>{0} entrada · {1} salida · {2} total</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Header" xml:space="preserve">
+        <value>Preguntar al Usuario</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Description" xml:space="preserve">
+        <value>Permite que el asistente haga preguntas al usuario a través de un cuadro de diálogo interactivo y recopile respuestas.</value>
+    </data>
+    <data name="AskQuestionCard_NextButton_Content" xml:space="preserve">
+        <value>Siguiente</value>
+    </data>
+    <data name="AskQuestionCard_PreviousButton_Content" xml:space="preserve">
+        <value>Anterior</value>
+    </data>
+    <data name="AskQuestionCard_FreeformTextBox_Watermark" xml:space="preserve">
+        <value>Escribe tu respuesta…</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
@@ -1923,6 +1977,9 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
         <value>Mantén presionado el botón izquierdo del ratón para seleccionar, usa el botón derecho o Esc para salir
 Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_TakeScreenshot" xml:space="preserve">
+        <value>Capturar Pantalla</value>
+    </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
         <value>Agregar Selección de Texto Automáticamente</value>
     </data>
@@ -2028,6 +2085,18 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>Intensidad de Razonamiento</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>Máximas Rondas de Contexto</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>Limita las últimas rondas de mensajes del usuario que se mantienen en el contexto. Una pregunta y respuesta cuentan como una ronda.</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>Solo Mensaje Actual</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>Sin Límite</value>
+    </data>
     <data name="VisualContextLengthLimit_Balanced" xml:space="preserve">
         <value>Equilibrado (~4096, recomendado)</value>
     </data>
@@ -2122,6 +2191,9 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
         <value>Continúa en el navegador</value>
     </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>Reiniciar Puntos de Suscripción {0}</value>
+    </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>Prueba hasta el {0}</value>
     </data>
@@ -2157,6 +2229,9 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="UserProfilePresenter_SynchronizingTextBlock_Text" xml:space="preserve">
         <value>Sincronizando...</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>Quiero Configurar el Modelo Yo Mismo</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>El servicio no admite solicitudes desde tu región o ubicación actual.</value>
@@ -2211,5 +2286,356 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
         <value>Se eliminaron {0} conversaciones</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
+        <value>Pantalla</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Header" xml:space="preserve">
+        <value>General</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Header" xml:space="preserve">
+        <value>Atajos</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Header" xml:space="preserve">
+        <value>Asistente del Sistema</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
+        <value>Configura el asistente clave necesario para Everywhere, para resúmenes de títulos, compresión de contexto, etc. Si no se configura, Everywhere utilizará el mejor modelo actual como asistente requerido.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
+        <value>Configura cómo Everywhere muestra el contenido de la interfaz, como idioma, tema, tamaño de fuente, etc.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
+        <value>Configura un proxy de red; después de la configuración, todas las solicitudes de red de Everywhere pasarán por este proxy.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
+        <value>Configura los atajos globales utilizados por Everywhere, personalizando la experiencia según tus hábitos.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
+        <value>Configura las opciones relacionadas con la ejecución de Everywhere.</value>
+    </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
+        <value>Configura el comportamiento de la ventana de chat.</value>
+    </data>
+    <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
+        <value>El asistente seleccionado no soporta el tipo de archivo actual</value>
+    </data>
+    <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
+        <value>Siempre en la Parte Superior</value>
+    </data>
+    <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
+        <value>En la Parte Superior al Ingresar</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
+        <value>Seleccionar Elemento Visual</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
+        <value>Configura un atajo para seleccionar un elemento visual en cualquier momento, luego se abrirá la ventana de chat.</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
+        <value>Capturar Captura de Pantalla</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
+        <value>Configura un atajo para capturar una captura de pantalla en cualquier momento, luego se abrirá la ventana de chat.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
+        <value>Asistente de Navegador</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Description" xml:space="preserve">
+        <value>Comandos de contexto del navegador web</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Name" xml:space="preserve">
+        <value>Traducir</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Description" xml:space="preserve">
+        <value>Traducir el contenido de la página actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Name" xml:space="preserve">
+        <value>Resumir</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Description" xml:space="preserve">
+        <value>Hacer un resumen rápido de la página</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Name" xml:space="preserve">
+        <value>Extraer Información Clave</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Description" xml:space="preserve">
+        <value>Extraer y resumir información clave</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Name" xml:space="preserve">
+        <value>Explicar</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Description" xml:space="preserve">
+        <value>Explicar el contenido de la página actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Name" xml:space="preserve">
+        <value>Verificación de Hechos</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Description" xml:space="preserve">
+        <value>Verificar las afirmaciones en la página</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Name" xml:space="preserve">
+        <value>Asistente de Editor de Código</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Description" xml:space="preserve">
+        <value>Comandos de contexto del editor de código</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Name" xml:space="preserve">
+        <value>Explicar</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Description" xml:space="preserve">
+        <value>Explicar la funcionalidad del código actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Name" xml:space="preserve">
+        <value>Revisar</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Description" xml:space="preserve">
+        <value>Revisar el código actual y dar sugerencias</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Name" xml:space="preserve">
+        <value>Generar Documentación</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Description" xml:space="preserve">
+        <value>Generar comentarios de documentación para el código actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Name" xml:space="preserve">
+        <value>Buscar Bugs</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Description" xml:space="preserve">
+        <value>Buscar posibles bugs o problemas en el código actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Name" xml:space="preserve">
+        <value>Optimizar</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Description" xml:space="preserve">
+        <value>Optimizar el rendimiento del código actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Name" xml:space="preserve">
+        <value>Asistente de Selección</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Description" xml:space="preserve">
+        <value>Comando de texto de selección</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Name" xml:space="preserve">
+        <value>Traducir</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Description" xml:space="preserve">
+        <value>Traducir el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Name" xml:space="preserve">
+        <value>Explicar/Definir</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Description" xml:space="preserve">
+        <value>Explicar o definir el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Name" xml:space="preserve">
+        <value>Resumir</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Description" xml:space="preserve">
+        <value>Resumir el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Name" xml:space="preserve">
+        <value>Reescribir/Mejorar</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Description" xml:space="preserve">
+        <value>Reescribir o mejorar el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Name" xml:space="preserve">
+        <value>Investigar</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Description" xml:space="preserve">
+        <value>Investigar el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Name" xml:space="preserve">
+        <value>Revisar Gramática</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Description" xml:space="preserve">
+        <value>Revisa y corrige errores gramaticales en el texto seleccionado</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Name" xml:space="preserve">
+        <value>Asistente Global</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Description" xml:space="preserve">
+        <value>Comandos disponibles en todos los contextos</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Name" xml:space="preserve">
+        <value>¿Qué es esto?</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Description" xml:space="preserve">
+        <value>Explica el contenido o contexto seleccionado actualmente</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Name" xml:space="preserve">
+        <value>Resumir</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Description" xml:space="preserve">
+        <value>Resume el contenido actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Name" xml:space="preserve">
+        <value>Ayúdame con esto</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Description" xml:space="preserve">
+        <value>Obtén ayuda para el contexto actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Name" xml:space="preserve">
+        <value>Asistente de Archivos</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Description" xml:space="preserve">
+        <value>Comandos para archivos adjuntos</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Name" xml:space="preserve">
+        <value>Resumir Archivo</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Description" xml:space="preserve">
+        <value>Resume el contenido del archivo</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Name" xml:space="preserve">
+        <value>Extraer Puntos Clave</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Description" xml:space="preserve">
+        <value>Extrae y lista los puntos principales del documento</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Name" xml:space="preserve">
+        <value>Traducir Documento</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Description" xml:space="preserve">
+        <value>Traduce el contenido del documento</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Name" xml:space="preserve">
+        <value>Describir Imagen</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Description" xml:space="preserve">
+        <value>Describe detalladamente la imagen</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Name" xml:space="preserve">
+        <value>Extraer Texto (OCR)</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Description" xml:space="preserve">
+        <value>Extraer texto de imágenes</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Name" xml:space="preserve">
+        <value>Analizar Datos</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Description" xml:space="preserve">
+        <value>Analizar datos y proporcionar información</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Name" xml:space="preserve">
+        <value>Sugerir Visualización</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Description" xml:space="preserve">
+        <value>Sugerir cómo visualizar estos datos</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Name" xml:space="preserve">
+        <value>Comparar Archivos</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Description" xml:space="preserve">
+        <value>Comparar el contenido de estos archivos</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
+        <value>Para que empieces a disfrutar de inmediato, he preparado un poco de crédito gratuito para ti.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
+        <value>Bienvenido al modo nativo. Necesitas autenticarte para usar nuestros servicios en la nube.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
+        <value>Inicia sesión para acceder a tus datos de puntos o vuelve atrás para elegir otro modo.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
+        <value>Selecciona un modelo para ver más detalles. Estaré actualizando continuamente para seguir los modelos más recientes.</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
+        <value>El modelo actual se retirará el {0}</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
+        <value>Efecto de Entrada de Elementos</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Description" xml:space="preserve">
+        <value>Al recoger elementos visuales de la pantalla en la ventana de chat, usa una animación con retroalimentación física para lanzarlos a la ventana de chat.</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
+        <value>Efecto de Análisis de Contexto</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
+        <value>Al analizar el contexto, usa una animación de escaneo para resaltar los elementos procesados.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
+        <value>El resultado devuelto por la herramienta es incorrecto: {0}</value>
+    </data>
+    <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
+        <value>Chat Temporal: Al activarlo, el chat actual no se guardará y se eliminará al cambiar o crear una nueva conversación.</value>
+    </data>
+    <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
+        <value>(Opcional) {0}</value>
+    </data>
+    <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
+        <value>Actualizar a la última versión</value>
+    </data>
+    <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
+        <value>Actual</value>
+    </data>
+    <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
+        <value>Configura el modelo para nombrar automáticamente los títulos de las conversaciones</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>Asistente de Generación de Títulos</value>
+    </data>
+    <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
+        <value>Selección Automática</value>
+    </data>
+    <data name="ChatWindow_TodoList_Header" xml:space="preserve">
+        <value>Lista de Tareas ({0}/{1})</value>
+    </data>
+    <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
+        <value>(Selección Múltiple)</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
+        <value>Generar Título Automáticamente</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
+        <value>Al habilitar, se resumirá automáticamente el título de la conversación según el primer mensaje.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
+        <value>Idioma objetivo de la traducción, por defecto es el idioma actual</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
+        <value>Analizar Código</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
+        <value>Explica el código y analiza problemas potenciales</value>
+    </data>
+    <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
+        <value>No has iniciado sesión, por favor inicia sesión para usar los servicios en la nube de Everywhere.</value>
+    </data>
+    <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
+        <value>Rechazar e Ingresar Razón</value>
+    </data>
+    <data name="Common_Submit" xml:space="preserve">
+        <value>Enviar</value>
+    </data>
+    <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
+        <value>Ingresa la razón del rechazo</value>
+    </data>
+    <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
+        <value>El modelo no soporta el parámetro de temperatura, o el parámetro está fuera del rango del modelo. Restaurar a los valores predeterminados puede resolver este problema.</value>
+    </data>
+    <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
+        <value>El modelo no soporta el parámetro top_p, o el parámetro está fuera del rango del modelo. Restaurar a los valores predeterminados puede resolver este problema.</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>Selecciona un elemento a la izquierda para ver los detalles</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
+        <value>La lista de asistentes está vacía, crea uno y comienza a usarlo</value>
+    </data>
+    <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>Selecciona un elemento a la izquierda para ver los detalles</value>
+    </data>
+    <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
+        <value>Buscar...</value>
+    </data>
+    <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
+        <value>No se puede iniciar sesión en el servicio en la nube</value>
+    </data>
+    <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
+        <value>Iniciando sesión</value>
     </data>
 </root>

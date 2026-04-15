@@ -19,6 +19,9 @@
     <data name="DisplaySettings_Language_Header" xml:space="preserve">
         <value>언어</value>
     </data>
+    <data name="SettingsPage_Title" xml:space="preserve">
+        <value>설정</value>
+    </data>
     <data name="DisplaySettings_Language_Description" xml:space="preserve">
         <value>소프트웨어의 표시 언어를 선택하세요.</value>
     </data>
@@ -82,8 +85,26 @@
     <data name="ProxySettings_Password_Description" xml:space="preserve">
         <value>프록시 서버의 비밀번호입니다.</value>
     </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Header" xml:space="preserve">
+        <value>채팅 창</value>
+    </data>
+    <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
+        <value>채팅 창</value>
+    </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>언제든지 채팅 창을 호출할 수 있는 단축키를 설정합니다.</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
+        <value>온도 (“창의성 수준”)</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
+        <value>일반적으로 값이 높을수록 답변이 더 창의적이고 상상력이 풍부하며, 값이 낮을수록 더 엄격해집니다. 일부 모델에서 값이 1.0을 초과하면 출력이 깨질 수 있습니다. 보통 top_p를 동시에 변경하지 않는 것이 좋습니다. 오류가 발생하면 기본값으로 복원해 보세요.</value>
+    </data>
+    <data name="CustomAssistant_TopP_Header" xml:space="preserve">
+        <value>top_p (“사고 개방성”)</value>
+    </data>
+    <data name="CustomAssistant_TopP_Description" xml:space="preserve">
+        <value>모델 출력 텍스트의 다양성을 제어하는 데 사용됩니다. 일반적으로 값이 높을수록 모델이 더 많은 잠재적 답변을 수용하고, 값이 낮을수록 가장 가능성이 높은 답변을 선호합니다. 보통 온도를 동시에 변경하지 않는 것이 좋습니다. 오류가 발생하면 기본값으로 복원해 보세요.</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>웹 검색 엔진의 서비스 제공자를 선택하세요.</value>
@@ -512,6 +533,9 @@
     <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>모델은 먼저 생각한 후 답변을 지원합니다. 모델이 지원하지 않는 경우 이 옵션을 활성화하면 대화 중 오류가 발생할 수 있습니다.</value>
     </data>
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
+        <value>심층 사고</value>
+    </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>대화의 최대 컨텍스트 길이 (context_limit). 이 값은 시각적 컨텍스트를 구축하는 전략에 영향을 미치므로 가능한 실제 값으로 설정하세요.</value>
     </data>
@@ -532,6 +556,12 @@
     </data>
     <data name="SoftwareSettings_IsStartupEnabled_Description" xml:space="preserve">
         <value>Everywhere는 시작 후 자동으로 실행됩니다. &quot;관리자 권한으로 시작&quot;이 활성화된 경우, 현재 옵션은 관리자 모드에서만 비활성화할 수 있습니다.</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Header" xml:space="preserve">
+        <value>관리자 모드로 자동 시작</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
+        <value>시작 시 Everywhere가 관리자 권한으로 자동 시작됩니다. 현재 옵션을 켜거나 끄려면 관리자 모드여야 합니다.</value>
     </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>운영 체제의 제한으로 인해, 관리자 권한(승격된 권한)으로 애플리케이션을 실행할 때, Everywhere가 포커스된 승격된 애플리케이션이나 &quot;요소 선택&quot;과 같은 Everywhere 기능과 상호작용하려고 할 때 제대로 작동하지 않을 수 있습니다. 이는 Everywhere를 관리자 권한으로 실행하여 해결할 수 있습니다.</value>
@@ -656,6 +686,9 @@
     <data name="MainViewModel_UpgradeSuccessfulToast_Title" xml:space="preserve">
         <value>Everywhere가 최신 버전으로 업데이트되었습니다 🎉</value>
     </data>
+    <data name="ChangeLogView_Title" xml:space="preserve">
+        <value>변경 로그</value>
+    </data>
     <data name="WelcomeView_QQGroupHyperlinkButton_Content" xml:space="preserve">
         <value>QQ 그룹</value>
     </data>
@@ -768,6 +801,9 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>총계</value>
     </data>
+    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
+        <value>총 소요 시간</value>
+    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>모델 구성이 올바르지 않습니다. 모델 제공자 또는 모델 ID가 누락되었거나 유효하지 않거나, 현재 모델이 이미지 입력/도구 호출을 지원하지 않습니다.</value>
     </data>
@@ -818,12 +854,6 @@
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>활성화되면, 채팅 창을 열 때 포커스된 요소를 자동으로 첨부 파일로 추가합니다.</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>백그라운드 실행 허용</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>활성화되면, 채팅 창을 닫아도 현재 작업이 종료되지 않습니다.</value>
     </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>작업이 취소되었습니다.</value>
@@ -884,6 +914,9 @@
     </data>
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>기본 어시스턴트</value>
+    </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>도우미</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>생성</value>
@@ -1029,6 +1062,9 @@
     </data>
     <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
         <value>SSL 연결을 설정할 수 없습니다. 네트워크 설정이나 인증서를 확인하세요.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>서버에서 연결이 거부되었습니다. 네트워크 연결 및 프록시 설정을 확인하세요.</value>
     </data>
     <data name="HandledSystemException_HostNotFound" xml:space="preserve">
         <value>호스트를 찾을 수 없습니다. 주소와 네트워크 연결을 확인하세요.</value>
@@ -1239,6 +1275,9 @@
     </data>
     <data name="ChatWindow_BackAllHistoryButton_Content" xml:space="preserve">
         <value>뒤로</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Header" xml:space="preserve">
+        <value>네트워크 프록시</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>PowerShell 스크립트 실행 실패: {0}</value>
@@ -1790,6 +1829,21 @@
     <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
         <value>{0} 입력 · {1} 출력 · {2} 총</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Header" xml:space="preserve">
+        <value>사용자에게 질문하기</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Description" xml:space="preserve">
+        <value>도우미가 대화형 대화 상자를 통해 사용자에게 질문하고 입력을 수집할 수 있도록 합니다.</value>
+    </data>
+    <data name="AskQuestionCard_NextButton_Content" xml:space="preserve">
+        <value>다음</value>
+    </data>
+    <data name="AskQuestionCard_PreviousButton_Content" xml:space="preserve">
+        <value>이전</value>
+    </data>
+    <data name="AskQuestionCard_FreeformTextBox_Watermark" xml:space="preserve">
+        <value>답변을 입력하세요…</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
@@ -1923,6 +1977,9 @@
         <value>왼쪽 버튼을 눌러 선택하고, 오른쪽 버튼이나 Esc로 종료
 휠 또는 숫자 키로 선택 모드 전환</value>
     </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_TakeScreenshot" xml:space="preserve">
+        <value>스크린샷 찍기</value>
+    </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
         <value>텍스트 선택 자동 추가</value>
     </data>
@@ -2028,6 +2085,18 @@
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>추론 강도</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>최대 컨텍스트 라운드</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>컨텍스트에 보존할 최근 사용자 메시지 라운드를 제한합니다. 질문과 답변은 하나의 라운드로 간주됩니다.</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>현재 메시지만</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>무제한</value>
+    </data>
     <data name="VisualContextLengthLimit_Balanced" xml:space="preserve">
         <value>균형 (~4096, 추천)</value>
     </data>
@@ -2122,6 +2191,9 @@
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
         <value>브라우저에서 계속하기</value>
     </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} 구독 포인트 재설정</value>
+    </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>시험 사용 가능 기간: {0}</value>
     </data>
@@ -2157,6 +2229,9 @@
     </data>
     <data name="UserProfilePresenter_SynchronizingTextBlock_Text" xml:space="preserve">
         <value>동기화 중...</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>모델을 직접 구성할게요</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>서비스가 현재 위치에서 요청을 지원하지 않습니다.</value>
@@ -2211,5 +2286,356 @@
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
         <value>{0} 개의 대화가 제거되었습니다</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
+        <value>디스플레이</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Header" xml:space="preserve">
+        <value>일반</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Header" xml:space="preserve">
+        <value>단축키</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Header" xml:space="preserve">
+        <value>시스템 어시스턴트</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
+        <value>제목 요약, 컨텍스트 압축 등을 위한 Everywhere에 필요한 주요 어시스턴트를 구성합니다. 구성하지 않으면 Everywhere는 현재 최상의 모델을 사용합니다.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
+        <value>언어, 테마, 글꼴 크기 등과 같이 Everywhere가 인터페이스 내용을 표시하는 방식을 구성합니다.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
+        <value>네트워크 프록시를 구성합니다. 구성 후 Everywhere의 모든 네트워크 요청은 이 프록시를 통해 전달됩니다.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
+        <value>Everywhere에서 사용하는 전역 단축키를 구성하여 개인의 습관에 맞는 경험을 만듭니다.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
+        <value>Everywhere 실행과 관련된 설정을 구성합니다.</value>
+    </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
+        <value>채팅 창의 동작을 구성합니다.</value>
+    </data>
+    <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
+        <value>선택한 어시스턴트가 현재 파일 형식을 지원하지 않습니다.</value>
+    </data>
+    <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
+        <value>항상 위에 고정</value>
+    </data>
+    <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
+        <value>입력 시 위에 고정</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
+        <value>시각 요소 선택</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
+        <value>언제든지 눌러 시각 요소를 선택하고, 이후 채팅 창을 호출하는 단축키를 설정합니다.</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
+        <value>스크린샷 캡처</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
+        <value>언제든지 눌러 스크린샷을 캡처하고, 이후 채팅 창을 호출하는 단축키를 설정합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
+        <value>브라우저 도우미</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Description" xml:space="preserve">
+        <value>웹 브라우저 컨텍스트 명령</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Name" xml:space="preserve">
+        <value>번역</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Description" xml:space="preserve">
+        <value>현재 페이지의 내용을 번역합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Name" xml:space="preserve">
+        <value>요약</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Description" xml:space="preserve">
+        <value>페이지를 빠르게 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Name" xml:space="preserve">
+        <value>핵심 정보 추출</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Description" xml:space="preserve">
+        <value>핵심 정보를 추출하고 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Name" xml:space="preserve">
+        <value>설명</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Description" xml:space="preserve">
+        <value>현재 페이지의 내용을 설명합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Name" xml:space="preserve">
+        <value>사실 확인</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Description" xml:space="preserve">
+        <value>페이지 내의 주장을 확인합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Name" xml:space="preserve">
+        <value>코드 편집기 도우미</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Description" xml:space="preserve">
+        <value>코드 편집기 컨텍스트 명령</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Name" xml:space="preserve">
+        <value>설명</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Description" xml:space="preserve">
+        <value>현재 코드의 기능을 설명합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Name" xml:space="preserve">
+        <value>검토</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Description" xml:space="preserve">
+        <value>현재 코드를 검토하고 제안합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Name" xml:space="preserve">
+        <value>문서 생성</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Description" xml:space="preserve">
+        <value>현재 코드에 대한 문서 주석을 생성합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Name" xml:space="preserve">
+        <value>버그 찾기</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Description" xml:space="preserve">
+        <value>현재 코드에서 잠재적인 버그나 문제를 찾습니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Name" xml:space="preserve">
+        <value>최적화</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Description" xml:space="preserve">
+        <value>현재 코드의 성능을 최적화합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Name" xml:space="preserve">
+        <value>단어 도우미</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Description" xml:space="preserve">
+        <value>단어 텍스트 명령</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Name" xml:space="preserve">
+        <value>번역</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트를 번역합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Name" xml:space="preserve">
+        <value>설명/정의</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트를 설명하거나 정의합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Name" xml:space="preserve">
+        <value>요약</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트를 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Name" xml:space="preserve">
+        <value>재작성/개선</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트를 재작성하거나 개선합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Name" xml:space="preserve">
+        <value>조사</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트를 조사합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Name" xml:space="preserve">
+        <value>문법 검사</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Description" xml:space="preserve">
+        <value>선택한 텍스트의 문법 오류를 검사하고 수정합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Name" xml:space="preserve">
+        <value>전역 도우미</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Description" xml:space="preserve">
+        <value>모든 컨텍스트에서 사용할 수 있는 명령</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Name" xml:space="preserve">
+        <value>이게 뭐예요?</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Description" xml:space="preserve">
+        <value>현재 선택된 내용이나 컨텍스트를 설명합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Name" xml:space="preserve">
+        <value>요약</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Description" xml:space="preserve">
+        <value>현재 내용을 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Name" xml:space="preserve">
+        <value>이 문제를 해결해 주세요</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Description" xml:space="preserve">
+        <value>현재 컨텍스트에 대한 도움을 받습니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Name" xml:space="preserve">
+        <value>파일 도우미</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Description" xml:space="preserve">
+        <value>파일 첨부 명령</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Name" xml:space="preserve">
+        <value>파일 요약</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Description" xml:space="preserve">
+        <value>파일 내용을 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Name" xml:space="preserve">
+        <value>주요 사항 추출</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Description" xml:space="preserve">
+        <value>문서의 주요 포인트를 추출하고 나열합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Name" xml:space="preserve">
+        <value>문서 번역</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Description" xml:space="preserve">
+        <value>문서 내용을 번역합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Name" xml:space="preserve">
+        <value>이미지 설명</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Description" xml:space="preserve">
+        <value>이미지를 자세히 설명합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Name" xml:space="preserve">
+        <value>텍스트 추출 (OCR)</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Description" xml:space="preserve">
+        <value>이미지에서 텍스트 추출</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Name" xml:space="preserve">
+        <value>데이터 분석</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Description" xml:space="preserve">
+        <value>데이터를 분석하고 통찰 제공</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Name" xml:space="preserve">
+        <value>시각화 제안 제공</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Description" xml:space="preserve">
+        <value>이 데이터를 시각화하는 방법 제안</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Name" xml:space="preserve">
+        <value>파일 비교</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Description" xml:space="preserve">
+        <value>이 파일들의 내용을 비교</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
+        <value>즉시 체험할 수 있도록 무료 크레딧을 준비했어요.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
+        <value>네이티브 모드에 오신 것을 환영합니다. 클라우드 서비스를 사용하려면 인증이 필요해요.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
+        <value>포인트 데이터를 받으려면 로그인 하거나 이전 단계로 돌아가 다른 모드를 선택하세요.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
+        <value>모델을 선택하여 자세한 정보를 확인하세요. 최신 모델을 지속적으로 업데이트할게요.</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
+        <value>현재 모델은 {0}에 종료될 예정입니다.</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
+        <value>요소 비행 효과</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Description" xml:space="preserve">
+        <value>채팅 창에서 화면 시각 요소를 선택할 때 물리적 피드백이 있는 애니메이션으로 채팅 창으로 던져집니다.</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
+        <value>맥락 분석 효과</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
+        <value>맥락을 분석할 때 스캔 애니메이션으로 처리되는 요소를 강조 표시합니다.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
+        <value>도구의 반환 결과가 잘못되었습니다: {0}</value>
+    </data>
+    <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
+        <value>임시 채팅: 활성화하면 현재 채팅이 저장되지 않으며, 대화 전환 또는 새 대화 시 삭제됩니다.</value>
+    </data>
+    <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
+        <value>(선택 사항) {0}</value>
+    </data>
+    <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
+        <value>최신 버전으로 업데이트</value>
+    </data>
+    <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
+        <value>현재</value>
+    </data>
+    <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
+        <value>대화 제목 자동 작성을 위한 모델 설정</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>제목 생성 도우미</value>
+    </data>
+    <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
+        <value>자동 선택</value>
+    </data>
+    <data name="ChatWindow_TodoList_Header" xml:space="preserve">
+        <value>할 일 목록 ({0}/{1})</value>
+    </data>
+    <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
+        <value>(다중 선택)</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
+        <value>제목 자동 생성</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
+        <value>활성화하면 첫 번째 메시지를 기반으로 대화 제목을 자동으로 요약합니다.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
+        <value>번역할 대상 언어, 기본값은 현재 언어입니다</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
+        <value>코드 분석</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
+        <value>코드를 설명하고 잠재적인 문제를 분석합니다</value>
+    </data>
+    <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
+        <value>로그인하지 않았습니다. 로그인 후 Everywhere 클라우드 서비스를 이용하세요.</value>
+    </data>
+    <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
+        <value>거부하고 이유 입력</value>
+    </data>
+    <data name="Common_Submit" xml:space="preserve">
+        <value>제출</value>
+    </data>
+    <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
+        <value>거부 이유 입력</value>
+    </data>
+    <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
+        <value>모델이 temperature 매개변수를 지원하지 않거나 매개변수가 모델 범위를 초과합니다. 기본값으로 복원하면 이 문제를 해결할 수 있습니다.</value>
+    </data>
+    <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
+        <value>모델이 top_p 매개변수를 지원하지 않거나 매개변수가 모델 범위를 초과합니다. 기본값으로 복원하면 이 문제를 해결할 수 있습니다.</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>왼쪽에서 항목을 선택하여 자세히 보기</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
+        <value>도우미 목록이 비어 있습니다. 하나를 생성하고 사용을 시작하세요.</value>
+    </data>
+    <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>왼쪽에서 항목을 선택하여 자세히 보기</value>
+    </data>
+    <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
+        <value>검색...</value>
+    </data>
+    <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
+        <value>클라우드 서비스에 로그인할 수 없습니다</value>
+    </data>
+    <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
+        <value>로그인 중</value>
     </data>
 </root>

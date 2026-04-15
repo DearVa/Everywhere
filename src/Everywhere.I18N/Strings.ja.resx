@@ -19,6 +19,9 @@
     <data name="DisplaySettings_Language_Header" xml:space="preserve">
         <value>言語</value>
     </data>
+    <data name="SettingsPage_Title" xml:space="preserve">
+        <value>設定</value>
+    </data>
     <data name="DisplaySettings_Language_Description" xml:space="preserve">
         <value>ソフトウェアの表示言語を選択します。</value>
     </data>
@@ -82,8 +85,26 @@
     <data name="ProxySettings_Password_Description" xml:space="preserve">
         <value>プロキシサーバーのパスワード。</value>
     </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Header" xml:space="preserve">
+        <value>チャットウィンドウ</value>
+    </data>
+    <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
+        <value>チャットウィンドウ</value>
+    </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>いつでもチャットウィンドウを呼び出すためのショートカットを設定します。</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
+        <value>温度（“創造性の活発さ”）</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
+        <value>通常、数値が高いほど回答が創造的で想像力に富み、数値が低いほど厳密になります。一部のモデルでは1.0を超える数値が出力の乱れを引き起こす可能性があります。通常、top_pを同時に変更しないことをお勧めします。エラーが発生した場合は、デフォルト値に戻してみてください。</value>
+    </data>
+    <data name="CustomAssistant_TopP_Header" xml:space="preserve">
+        <value>top_p（“思考の開放度”）</value>
+    </data>
+    <data name="CustomAssistant_TopP_Description" xml:space="preserve">
+        <value>モデルの出力テキストの多様性を制御します。通常、数値が高いほどモデルはより多くの潜在的な回答を受け入れ、数値が低いほど最も可能性の高い回答を選択します。通常、温度を同時に変更しないことをお勧めします。エラーが発生した場合は、デフォルト値に戻してみてください。</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>ウェブ検索エンジンのサービスプロバイダーを選択します。</value>
@@ -512,6 +533,9 @@
     <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>モデルは考えてから回答することをサポートしています。このオプションを有効にすると、モデルがサポートしていない場合に会話中にエラーが発生する可能性があります。</value>
     </data>
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
+        <value>深い思考</value>
+    </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>対話の最大コンテキスト長 (context_limit)。これは視覚的コンテキストを構築する戦略に影響を与えるため、できるだけ実際の値に設定してください。</value>
     </data>
@@ -532,6 +556,12 @@
     </data>
     <data name="SoftwareSettings_IsStartupEnabled_Description" xml:space="preserve">
         <value>Everywhereはスタートアップ後に自動的に実行されます。「管理者としてスタートアップ」が有効な場合、このオプションは管理者モードでのみ無効にできます。</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Header" xml:space="preserve">
+        <value>管理者として自動起動</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
+        <value>起動時にEverywhereが管理者として自動起動します。このオプションは管理者モードでのみ切り替え可能です。</value>
     </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>オペレーティングシステムの制限により、管理者としてアプリケーションを実行している場合（権限が昇格している場合）、Everywhereがフォーカスされている昇格されたアプリケーションや「要素を選択」などのEverywhereの機能と相互作用しようとする際に正しく動作しないことがあります。これを解決するには、Everywhereを管理者として実行してください。</value>
@@ -656,10 +686,8 @@
     <data name="MainViewModel_UpgradeSuccessfulToast_Title" xml:space="preserve">
         <value>Everywhereが最新バージョンに更新されました 🎉</value>
     </data>
-    <data name="ChangeLogView_Content" xml:space="preserve">
-        <value>まだまだ若いので、問題があれば下のリンクからフィードバックをお願いします。進化を続けます！
-また、グループディスカッションに参加するには下のリンクをクリックしてください。さらに多くのソーシャルメディアが構築中ですので、お楽しみに。
-ヒント：「About - What's new」をクリックするとこのメッセージを再度表示できます。</value>
+    <data name="ChangeLogView_Title" xml:space="preserve">
+        <value>更新履歴</value>
     </data>
     <data name="WelcomeView_QQGroupHyperlinkButton_Content" xml:space="preserve">
         <value>QQグループ</value>
@@ -773,6 +801,9 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>合計</value>
     </data>
+    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
+        <value>総時間</value>
+    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>モデル構成が正しくありません。モデルプロバイダーまたはモデルIDが欠落または無効であるか、現在のモデルが画像入力/ツール呼び出しをサポートしていません。</value>
     </data>
@@ -823,12 +854,6 @@
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>有効にすると、チャットウィンドウを開く際にフォーカスされた要素を自動的に添付します。</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>バックグラウンドでの実行を許可</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>有効にすると、チャットウィンドウを閉じても現在のタスクは終了しません。</value>
     </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>操作がキャンセルされました。</value>
@@ -889,6 +914,9 @@
     </data>
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>デフォルトアシスタント</value>
+    </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>アシスタント</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>作成</value>
@@ -1247,6 +1275,9 @@
     </data>
     <data name="ChatWindow_BackAllHistoryButton_Content" xml:space="preserve">
         <value>戻る</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Header" xml:space="preserve">
+        <value>ネットワークプロキシ</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>PowerShellスクリプトの実行に失敗しました: {0}</value>
@@ -1798,6 +1829,21 @@
     <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
         <value>{0} 入力 · {1} 出力 · {2} 合計</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Header" xml:space="preserve">
+        <value>ユーザーに質問</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Description" xml:space="preserve">
+        <value>アシスタントがインタラクティブなダイアログを通じてユーザーに質問し、入力を収集できるようにします。</value>
+    </data>
+    <data name="AskQuestionCard_NextButton_Content" xml:space="preserve">
+        <value>次へ</value>
+    </data>
+    <data name="AskQuestionCard_PreviousButton_Content" xml:space="preserve">
+        <value>前へ</value>
+    </data>
+    <data name="AskQuestionCard_FreeformTextBox_Watermark" xml:space="preserve">
+        <value>回答を入力…</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
@@ -1931,6 +1977,9 @@
         <value>左クリックを押しながら選択し、右クリックまたは Esc で終了
 ホイールまたは数字キーで選択モードを切り替え</value>
     </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_TakeScreenshot" xml:space="preserve">
+        <value>スクリーンショットを撮る</value>
+    </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
         <value>選択したテキストを自動追加</value>
     </data>
@@ -2036,6 +2085,18 @@
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>推論強度</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>最大コンテキストラウンド</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>コンテキストに保持する最近のユーザーメッセージのラウンド数を制限します。一問一答は1ラウンドと見なされます。</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>現在のメッセージのみ</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>無制限</value>
+    </data>
     <data name="VisualContextLengthLimit_Balanced" xml:space="preserve">
         <value>バランス (~4096、推奨)</value>
     </data>
@@ -2130,6 +2191,9 @@
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
         <value>ブラウザで続行</value>
     </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} サブスクリプションポイントをリセット</value>
+    </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>試用期間: {0} まで</value>
     </data>
@@ -2165,6 +2229,9 @@
     </data>
     <data name="UserProfilePresenter_SynchronizingTextBlock_Text" xml:space="preserve">
         <value>同期中...</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>自分でモデルを設定する</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>サービスは現在の地域または位置でのリクエストをサポートしていません。</value>
@@ -2219,5 +2286,356 @@
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
         <value>{0} 件の会話を削除しました</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
+        <value>表示</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Header" xml:space="preserve">
+        <value>一般</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Header" xml:space="preserve">
+        <value>ショートカット</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Header" xml:space="preserve">
+        <value>システムアシスタント</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
+        <value>タイトルの要約、コンテキストの圧縮などに必要なEverywhereの主要アシスタントを設定します。設定しない場合、Everywhereは現在の最良モデルを必要なアシスタントとして使用します。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
+        <value>言語、テーマ、フォントサイズなど、Everywhereがインターフェースの内容を表示する方法を設定します。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
+        <value>ネットワークプロキシを設定し、その後Everywhereのすべてのネットワークリクエストがこのプロキシを経由します。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
+        <value>Everywhereで使用するグローバルショートカットを設定し、個人の習慣に合った体験をカスタマイズします。</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
+        <value>Everywhereの実行に関連する設定を構成します。</value>
+    </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
+        <value>チャットウィンドウの動作を設定します。</value>
+    </data>
+    <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
+        <value>選択したアシスタントは現在のファイルタイプをサポートしていません</value>
+    </data>
+    <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
+        <value>常に最前面</value>
+    </data>
+    <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
+        <value>入力時に最前面</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
+        <value>ビジュアル要素を選択</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
+        <value>任意のタイミングで視覚要素を選択するためのショートカットキーを設定し、その後チャットウィンドウを呼び出します。</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
+        <value>スクリーンショットをキャプチャ</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
+        <value>任意のタイミングでスクリーンショットをキャプチャするためのショートカットキーを設定し、その後チャットウィンドウを呼び出します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
+        <value>ブラウザアシスタント</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Description" xml:space="preserve">
+        <value>ウェブブラウザのコンテキストコマンド</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Name" xml:space="preserve">
+        <value>翻訳</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Description" xml:space="preserve">
+        <value>現在のページの内容を翻訳します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Name" xml:space="preserve">
+        <value>要約</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Description" xml:space="preserve">
+        <value>ページを迅速に要約します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Name" xml:space="preserve">
+        <value>要点情報を抽出</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Description" xml:space="preserve">
+        <value>重要な情報を抽出して要約します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Name" xml:space="preserve">
+        <value>説明</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Description" xml:space="preserve">
+        <value>現在のページの内容を説明します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Name" xml:space="preserve">
+        <value>事実確認</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Description" xml:space="preserve">
+        <value>ページ内の主張を確認します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Name" xml:space="preserve">
+        <value>コードエディタアシスタント</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Description" xml:space="preserve">
+        <value>コードエディタのコンテキストコマンド</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Name" xml:space="preserve">
+        <value>説明</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Description" xml:space="preserve">
+        <value>現在のコードの機能を説明します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Name" xml:space="preserve">
+        <value>レビュー</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Description" xml:space="preserve">
+        <value>現在のコードをレビューし、提案を行います</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Name" xml:space="preserve">
+        <value>ドキュメント生成</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Description" xml:space="preserve">
+        <value>現在のコードにドキュメントコメントを生成します</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Name" xml:space="preserve">
+        <value>バグを探す</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Description" xml:space="preserve">
+        <value>現在のコード内の潜在的なバグや問題を探します</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Name" xml:space="preserve">
+        <value>最適化</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Description" xml:space="preserve">
+        <value>現在のコードのパフォーマンスを最適化します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Name" xml:space="preserve">
+        <value>テキスト選択アシスタント</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Description" xml:space="preserve">
+        <value>テキスト選択コマンド</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Name" xml:space="preserve">
+        <value>翻訳</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Description" xml:space="preserve">
+        <value>選択したテキストを翻訳します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Name" xml:space="preserve">
+        <value>説明/定義</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Description" xml:space="preserve">
+        <value>選択したテキストを説明または定義します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Name" xml:space="preserve">
+        <value>要約</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Description" xml:space="preserve">
+        <value>選択したテキストを要約します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Name" xml:space="preserve">
+        <value>書き換え/改善</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Description" xml:space="preserve">
+        <value>選択したテキストを書き換えまたは改善します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Name" xml:space="preserve">
+        <value>調査</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Description" xml:space="preserve">
+        <value>選択したテキストを調査します</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Name" xml:space="preserve">
+        <value>文法チェック</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Description" xml:space="preserve">
+        <value>選択したテキストの文法エラーをチェックして修正します</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Name" xml:space="preserve">
+        <value>グローバルアシスタント</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Description" xml:space="preserve">
+        <value>すべてのコンテキストで利用可能なコマンド</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Name" xml:space="preserve">
+        <value>これは何ですか？</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Description" xml:space="preserve">
+        <value>現在選択されている内容またはコンテキストを説明します</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Name" xml:space="preserve">
+        <value>要約</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Description" xml:space="preserve">
+        <value>現在の内容を要約します</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Name" xml:space="preserve">
+        <value>この問題を解決する手伝いをしてください</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Description" xml:space="preserve">
+        <value>現在のコンテキストに関するヘルプを取得します</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Name" xml:space="preserve">
+        <value>ファイルアシスタント</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Description" xml:space="preserve">
+        <value>ファイル添付コマンド</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Name" xml:space="preserve">
+        <value>ファイルを要約</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Description" xml:space="preserve">
+        <value>ファイルの内容を要約します</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Name" xml:space="preserve">
+        <value>要点を抽出</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Description" xml:space="preserve">
+        <value>文書の主要なポイントを抽出してリストします</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Name" xml:space="preserve">
+        <value>文書を翻訳</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Description" xml:space="preserve">
+        <value>文書の内容を翻訳します</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Name" xml:space="preserve">
+        <value>画像を説明</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Description" xml:space="preserve">
+        <value>画像を詳細に説明します</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Name" xml:space="preserve">
+        <value>テキストを抽出 (OCR)</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Description" xml:space="preserve">
+        <value>画像からテキストを抽出</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Name" xml:space="preserve">
+        <value>データ分析</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Description" xml:space="preserve">
+        <value>データを分析し、洞察を提供</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Name" xml:space="preserve">
+        <value>可視化提案</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Description" xml:space="preserve">
+        <value>これらのデータを可視化する方法を提案</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Name" xml:space="preserve">
+        <value>ファイル比較</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Description" xml:space="preserve">
+        <value>これらのファイルの内容を比較</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
+        <value>すぐに体験を始められるように、いくつかの無料クレジットを用意しました。</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
+        <value>ネイティブモードへようこそ。クラウドサービスを利用するには、認証が必要です。</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
+        <value>ポイントデータを取得するためにログインするか、前のステップに戻って他のモードを選択してください。</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
+        <value>モデルを選択して詳細を確認してください。最新のモデルを追跡するために、定期的に更新します。</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
+        <value>現在のモデルは {0} に廃止予定です</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
+        <value>要素飛入エフェクト</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Description" xml:space="preserve">
+        <value>チャットウィンドウで画面の視覚要素を拾う際に、物理的フィードバックを伴うアニメーションでチャットウィンドウに投げ入れます。</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
+        <value>コンテキスト分析エフェクト</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
+        <value>コンテキストを分析する際に、スキャンアニメーションで処理中の要素をハイライト表示します。</value>
+    </data>
+    <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
+        <value>ツールの返結果に誤りがあります：{0}</value>
+    </data>
+    <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
+        <value>一時チャット：オンにすると、現在のチャットは保存されず、切り替えや新しい対話時に削除されます。</value>
+    </data>
+    <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
+        <value>(オプション) {0}</value>
+    </data>
+    <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
+        <value>最新バージョンに更新</value>
+    </data>
+    <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
+        <value>現在</value>
+    </data>
+    <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
+        <value>対話タイトルの自動命名に使用するモデルを設定します</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>タイトル生成アシスタント</value>
+    </data>
+    <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
+        <value>自動選択</value>
+    </data>
+    <data name="ChatWindow_TodoList_Header" xml:space="preserve">
+        <value>やることリスト ({0}/{1})</value>
+    </data>
+    <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
+        <value>(複数選択)</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
+        <value>タイトルを自動生成</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
+        <value>有効にすると、最初のメッセージに基づいて対話タイトルを自動的に要約します。</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
+        <value>翻訳先の言語、デフォルトは現在の言語</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
+        <value>コード分析</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
+        <value>コードを解釈し、潜在的な問題を分析します</value>
+    </data>
+    <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
+        <value>まだログインしていません。Everywhereクラウドサービスを使用するにはログインしてください。</value>
+    </data>
+    <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
+        <value>拒否して理由を入力</value>
+    </data>
+    <data name="Common_Submit" xml:space="preserve">
+        <value>送信</value>
+    </data>
+    <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
+        <value>拒否理由を入力</value>
+    </data>
+    <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
+        <value>モデルはtemperatureパラメータをサポートしていないか、パラメータがモデルの範囲を超えています。デフォルト値に戻すことで解決できます。</value>
+    </data>
+    <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
+        <value>モデルはtop_pパラメータをサポートしていないか、パラメータがモデルの範囲を超えています。デフォルト値に戻すことで解決できます。</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>左側から項目を選択して詳細を表示</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
+        <value>アシスタントリストは空です。作成して使用を開始してください</value>
+    </data>
+    <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>左側から項目を選択して詳細を表示</value>
+    </data>
+    <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
+        <value>検索...</value>
+    </data>
+    <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
+        <value>クラウドサービスにログインできません</value>
+    </data>
+    <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
+        <value>ログイン中</value>
     </data>
 </root>

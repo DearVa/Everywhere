@@ -89,22 +89,22 @@
         <value>Chat Window</value>
     </data>
     <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
-        <value />
+        <value>Chat Window</value>
     </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>Set a shortcut to invoke the chat window at any time.</value>
     </data>
     <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
-        <value />
+        <value>Temperature</value>
     </data>
     <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
-        <value />
+        <value>Generally, a higher value results in more creative and imaginative responses, while a lower value tends to be more precise. Some models may produce garbled output if the value exceeds 1.0. It is usually recommended not to change top_p simultaneously. If you encounter errors, try reverting to default values.</value>
     </data>
     <data name="CustomAssistant_TopP_Header" xml:space="preserve">
-        <value />
+        <value>Top P</value>
     </data>
     <data name="CustomAssistant_TopP_Description" xml:space="preserve">
-        <value />
+        <value>Controls the diversity of the model's output text. Typically, a higher value allows the model to accept more potential responses, while a lower value leans towards the most likely answer. It is usually recommended not to change temperature simultaneously. If you encounter errors, try reverting to default values.</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>Select the service provider for web search engines.</value>
@@ -561,7 +561,7 @@
         <value>Startup as Administrator</value>
     </data>
     <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
-        <value />
+        <value>Everywhere will start automatically as an administrator at boot. This option can only be toggled in administrator mode.</value>
     </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>Due to operating system restrictions, when running any application as an administrator (elevated permissions), Everywhere may not work correctly when the elevated applications are in focus or trying to interact with a Everywhere feature like &quot;Pick Element&quot;. This can be addressed by running Everywhere as administrator.</value>
@@ -855,12 +855,6 @@ My intelligence is powered by large language models, and I need your help to con
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>When enabled, automatically add focused element as attachment when opening chat window.</value>
     </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>Allow Run in Background</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>When enabled, closing the chat window will not terminate the current task.</value>
-    </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>Operation canceled.</value>
     </data>
@@ -1070,7 +1064,7 @@ Placeholders can be used in the prompt, enclosed in {}, which will be replaced w
         <value>The SSL connection could not be established. Please check your network settings or certificate.</value>
     </data>
     <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
-        <value />
+        <value>Connection was refused by the server. Please check your network connection and proxy settings.</value>
     </data>
     <data name="HandledSystemException_HostNotFound" xml:space="preserve">
         <value>The host could not be found. Please check the address and your network connection.</value>
@@ -2198,7 +2192,7 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Continue in Browser</value>
     </data>
     <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>{0} Renew Subscription Points</value>
     </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>Trial Until {0}</value>
@@ -2237,7 +2231,7 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Syncing...</value>
     </data>
     <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
-        <value />
+        <value>I'll Configure the Model Myself</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>Service does not support requests from current region or location.</value>
@@ -2306,43 +2300,43 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>System Assistant</value>
     </data>
     <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
-        <value />
+        <value>Configure the key assistant required for Everywhere, used for title summarization, context compression, etc. If not configured, Everywhere will use the current best model as the required assistant.</value>
     </data>
     <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
-        <value />
+        <value>Configure how Everywhere displays interface content, such as language, theme, font size, etc.</value>
     </data>
     <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
-        <value />
+        <value>Configure the network proxy. After configuration, all network requests from Everywhere will go through this proxy.</value>
     </data>
     <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
-        <value />
+        <value>Configure the global shortcuts used by Everywhere for a personalized experience.</value>
     </data>
     <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
-        <value />
+        <value>Configure settings related to the operation of Everywhere.</value>
     </data>
     <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
-        <value />
+        <value>Configure the behavior of the chat window.</value>
     </data>
     <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
-        <value />
+        <value>The selected assistant does not support the current file type.</value>
     </data>
     <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
-        <value />
+        <value>Always On Top</value>
     </data>
     <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
-        <value />
+        <value>On Top When Inputting</value>
     </data>
     <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
-        <value />
+        <value>Select Visual Element</value>
     </data>
     <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
-        <value />
+        <value>Set a shortcut key to select a visual element at any time, which will then invoke the chat window.</value>
     </data>
     <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
-        <value />
+        <value>Capture Screenshot</value>
     </data>
     <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
-        <value />
+        <value>Set a shortcut key to capture a screenshot anytime, which will then open the chat window.</value>
     </data>
     <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
         <value>Browser Assistant</value>
@@ -2537,19 +2531,19 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Compare the contents of these files</value>
     </data>
     <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
-        <value />
+        <value>I've prepared some free credits for you to start experiencing right away.</value>
     </data>
     <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
-        <value />
+        <value>Welcome to Native Mode. You need to authenticate to use our cloud services.</value>
     </data>
     <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
-        <value />
+        <value>Please log in to access your credit data, or go back to choose another mode.</value>
     </data>
     <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
-        <value />
+        <value>Please select a model to see details. I will keep updating to follow the latest models.</value>
     </data>
     <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
-        <value />
+        <value>The current model is expected to be deprecated on {0}</value>
     </data>
     <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
         <value>Element Fly-in Effect</value>
@@ -2558,93 +2552,90 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Show a smooth physical trajectory animation when adding an visual element to the chat window.</value>
     </data>
     <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
-        <value />
+        <value>Context Analysis Effects</value>
     </data>
     <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
-        <value />
+        <value>Highlight processed elements with a scanning animation during context analysis.</value>
     </data>
     <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
-        <value />
+        <value>The tool's return result is incorrect: {0}</value>
     </data>
     <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
-        <value />
+        <value>Temporary Chat: Once enabled, the current chat will not be saved and will be deleted when switching or starting a new conversation.</value>
     </data>
     <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
-        <value />
+        <value>(Optional) {0}</value>
     </data>
     <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
-        <value />
+        <value>Update to Latest Version</value>
     </data>
     <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
-        <value />
-    </data>
-    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
-        <value />
+        <value>Current</value>
     </data>
     <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
-        <value />
+        <value>Configure the model used for automatically naming conversation titles</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>Title Generation Assistant</value>
     </data>
     <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
-        <value />
+        <value>Auto Select</value>
     </data>
     <data name="ChatWindow_TodoList_Header" xml:space="preserve">
-        <value />
+        <value>To-Do List ({0}/{1})</value>
     </data>
     <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
-        <value />
+        <value>(Multi-Select)</value>
     </data>
     <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
-        <value />
+        <value>Automatically Summarize Title</value>
     </data>
     <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
-        <value />
+        <value>When enabled, automatically summarizes the conversation title based on the first message.</value>
     </data>
     <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
-        <value />
+        <value>Target language for translation, defaults to current language</value>
     </data>
     <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
-        <value />
+        <value>Analyze Code</value>
     </data>
     <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
-        <value />
+        <value>Explains code and analyzes potential issues</value>
     </data>
     <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
-        <value />
+        <value>You are not logged in. Please log in to use Everywhere cloud services.</value>
     </data>
     <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
-        <value />
+        <value>Deny and Enter Reason</value>
     </data>
     <data name="Common_Submit" xml:space="preserve">
-        <value />
+        <value>Submit</value>
     </data>
     <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
-        <value />
+        <value>Enter denial reason</value>
     </data>
     <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
-        <value />
+        <value>The model does not support the temperature parameter, or the parameter is out of range. Restoring to default value can resolve this issue.</value>
     </data>
     <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
-        <value />
+        <value>The model does not support the top_p parameter, or the parameter is out of range. Restoring to default value can resolve this issue.</value>
     </data>
     <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
-        <value />
+        <value>Select an item on the left to view details</value>
     </data>
     <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
-        <value />
+        <value>The assistant list is empty. Create one to get started</value>
     </data>
     <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
-        <value />
+        <value>Select an item on the left to view details</value>
     </data>
     <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
-        <value />
+        <value>Search...</value>
     </data>
     <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
-        <value />
-    </data>
-    <data name="UserProfilePresenter_RetryButton_Content" xml:space="preserve">
-        <value />
+        <value>Unable to log in to cloud services</value>
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
-        <value />
+        <value>Logging in</value>
     </data>
 </root>

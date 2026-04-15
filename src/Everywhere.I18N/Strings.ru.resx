@@ -19,6 +19,9 @@
     <data name="DisplaySettings_Language_Header" xml:space="preserve">
         <value>Язык</value>
     </data>
+    <data name="SettingsPage_Title" xml:space="preserve">
+        <value>Настройки</value>
+    </data>
     <data name="DisplaySettings_Language_Description" xml:space="preserve">
         <value>Выберите язык отображения для программы.</value>
     </data>
@@ -82,8 +85,26 @@
     <data name="ProxySettings_Password_Description" xml:space="preserve">
         <value>Пароль для прокси-сервера.</value>
     </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Header" xml:space="preserve">
+        <value>Окно Чата</value>
+    </data>
+    <data name="ShortcutSettings_ChatWindow_Header" xml:space="preserve">
+        <value>Окно Чата</value>
+    </data>
     <data name="ShortcutSettings_ChatWindow_Desription" xml:space="preserve">
         <value>Установите горячую клавишу для вызова окна чата в любое время.</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Header" xml:space="preserve">
+        <value>Температура (“Креативность”)</value>
+    </data>
+    <data name="CustomAssistant_Temperature_Description" xml:space="preserve">
+        <value>Как правило, чем выше значение, тем более креативные и воображаемые ответы. Чем ниже значение, тем более строгими будут ответы. Значения выше 1.0 могут привести к искажению вывода в некоторых моделях. Рекомендуется не изменять top_p одновременно. Если возникли ошибки, попробуйте восстановить значения по умолчанию.</value>
+    </data>
+    <data name="CustomAssistant_TopP_Header" xml:space="preserve">
+        <value>top_p (“Открытость Мысли”)</value>
+    </data>
+    <data name="CustomAssistant_TopP_Description" xml:space="preserve">
+        <value>Контролирует разнообразие текстов, генерируемых моделью. Обычно, чем выше значение, тем больше потенциальных ответов принимает модель, чем ниже - тем более вероятный ответ будет выбран. Рекомендуется не изменять температуру одновременно. Если возникли ошибки, попробуйте восстановить значения по умолчанию.</value>
     </data>
     <data name="WebSearchEngineProvider_Description" xml:space="preserve">
         <value>Выберите поставщика услуг для поисковых систем.</value>
@@ -512,6 +533,9 @@
     <data name="CustomAssistant_SupportsReasoning_Description" xml:space="preserve">
         <value>Модель поддерживает предварительное обдумывание перед ответом. Если модель не поддерживает, включение этой опции может привести к ошибкам в диалоге.</value>
     </data>
+    <data name="CustomAssistant_SupportsReasoning_Header" xml:space="preserve">
+        <value>Глубокое Мышление</value>
+    </data>
     <data name="CustomAssistant_ContextLimit_Description" xml:space="preserve">
         <value>Максимальная длина контекста диалога (context_limit). Это повлияет на стратегию построения визуального контекста, постарайтесь установить реальное значение.</value>
     </data>
@@ -532,6 +556,12 @@
     </data>
     <data name="SoftwareSettings_IsStartupEnabled_Description" xml:space="preserve">
         <value>Everywhere будет запускаться автоматически после старта системы. Если включена опция «Запуск от имени администратора», текущую опцию можно отключить только в режиме администратора.</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Header" xml:space="preserve">
+        <value>Автозапуск от имени администратора</value>
+    </data>
+    <data name="SoftwareSettings_IsAdministratorStartupEnabled_Description" xml:space="preserve">
+        <value>Everywhere будет автоматически запускаться от имени администратора при включении компьютера. Только в режиме администратора можно включать или выключать эту опцию.</value>
     </data>
     <data name="SoftwareSettings_RestartAsAdministrator_Description" xml:space="preserve">
         <value>Из-за ограничений операционной системы, при запуске любого приложения от имени администратора (с повышенными правами) Everywhere может работать некорректно, если приложения с повышенными правами находятся в фокусе или пытаются взаимодействовать с функцией Everywhere, такой как «Выбор элемента». Это можно исправить, запустив Everywhere от имени администратора.</value>
@@ -656,6 +686,9 @@
     <data name="MainViewModel_UpgradeSuccessfulToast_Title" xml:space="preserve">
         <value>Everywhere обновлен до последней версии 🎉</value>
     </data>
+    <data name="ChangeLogView_Title" xml:space="preserve">
+        <value>Журнал Изменений</value>
+    </data>
     <data name="WelcomeView_QQGroupHyperlinkButton_Content" xml:space="preserve">
         <value>Группа QQ</value>
     </data>
@@ -768,6 +801,9 @@
     <data name="ChatWindow_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Всего</value>
     </data>
+    <data name="ChatWindow_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
+        <value>Общее Время</value>
+    </data>
     <data name="HandledChatException_InvalidConfiguration" xml:space="preserve">
         <value>Конфигурация модели неверна, поставщик модели или ID модели отсутствует или недействителен, или текущая модель не поддерживает ввод изображений/вызовы инструментов.</value>
     </data>
@@ -818,12 +854,6 @@
     </data>
     <data name="ChatWindowSettings_AutomaticallyAddElement_Description" xml:space="preserve">
         <value>При включении автоматически добавляет фокусируемый элемент в качестве вложения при открытии окна чата.</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Header" xml:space="preserve">
-        <value>Разрешить работу в фоновом режиме</value>
-    </data>
-    <data name="ChatWindowSettings_AllowRunInBackground_Description" xml:space="preserve">
-        <value>При включении закрытие окна чата не завершит текущую задачу.</value>
     </data>
     <data name="HandledChatException_OperationCanceled" xml:space="preserve">
         <value>Операция отменена.</value>
@@ -884,6 +914,9 @@
     </data>
     <data name="CustomAssistant_Name_Default" xml:space="preserve">
         <value>Ассистент по умолчанию</value>
+    </data>
+    <data name="CustomAssistantPage_Title" xml:space="preserve">
+        <value>Ассистент</value>
     </data>
     <data name="CustomAssistantPage_CreateNewCustomAssistantButton_Content" xml:space="preserve">
         <value>Создать</value>
@@ -1029,6 +1062,9 @@
     </data>
     <data name="HandledSystemException_SSLConnectionError" xml:space="preserve">
         <value>Не удалось установить SSL-соединение. Пожалуйста, проверьте настройки сети или сертификат.</value>
+    </data>
+    <data name="HandledSystemException_ConnectionRefused" xml:space="preserve">
+        <value>Подключение отклонено сервером, проверьте сетевое соединение и настройки прокси.</value>
     </data>
     <data name="HandledSystemException_HostNotFound" xml:space="preserve">
         <value>Хост не найден. Пожалуйста, проверьте адрес и соединение с сетью.</value>
@@ -1239,6 +1275,9 @@
     </data>
     <data name="ChatWindow_BackAllHistoryButton_Content" xml:space="preserve">
         <value>Назад</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Header" xml:space="preserve">
+        <value>Сетевой Прокси</value>
     </data>
     <data name="Windows_BuiltInChatPlugin_PowerShell_ExecuteScript_ErrorMessage" xml:space="preserve">
         <value>Ошибка выполнения скрипта PowerShell: {0}</value>
@@ -1790,6 +1829,21 @@
     <data name="BuiltInChatPlugin_Essential_RunSubagent_TokenCount" xml:space="preserve">
         <value>{0} ввод · {1} вывод · {2} всего</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Header" xml:space="preserve">
+        <value>Спросить Пользователя</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Description" xml:space="preserve">
+        <value>Позволяет ассистенту задавать вопросы пользователю через интерактивный диалог и собирать ввод.</value>
+    </data>
+    <data name="AskQuestionCard_NextButton_Content" xml:space="preserve">
+        <value>Далее</value>
+    </data>
+    <data name="AskQuestionCard_PreviousButton_Content" xml:space="preserve">
+        <value>Назад</value>
+    </data>
+    <data name="AskQuestionCard_FreeformTextBox_Watermark" xml:space="preserve">
+        <value>Введите ваш ответ…</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
@@ -1923,6 +1977,9 @@
         <value>Удерживайте левую кнопку мыши для выделения, правой кнопкой или Esc для выхода
 Прокрутка или цифровые клавиши для переключения режима выбора</value>
     </data>
+    <data name="ChatWindow_ChatInputArea_AddAttachmentMenuItems_TakeScreenshot" xml:space="preserve">
+        <value>Сделать скриншот</value>
+    </data>
     <data name="ChatWindowSettings_AutomaticallyAddTextSelection_Header" xml:space="preserve">
         <value>Автоматически Добавлять Выделение</value>
     </data>
@@ -2028,6 +2085,18 @@
     <data name="PersistentState_ReasoningEffortLevel_Header" xml:space="preserve">
         <value>Интенсивность рассуждений</value>
     </data>
+    <data name="PersistentState_MaxContextRounds_Header" xml:space="preserve">
+        <value>Макс. количество раундов контекста</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Description" xml:space="preserve">
+        <value>Ограничивает количество последних сообщений пользователя, сохраняемых в контексте. Один вопрос и ответ считаются одним раундом.</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_CurrentInputOnly" xml:space="preserve">
+        <value>Только текущее сообщение</value>
+    </data>
+    <data name="PersistentState_MaxContextRounds_Value_Unlimited" xml:space="preserve">
+        <value>Без ограничений</value>
+    </data>
     <data name="VisualContextLengthLimit_Balanced" xml:space="preserve">
         <value>Сбалансированный (~4096, рекомендуется)</value>
     </data>
@@ -2122,6 +2191,9 @@
     <data name="UserProfilePresenter_CancelLoginButton_Content" xml:space="preserve">
         <value>Продолжить в браузере</value>
     </data>
+    <data name="UserProfilePresenter_RenewsOnTextBlock_Text" xml:space="preserve">
+        <value>{0} сбросить подписочные баллы</value>
+    </data>
     <data name="UserProfilePresenter_TrialUntilTextBlock_Text" xml:space="preserve">
         <value>Пробный период до {0}</value>
     </data>
@@ -2157,6 +2229,9 @@
     </data>
     <data name="UserProfilePresenter_SynchronizingTextBlock_Text" xml:space="preserve">
         <value>Синхронизация...</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_SkipButton_Content" xml:space="preserve">
+        <value>Я сам настрою модель</value>
     </data>
     <data name="HandledChatException_RegionNotSupport" xml:space="preserve">
         <value>Сервис не поддерживает запросы из вашего региона или местоположения.</value>
@@ -2211,5 +2286,356 @@
     </data>
     <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
         <value>Удалено {0} бесед</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
+        <value>Отображение</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Header" xml:space="preserve">
+        <value>Общие</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Header" xml:space="preserve">
+        <value>Сочетания клавиш</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Header" xml:space="preserve">
+        <value>Системный помощник</value>
+    </data>
+    <data name="SettingsCategory_Settings_SystemAssistant_Description" xml:space="preserve">
+        <value>Настройте ключевого помощника для Everywhere, используемого для резюме заголовков, сжатия контекста и т.д. Если не настроен, Everywhere использует текущую лучшую модель в качестве необходимого помощника.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Display_Description" xml:space="preserve">
+        <value>Настройте, как Everywhere отображает содержимое интерфейса, например, язык, тему, размер шрифта и т.д.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Proxy_Description" xml:space="preserve">
+        <value>Настройте сетевой прокси, после настройки все сетевые запросы Everywhere будут проходить через этот прокси.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Shortcut_Description" xml:space="preserve">
+        <value>Настройте глобальные сочетания клавиш, используемые Everywhere, для создания индивидуального опыта.</value>
+    </data>
+    <data name="SettingsCategory_Settings_Common_Description" xml:space="preserve">
+        <value>Настройте параметры, связанные с работой Everywhere.</value>
+    </data>
+    <data name="SettingsCategory_Settings_ChatWindow_Description" xml:space="preserve">
+        <value>Настройте поведение окна чата.</value>
+    </data>
+    <data name="ChatWindowViewModel_UnsupportedAttachment" xml:space="preserve">
+        <value>Выбранный помощник не поддерживает текущий тип файла</value>
+    </data>
+    <data name="ChatWindowPinMode_AlwaysTopmost" xml:space="preserve">
+        <value>Всегда сверху</value>
+    </data>
+    <data name="ChatWindowPinMode_TopmostOnInput" xml:space="preserve">
+        <value>Сверху при вводе</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Header" xml:space="preserve">
+        <value>Выбор визуального элемента</value>
+    </data>
+    <data name="ShortcutSettings_PickVisualElement_Desription" xml:space="preserve">
+        <value>Настройте горячую клавишу для выбора визуального элемента в любое время, после чего откроется окно чата.</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Header" xml:space="preserve">
+        <value>Сделать скриншот</value>
+    </data>
+    <data name="ShortcutSettings_TakeScreenshot_Desription" xml:space="preserve">
+        <value>Настройте горячую клавишу для захвата скриншота в любое время, после чего откроется окно чата.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Name" xml:space="preserve">
+        <value>Помощник браузера</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_Description" xml:space="preserve">
+        <value>Команды контекста веб-браузера</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Name" xml:space="preserve">
+        <value>Перевести</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_Description" xml:space="preserve">
+        <value>Перевести содержимое текущей страницы</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Name" xml:space="preserve">
+        <value>Суммировать</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_SummarizePageCommand_Description" xml:space="preserve">
+        <value>Быстрое резюме страницы</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Name" xml:space="preserve">
+        <value>Извлечь ключевую информацию</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExtractInfoCommand_Description" xml:space="preserve">
+        <value>Извлечь и резюмировать ключевую информацию</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Name" xml:space="preserve">
+        <value>Объяснить</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_ExplainCommand_Description" xml:space="preserve">
+        <value>Объяснить содержимое текущей страницы</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Name" xml:space="preserve">
+        <value>Проверка фактов</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_FactCheckCommand_Description" xml:space="preserve">
+        <value>Проверить утверждения на странице</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Name" xml:space="preserve">
+        <value>Помощник редактора кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_Description" xml:space="preserve">
+        <value>Команды контекста редактора кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Name" xml:space="preserve">
+        <value>Объяснить</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ExplainCommand_Description" xml:space="preserve">
+        <value>Объяснить функциональность текущего кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Name" xml:space="preserve">
+        <value>Обзор</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_ReviewCommand_Description" xml:space="preserve">
+        <value>Просмотрите текущий код и дайте рекомендации</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Name" xml:space="preserve">
+        <value>Сгенерировать документацию</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_DocumentCommand_Description" xml:space="preserve">
+        <value>Создайте комментарии документации для текущего кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Name" xml:space="preserve">
+        <value>Найти баги</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_FindBugsCommand_Description" xml:space="preserve">
+        <value>Найдите потенциальные баги или проблемы в текущем коде</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Name" xml:space="preserve">
+        <value>Оптимизировать</value>
+    </data>
+    <data name="Strategy_BuiltIn_CodeEditor_OptimizeCommand_Description" xml:space="preserve">
+        <value>Оптимизируйте производительность текущего кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Name" xml:space="preserve">
+        <value>Помощник по выделению текста</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_Description" xml:space="preserve">
+        <value>Команды для выделенного текста</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Name" xml:space="preserve">
+        <value>Перевести</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_TranslateCommand_Description" xml:space="preserve">
+        <value>Переведите выделенный текст</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Name" xml:space="preserve">
+        <value>Объяснить/Определить</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ExplainCommand_Description" xml:space="preserve">
+        <value>Объясните или определите выделенный текст</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Name" xml:space="preserve">
+        <value>Суммировать</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_SummarizeCommand_Description" xml:space="preserve">
+        <value>Суммируйте выделенный текст</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Name" xml:space="preserve">
+        <value>Переписать/Улучшить</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_RewriteCommand_Description" xml:space="preserve">
+        <value>Перепишите или улучшите выделенный текст</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Name" xml:space="preserve">
+        <value>Исследовать</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_ResearchCommand_Description" xml:space="preserve">
+        <value>Исследуйте выделенный текст</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Name" xml:space="preserve">
+        <value>Проверка грамматики</value>
+    </data>
+    <data name="Strategy_BuiltIn_TextSelection_GrammarCommand_Description" xml:space="preserve">
+        <value>Проверяет и исправляет грамматические ошибки в выделенном тексте</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Name" xml:space="preserve">
+        <value>Глобальный помощник</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_Description" xml:space="preserve">
+        <value>Команды, доступные во всех контекстах</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Name" xml:space="preserve">
+        <value>Что это?</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_WhatIsThisCommand_Description" xml:space="preserve">
+        <value>Объясняет текущее выделенное содержимое или контекст</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Name" xml:space="preserve">
+        <value>Суммировать</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_SummarizeCommand_Description" xml:space="preserve">
+        <value>Суммирует текущее содержимое</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Name" xml:space="preserve">
+        <value>Помоги мне с этой проблемой</value>
+    </data>
+    <data name="Strategy_BuiltIn_Global_HelpCommand_Description" xml:space="preserve">
+        <value>Получить помощь по текущему контексту</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Name" xml:space="preserve">
+        <value>Файловый помощник</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_Description" xml:space="preserve">
+        <value>Команды для работы с файлами</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Name" xml:space="preserve">
+        <value>Суммировать файл</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_SummarizeCommand_Description" xml:space="preserve">
+        <value>Суммирует содержимое файла</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Name" xml:space="preserve">
+        <value>Извлечь ключевые моменты</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractKeyPointsCommand_Description" xml:space="preserve">
+        <value>Извлекает и перечисляет основные моменты документа</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Name" xml:space="preserve">
+        <value>Перевести документ</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_TranslateDocumentCommand_Description" xml:space="preserve">
+        <value>Переводит содержимое документа</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Name" xml:space="preserve">
+        <value>Описание изображения</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_DescribeImageCommand_Description" xml:space="preserve">
+        <value>Подробно описывает изображение</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Name" xml:space="preserve">
+        <value>Извлечение текста (OCR)</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_ExtractTextCommand_Description" xml:space="preserve">
+        <value>Извлечение текста из изображения</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Name" xml:space="preserve">
+        <value>Анализ данных</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeDataCommand_Description" xml:space="preserve">
+        <value>Анализ данных и предоставление инсайтов</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Name" xml:space="preserve">
+        <value>Предложить визуализацию</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_VisualizeDataCommand_Description" xml:space="preserve">
+        <value>Рекомендации по визуализации этих данных</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Name" xml:space="preserve">
+        <value>Сравнить файлы</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_CompareCommand_Description" xml:space="preserve">
+        <value>Сравнить содержимое этих файлов</value>
+    </data>
+    <data name="WelcomeView_SoftLoginStep_Message1" xml:space="preserve">
+        <value>Чтобы ты мог сразу начать, я подготовил для тебя бесплатные кредиты.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message1" xml:space="preserve">
+        <value>Добро пожаловать в режим нативного доступа. Сначала нужно пройти аутентификацию для использования наших облачных сервисов.</value>
+    </data>
+    <data name="WelcomeView_HardLoginStep_Message2" xml:space="preserve">
+        <value>Пожалуйста, войди, чтобы получить данные о своих кредитах, или вернись назад, чтобы выбрать другой режим.</value>
+    </data>
+    <data name="WelcomeView_AssistantStep_Official_Message1" xml:space="preserve">
+        <value>Выбери модель, чтобы увидеть подробности. Я буду регулярно обновлять информацию о новых моделях.</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_DeprecationToast_Text" xml:space="preserve">
+        <value>Текущая модель будет снята с поддержки {0}</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Header" xml:space="preserve">
+        <value>Эффект появления элементов</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualElementPickAnimation_Description" xml:space="preserve">
+        <value>При выборе визуальных элементов экрана в чате используйте анимацию с физической обратной связью.</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Header" xml:space="preserve">
+        <value>Эффект анализа контекста</value>
+    </data>
+    <data name="ChatWindowSettings_EnableVisualContextAnimation_Description" xml:space="preserve">
+        <value>При анализе контекста используйте анимацию сканирования для выделения обрабатываемых элементов.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_InvalidResult" xml:space="preserve">
+        <value>Неверный результат от инструмента: {0}</value>
+    </data>
+    <data name="ChatContext_TemporaryToggleButton_ToolTip" xml:space="preserve">
+        <value>Временный чат: после включения текущий чат не будет сохранен, при переключении или создании нового разговора он будет удален.</value>
+    </data>
+    <data name="ChatInputArea_Watermark_StrategyArgumentHint" xml:space="preserve">
+        <value>(необязательно) {0}</value>
+    </data>
+    <data name="ChangeLogView_UpdateButton_Content" xml:space="preserve">
+        <value>Обновить до последней версии</value>
+    </data>
+    <data name="ChangeLogView_CurrentBadge_Content" xml:space="preserve">
+        <value>Текущий</value>
+    </data>
+    <data name="SystemAssistantSettings_CommonDesription" xml:space="preserve">
+        <value>Настройте модель для автоматического именования заголовков диалогов</value>
+    </data>
+    <data name="SystemAssistantSettings_TitleGeneration_Header" xml:space="preserve">
+        <value>Помощник по генерации заголовков</value>
+    </data>
+    <data name="SystemAssistant_AutoSelectToggle_Content" xml:space="preserve">
+        <value>Автовыбор</value>
+    </data>
+    <data name="ChatWindow_TodoList_Header" xml:space="preserve">
+        <value>Список дел ({0}/{1})</value>
+    </data>
+    <data name="ChatPlugin_MultiSelectHint" xml:space="preserve">
+        <value>(Мультивыбор)</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Header" xml:space="preserve">
+        <value>Автоматическая генерация заголовка</value>
+    </data>
+    <data name="ChatWindowSettings_AutomaticallyGenerateTitle_Description" xml:space="preserve">
+        <value>При включении автоматически подводит итог заголовка диалога по первому сообщению.</value>
+    </data>
+    <data name="Strategy_BuiltIn_Browser_TranslateCommand_ArgumentHint" xml:space="preserve">
+        <value>Целевой язык перевода, по умолчанию текущий язык</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Name" xml:space="preserve">
+        <value>Анализ кода</value>
+    </data>
+    <data name="Strategy_BuiltIn_File_AnalyzeCodeCommand_Description" xml:space="preserve">
+        <value>Объясняет код и анализирует потенциальные проблемы</value>
+    </data>
+    <data name="HandledSystemException_UserNotLogin" xml:space="preserve">
+        <value>Вы еще не вошли в систему, пожалуйста, войдите, чтобы использовать облачные сервисы Everywhere.</value>
+    </data>
+    <data name="ConsentDecisionCard_DenyWithReasonMenuItem_Header" xml:space="preserve">
+        <value>Отказать и ввести причину</value>
+    </data>
+    <data name="Common_Submit" xml:space="preserve">
+        <value>Отправить</value>
+    </data>
+    <data name="ConsentDecisionCard_ReasonTextBox_Watermark" xml:space="preserve">
+        <value>Введите причину отказа</value>
+    </data>
+    <data name="HandledChatException_TemperatureNotSupport" xml:space="preserve">
+        <value>Модель не поддерживает параметр temperature или параметр выходит за пределы диапазона модели. Восстановление до значения по умолчанию может решить эту проблему.</value>
+    </data>
+    <data name="HandledChatException_TopPNotSupport" xml:space="preserve">
+        <value>Модель не поддерживает параметр top_p или параметр выходит за пределы диапазона модели. Восстановление до значения по умолчанию может решить эту проблему.</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>Выберите элемент слева для просмотра деталей</value>
+    </data>
+    <data name="CustomAssistantPage_EmptyContent_EmptyListInstruction" xml:space="preserve">
+        <value>Список помощников пуст, создайте один и начните использовать</value>
+    </data>
+    <data name="ChatPluginPage_EmptyContent_SelectInstruction" xml:space="preserve">
+        <value>Выберите элемент слева для просмотра деталей</value>
+    </data>
+    <data name="IconEditor_SearchBox_Watermark" xml:space="preserve">
+        <value>Поиск...</value>
+    </data>
+    <data name="UserProfilePresenter_ErrorTextBlock_Text" xml:space="preserve">
+        <value>Не удалось войти в облачный сервис</value>
+    </data>
+    <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
+        <value>Вход в систему</value>
     </data>
 </root>
