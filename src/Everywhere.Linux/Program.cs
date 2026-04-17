@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Everywhere.AI;
+using Everywhere.Cloud;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Common;
@@ -69,6 +70,7 @@ public static class Program
                 .AddAvaloniaBasicServices()
                 .AddViewsAndViewModels()
                 .AddDatabaseAndStorage()
+                .AddCloudClient()
                 .AddChatEssentials()
 
                 #endregion
