@@ -22,14 +22,6 @@ public sealed class X11Screenshot(X11Context context)
             (ulong)Planes.AllPlanes,
             PixmapFormat.ZPixmap);
         if (xImage.data == IntPtr.Zero) throw new InvalidOperationException("XGetImage returned null");
-
-        try
-        {
-            return new X11CapturedBitmapData(xImage);
-        }
-        finally
-        {
-            Xutil.XDestroyImage(ref xImage);
-        }
+        return new X11CapturedBitmapData(xImage);
     }
 }
