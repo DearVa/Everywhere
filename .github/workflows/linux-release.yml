@@ -79,8 +79,9 @@ jobs:
           /p:AIGatewayBaseUrl="$AI_GATEWAY_BASE_URL" \
           /p:AccountBaseUrl="$ACCOUNT_BASE_URL" \
           /p:CloudSyncBaseUrl="$CLOUD_SYNC_BASE_URL" \
-          --self-contained true \
           --no-restore
+        cp LICENSE ./publish/
+        cp README.md ./publish/
 
     - name: Build Deb Package
       if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
