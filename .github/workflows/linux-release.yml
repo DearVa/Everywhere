@@ -85,8 +85,18 @@ jobs:
     - name: Build Deb Package
       if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
       run: |
-        chmod +x ./src/Everywhere.Linux/packaging_deb.sh
-        ./src/Everywhere.Linux/packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+        chmod +x ./packaging_deb.sh
+        ./packaging_deb.sh ${{ matrix.runtime }} ${{ env.VERSION }} ./publish
+
+    - name: Install AppImage Build Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y squashfs-tools libfuse2
+
+    - name: Create Archive
+      run: |
+        sudo apt-get update && sudo apt-get install -y zstd
+        tar -I 'zstd -19 -T0' -cf Everywhere-${{ matrix.asset_name }}-v${{ env.VERSION }}.tar.zst -C ./publish .
 
     - name: Install AppImage Build Dependencies
       if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'

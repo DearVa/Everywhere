@@ -45,8 +45,8 @@ mkdir -p "$APPDIR/usr/lib/$APP_NAME"
 
 cp -r "$PUBLISH_DIR"/* "$APPDIR/usr/lib/$APP_NAME/"
 
-mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
-cp img/Everywhere-icon.png "$APPDIR/usr/share/icons/hicolor/256x256/apps/$APP_ID.png"
+mkdir -p "$APPDIR/usr/share/icons/hicolor/512x512/apps"
+cp img/Everywhere-icon.png "$APPDIR/usr/share/icons/hicolor/512x512/apps/$APP_ID.png"
 ln -s "usr/share/icons/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
 ln -s "usr/share/icons/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/.DirIcon"
 

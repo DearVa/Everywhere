@@ -14,9 +14,11 @@ namespace Everywhere.Linux.Interop;
 /// </summary>
 public partial class VisualElementContext(
     IWindowBackend backend,
-    ILogger<VisualElementContext> logger
+    ILoggerFactory loggerFactory
 ) : IVisualElementContext
 {
+    private readonly ILogger<VisualElementContext> logger = loggerFactory.CreateLogger<VisualElementContext>();
+
     public IVisualElement? FocusedElement
     {
         get
@@ -42,7 +44,7 @@ public partial class VisualElementContext(
 
     public IEnumerable<IVisualElement> Screens => backend.Screens;
 
-    private readonly AtspiService _atspi = new(backend);
+    private readonly AtspiService _atspi = new(backend, loggerFactory.CreateLogger<AtspiService>());
 
     public IVisualElement? ElementFromPoint(PixelPoint point, ScreenSelectionMode mode = ScreenSelectionMode.Element)
     {
