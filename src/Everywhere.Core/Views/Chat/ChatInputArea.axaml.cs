@@ -19,7 +19,6 @@ using CommunityToolkit.Mvvm.Input;
 using Everywhere.AI;
 using Everywhere.Chat;
 using Everywhere.Cloud;
-using Everywhere.Patches.Avalonia;
 using Everywhere.Utilities;
 using Serilog;
 

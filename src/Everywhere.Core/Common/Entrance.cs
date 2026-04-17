@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using Everywhere.Configuration;
 using Everywhere.Interop;
 using Everywhere.Messages;
-using Everywhere.Patches;
 using MessagePack;
 using Serilog;
 using Serilog.Core;
@@ -43,7 +42,6 @@ public static class Entrance
         Telemetry.Initialize();
         InitializeLogger();
         InitializeErrorHandling();
-        InitializeHarmony();
     }
 
     /// <summary>
@@ -248,11 +246,6 @@ public static class Entrance
             Log.Logger.Error(e.Exception, "Unobserved Task Exception");
             e.SetObserved();
         };
-    }
-
-    private static void InitializeHarmony()
-    {
-        Patcher.PatchAll();
     }
 
     private sealed class ActivityEnricher : ILogEventEnricher
