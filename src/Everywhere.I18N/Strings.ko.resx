@@ -2269,6 +2269,9 @@
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>백만 토큰당 {0} 달러</value>
     </data>
+    <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
+        <value>매 1M 토큰당 {0}M 크레딧</value>
+    </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>토큰 수 ≤ {1} 일 때, {0}</value>
     </data>
@@ -2634,5 +2637,8 @@
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
         <value>로그인 중</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
+        <value>가격 세부정보 보기</value>
     </data>
 </root>

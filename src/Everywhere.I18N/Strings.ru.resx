@@ -2269,6 +2269,9 @@
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>Каждые миллион токенов {0} долларов</value>
     </data>
+    <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
+        <value>Каждые 1M токенов {0}M кредитов</value>
+    </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>Когда количество токенов ≤ {1}, {0}</value>
     </data>
@@ -2634,5 +2637,8 @@
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
         <value>Вход в систему</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
+        <value>Посмотреть детали цен</value>
     </data>
 </root>

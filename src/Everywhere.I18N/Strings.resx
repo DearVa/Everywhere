@@ -2270,7 +2270,7 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>USD</value>
     </data>
     <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
-        <value />
+        <value>Every 1M Token {0}M Credits</value>
     </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>When token count ≤ {1}, {0}</value>

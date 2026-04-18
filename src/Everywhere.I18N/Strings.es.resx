@@ -2269,6 +2269,9 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>Cada millón de tokens {0} dólares</value>
     </data>
+    <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
+        <value>Cada 1M Token {0}M Créditos</value>
+    </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>Cuando el número de tokens ≤ {1}, {0}</value>
     </data>
@@ -2634,5 +2637,8 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
         <value>Iniciando sesión</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
+        <value>Ver detalles de precios</value>
     </data>
 </root>

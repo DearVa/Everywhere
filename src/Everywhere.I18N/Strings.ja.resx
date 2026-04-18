@@ -2269,6 +2269,9 @@
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>百万トークンあたり {0} ドル</value>
     </data>
+    <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
+        <value>1M トークンあたり {0}M クレジット</value>
+    </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>トークン数 ≤ {1} の場合、{0}</value>
     </data>
@@ -2634,5 +2637,8 @@
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
         <value>ログイン中</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
+        <value>価格の詳細を見る</value>
     </data>
 </root>

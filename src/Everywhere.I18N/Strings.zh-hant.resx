@@ -2269,6 +2269,9 @@
     <data name="ModelPricingUnit_UsdPerMToken" xml:space="preserve">
         <value>每百萬詞元 {0} 美元</value>
     </data>
+    <data name="ModelPricingUnit_MCreditPerMToken" xml:space="preserve">
+        <value>每 1M Token {0}M 積分</value>
+    </data>
     <data name="ModelPricing_NotGreaterThanTierDescription" xml:space="preserve">
         <value>詞元數 ≤ {1} 時，{0}</value>
     </data>
@@ -2634,5 +2637,8 @@
     </data>
     <data name="UserProfilePresenter_LoggingInTextBlock_Text" xml:space="preserve">
         <value>正在登入</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
+        <value>查看定價詳情</value>
     </data>
 </root>
