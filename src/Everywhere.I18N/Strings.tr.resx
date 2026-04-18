@@ -1846,6 +1846,9 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Hizmet Sağlayıcı</value>
+    </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>API anahtarı ekle</value>
     </data>
@@ -2252,6 +2255,9 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     </data>
     <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
         <value>Çıktı Fiyatı</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>Model</value>
     </data>
     <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
         <value>Model Detayları</value>

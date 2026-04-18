@@ -1847,6 +1847,9 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Proveedor de Servicios</value>
+    </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>Agregar clave API</value>
     </data>
@@ -2253,6 +2256,9 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     </data>
     <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
         <value>Precio de Salida</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>Modelo</value>
     </data>
     <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
         <value>Detalles del Modelo</value>

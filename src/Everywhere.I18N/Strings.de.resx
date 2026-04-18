@@ -1846,6 +1846,9 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
     </data>
+    <data name="CustomAssistant_ConfiguratorSelector_Header" xml:space="preserve">
+        <value>Anbieter</value>
+    </data>
     <data name="ApiKeyComboBox_AddApiKey" xml:space="preserve">
         <value>API-Schlüssel hinzufügen</value>
     </data>
@@ -2252,6 +2255,9 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     </data>
     <data name="CustomAssistant_OutputPrice_Header" xml:space="preserve">
         <value>Ausgabepreis</value>
+    </data>
+    <data name="OfficialModelDefinitionForm_SelectModelTextBlock_Text" xml:space="preserve">
+        <value>Modell</value>
     </data>
     <data name="OfficialModelDefinitionForm_DetailsTextBlock_Text" xml:space="preserve">
         <value>Modell Details</value>
