@@ -94,6 +94,22 @@ public class PresetModelProviderTemplatesTest
             $"Config drift detected:{string.Join("", drifts)}");
     }
 
+    [Test]
+    public void ModelProviderTemplates_ShouldContainQiniuTemplate()
+    {
+        var template = PresetBasedAssistantConfigurator.ModelProviderTemplates
+            .FirstOrDefault(x => x.Id == "qiniu");
+
+        Assert.That(template, Is.Not.Null, "qiniu provider template is missing.");
+        Assert.Multiple(() =>
+        {
+            Assert.That(template!.Schema, Is.EqualTo(ModelProviderSchema.OpenAI));
+            Assert.That(template.Endpoint, Is.EqualTo("https://api.qnaigc.com/v1"));
+            Assert.That(template.ModelDefinitions.Count, Is.GreaterThan(0));
+            Assert.That(template.ModelDefinitions.Any(x => x.ModelId == "deepseek-v3" && x.IsDefault), Is.True);
+        });
+    }
+
     private static List<string> CompareModel(ModelDefinitionTemplate local, ApiModelInfo remote)
     {
         var diff = new List<string>();

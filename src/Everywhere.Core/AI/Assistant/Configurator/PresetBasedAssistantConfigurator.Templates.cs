@@ -402,6 +402,31 @@ partial class PresetBasedAssistantConfigurator
         },
         new()
         {
+            Id = "qiniu",
+            DisplayName = "Qiniu",
+            Endpoint = "https://api.qnaigc.com/v1",
+            OfficialWebsiteUrl = "https://www.qiniu.com",
+            DarkIconUrl = "avares://Everywhere.Core/Assets/Icons/qiniu-color.svg",
+            LightIconUrl = "avares://Everywhere.Core/Assets/Icons/qiniu-color.svg",
+            Schema = ModelProviderSchema.OpenAI,
+            ModelDefinitions =
+            [
+                new ModelDefinitionTemplate
+                {
+                    ModelId = "deepseek-v3",
+                    Name = "DeepSeek V3",
+                    SupportsReasoning = false,
+                    SupportsToolCall = true,
+                    InputModalities = Modalities.Text,
+                    OutputModalities = Modalities.Text,
+                    ContextLimit = 128_000,
+                    OutputLimit = 8_192,
+                    IsDefault = true
+                }
+            ]
+        },
+        new()
+        {
             Id = "moonshot",
             DisplayName = "Moonshot (Kimi)",
             Endpoint = "https://api.moonshot.cn/v1",
