@@ -2638,4 +2638,19 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>Visualizza i dettagli dei prezzi</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>Questo tipo di allegato non è supportato dal modello, ma il modello può comunque vedere i metadati e suggerire l'uso degli strumenti per elaborarlo.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>Chiamata agli strumenti bloccata dal modello.</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>Autorizzazione fallita ({0}): potresti aver annullato l'operazione o il server ha rifiutato la richiesta. {1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>La sessione di accesso è scaduta o presenta rischi di sicurezza. Per la sicurezza del tuo account, chiudi la pagina e riavvia il login.</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>Impossibile ottenere un codice di autorizzazione valido, riprova.</value>
+    </data>
 </root>

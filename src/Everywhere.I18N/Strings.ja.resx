@@ -2638,4 +2638,19 @@
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>価格の詳細を見る</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>この添付ファイルタイプはモデルでサポートされていませんが、モデルはメタデータを確認し、ツールを使用するように指示されます。</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>モデルによるツールの呼び出しがブロックされました。</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>認証に失敗しました ({0}): 操作をキャンセルしたか、サーバーがリクエストを拒否しました。{1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>ログインセッションが期限切れまたはセキュリティリスクがあります。アカウントの安全のため、ページを閉じて再度ログインを試みてください。</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>有効な認証情報を取得できませんでした。再試行してください。</value>
+    </data>
 </root>

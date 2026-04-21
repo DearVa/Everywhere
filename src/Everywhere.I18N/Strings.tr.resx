@@ -2637,4 +2637,19 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>Fiyatlandırma detaylarını görüntüle</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>Bu ek dosya türü model tarafından desteklenmiyor, ancak model yine de meta verileri görebilir ve araç kullanması için yönlendirilebilir.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>Modelin araç çağrısı engellendi.</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>Yetkilendirme hatası ({0}): İşlemi iptal etmiş olabilirsiniz veya sunucu isteği reddetti. {1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>Giriş oturumu süresi dolmuş veya güvenlik riski var. Hesabınızın güvenliği için lütfen sayfayı kapatın ve tekrar giriş yapın.</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>Geçerli bir yetkilendirme belgesi alınamadı, lütfen tekrar deneyin.</value>
+    </data>
 </root>

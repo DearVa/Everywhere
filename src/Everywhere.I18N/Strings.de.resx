@@ -2637,4 +2637,19 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>Preisinformationen anzeigen</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>Dieser Anhangstyp wird vom Modell nicht unterstützt, aber das Modell kann weiterhin die Metadaten sehen und aufgefordert werden, das Tool zu verwenden.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>Das Modell kann das Tool nicht aufrufen.</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>Autorisierung fehlgeschlagen ({0}): Möglicherweise haben Sie die Aktion abgebrochen oder der Server hat die Anfrage abgelehnt. {1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>Die Anmeldesitzung ist abgelaufen oder es liegt ein Sicherheitsrisiko vor. Bitte schließen Sie die Seite und starten Sie die Anmeldung erneut, um die Sicherheit Ihres Kontos zu gewährleisten.</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>Es konnte kein gültiges Autorisierungstoken abgerufen werden. Bitte versuchen Sie es erneut.</value>
+    </data>
 </root>

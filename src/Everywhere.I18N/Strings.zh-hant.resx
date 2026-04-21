@@ -2638,4 +2638,19 @@
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>查看定價詳情</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>此附件類型不被模型支持，但模型仍可看到元數據並被提示使用工具處理</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>已阻止模型調用工具。</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>授權失敗 ({0}): 您可能取消了操作，或伺服器拒絕了請求。{1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>登錄會話已過期或存在安全風險。為了您的帳號安全，請關閉頁面後重新發起登錄。</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>未能獲取到有效的授權憑證，請重試。</value>
+    </data>
 </root>

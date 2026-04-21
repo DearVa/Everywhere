@@ -2638,4 +2638,19 @@
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>Посмотреть детали цен</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>Этот тип вложения не поддерживается моделью, но модель все равно может видеть метаданные и предложить использовать инструменты для обработки.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>Вызов инструментов моделью заблокирован.</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>Ошибка авторизации ({0}): Вы могли отменить операцию или сервер отклонил запрос. {1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>Сессия входа истекла или существует риск безопасности. Для безопасности вашего аккаунта закройте страницу и повторно начните вход.</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>Не удалось получить действительные учетные данные для авторизации, пожалуйста, попробуйте снова.</value>
+    </data>
 </root>

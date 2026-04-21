@@ -2639,18 +2639,18 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>View Pricing Details</value>
     </data>
     <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
-        <value />
+        <value>This attachment type is not supported by the model, but the model can still see the metadata and be prompted to use tools to process it.</value>
     </data>
     <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
-        <value />
+        <value>The model is blocked from calling tools.</value>
     </data>
     <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
-        <value />
+        <value>Authorization failed ({0}): You may have canceled the operation, or the server denied the request. {1}</value>
     </data>
     <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
-        <value />
+        <value>The login session has expired or there is a security risk. For your account's safety, please close the page and re-initiate the login.</value>
     </data>
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
-        <value />
+        <value>Failed to obtain a valid authorization credential, please try again.</value>
     </data>
 </root>

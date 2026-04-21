@@ -2638,4 +2638,19 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="OfficialModelDefinitionForm_PricingTextBlock_Text" xml:space="preserve">
         <value>Voir les détails des prix</value>
     </data>
+    <data name="ChatAttachmentItemsControl_FileAttachment_NotSupportToolTip_Tip" xml:space="preserve">
+        <value>Ce type de fichier n'est pas pris en charge par le modèle, mais le modèle peut toujours voir les métadonnées et être invité à utiliser des outils.</value>
+    </data>
+    <data name="HandledFunctionInvokingException_FunctionCallingDisabled" xml:space="preserve">
+        <value>L'appel d'outils par le modèle est désactivé.</value>
+    </data>
+    <data name="OAuthCloudClient_OAuthError" xml:space="preserve">
+        <value>Échec de l'autorisation ({0}) : Vous avez peut-être annulé l'opération ou le serveur a refusé la demande. {1}</value>
+    </data>
+    <data name="OAuthCloudClient_InvalidState" xml:space="preserve">
+        <value>La session de connexion a expiré ou présente un risque de sécurité. Pour la sécurité de votre compte, veuillez fermer la page et relancer la connexion.</value>
+    </data>
+    <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
+        <value>Impossible d'obtenir un jeton d'autorisation valide, veuillez réessayer.</value>
+    </data>
 </root>
