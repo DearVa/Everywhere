@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -27,15 +28,15 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
 
     public IVisualElement? FocusedElement => TryCreateVisualElement(Automation.FocusedElement);
 
-    public IVisualElement? ElementFromPoint(PixelPoint point, ScreenSelectionMode mode = ScreenSelectionMode.Element)
+    public IVisualElement? ElementFromPoint(PixelPoint point, ScreenSelectionModes modes = ScreenSelectionModes.Element)
     {
-        switch (mode)
+        switch (modes)
         {
-            case ScreenSelectionMode.Element:
+            case ScreenSelectionModes.Element:
             {
                 return TryCreateVisualElement(() => Automation.FromPoint(new Point(point.X, point.Y)));
             }
-            case ScreenSelectionMode.Window:
+            case ScreenSelectionModes.Window:
             {
                 IVisualElement? element = TryCreateVisualElement(() => Automation.FromPoint(new Point(point.X, point.Y)));
                 while (element is AutomationVisualElementImpl { IsTopLevelWindow: false })
@@ -45,7 +46,7 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
 
                 return element;
             }
-            case ScreenSelectionMode.Screen:
+            case ScreenSelectionModes.Screen:
             {
                 var hMonitor = PInvoke.MonitorFromPoint(new Point(point.X, point.Y), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
                 return hMonitor == HMONITOR.Null ? null : new ScreenVisualElementImpl(hMonitor);
@@ -55,9 +56,9 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         return null;
     }
 
-    public IVisualElement? ElementFromPointer(ScreenSelectionMode mode = ScreenSelectionMode.Element)
+    public IVisualElement? ElementFromPointer(ScreenSelectionModes modes = ScreenSelectionModes.Element)
     {
-        return !PInvoke.GetCursorPos(out var point) ? null : ElementFromPoint(new PixelPoint(point.X, point.Y), mode);
+        return !PInvoke.GetCursorPos(out var point) ? null : ElementFromPoint(new PixelPoint(point.X, point.Y), modes);
     }
 
     public IVisualElement? ElementFromWindowHandle(IntPtr windowHandle)
@@ -65,9 +66,13 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         return TryCreateVisualElement(() => Automation.FromHandle(windowHandle));
     }
 
-    public Task<IVisualElement?> PickVisualElementAsync(ScreenSelectionMode? initialMode) => PickerSession.PickAsync(windowHelper, initialMode);
+    public Task<IVisualElement?> PickVisualElementAsync(ScreenSelectionModes? initialMode) =>
+        PickerSessionWindow.PickAsync(windowHelper, initialMode);
 
-    public Task<Bitmap?> TakeScreenshotAsync(ScreenSelectionMode? initialMode) => ScreenshotSession.TakeAsync(windowHelper, initialMode);
+    public Task<Bitmap?> TakeScreenshotAsync(ScreenSelectionModes? initialMode) => ScreenshotSessionWindow.TakeAsync(windowHelper, initialMode);
+
+    public Task<IReadOnlyList<IVisualElement>> SelectMultipleVisualElementsAsync(ScreenSelectionModes? initialMode) =>
+        MultiSelectionSessionWindow.SelectAsync(windowHelper, initialMode);
 
     private static AutomationVisualElementImpl? TryCreateVisualElement(Func<AutomationElement?> factory)
     {
@@ -75,6 +80,7 @@ public partial class VisualElementContext(IWindowHelper windowHelper) : IVisualE
         {
             if (factory() is { } element) return new AutomationVisualElementImpl(element);
         }
+        catch (COMException) { }
         catch (Exception ex)
         {
             Log.ForContext<VisualElementContext>().Error(
