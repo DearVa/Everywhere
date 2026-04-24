@@ -2653,4 +2653,10 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>No se pudo obtener un código de autorización válido, por favor intente de nuevo.</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>Desactivado</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>Solo es efectivo para algunos modelos, si hay un error, restaura a los valores predeterminados.</value>
+    </data>
 </root>

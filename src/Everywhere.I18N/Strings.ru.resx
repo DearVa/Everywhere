@@ -2653,4 +2653,10 @@
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>Не удалось получить действительные учетные данные для авторизации, пожалуйста, попробуйте снова.</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>Отключено</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>Применимо только к некоторым моделям, если возникла ошибка, восстановите значение по умолчанию.</value>
+    </data>
 </root>

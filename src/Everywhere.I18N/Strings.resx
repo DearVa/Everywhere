@@ -2657,6 +2657,6 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Disabled</value>
     </data>
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
-        <value />
+        <value>Only applicable to certain models; if an error occurs, please revert to the default value.</value>
     </data>
 </root>

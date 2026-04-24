@@ -2653,4 +2653,10 @@
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>有効な認証情報を取得できませんでした。再試行してください。</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>無効</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>一部のモデルにのみ有効です。エラーが発生した場合は、デフォルト値に戻してください。</value>
+    </data>
 </root>

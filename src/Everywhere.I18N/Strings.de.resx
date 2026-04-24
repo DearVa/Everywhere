@@ -2652,4 +2652,10 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>Es konnte kein gültiges Autorisierungstoken abgerufen werden. Bitte versuchen Sie es erneut.</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>Deaktiviert</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>Gilt nur für bestimmte Modelle. Bei Fehlern bitte auf den Standardwert zurücksetzen.</value>
+    </data>
 </root>

@@ -2653,4 +2653,10 @@
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>未能獲取到有效的授權憑證，請重試。</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>禁用</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>只對部分模型有效，如有錯誤請還原至默認值。</value>
+    </data>
 </root>

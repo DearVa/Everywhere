@@ -2653,4 +2653,10 @@
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>유효한 인증 자격 증명을 가져오지 못했습니다. 다시 시도해 주세요.</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>비활성화</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>일부 모델에만 적용되며, 오류가 발생하면 기본값으로 복원하세요.</value>
+    </data>
 </root>

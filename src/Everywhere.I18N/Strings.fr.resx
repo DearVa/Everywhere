@@ -2653,4 +2653,10 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="OAuthCloudClient_MissingCode" xml:space="preserve">
         <value>Impossible d'obtenir un jeton d'autorisation valide, veuillez réessayer.</value>
     </data>
+    <data name="ReasoningEffortLevel_Disabled" xml:space="preserve">
+        <value>Désactivé</value>
+    </data>
+    <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
+        <value>N'impacte que certains modèles, si une erreur se produit, veuillez revenir à la valeur par défaut.</value>
+    </data>
 </root>
