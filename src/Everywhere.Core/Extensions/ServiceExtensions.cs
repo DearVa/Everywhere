@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Everywhere.Extensions;
 
-public static class ServiceExtension
+public static class ServiceExtensions
 {
     extension(IServiceCollection services)
     {
