@@ -2659,4 +2659,16 @@
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>Применимо только к некоторым моделям, если возникла ошибка, восстановите значение по умолчанию.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Цвет темы</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Использовать системный цвет темы</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Настроить цвет</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Выберите цвет акцента для приложения.</value>
+    </data>
 </root>

@@ -2659,4 +2659,16 @@ Rueda o teclas numéricas para cambiar el modo de selección</value>
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>Solo es efectivo para algunos modelos, si hay un error, restaura a los valores predeterminados.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Color Del Tema</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Usar Color De Tema Del Sistema</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Color Personalizado</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Selecciona el color destacado de la aplicación.</value>
+    </data>
 </root>

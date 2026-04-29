@@ -2658,4 +2658,16 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>Sadece bazı modeller için geçerlidir, hata alırsanız varsayılan değere geri dönün.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Aksan Rengi</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Sistem aksan rengini kullan</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Özel renk</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Yazılımın vurgulama rengini seçin.</value>
+    </data>
 </root>

@@ -2660,15 +2660,15 @@ Use scroll wheel or number keys to switch selection mode</value>
         <value>Only applicable to certain models; if an error occurs, please revert to the default value.</value>
     </data>
     <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
-        <value />
+        <value>Accent Color</value>
     </data>
     <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
-        <value />
+        <value>Use System Accent Color</value>
     </data>
     <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
-        <value />
+        <value>Custom Color</value>
     </data>
     <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
-        <value />
+        <value>Choose the highlight color for the application.</value>
     </data>
 </root>

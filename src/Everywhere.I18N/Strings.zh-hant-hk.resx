@@ -2659,4 +2659,16 @@
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>只對部分模型有效，如有錯誤請還原至默認值。</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>主題色</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>使用系統主題色</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>自定義顏色</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>選擇軟件的高亮顏色。</value>
+    </data>
 </root>

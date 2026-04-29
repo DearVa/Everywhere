@@ -2659,4 +2659,16 @@ Utilisez la molette ou les touches numériques pour changer de mode de sélectio
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>N'impacte que certains modèles, si une erreur se produit, veuillez revenir à la valeur par défaut.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Couleur Thématique</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Utiliser la couleur thématique du système</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Couleur personnalisée</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Choisissez la couleur d'accentuation de l'application.</value>
+    </data>
 </root>

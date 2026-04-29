@@ -2659,4 +2659,16 @@
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>一部のモデルにのみ有効です。エラーが発生した場合は、デフォルト値に戻してください。</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>テーマカラー</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>システムテーマカラーを使用</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>カスタムカラー</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>アプリのハイライトカラーを選択します。</value>
+    </data>
 </root>

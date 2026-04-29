@@ -2659,4 +2659,16 @@
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>일부 모델에만 적용되며, 오류가 발생하면 기본값으로 복원하세요.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>테마 색상</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>시스템 테마 색상 사용</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>사용자 정의 색상</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>소프트웨어의 강조 색상을 선택하세요.</value>
+    </data>
 </root>

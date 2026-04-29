@@ -2658,4 +2658,16 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>Gilt nur für bestimmte Modelle. Bei Fehlern bitte auf den Standardwert zurücksetzen.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Akzentfarbe</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Systemakzentfarbe verwenden</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Benutzerdefinierte Farbe</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Wählen Sie die Hervorhebungsfarbe der Software.</value>
+    </data>
 </root>

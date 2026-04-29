@@ -2659,4 +2659,16 @@ Rotella o tasti numerici per cambiare modalità di selezione</value>
     <data name="PersistentState_ReasoningEffortLevel_Description" xml:space="preserve">
         <value>Valido solo per alcuni modelli, se si verifica un errore ripristina il valore predefinito.</value>
     </data>
+    <data name="DisplaySettings_AccentColor_Header" xml:space="preserve">
+        <value>Colore Tema</value>
+    </data>
+    <data name="AccentColorSelector_UseSystemAccentColorToolTip_Tip" xml:space="preserve">
+        <value>Usa il colore tema di sistema</value>
+    </data>
+    <data name="AccentColorSelector_CustomColorToolTip_Tip" xml:space="preserve">
+        <value>Colore personalizzato</value>
+    </data>
+    <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
+        <value>Scegli il colore di evidenziazione dell'app.</value>
+    </data>
 </root>
