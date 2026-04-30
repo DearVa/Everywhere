@@ -2284,6 +2284,9 @@
     <data name="Common_Undo" xml:space="preserve">
         <value>Отменить</value>
     </data>
+    <data name="ChatContextManager_DeletingToast_Content" xml:space="preserve">
+        <value>Удалено «{0}»</value>
+    </data>
     <data name="SettingsCategory_Settings_Display_Header" xml:space="preserve">
         <value>Отображение</value>
     </data>
