@@ -11,6 +11,7 @@ partial class VisualContextBuilder
     private string GenerateXmlString(Dictionary<string, VisualElementNode> visualElements)
     {
         var sb = new StringBuilder();
+        // BUG: This algorithm is wrong
         foreach (var rootElement in visualElements.Values.AsValueEnumerable().Where(e => e.Parent is null))
         {
             if (rootElement.Type is not VisualElementType.TopLevel and not VisualElementType.Screen)

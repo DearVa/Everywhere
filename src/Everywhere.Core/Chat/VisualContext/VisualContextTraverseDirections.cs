@@ -20,7 +20,7 @@ public enum VisualContextTraverseDirections
     /// <summary>
     /// previous sibling, child
     /// </summary>
-    PreviousSibling = 0x2,
+    PrevSibling = 0x2,
 
     /// <summary>
     /// next sibling, child
@@ -32,5 +32,5 @@ public enum VisualContextTraverseDirections
     /// </summary>
     Child = 0x8,
 
-    All = Parent | PreviousSibling | NextSibling | Child
+    All = Parent | PrevSibling | NextSibling | Child
 }

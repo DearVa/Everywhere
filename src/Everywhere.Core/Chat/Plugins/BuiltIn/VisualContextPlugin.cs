@@ -361,9 +361,9 @@ public sealed class VisualContextPlugin : BuiltInChatPlugin
             {
                 "parent" => VisualContextTraverseDirections.Parent,
                 "child" or "children" => VisualContextTraverseDirections.Child,
-                "previous" or "prev" => VisualContextTraverseDirections.PreviousSibling,
+                "previous" or "prev" => VisualContextTraverseDirections.PrevSibling,
                 "next" => VisualContextTraverseDirections.NextSibling,
-                "sibling" or "siblings" => VisualContextTraverseDirections.PreviousSibling | VisualContextTraverseDirections.NextSibling,
+                "sibling" or "siblings" => VisualContextTraverseDirections.PrevSibling | VisualContextTraverseDirections.NextSibling,
                 "all" => VisualContextTraverseDirections.All,
                 _ => VisualContextTraverseDirections.Core // unknown tokens are ignored
             });

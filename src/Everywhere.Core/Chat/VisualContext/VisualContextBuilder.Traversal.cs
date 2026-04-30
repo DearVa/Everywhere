@@ -92,7 +92,7 @@ partial class VisualContextBuilder
             var score = Direction switch
             {
                 VisualContextTraverseDirections.Parent => 2000.0f,
-                VisualContextTraverseDirections.PreviousSibling => 10000f,
+                VisualContextTraverseDirections.PrevSibling => 10000f,
                 VisualContextTraverseDirections.NextSibling => 10000f,
                 VisualContextTraverseDirections.Child => 1000.0f,
                 _ => throw new ArgumentOutOfRangeException()
@@ -198,7 +198,7 @@ partial class VisualContextBuilder
             direction,
             direction switch
             {
-                VisualContextTraverseDirections.PreviousSibling => previous?.SiblingIndex - 1 ?? 0,
+                VisualContextTraverseDirections.PrevSibling => previous?.SiblingIndex - 1 ?? 0,
                 VisualContextTraverseDirections.NextSibling => previous?.SiblingIndex + 1 ?? 0,
                 _ => 0
             },
@@ -553,12 +553,12 @@ partial class VisualContextBuilder
                     // Get two enumerators together, prohibited to dispose one before the other, causing resource reallocation.
                     var siblingAccessor = node.Element.SiblingAccessor;
 
-                    if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PreviousSibling))
+                    if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PrevSibling))
                         TryEnqueueTraversalNode(
                             priorityQueue,
                             node,
                             1,
-                            VisualContextTraverseDirections.PreviousSibling,
+                            VisualContextTraverseDirections.PrevSibling,
                             siblingAccessor.BackwardEnumerator);
 
                     if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.NextSibling))
@@ -593,12 +593,12 @@ partial class VisualContextBuilder
                 // Get two enumerators together, prohibited to dispose one before the other, causing resource reallocation.
                 var siblingAccessor = node.Element.SiblingAccessor;
 
-                if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PreviousSibling))
+                if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PrevSibling))
                     TryEnqueueTraversalNode(
                         priorityQueue,
                         node,
                         node.Distance.Reset(),
-                        VisualContextTraverseDirections.PreviousSibling,
+                        VisualContextTraverseDirections.PrevSibling,
                         siblingAccessor.BackwardEnumerator);
 
                 if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.NextSibling))
@@ -610,15 +610,15 @@ partial class VisualContextBuilder
                         siblingAccessor.ForwardEnumerator);
                 break;
             }
-            case VisualContextTraverseDirections.PreviousSibling:
+            case VisualContextTraverseDirections.PrevSibling:
             {
-                if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PreviousSibling))
+                if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.PrevSibling))
                     // In this case, node.Enumerator is the Previous Sibling enumerator
                     TryEnqueueTraversalNode(
                         priorityQueue,
                         node,
                         node.Distance.Step(),
-                        VisualContextTraverseDirections.PreviousSibling,
+                        VisualContextTraverseDirections.PrevSibling,
                         node.Enumerator);
 
                 if (allowedTraverseDirections.HasFlag(VisualContextTraverseDirections.Child))

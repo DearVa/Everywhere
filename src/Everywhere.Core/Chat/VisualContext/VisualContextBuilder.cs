@@ -237,6 +237,7 @@ public sealed partial class VisualContextBuilder(
     public Dictionary<int, IVisualElement> BuiltVisualElements { get; } = [];
 
     private readonly HashSet<string> _coreElementIdSet = coreElements
+        .AsValueEnumerable()
         .Select(e => e.Id)
         .Where(id => !string.IsNullOrEmpty(id))
         .ToHashSet(StringComparer.Ordinal);
