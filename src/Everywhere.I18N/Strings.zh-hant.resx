@@ -2672,4 +2672,40 @@
     <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
         <value>選擇軟體的高亮顏色。</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Prompt" xml:space="preserve">
+        <value>提出了 {0} 個問題</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Read" xml:space="preserve">
+        <value>讀取了 {0} 條待辦事項</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Reset" xml:space="preserve">
+        <value>設置了 {0} 條待辦事項</value>
+    </data>
+    <data name="BuiltInChatPlugin_ListWindows_ScreenCount" xml:space="preserve">
+        <value>找到 {0} 個窗口</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Result" xml:space="preserve">
+        <value>讀取了 {0} 個視覺元素</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Click" xml:space="preserve">
+        <value>點擊 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SendKey" xml:space="preserve">
+        <value>在 {0} 上按下 {1} 鍵</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SetText" xml:space="preserve">
+        <value>將 {0} 的文本設置為 {1}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Wait" xml:space="preserve">
+        <value>等待 {0} 毫秒</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetHwnd" xml:space="preserve">
+        <value>窗口 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetId" xml:space="preserve">
+        <value>元素 {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ExecuteConsent_Header" xml:space="preserve">
+        <value>是否允許執行下列自動化操作？</value>
+    </data>
 </root>

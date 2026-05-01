@@ -2671,4 +2671,40 @@ Seçim modunu değiştirmek için kaydırıcı veya rakam tuşlarını kullanın
     <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
         <value>Yazılımın vurgulama rengini seçin.</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Prompt" xml:space="preserve">
+        <value>{0} soru soruldu</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Read" xml:space="preserve">
+        <value>{0} adet yapılacak iş okundu</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Reset" xml:space="preserve">
+        <value>{0} adet yapılacak iş ayarlandı</value>
+    </data>
+    <data name="BuiltInChatPlugin_ListWindows_ScreenCount" xml:space="preserve">
+        <value>{0} pencere bulundu</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Result" xml:space="preserve">
+        <value>{0} görsel öğe okundu</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Click" xml:space="preserve">
+        <value>{0} üzerine tıkla</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SendKey" xml:space="preserve">
+        <value>{0} üzerinde {1} tuşuna bas</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SetText" xml:space="preserve">
+        <value>{0} metnini {1} olarak ayarla</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Wait" xml:space="preserve">
+        <value>{0} milisaniye bekle</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetHwnd" xml:space="preserve">
+        <value>pencere {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetId" xml:space="preserve">
+        <value>öğe {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ExecuteConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki otomatik işlemleri gerçekleştirmeye izin veriyor musunuz?</value>
+    </data>
 </root>

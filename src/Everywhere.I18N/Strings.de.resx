@@ -2671,4 +2671,40 @@ Scrollrad oder Zifferntasten zum Wechseln des Auswahlmodus</value>
     <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
         <value>Wählen Sie die Hervorhebungsfarbe der Software.</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Prompt" xml:space="preserve">
+        <value>{0} Fragen gestellt</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Read" xml:space="preserve">
+        <value>{0} To-Do-Elemente gelesen</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Reset" xml:space="preserve">
+        <value>{0} To-Do-Elemente gesetzt</value>
+    </data>
+    <data name="BuiltInChatPlugin_ListWindows_ScreenCount" xml:space="preserve">
+        <value>{0} Fenster gefunden</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Result" xml:space="preserve">
+        <value>{0} visuelle Elemente gelesen</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Click" xml:space="preserve">
+        <value>{0} klicken</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SendKey" xml:space="preserve">
+        <value>{1} Taste auf {0} drücken</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SetText" xml:space="preserve">
+        <value>Text von {0} auf {1} setzen</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Wait" xml:space="preserve">
+        <value>{0} Millisekunden warten</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetHwnd" xml:space="preserve">
+        <value>Fenster {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetId" xml:space="preserve">
+        <value>Element {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ExecuteConsent_Header" xml:space="preserve">
+        <value>Darf ich die folgenden Automatisierungsaktionen ausführen?</value>
+    </data>
 </root>

@@ -2672,4 +2672,40 @@
     <data name="DisplaySettings_AccentColor_Description" xml:space="preserve">
         <value>Выберите цвет акцента для приложения.</value>
     </data>
+    <data name="BuiltInChatPlugin_Essential_AskUserQuestion_Prompt" xml:space="preserve">
+        <value>Задано {0} вопросов</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Read" xml:space="preserve">
+        <value>Прочитано {0} задач</value>
+    </data>
+    <data name="BuiltInChatPlugin_Essential_ManageTodoList_Reset" xml:space="preserve">
+        <value>Установлено {0} задач</value>
+    </data>
+    <data name="BuiltInChatPlugin_ListWindows_ScreenCount" xml:space="preserve">
+        <value>Найдено {0} окон</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_GetVisualTree_Result" xml:space="preserve">
+        <value>Прочитано {0} визуальных элементов</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Click" xml:space="preserve">
+        <value>Нажать {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SendKey" xml:space="preserve">
+        <value>Нажать клавишу {1} на {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_SetText" xml:space="preserve">
+        <value>Установить текст {0} на {1}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_Wait" xml:space="preserve">
+        <value>Подождать {0} миллисекунд</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetHwnd" xml:space="preserve">
+        <value>Окно {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ActionDescription_TargetId" xml:space="preserve">
+        <value>Элемент {0}</value>
+    </data>
+    <data name="BuiltInChatPlugin_VisualContext_ExecuteVisualActions_ExecuteConsent_Header" xml:space="preserve">
+        <value>Разрешаете ли вы выполнение следующих автоматизированных действий?</value>
+    </data>
 </root>
