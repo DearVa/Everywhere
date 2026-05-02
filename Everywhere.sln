@@ -13,7 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Everywhere.Mac", "src\Every
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3DA99C4E-89E3-4049-9C22-0A7EC60D83D8}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.gitmodules = .gitmodules
@@ -31,9 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rd", "3rd", "{53D93485-1520-4753-81CE-DA1CFF334372}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.I18N.SourceGenerator", "src\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj", "{A68C1BEB-0FC2-4A47-BFEB-E96BB14A9913}"
 EndProject
@@ -99,8 +95,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Configuration.So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.I18N", "src\Everywhere.I18N\Everywhere.I18N.csproj", "{86706D25-90AA-49CF-99B0-FE90F31A2BCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Windows.PowerShell", "src\Everywhere.Windows.PowerShell\Everywhere.Windows.PowerShell.csproj", "{8F99D00A-320D-4813-AE2C-13F903B39F80}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Targets", "Targets", "{1759E8BE-00FC-4797-8F24-FC2B1242E1F0}"
 	ProjectSection(SolutionItems) = preProject
 		src\Build.Watchdog.targets = src\Build.Watchdog.targets
@@ -120,6 +114,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Abstractions.Tests", "tests\Everywhere.Abstractions.Tests\Everywhere.Abstractions.Tests.csproj", "{9561A317-E9E5-4B18-9A3B-17D9BE54592A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everywhere.Patches", "src\Everywhere.Patches\Everywhere.Patches.csproj", "{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Porta.Pty", "Porta.Pty", "{23677091-FD65-4644-8EEA-6516242675F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Porta.Pty", "3rd\Porta.Pty\src\Porta.Pty\Porta.Pty.csproj", "{626FA42F-96AD-4842-B02A-565996FFEAD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Porta.Pty.Tests", "3rd\Porta.Pty\src\Porta.Pty.Tests\Porta.Pty.Tests.csproj", "{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -203,10 +203,6 @@ Global
 		{86706D25-90AA-49CF-99B0-FE90F31A2BCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86706D25-90AA-49CF-99B0-FE90F31A2BCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86706D25-90AA-49CF-99B0-FE90F31A2BCA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F99D00A-320D-4813-AE2C-13F903B39F80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F99D00A-320D-4813-AE2C-13F903B39F80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F99D00A-320D-4813-AE2C-13F903B39F80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F99D00A-320D-4813-AE2C-13F903B39F80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62900E41-0B12-4AD8-A71A-2D8C2C4D033A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62900E41-0B12-4AD8-A71A-2D8C2C4D033A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62900E41-0B12-4AD8-A71A-2D8C2C4D033A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -223,6 +219,14 @@ Global
 		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5ED5DDEA-372D-49EE-80AD-E64F8DEBC74D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{626FA42F-96AD-4842-B02A-565996FFEAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{626FA42F-96AD-4842-B02A-565996FFEAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{626FA42F-96AD-4842-B02A-565996FFEAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{626FA42F-96AD-4842-B02A-565996FFEAD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,6 +248,9 @@ Global
 		{1F3E1A58-51BB-46BD-815D-966D1BF0AB21} = {53D93485-1520-4753-81CE-DA1CFF334372}
 		{62900E41-0B12-4AD8-A71A-2D8C2C4D033A} = {1F3E1A58-51BB-46BD-815D-966D1BF0AB21}
 		{9561A317-E9E5-4B18-9A3B-17D9BE54592A} = {9933B251-881A-4638-8995-EB7CC5370002}
+		{23677091-FD65-4644-8EEA-6516242675F7} = {53D93485-1520-4753-81CE-DA1CFF334372}
+		{626FA42F-96AD-4842-B02A-565996FFEAD4} = {23677091-FD65-4644-8EEA-6516242675F7}
+		{8E78D5CD-D25C-4C6D-B796-BC2C56976CD1} = {23677091-FD65-4644-8EEA-6516242675F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83CB65B8-011F-4ED7-BCD3-A6CFA935EF7E}

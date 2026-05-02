@@ -69,7 +69,8 @@ public static class ServiceExtension
                 .AddTransient<BuiltInChatPlugin, EssentialPlugin>()
                 .AddTransient<BuiltInChatPlugin, VisualContextPlugin>()
                 .AddTransient<BuiltInChatPlugin, WebBrowserPlugin>()
-                .AddTransient<BuiltInChatPlugin, FileSystemPlugin>();
+                .AddTransient<BuiltInChatPlugin, FileSystemPlugin>()
+                .AddTransient<BuiltInChatPlugin, TerminalPlugin>();
 
     }
 }

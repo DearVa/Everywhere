@@ -58,8 +58,8 @@ public static class Program
                 #endregion
 
                 #region Chat Plugins
+
                 .AddTransient<BuiltInChatPlugin, SystemPlugin>()
-                .AddTransient<BuiltInChatPlugin, ZshPlugin>()
 
                 #endregion
                 
