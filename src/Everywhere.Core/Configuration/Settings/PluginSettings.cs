@@ -31,7 +31,12 @@ public sealed partial class PluginSettings : SettingsBase
     /// <summary>
     /// Gets or sets the web search engine settings.
     /// </summary>
-    public WebSearchEngineSettings WebSearchEngine { get; set; } = new();
+    public WebSearchEnginePluginSettings WebSearchEngine { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the terminal settings.
+    /// </summary>
+    public TerminalPluginSettings Terminal { get; set; } = new();
 }
 
 /// <summary>

@@ -26,9 +26,9 @@ public sealed partial class WebBrowserPlugin : BuiltInChatPlugin
     public override IDynamicResourceKey DescriptionKey { get; } = new DynamicResourceKey(LocaleKey.BuiltInChatPlugin_WebBrowser_Description);
     public override LucideIconKind? Icon => LucideIconKind.Globe;
 
-    public override IReadOnlyList<SettingsItem> SettingsItems => _webSearchEngineSettings.SettingsItems;
+    public override IReadOnlyList<SettingsItem> SettingsItems => _pluginSettings.SettingsItems;
 
-    private readonly WebSearchEngineSettings _webSearchEngineSettings;
+    private readonly WebSearchEnginePluginSettings _pluginSettings;
     private readonly IWatchdogManager _watchdogManager;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IServiceProvider _serviceProvider;
@@ -65,7 +65,7 @@ public sealed partial class WebBrowserPlugin : BuiltInChatPlugin
         IServiceProvider serviceProvider,
         ILoggerFactory loggerFactory) : base("web_browser")
     {
-        _webSearchEngineSettings = settings.Plugin.WebSearchEngine;
+        _pluginSettings = settings.Plugin.WebSearchEngine;
         _watchdogManager = watchdogManager;
         _httpClientFactory = httpClientFactory;
         _serviceProvider = serviceProvider;
@@ -109,7 +109,7 @@ public sealed partial class WebBrowserPlugin : BuiltInChatPlugin
                     ChatFunctionPermissions.NetworkAccess));
         });
 
-        new ObjectObserver(HandleSettingsChanged).Observe(_webSearchEngineSettings);
+        new ObjectObserver(HandleSettingsChanged).Observe(_pluginSettings);
     }
 
     private void HandleSettingsChanged(in ObjectObserverChangedEventArgs e)
@@ -125,7 +125,7 @@ public sealed partial class WebBrowserPlugin : BuiltInChatPlugin
 
         _logger.LogDebug("Ensuring web search engine connector is initialized.");
 
-        if (_webSearchEngineSettings.SelectedProvider is not { } provider)
+        if (_pluginSettings.SelectedProvider is not { } provider)
         {
             throw new HandledException(
                 new ArgumentException("Web search engine provider is not selected."),

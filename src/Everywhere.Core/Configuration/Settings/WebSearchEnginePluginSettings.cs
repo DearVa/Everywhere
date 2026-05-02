@@ -81,7 +81,7 @@ public sealed partial class WebSearchEngineProvider(ObservableCollection<ApiKey>
 }
 
 [GeneratedSettingsItems]
-public sealed partial class WebSearchEngineSettings : ObservableObject
+public sealed partial class WebSearchEnginePluginSettings : ObservableObject
 {
     [HiddenSettingsItem]
     public ObservableDictionary<WebSearchEngineProviderId, WebSearchEngineProvider> Providers { get; }
@@ -93,8 +93,8 @@ public sealed partial class WebSearchEngineSettings : ObservableObject
 
     [JsonIgnore]
     [DynamicResourceKey(
-        LocaleKey.WebSearchEngineProvider_Header,
-        LocaleKey.WebSearchEngineProvider_Description)]
+        LocaleKey.WebSearchEnginePluginSettings_SelectedProvider_Header,
+        LocaleKey.WebSearchEnginePluginSettings_SelectedProvider_Description)]
     [SettingsItems(IsExpanded = true)]
     [SettingsSelectionItem(
         $"{nameof(Providers)}.{nameof(Providers.Values)}",
@@ -113,7 +113,7 @@ public sealed partial class WebSearchEngineSettings : ObservableObject
     [HiddenSettingsItem]
     public partial ObservableCollection<ApiKey> ApiKeys { get; set; }
 
-    public WebSearchEngineSettings()
+    public WebSearchEnginePluginSettings()
     {
         ApiKeys = [];
         Providers = new ObservableDictionary<WebSearchEngineProviderId, WebSearchEngineProvider>
