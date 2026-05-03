@@ -22,7 +22,7 @@ public sealed class FallbackEnumConverter(Type type) : EnumConverter(type)
             {
                 try
                 {
-                    return Convert.ChangeType(defaultValue, type, CultureInfo.InvariantCulture);
+                    return Convert.ChangeType(defaultValue, EnumType, CultureInfo.InvariantCulture);
                 }
                 catch
                 {
