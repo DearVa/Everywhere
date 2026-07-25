@@ -1183,11 +1183,35 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>Permitir mover o arquivo?</value>
     </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
+        <value>Permitir copiar os seguintes arquivos ou pastas?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
+        <value>Permitir mover os seguintes arquivos ou pastas?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+        <value>De</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+        <value>Copiar para</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+        <value>Mover para</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
         <value>Permitir criar uma pasta?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
         <value>Permitir escrever no arquivo?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
+        <value>Permitir criar e escrever nos seguintes arquivos?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
+        <value>Permitir adicionar conteúdo aos seguintes arquivos?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
+        <value>Permitir sobrescrever os seguintes arquivos?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
         <value>Criar este arquivo.</value>
@@ -1257,6 +1281,9 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>Mover ou Renomear Arquivo</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
+        <value>Copiar ou mover arquivos</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
         <value>Excluir Arquivos</value>
@@ -1353,6 +1380,9 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>Mova ou renomeie arquivos ou pastas.</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
+        <value>Copiar ou mover arquivos ou pastas.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
         <value>Exclua arquivos ou pastas no caminho especificado.</value>
@@ -1797,7 +1827,7 @@ Use a roda do mouse ou as teclas numéricas para alternar o modo de seleção.</
         <value>Anterior</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value></value>
+        <value>Digite sua resposta...</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
@@ -3784,5 +3814,11 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     </data>
     <data name="AssistantToolSettings_ToolCallDisabled_Content" xml:space="preserve">
         <value>Este assistente teve a chamada da ferramenta desativada. Ative acima para configurar as ferramentas disponíveis.</value>
+    </data>
+    <data name="AskQuestionCard_PageDisplay" xml:space="preserve">
+        <value>Página {0} de {1}</value>
+    </data>
+    <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
+        <value>Opcional: digite uma resposta adicional…</value>
     </data>
 </root>

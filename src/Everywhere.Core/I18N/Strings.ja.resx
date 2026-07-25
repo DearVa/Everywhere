@@ -1182,11 +1182,35 @@
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>Allow file move?</value>
     </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
+        <value>以下のファイルまたはフォルダーをコピーしてもよろしいですか？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
+        <value>以下のファイルまたはフォルダーを移動してもよろしいですか？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+        <value>から</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+        <value>コピー先</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+        <value>移動先</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
         <value>Allow directory creation?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
         <value>Allow file write?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
+        <value>以下のファイルを作成して書き込んでもよろしいですか？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
+        <value>以下のファイルに内容を追加してもよろしいですか？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
+        <value>以下のファイルに上書きしてもよろしいですか？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
         <value>Create this file.</value>
@@ -1256,6 +1280,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>ファイルを移動または名前変更</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
+        <value>ファイルをコピーまたは移動</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
         <value>ファイルを削除</value>
@@ -1352,6 +1379,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>ファイルまたはディレクトリを移動または名前変更します。</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
+        <value>ファイルまたはフォルダーをコピーまたは移動します。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
         <value>指定されたパスにあるファイルまたはディレクトリを削除します。</value>
@@ -1796,7 +1826,7 @@
         <value>前へ</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value></value>
+        <value>回答を入力...</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
@@ -3783,5 +3813,11 @@
     </data>
     <data name="AssistantToolSettings_ToolCallDisabled_Content" xml:space="preserve">
         <value>このアシスタントはツール呼び出しが無効になっています。上で有効にしてから、使用可能なツールを設定してください。</value>
+    </data>
+    <data name="AskQuestionCard_PageDisplay" xml:space="preserve">
+        <value>{0} / {1}</value>
+    </data>
+    <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
+        <value>オプション：追加の回答を入力…</value>
     </data>
 </root>

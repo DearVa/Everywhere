@@ -1182,11 +1182,35 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>Allow file move?</value>
     </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki dosya veya klasörlerin kopyalanmasına izin veriyor musunuz?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki dosya veya klasörlerin taşınmasına izin veriyor musunuz?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+        <value>Şuradan</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+        <value>Şuraya kopyala</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+        <value>Şuraya taşı</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
         <value>Allow directory creation?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
         <value>Allow file write?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki dosyaların oluşturulmasına ve yazılmasına izin veriyor musunuz?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki dosyalara içerik eklenmesine izin veriyor musunuz?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
+        <value>Aşağıdaki dosyaların üzerine yazılmasına izin veriyor musunuz?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
         <value>Create this file.</value>
@@ -1256,6 +1280,9 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>Dosyayı Taşı veya Yeniden Adlandır</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
+        <value>Dosya Kopyala veya Taşı</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
         <value>Dosya(lar) Sil</value>
@@ -1352,6 +1379,9 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>Bir dosya veya dizini taşıyın veya yeniden adlandırın.</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
+        <value>Dosya veya klasör kopyalama veya taşıma işlemi.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
         <value>Belirtilen yoldaki dosya veya dizinleri silin.</value>
@@ -1796,7 +1826,7 @@ Seçim modlarını değiştirmek için kaydırma tekerleğini veya sayı tuşlar
         <value>Önceki</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value></value>
+        <value>Cevabınızı girin...</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
@@ -3783,5 +3813,11 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
     </data>
     <data name="AssistantToolSettings_ToolCallDisabled_Content" xml:space="preserve">
         <value>Bu asistanın araç çağrısı kapatıldı. Yukarıda etkinleştirdikten sonra kullanılabilir araçları yapılandırın.</value>
+    </data>
+    <data name="AskQuestionCard_PageDisplay" xml:space="preserve">
+        <value>{0}. sayfa, toplam {1} sayfa</value>
+    </data>
+    <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
+        <value>Opsiyonel: Ek cevap girin...</value>
     </data>
 </root>
