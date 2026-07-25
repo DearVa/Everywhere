@@ -1797,7 +1797,7 @@ Use a roda do mouse ou as teclas numéricas para alternar o modo de seleção.</
         <value>Anterior</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value></value>
+        <value>Digite sua resposta...</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
@@ -3784,5 +3784,11 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     </data>
     <data name="AssistantToolSettings_ToolCallDisabled_Content" xml:space="preserve">
         <value>Este assistente teve a chamada da ferramenta desativada. Ative acima para configurar as ferramentas disponíveis.</value>
+    </data>
+    <data name="AskQuestionCard_PageDisplay" xml:space="preserve">
+        <value>Página {0} de {1}</value>
+    </data>
+    <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
+        <value>Opcional: Digite uma resposta adicional...</value>
     </data>
 </root>
