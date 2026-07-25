@@ -41,6 +41,9 @@ Read this reference before modifying Avalonia controls, Views, Presentation obje
 
 ## Animation and Layout
 
+- Use the simplest panel that directly expresses the layout intent. When multiple controls only need to share a single layout slot, prefer `Panel` over `Grid`.
+- When one child should keep its natural size and another should fill the remaining space, prefer `DockPanel`, docking the size-constrained child and leaving the fill child last. Use `HorizontalSpacing` or `VerticalSpacing` for separation.
+- Reserve `Grid` for layouts that genuinely require row or column sizing and alignment.
 - Use `RenderTransform` and opacity for visual-only movement and fading. These do not participate in measure or arrange and should be preferred over changing layout dimensions for animation.
 - Do not rebuild controls merely to animate a state change. Maintain stable control identity and animate the visual properties that changed.
 - Keep animation state minimal and tied to the real control lifetime. Avoid speculative fallback state machines unless the product requirement calls for them.

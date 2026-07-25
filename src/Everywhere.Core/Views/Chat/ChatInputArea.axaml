@@ -324,7 +324,9 @@
               </Button.IsEnabled>
 
               <LucideIcon
-                Margin="-2,0,0,-2" Kind="Send"
+                Margin="-2,0,0,-2"
+                Foreground="{DynamicResource PrimaryForegroundColor}"
+                Kind="Send"
                 Size="{DynamicResource FontSizeL}"/>
             </Button>
 
@@ -335,7 +337,7 @@
               ToolTip.Tip="{I18N {x:Static LocaleKey.ChatInputArea_CancelButton_ToolTip}}">
               <Border
                 Width="12" Height="12"
-                Background="{DynamicResource ForegroundColor}"
+                Background="{DynamicResource PrimaryForegroundColor}"
                 CornerRadius="1"/>
             </Button>
           </StackPanel>

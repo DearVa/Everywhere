@@ -94,9 +94,12 @@
                           Size="14"/>
                         <TextBlock
                           FontSize="{DynamicResource FontSizeS}"
-                          Text="{Binding FullPath}"
-                          TextTrimming="PathSegmentEllipsis"
-                          ToolTip.Tip="{Binding FullPath}"/>
+                          Text="{Binding FullPath, Mode=OneTime}"
+                          TextTrimming="PathSegmentEllipsis">
+                          <Interaction.Behaviors>
+                            <shadui:TextTrimmedToolTipBehavior Tip="{Binding FullPath, Mode=OneTime}"/>
+                          </Interaction.Behaviors>
+                        </TextBlock>
                       </StackPanel>
                     </HyperlinkButton.Content>
                   </HyperlinkButton>

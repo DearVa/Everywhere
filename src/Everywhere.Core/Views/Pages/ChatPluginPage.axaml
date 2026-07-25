@@ -139,6 +139,7 @@
 
         <shadui:ControlGroup
           HorizontalAlignment="Right" VerticalAlignment="Center"
+          CornerRadius="{DynamicResource FullCornerRadius}"
           IsVisible="{Binding #McpTabItem.IsSelected}"
           Orientation="Horizontal">
           <Button

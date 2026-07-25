@@ -40,16 +40,16 @@
         </DataTemplate>
 
         <DataTemplate x:DataType="plugins:ChatPluginFileReferencesActivityPreview">
-          <Grid
-            ColumnDefinitions="Auto,*" ColumnSpacing="4">
+          <DockPanel HorizontalSpacing="4">
             <TextBlock
-              Classes="Muted" VerticalAlignment="Center"
+              Classes="Muted" DockPanel.Dock="Left"
+              VerticalAlignment="Center"
               FontSize="{DynamicResource FontSizeXs}"
               IsVisible="{Binding PrefixKey, Converter={x:Static ObjectConverters.IsNotNull}}"
               Text="{Binding PrefixKey^, FallbackValue={x:Null}}"
               TextWrapping="NoWrap"/>
             <ItemsControl
-              Grid.Column="1" HorizontalAlignment="Stretch"
+              HorizontalAlignment="Stretch"
               ItemsSource="{Binding References}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -61,33 +61,38 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="plugins:ChatPluginFileReference">
                   <Button
-                    Classes="Ghost Compact" Padding="5,1"
-                    Command="{Binding OpenFileLocationCommand}"
-                    ToolTip.Tip="{Binding FullPath}">
-                    <Grid
-                      ColumnDefinitions="Auto,*" ColumnSpacing="3">
+                    x:Name="FileReferenceButton" Classes="Ghost Compact"
+                    Padding="5,1"
+                    Command="{Binding OpenFileLocationCommand}">
+                    <DockPanel HorizontalSpacing="3">
                       <LucideIcon
-                        Kind="File" Size="12"/>
+                        DockPanel.Dock="Left" Kind="File"
+                        Size="12"/>
                       <TextBlock
-                        Grid.Column="1"
                         FontSize="{DynamicResource FontSizeXs}"
                         Text="{Binding FullPath}"
-                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                    </Grid>
+                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                        <Interaction.Behaviors>
+                          <shadui:TextTrimmedToolTipBehavior
+                            Target="{Binding #FileReferenceButton}"
+                            Tip="{Binding FullPath}"/>
+                        </Interaction.Behaviors>
+                      </TextBlock>
+                    </DockPanel>
                   </Button>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
-          </Grid>
+          </DockPanel>
         </DataTemplate>
 
         <DataTemplate x:DataType="plugins:ChatPluginFileTransferActivityPreview">
           <StackPanel
             Orientation="Horizontal" Spacing="4">
             <Button
-              Classes="Ghost Compact" Padding="5,1"
-              Command="{Binding Source.OpenFileLocationCommand}"
-              ToolTip.Tip="{Binding Source.FullPath}">
+              x:Name="SourceFileButton" Classes="Ghost Compact"
+              Padding="5,1"
+              Command="{Binding Source.OpenFileLocationCommand}">
               <StackPanel
                 Orientation="Horizontal" Spacing="3">
                 <LucideIcon
@@ -95,16 +100,22 @@
                 <TextBlock
                   FontSize="{DynamicResource FontSizeXs}"
                   Text="{Binding Source.FullPath}"
-                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                  <Interaction.Behaviors>
+                    <shadui:TextTrimmedToolTipBehavior
+                      Target="{Binding #SourceFileButton}"
+                      Tip="{Binding Source.FullPath}"/>
+                  </Interaction.Behaviors>
+                </TextBlock>
               </StackPanel>
             </Button>
             <TextBlock
               Classes="Muted" VerticalAlignment="Center"
               Text="→"/>
             <Button
-              Classes="Ghost Compact" Padding="5,1"
-              Command="{Binding Destination.OpenFileLocationCommand}"
-              ToolTip.Tip="{Binding Destination.FullPath}">
+              x:Name="DestinationFileButton" Classes="Ghost Compact"
+              Padding="5,1"
+              Command="{Binding Destination.OpenFileLocationCommand}">
               <StackPanel
                 Orientation="Horizontal" Spacing="3">
                 <LucideIcon
@@ -112,7 +123,13 @@
                 <TextBlock
                   FontSize="{DynamicResource FontSizeXs}"
                   Text="{Binding Destination.FullPath}"
-                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                  <Interaction.Behaviors>
+                    <shadui:TextTrimmedToolTipBehavior
+                      Target="{Binding #DestinationFileButton}"
+                      Tip="{Binding Destination.FullPath}"/>
+                  </Interaction.Behaviors>
+                </TextBlock>
               </StackPanel>
             </Button>
           </StackPanel>
@@ -142,10 +159,10 @@
                   Command="{Binding $parent[v:ChatMessageItemsControl].OpenUrlCommand}"
                   CommandParameter="{Binding}"
                   ToolTip.Tip="{Binding AbsoluteUri}">
-                  <Grid
-                    ColumnDefinitions="Auto,*" ColumnSpacing="3">
+                  <DockPanel HorizontalSpacing="3">
                     <Panel
-                      Width="12" Height="12">
+                      DockPanel.Dock="Left" Width="12"
+                      Height="12">
                       <Image
                         x:Name="FaviconImage" MaxWidth="12"
                         MaxHeight="12" md:AsyncImageLoader.SizeToContent="Manual"
@@ -155,11 +172,10 @@
                         Kind="Link" Size="12"/>
                     </Panel>
                     <TextBlock
-                      Grid.Column="1"
                       FontSize="{DynamicResource FontSizeXs}"
                       Text="{Binding Converter={x:Static vc:UrlConverters.ToHost}}"
                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
-                  </Grid>
+                  </DockPanel>
                 </Button>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
