@@ -73,7 +73,7 @@
       <TransitioningContentControl.PageTransition>
         <CrossFade
           FadeInEasing="CubicEaseInOut" FadeOutEasing="CubicEaseInOut"
-          Duration="0:0:0.4"/>
+          FillMode="None" Duration="0:0:0.4"/>
       </TransitioningContentControl.PageTransition>
     </TransitioningContentControl>
   </DockPanel>
