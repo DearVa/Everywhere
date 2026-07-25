@@ -1178,16 +1178,40 @@
         <value>拒绝所有</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header" xml:space="preserve">
-        <value>即将删除 {0} 个文件或文件夹</value>
+        <value>允许删除下列文件或文件夹？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>允许移动文件？</value>
     </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
+        <value>允许复制下列文件或文件夹？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
+        <value>允许移动下列文件或文件夹？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+        <value>从</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+        <value>复制到</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+        <value>移动到</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
-        <value>允许创建目录？</value>
+        <value>允许创建下列文件夹？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
         <value>允许写入文件？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
+        <value>允许创建并写入下列文件？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
+        <value>允许向下列文件追加内容？</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
+        <value>允许覆盖写入下列文件？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
         <value>创建此文件。</value>
@@ -1257,6 +1281,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>移动或重命名文件</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
+        <value>复制或移动文件</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
         <value>删除一个或多个文件</value>
@@ -1353,6 +1380,9 @@
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>移动或重命名文件或文件夹。</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
+        <value>复制或移动文件或文件夹。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
         <value>删除指定路径的文件或文件夹。</value>

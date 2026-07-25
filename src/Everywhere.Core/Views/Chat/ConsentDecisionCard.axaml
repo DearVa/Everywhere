@@ -12,161 +12,156 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="v:ConsentDecisionCard">
-          <Border
+          <Expander
+            Classes="ReverseIcon" Padding="12,8"
             BorderBrush="{DynamicResource BorderColor}"
             BorderThickness="1" ClipToBounds="True"
-            CornerRadius="{DynamicResource MdCornerRadius}">
-            <Expander
-              Classes="ReverseIcon" Padding="8"
-              BorderThickness="0" CornerRadius="0"
-              IsExpanded="True">
-              <Expander.Styles>
-                <Style Selector="shadui|ContentExpandControl#PART_ContentExpand">
-                  <Setter Property="ClipToBounds" Value="False"/>
-                </Style>
-              </Expander.Styles>
+            CornerRadius="{DynamicResource 2XlCornerRadius}"
+            IsExpanded="True">
+            <Expander.Styles>
+              <Style Selector="shadui|ContentExpandControl#PART_ContentExpand">
+                <Setter Property="ClipToBounds" Value="False"/>
+              </Style>
+            </Expander.Styles>
 
-              <Expander.Header>
-                <!--  Question text  -->
-                <DockPanel
-                  HorizontalSpacing="4" IsHitTestVisible="False">
-                  <LucideIcon
-                    DockPanel.Dock="Left" Kind="CircleQuestionMark"
-                    Size="{DynamicResource FontSizeL}"/>
+            <Expander.Header>
+              <!--  Question text  -->
+              <DockPanel
+                HorizontalSpacing="4" IsHitTestVisible="False">
+                <LucideIcon
+                  DockPanel.Dock="Left" Kind="BadgeInfo"
+                  Size="{DynamicResource FontSizeL}"/>
 
-                  <ContentPresenter
-                    Content="{TemplateBinding Header}"
-                    IsVisible="{TemplateBinding Header, Converter={x:Static ObjectConverters.IsNotNull}}"
-                    TextWrapping="Wrap"/>
-                </DockPanel>
-              </Expander.Header>
+                <ContentPresenter
+                  Content="{TemplateBinding Header}"
+                  IsVisible="{TemplateBinding Header, Converter={x:Static ObjectConverters.IsNotNull}}"
+                  TextWrapping="Wrap"/>
+              </DockPanel>
+            </Expander.Header>
 
-              <StackPanel Spacing="8">
-                <Border
-                  Margin="-8,0"
-                  Background="{DynamicResource SecondaryCardBackgroundColor}"
-                  BorderBrush="{DynamicResource BorderColor}"
-                  BorderThickness="0,1"
-                  IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}">
-                  <ScrollViewer
-                    MaxHeight="320" HorizontalScrollBarVisibility="Disabled">
-                    <v:ChatPluginDisplayBlockPresenter
-                      Background="Transparent"
-                      Content="{TemplateBinding Content}"/>
-                  </ScrollViewer>
-                </Border>
+            <StackPanel Spacing="8">
+              <ScrollViewer
+                MaxHeight="320" Margin="-12,0"
+                HorizontalScrollBarVisibility="Disabled">
+                <v:ChatPluginDisplayBlockPresenter
+                  Margin="12,0" Background="Transparent"
+                  Content="{TemplateBinding Content}"/>
+              </ScrollViewer>
 
-                <DockPanel
-                  HorizontalAlignment="Right" HorizontalSpacing="4"
-                  IsVisible="{TemplateBinding IsReasonInputVisible, Converter={x:Static BoolConverters.Not}}">
-                  <shadui:ControlGroup
-                    DockPanel.Dock="Left"
-                    CornerRadius="{DynamicResource SmCornerRadius}"
-                    Orientation="Horizontal">
-                    <Button
-                      Classes="Primary Compact"
-                      Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
-                      CommandParameter="{x:Static permissions:ConsentDecisionKind.AllowOnce}"
-                      Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowOnce}}"/>
-                    <Button
-                      Classes="Primary Compact"
-                      IsVisible="{Binding HasMoreCommands, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}">
-                      <Button.Flyout>
-                        <MenuFlyout>
-                          <MenuFlyout.ItemsSource>
-                            <shadui:CompositeCollection>
-                              <MenuItem
-                                Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
-                                CommandParameter="{x:Static permissions:ConsentDecisionKind.AllowSession}"
-                                Header="{I18N {x:Static LocaleKey.ConsentDecision_AllowSession}}"
-                                IsVisible="{Binding CanAllowSession, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"/>
-                              <MenuItem
-                                Classes="Destructive"
-                                Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
-                                CommandParameter="{x:Static permissions:ConsentDecisionKind.AlwaysAllow}"
-                                Header="{I18N {x:Static LocaleKey.ConsentDecision_AlwaysAllow}}"
-                                IsVisible="{Binding CanAlwaysAllow, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"/>
-                              <shadui:CompositeCollection ItemsSource="{Binding $parent[v:ConsentDecisionCard].CustomOptions}">
-                                <shadui:CompositeCollection.ItemTemplate>
-                                  <DataTemplate x:DataType="plugins:RequestConsentCustomOption">
-                                    <MenuItem
-                                      Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
-                                      CommandParameter="{Binding Mode=OneTime}"
-                                      Header="{Binding HeaderKey^}">
-                                      <MenuItem.Icon>
-                                        <LucideIcon
-                                          IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneTime}"
-                                          Kind="{Binding Icon, Mode=OneTime}"
-                                          Size="{DynamicResource FontSizeL}"/>
-                                      </MenuItem.Icon>
-                                    </MenuItem>
-                                  </DataTemplate>
-                                </shadui:CompositeCollection.ItemTemplate>
-                              </shadui:CompositeCollection>
+              <DockPanel
+                Margin="-4,0" HorizontalAlignment="Right"
+                HorizontalSpacing="4"
+                IsVisible="{TemplateBinding IsReasonInputVisible, Converter={x:Static BoolConverters.Not}}">
+                <shadui:ControlGroup
+                  DockPanel.Dock="Left"
+                  CornerRadius="{DynamicResource FullCornerRadius}"
+                  Orientation="Horizontal">
+                  <Button
+                    Classes="Primary Compact"
+                    Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
+                    CommandParameter="{x:Static permissions:ConsentDecisionKind.AllowOnce}"
+                    Content="{I18N {x:Static LocaleKey.ConsentDecision_AllowOnce}}"/>
+                  <Button
+                    Classes="Primary Compact"
+                    IsVisible="{Binding HasMoreCommands, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}">
+                    <Button.Flyout>
+                      <MenuFlyout>
+                        <MenuFlyout.ItemsSource>
+                          <shadui:CompositeCollection>
+                            <MenuItem
+                              Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
+                              CommandParameter="{x:Static permissions:ConsentDecisionKind.AllowSession}"
+                              Header="{I18N {x:Static LocaleKey.ConsentDecision_AllowSession}}"
+                              IsVisible="{Binding CanAllowSession, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"/>
+                            <MenuItem
+                              Classes="Destructive"
+                              Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
+                              CommandParameter="{x:Static permissions:ConsentDecisionKind.AlwaysAllow}"
+                              Header="{I18N {x:Static LocaleKey.ConsentDecision_AlwaysAllow}}"
+                              IsVisible="{Binding CanAlwaysAllow, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"/>
+                            <shadui:CompositeCollection ItemsSource="{Binding $parent[v:ConsentDecisionCard].CustomOptions}">
+                              <shadui:CompositeCollection.ItemTemplate>
+                                <DataTemplate x:DataType="plugins:RequestConsentCustomOption">
+                                  <MenuItem
+                                    Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}, Mode=OneTime}"
+                                    CommandParameter="{Binding Mode=OneTime}"
+                                    Header="{Binding HeaderKey^}">
+                                    <MenuItem.Icon>
+                                      <LucideIcon
+                                        IsVisible="{Binding Icon, Converter={x:Static ObjectConverters.IsNotNull}, Mode=OneTime}"
+                                        Kind="{Binding Icon, Mode=OneTime}"
+                                        Size="{DynamicResource FontSizeL}"/>
+                                    </MenuItem.Icon>
+                                  </MenuItem>
+                                </DataTemplate>
+                              </shadui:CompositeCollection.ItemTemplate>
                             </shadui:CompositeCollection>
-                          </MenuFlyout.ItemsSource>
-                        </MenuFlyout>
-                      </Button.Flyout>
+                          </shadui:CompositeCollection>
+                        </MenuFlyout.ItemsSource>
+                      </MenuFlyout>
+                    </Button.Flyout>
 
-                      <LucideIcon
-                        Kind="ChevronDown"
-                        Size="{DynamicResource FontSizeM}"/>
-                    </Button>
-                  </shadui:ControlGroup>
+                    <LucideIcon
+                      Kind="ChevronDown"
+                      Size="{DynamicResource FontSizeM}"/>
+                  </Button>
+                </shadui:ControlGroup>
 
-                  <shadui:ControlGroup
-                    CornerRadius="{DynamicResource SmCornerRadius}"
-                    Orientation="Horizontal">
-                    <Button
-                      Classes="Secondary Compact"
-                      Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                      CommandParameter="{x:Static permissions:ConsentDecisionKind.Deny}"
-                      Content="{I18N {x:Static LocaleKey.ConsentDecision_Deny}}"/>
-                    <Button
-                      Classes="Secondary Compact"
-                      IsVisible="{TemplateBinding CanDenyWithReason}">
-                      <Button.Flyout>
-                        <MenuFlyout>
-                          <MenuItem
-                            Command="{Binding $parent[v:ConsentDecisionCard].SetIsReasonInputVisibleCommand}"
-                            CommandParameter="{x:True}"
-                            Header="{I18N {x:Static LocaleKey.ConsentDecisionCard_DenyWithReasonMenuItem_Header}}"/>
-                        </MenuFlyout>
-                      </Button.Flyout>
-
-                      <LucideIcon
-                        Kind="ChevronDown"
-                        Size="{DynamicResource FontSizeM}"/>
-                    </Button>
-                  </shadui:ControlGroup>
-                </DockPanel>
-
-                <DockPanel
-                  HorizontalAlignment="Stretch" HorizontalSpacing="4"
-                  IsVisible="{TemplateBinding IsReasonInputVisible}">
+                <shadui:ControlGroup
+                  CornerRadius="{DynamicResource FullCornerRadius}"
+                  Orientation="Horizontal">
                   <Button
-                    Classes="Secondary Compact" DockPanel.Dock="Left"
-                    Command="{Binding SetIsReasonInputVisibleCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                    CommandParameter="{x:False}"
-                    Content="{I18N {x:Static LocaleKey.Common_Cancel}}"/>
-
-                  <Button
-                    Classes="Primary Compact" DockPanel.Dock="Right"
+                    Classes="Secondary Compact"
                     Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
                     CommandParameter="{x:Static permissions:ConsentDecisionKind.Deny}"
-                    Content="{I18N {x:Static LocaleKey.Common_Submit}}"/>
+                    Content="{I18N {x:Static LocaleKey.ConsentDecision_Deny}}"/>
+                  <Button
+                    Classes="Secondary Compact"
+                    IsVisible="{TemplateBinding CanDenyWithReason}">
+                    <Button.Flyout>
+                      <MenuFlyout>
+                        <MenuItem
+                          Command="{Binding $parent[v:ConsentDecisionCard].SetIsReasonInputVisibleCommand}"
+                          CommandParameter="{x:True}"
+                          Header="{I18N {x:Static LocaleKey.ConsentDecisionCard_DenyWithReasonMenuItem_Header}}"/>
+                      </MenuFlyout>
+                    </Button.Flyout>
 
-                  <TextBox
-                    Classes="Compact" VerticalAlignment="Stretch"
-                    VerticalContentAlignment="Stretch" AcceptsReturn="False"
-                    AcceptsTab="False" MaxLines="1"
-                    PlaceholderText="{I18N {x:Static LocaleKey.ConsentDecisionCard_ReasonTextBox_PlaceholderText}}"
-                    Text="{TemplateBinding Reason, Mode=TwoWay}"
-                    TextWrapping="NoWrap"/>
-                </DockPanel>
-              </StackPanel>
-            </Expander>
-          </Border>
+                    <LucideIcon
+                      Kind="ChevronDown"
+                      Size="{DynamicResource FontSizeM}"/>
+                  </Button>
+                </shadui:ControlGroup>
+              </DockPanel>
+
+              <DockPanel
+                Margin="-4,0" HorizontalAlignment="Stretch"
+                HorizontalSpacing="4"
+                IsVisible="{TemplateBinding IsReasonInputVisible}">
+                <Button
+                  Classes="Ghost Compact Uniform" DockPanel.Dock="Left"
+                  shadui:ButtonAssist.Icon="{LucideIconContent ArrowLeft}"
+                  Command="{Binding SetIsReasonInputVisibleCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:False}"/>
+
+                <Button
+                  Classes="Primary Compact" DockPanel.Dock="Right"
+                  Command="{Binding SubmitCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                  CommandParameter="{x:Static permissions:ConsentDecisionKind.Deny}"
+                  Content="{I18N {x:Static LocaleKey.Common_Submit}}"
+                  CornerRadius="{DynamicResource FullCornerRadius}"
+                  IsEnabled="{Binding Reason, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+
+                <TextBox
+                  Classes="Compact" VerticalAlignment="Stretch"
+                  VerticalContentAlignment="Stretch" AcceptsReturn="False"
+                  AcceptsTab="False" MaxLines="1"
+                  PlaceholderText="{I18N {x:Static LocaleKey.ConsentDecisionCard_ReasonTextBox_PlaceholderText}}"
+                  Text="{TemplateBinding Reason, Mode=TwoWay}"
+                  TextWrapping="NoWrap"/>
+              </DockPanel>
+            </StackPanel>
+          </Expander>
         </ControlTemplate>
       </Setter.Value>
     </Setter>

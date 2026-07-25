@@ -10,18 +10,12 @@
   <ControlTheme
     x:Key="{x:Type v:ChatPluginDisplayBlockPresenter}"
     TargetType="v:ChatPluginDisplayBlockPresenter">
-    <Setter Property="Background" Value="{DynamicResource CardBackgroundColor}"/>
     <Setter Property="Template">
       <ControlTemplate TargetType="v:ChatPluginDisplayBlockPresenter">
-        <Border
-          Padding="4"
-          Background="{TemplateBinding Background}"
-          CornerRadius="4">
-          <ContentPresenter
-            x:Name="PART_ContentPresenter"
-            Content="{TemplateBinding Content}"
-            ContentTemplate="{TemplateBinding ContentTemplate}"/>
-        </Border>
+        <ContentPresenter
+          x:Name="PART_ContentPresenter"
+          Content="{TemplateBinding Content}"
+          ContentTemplate="{TemplateBinding ContentTemplate}"/>
       </ControlTemplate>
     </Setter>
 
@@ -29,6 +23,11 @@
       <DataTemplates>
         <DataTemplate DataType="plugins:ChatPluginContainerDisplayBlock">
           <ItemsControl ItemsSource="{Binding Children}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="4"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <v:ChatPluginDisplayBlockPresenter Content="{Binding}"/>
@@ -83,7 +82,6 @@
               <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="plugins:ChatPluginFileReference">
                   <HyperlinkButton
-                    Padding="2"
                     Command="{Binding OpenFileLocationCommand}"
                     TextBlock.TextTrimming="CharacterEllipsis">
                     <HyperlinkButton.Content>

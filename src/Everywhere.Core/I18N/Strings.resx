@@ -1177,16 +1177,40 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Discard All</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header" xml:space="preserve">
-        <value>{0} files or folders will be deleted</value>
+        <value>Allow deleting the following files or folders?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>Allow file move?</value>
     </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
+        <value>Allow copying the following file or folder?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
+        <value>Allow moving the following file or folder?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+        <value>From</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+        <value>Copy to</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+        <value>Move to</value>
+    </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
-        <value>Allow directory creation?</value>
+        <value>Allow creating the following folder?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
         <value>Allow file write?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
+        <value>Allow creating and writing to the following file?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
+        <value>Allow appending to the following file?</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
+        <value>Allow overwriting the following file?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
         <value>Create this file.</value>
@@ -1256,6 +1280,9 @@ My intelligence is powered by large language models, and I need your help to con
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>Move or Rename File</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
+        <value>Copy or Move File</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
         <value>Delete File(s)</value>
@@ -1352,6 +1379,9 @@ My intelligence is powered by large language models, and I need your help to con
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>Move or rename a file or directory.</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
+        <value>Copy or move a file or directory.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
         <value>Delete files or directories at the specified path.</value>
