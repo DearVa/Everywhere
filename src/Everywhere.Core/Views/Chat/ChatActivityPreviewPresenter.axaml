@@ -63,22 +63,19 @@
                   <Button
                     x:Name="FileReferenceButton" Classes="Ghost Compact"
                     Padding="5,1"
+                    shadui:ButtonAssist.Icon="{LucideIconContent File}"
+                    shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
                     Command="{Binding OpenFileLocationCommand}">
-                    <DockPanel HorizontalSpacing="3">
-                      <LucideIcon
-                        DockPanel.Dock="Left" Kind="File"
-                        Size="12"/>
-                      <TextBlock
-                        FontSize="{DynamicResource FontSizeXs}"
-                        Text="{Binding FullPath}"
-                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
-                        <Interaction.Behaviors>
-                          <shadui:TextTrimmedToolTipBehavior
-                            Target="{Binding #FileReferenceButton}"
-                            Tip="{Binding FullPath}"/>
-                        </Interaction.Behaviors>
-                      </TextBlock>
-                    </DockPanel>
+                    <TextBlock
+                      FontSize="{DynamicResource FontSizeXs}"
+                      Text="{Binding FullPath}"
+                      TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                      <Interaction.Behaviors>
+                        <shadui:TextTrimmedToolTipBehavior
+                          Target="{Binding #FileReferenceButton}"
+                          Tip="{Binding FullPath}"/>
+                      </Interaction.Behaviors>
+                    </TextBlock>
                   </Button>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -87,50 +84,44 @@
         </DataTemplate>
 
         <DataTemplate x:DataType="plugins:ChatPluginFileTransferActivityPreview">
-          <StackPanel
-            Orientation="Horizontal" Spacing="4">
+          <StackPanel Orientation="Horizontal">
             <Button
               x:Name="SourceFileButton" Classes="Ghost Compact"
               Padding="5,1"
+              shadui:ButtonAssist.Icon="{LucideIconContent File}"
+              shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
               Command="{Binding Source.OpenFileLocationCommand}">
-              <StackPanel
-                Orientation="Horizontal" Spacing="3">
-                <LucideIcon
-                  Kind="File" Size="12"/>
-                <TextBlock
-                  FontSize="{DynamicResource FontSizeXs}"
-                  Text="{Binding Source.FullPath}"
-                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
-                  <Interaction.Behaviors>
-                    <shadui:TextTrimmedToolTipBehavior
-                      Target="{Binding #SourceFileButton}"
-                      Tip="{Binding Source.FullPath}"/>
-                  </Interaction.Behaviors>
-                </TextBlock>
-              </StackPanel>
+              <TextBlock
+                FontSize="{DynamicResource FontSizeXs}"
+                Text="{Binding Source.FullPath}"
+                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                <Interaction.Behaviors>
+                  <shadui:TextTrimmedToolTipBehavior
+                    Target="{Binding #SourceFileButton}"
+                    Tip="{Binding Source.FullPath}"/>
+                </Interaction.Behaviors>
+              </TextBlock>
             </Button>
             <TextBlock
               Classes="Muted" VerticalAlignment="Center"
-              Text="→"/>
+              FontSize="{DynamicResource FontSizeXs}"
+              Text="{Binding ActionKey^}"/>
             <Button
               x:Name="DestinationFileButton" Classes="Ghost Compact"
               Padding="5,1"
+              shadui:ButtonAssist.Icon="{LucideIconContent File}"
+              shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
               Command="{Binding Destination.OpenFileLocationCommand}">
-              <StackPanel
-                Orientation="Horizontal" Spacing="3">
-                <LucideIcon
-                  Kind="File" Size="12"/>
-                <TextBlock
-                  FontSize="{DynamicResource FontSizeXs}"
-                  Text="{Binding Destination.FullPath}"
-                  TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
-                  <Interaction.Behaviors>
-                    <shadui:TextTrimmedToolTipBehavior
-                      Target="{Binding #DestinationFileButton}"
-                      Tip="{Binding Destination.FullPath}"/>
-                  </Interaction.Behaviors>
-                </TextBlock>
-              </StackPanel>
+              <TextBlock
+                FontSize="{DynamicResource FontSizeXs}"
+                Text="{Binding Destination.FullPath}"
+                TextTrimming="CharacterEllipsis" TextWrapping="NoWrap">
+                <Interaction.Behaviors>
+                  <shadui:TextTrimmedToolTipBehavior
+                    Target="{Binding #DestinationFileButton}"
+                    Tip="{Binding Destination.FullPath}"/>
+                </Interaction.Behaviors>
+              </TextBlock>
             </Button>
           </StackPanel>
         </DataTemplate>

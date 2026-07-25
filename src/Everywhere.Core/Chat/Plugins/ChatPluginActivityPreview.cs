@@ -45,10 +45,13 @@ public sealed class ChatPluginFileReferencesActivityPreview(
 /// </summary>
 public sealed class ChatPluginFileTransferActivityPreview(
     ChatPluginFileReference source,
+    IDynamicLocaleKey actionKey,
     ChatPluginFileReference destination
 ) : ChatPluginActivityPreview
 {
     public ChatPluginFileReference Source { get; } = source;
+
+    public IDynamicLocaleKey ActionKey { get; } = actionKey;
 
     public ChatPluginFileReference Destination { get; } = destination;
 }

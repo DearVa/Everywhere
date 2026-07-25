@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -42,7 +43,7 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             list.Add(new BuiltInChatFunction(GetFileInformationAsync, ChatFunctionPermissions.FileRead));
             list.Add(new BuiltInChatFunction(SearchFileContentAsync, ChatFunctionPermissions.FileRead));
             list.Add(new BuiltInChatFunction(ReadFileAsync, ChatFunctionPermissions.FileRead));
-            list.Add(new BuiltInChatFunction(MoveFileAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
+            list.Add(new BuiltInChatFunction(TransferFileAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
             list.Add(new BuiltInChatFunction(DeleteFilesAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
             list.Add(new BuiltInChatFunction(CreateDirectoryAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
             list.Add(new BuiltInChatFunction(WriteToFileAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
@@ -304,53 +305,129 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         return BuildReadOutput(context.Path, result);
     }
 
-    [KernelFunction("move_file")]
-    [Description("Moves or renames a local file or directory.")]
-    [DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_MoveFile_Header, LocaleKey.BuiltInChatPlugin_FileSystem_MoveFile_Description)]
-    [FriendlyFunctionCallContentRenderer(typeof(FileRenderer))]
-    private async Task MoveFileAsync(
+    [KernelFunction("transfer_file")]
+    [Description(
+        "Copies or moves a local file or directory to a new path. Moving to a new name renames it. " +
+        "The destination must not already exist.")]
+    [DynamicLocaleKey(
+        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Header,
+        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Description)]
+    [FriendlyFunctionCallContentRenderer(typeof(FileTransferRenderer))]
+    private async Task TransferFileAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [FromKernelServices] ChatContext chatContext,
-        string source,
-        string destination,
+        [Description("The existing local file or directory to copy or move.")] string source,
+        [Description("The destination path, including the final file or directory name.")] string destination,
+        [Description("The operation to perform: copy or move.")] FileTransferOperation operation,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Moving file from {Source} to {Destination}", source, destination);
+        _logger.LogDebug(
+            "{Operation} file from {Source} to {Destination}",
+            operation,
+            source,
+            destination);
 
         source = ExpandLocalPath(chatContext, source);
         destination = ExpandLocalPath(chatContext, destination);
+        if (operation is not FileTransferOperation.Copy and not FileTransferOperation.Move)
+        {
+            throw new HandledException(
+                new ArgumentOutOfRangeException(
+                    nameof(operation),
+                    operation,
+                    "The transfer_file operation must be either Copy or Move."),
+                LocaleKey.HandledSystemException_ArgumentOutOfRange);
+        }
+
         userInterface.ActivityPreview = new ChatPluginFileTransferActivityPreview(
             new ChatPluginFileReference(source),
+            new DynamicLocaleKey(
+                operation is FileTransferOperation.Copy ?
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyTo :
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveTo),
             new ChatPluginFileReference(destination));
         userInterface.DisplaySink.AppendFileReferences(
             new ChatPluginFileReference(source),
             new ChatPluginFileReference(destination));
 
+        var operationName = operation is FileTransferOperation.Copy ? "copy" : "move";
         var isFile = File.Exists(source);
         if (!isFile && !Directory.Exists(source))
         {
             throw new HandledException(
-                new FileNotFoundException($"The source path does not exist, so it cannot be moved: '{source}'.", source),
+                new FileNotFoundException($"The source path does not exist, so cannot {operationName}: '{source}'.", source),
                 LocaleKey.HandledSystemException_FileNotFound);
+        }
+
+        if (string.Equals(
+                Path.TrimEndingDirectorySeparator(source),
+                Path.TrimEndingDirectorySeparator(destination),
+                PathContainment.GetPathComparison()))
+        {
+            throw new HandledException(
+                new IOException($"The source and destination resolve to the same path, so the {operationName} operation cannot be performed."),
+                LocaleKey.HandledSystemException_IOException);
+        }
+
+        if (File.Exists(destination) || Directory.Exists(destination))
+        {
+            throw new HandledException(
+                new IOException($"The destination path already exists, so the {operationName} operation was not performed: '{destination}'."),
+                LocaleKey.HandledSystemException_IOException);
+        }
+
+        if (!isFile && PathContainment.IsInsideDirectory(destination, source))
+        {
+            throw new HandledException(
+                new IOException($"The destination directory is inside the source directory, so the {operationName} operation cannot be performed."),
+                LocaleKey.HandledSystemException_IOException);
         }
 
         var destinationDirectory = Path.GetDirectoryName(destination) ??
             throw new HandledException(
-                new DirectoryNotFoundException(
-                    $"The destination path does not contain a valid parent directory: '{destination}'."),
+                new DirectoryNotFoundException($"The destination path does not contain a valid parent directory: '{destination}'."),
                 LocaleKey.BuiltInChatPlugin_FileSystem_InvalidPath_ErrorMessage);
+
+        if (operation is FileTransferOperation.Copy && isFile && File.GetAttributes(source).HasFlag(FileAttributes.ReparsePoint))
+        {
+            throw new HandledException(
+                new NotSupportedException(
+                    $"The file copy was not performed because '{source}' is a symbolic link. Copying linked files is not supported."),
+                LocaleKey.HandledSystemException_NotSupported);
+        }
+
+        if (operation is FileTransferOperation.Copy && !isFile)
+        {
+            EnsureDirectoryCanBeCopied(new DirectoryInfo(source), cancellationToken);
+        }
 
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header),
-            null,
+            new DynamicLocaleKey(
+                operation is FileTransferOperation.Copy ?
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header :
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header),
             [source, destination],
+            () => CreateFileTransferContent(source, destination, operation),
             cancellationToken);
 
         Directory.CreateDirectory(destinationDirectory);
-        if (isFile) File.Move(source, destination, overwrite: false);
-        else Directory.Move(source, destination);
+        switch (operation)
+        {
+            case FileTransferOperation.Copy when isFile:
+                File.Copy(source, destination, overwrite: false);
+                break;
+            case FileTransferOperation.Copy:
+                CopyDirectory(new DirectoryInfo(source), destination, cancellationToken);
+                break;
+            case FileTransferOperation.Move when isFile:
+                File.Move(source, destination, overwrite: false);
+                break;
+            case FileTransferOperation.Move:
+                Directory.Move(source, destination);
+                break;
+        }
     }
 
     [KernelFunction("delete_files")]
@@ -396,11 +473,9 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new FormattedDynamicLocaleKey(
-                LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header,
-                new DirectLocaleKey(targets.Length)),
-            null,
+            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header),
             paths,
+            null,
             cancellationToken);
 
         var success = 0;
@@ -447,12 +522,21 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         path = ExpandLocalPath(chatContext, path);
         userInterface.ActivityPreview = CreateFilePreview(path);
         userInterface.DisplaySink.AppendFileReferences(new ChatPluginFileReference(path));
+        if (Directory.Exists(path)) return;
+        if (File.Exists(path))
+        {
+            throw new HandledException(
+                new IOException(
+                    $"The directory cannot be created because a file already exists at the requested path: '{path}'."),
+                LocaleKey.HandledSystemException_IOException);
+        }
+
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
             new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header),
-            null,
             [path],
+            null,
             cancellationToken);
         Directory.CreateDirectory(path);
     }
@@ -478,9 +562,14 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header),
-            new DynamicLocaleKey(GetWriteConsentDescriptionKey(append, exists)),
+            new DynamicLocaleKey(
+                exists ?
+                    append ?
+                        LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header :
+                        LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header :
+                    LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header),
             [context.Path],
+            null,
             cancellationToken);
         await context.Handler.WriteAsync(context, content, append, cancellationToken);
     }
@@ -547,13 +636,6 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
                     return new FileReviewResult(null, "All changes were rejected by user.");
                 }
 
-                await RequestFileOperationConsentAsync(
-                    userInterface,
-                    chatContext,
-                    new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_ReplaceFileContent_Consent_Header),
-                    null,
-                    [context.Path],
-                    token);
                 return new FileReviewResult(difference.Apply(original), difference.ToModelSummary(original, default));
             },
             cancellationToken);
@@ -798,12 +880,69 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         return Path.GetFullPath(Environment.ExpandEnvironmentVariables(path), workingDirectory);
     }
 
-    internal static string GetWriteConsentDescriptionKey(bool append, bool fileExists) =>
-        fileExists ?
-            append ?
-                LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Description :
-                LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Description :
-            LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description;
+    private static ChatPluginContainerDisplayBlock CreateFileTransferContent(string source, string destination, FileTransferOperation operation) =>
+        new()
+        {
+            new ChatPluginDynamicLocaleKeyDisplayBlock(
+                new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Consent_From),
+                "Muted"),
+            new ChatPluginFileReferencesDisplayBlock(new ChatPluginFileReference(source)),
+            new ChatPluginDynamicLocaleKeyDisplayBlock(
+                new DynamicLocaleKey(
+                    operation is FileTransferOperation.Copy ?
+                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyTo :
+                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveTo),
+                "Muted"),
+            new ChatPluginFileReferencesDisplayBlock(new ChatPluginFileReference(destination))
+        };
+
+    private static void EnsureDirectoryCanBeCopied(DirectoryInfo directory, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (directory.Attributes.HasFlag(FileAttributes.ReparsePoint))
+        {
+            throw new HandledException(
+                new NotSupportedException(
+                    $"The directory copy was not performed because '{directory.FullName}' is a symbolic link or directory junction. Copying linked directory trees is not supported."),
+                LocaleKey.HandledSystemException_NotSupported);
+        }
+
+        foreach (var entry in directory.EnumerateFileSystemInfos())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (entry.Attributes.HasFlag(FileAttributes.ReparsePoint))
+            {
+                throw new HandledException(
+                    new NotSupportedException(
+                        $"The directory copy was not performed because it contains a symbolic link or directory junction: '{entry.FullName}'. Copying linked directory trees is not supported."),
+                    LocaleKey.HandledSystemException_NotSupported);
+            }
+
+            if (entry is DirectoryInfo childDirectory)
+            {
+                EnsureDirectoryCanBeCopied(childDirectory, cancellationToken);
+            }
+        }
+    }
+
+    private static void CopyDirectory(DirectoryInfo source, string destination, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        Directory.CreateDirectory(destination);
+        foreach (var entry in source.EnumerateFileSystemInfos())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var target = Path.Combine(destination, entry.Name);
+            if (entry is DirectoryInfo directory)
+            {
+                CopyDirectory(directory, target, cancellationToken);
+            }
+            else
+            {
+                ((FileInfo)entry).CopyTo(target, overwrite: false);
+            }
+        }
+    }
 
     /// <summary>
     /// Creates the compact request preview used by file operations. The detailed file reference is
@@ -817,8 +956,8 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         IChatPluginUserInterface userInterface,
         ChatContext chatContext,
         IDynamicLocaleKey headerKey,
-        IDynamicLocaleKey? descriptionKey,
         string[] paths,
+        Func<ChatPluginDisplayBlock>? contentFactory,
         CancellationToken cancellationToken)
     {
         if (chatContext.FunctionCallContext.Value?.BypassesApproval is true) return;
@@ -832,14 +971,11 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
 
         if (_fileSystemSettings.ArePathsApproved(paths)) return;
 
-        // Build container. TODO: concise description, e.g. Move file
-        var container = new ChatPluginContainerDisplayBlock();
-        if (descriptionKey is not null) container.Add(new ChatPluginDynamicLocaleKeyDisplayBlock(descriptionKey));
-        container.Add(
+        var content = contentFactory?.Invoke() ??
             new ChatPluginFileReferencesDisplayBlock(paths.AsValueEnumerable().Select(path => new ChatPluginFileReference(path)).ToArray())
             {
                 TotalReferenceCount = paths.Length
-            });
+            };
 
         // Build custom options
         var commonParentDirectory = PathContainment.GetCommonParentDirectory(paths);
@@ -872,7 +1008,7 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         var consent = await userInterface.RequestConsentAsync(
             Guid.CreateVersion7().ToString(), // Random, not remembered
             headerKey,
-            container,
+            content,
             RequestConsentRememberMasks.AllowOnce,
             customOptions,
             cancellationToken: cancellationToken);
@@ -1035,6 +1171,13 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
 
     private readonly record struct SearchLineAllocation(SearchFileGroup File, int Added, double Remainder);
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    private enum FileTransferOperation
+    {
+        Copy,
+        Move
+    }
+
     /// <summary>
     /// Renders the path argument as a friendly file reference in the chat UI.
     /// </summary>
@@ -1044,5 +1187,24 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             arguments.TryGetValue("path", out var value) && value is string path ?
                 new ChatPluginFileReferencesDisplayBlock(new ChatPluginFileReference(path)) :
                 null;
+    }
+
+    /// <summary>
+    /// Renders both endpoints and the requested direction of a file transfer.
+    /// </summary>
+    private sealed class FileTransferRenderer : IFriendlyFunctionCallContentRenderer
+    {
+        public ChatPluginDisplayBlock? Render(KernelArguments arguments)
+        {
+            if (!arguments.TryGetValue("source", out var sourceValue) || sourceValue is not string source ||
+                !arguments.TryGetValue("destination", out var destinationValue) || destinationValue is not string destination ||
+                !arguments.TryGetValue("operation", out var operationValue) ||
+                !Enum.TryParse<FileTransferOperation>(operationValue?.ToString(), ignoreCase: true, out var operation))
+            {
+                return null;
+            }
+
+            return CreateFileTransferContent(source, destination, operation);
+        }
     }
 }
