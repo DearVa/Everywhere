@@ -1796,7 +1796,7 @@ Rueda de desplazamiento o teclas numéricas para cambiar modos de selección</va
         <value>Anterior</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value>Escribe tu respuesta…</value>
+        <value></value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

@@ -174,7 +174,7 @@
                       Classes.WaitingForUserInput="{Binding IsWaitingForUserInput}"
                       Foreground="{DynamicResource WarningColor}"
                       IsVisible="{Binding IsRunning}"
-                      Kind="TriangleAlert"
+                      Kind="BadgeInfo"
                       Size="{DynamicResource FontSizeL}">
                       <LucideIcon.Styles>
                         <Style Selector="LucideIcon#PART_WaitingIndicator">

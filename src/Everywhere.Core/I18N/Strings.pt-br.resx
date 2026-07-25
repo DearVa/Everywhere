@@ -1797,7 +1797,7 @@ Use a roda do mouse ou as teclas numéricas para alternar o modo de seleção.</
         <value>Anterior</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value>Digite sua resposta…</value>
+        <value></value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

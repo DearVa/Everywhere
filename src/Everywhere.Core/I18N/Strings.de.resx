@@ -1796,7 +1796,7 @@ Scrollrad oder Zifferntasten zum Wechseln der Auswahlmodi</value>
         <value>Vorheriger</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value>Geben Sie Ihre Antwort ein…</value>
+        <value></value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>

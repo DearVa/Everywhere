@@ -1796,7 +1796,7 @@
         <value>上一個</value>
     </data>
     <data name="AskQuestionCard_FreeformTextBox_PlaceholderText" xml:space="preserve">
-        <value>輸入你的回答…</value>
+        <value></value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_SearchFiles_OperationStarted_Message" xml:space="preserve">
         <value>📂 {0}</value>
