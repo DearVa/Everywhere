@@ -114,6 +114,8 @@ public class OpenAIKernelMixin : KernelMixin
         /// </summary>
         private void BeforeStreamingRequestHook(List<ChatMessage> messages, ref ChatOptions? options)
         {
+            options = OpenAICompatibleToolSchemaTransformer.Transform(options);
+
             if (!owner._options.IncludeReasoningContent) return;
 
             options ??= new ChatOptions();

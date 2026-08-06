@@ -432,6 +432,8 @@ internal sealed class GeminiRequest
         JsonNode? node = JsonNode.Parse(jsonElement.GetRawText());
         if (node is JsonObject rootObject)
         {
+            JsonObject referenceRoot = (JsonObject)rootObject.DeepClone();
+            ResolveReferences(rootObject, referenceRoot, []);
             TransformOpenApi3Object(rootObject);
         }
 
@@ -439,9 +441,50 @@ internal sealed class GeminiRequest
 
         static void TransformOpenApi3Object(JsonObject obj)
         {
-            if (obj.TryGetPropertyValue("additionalProperties", out _))
+            List<string> constraints = [];
+
+            if (obj.TryGetPropertyValue("additionalProperties", out JsonNode? additionalPropertiesNode))
             {
                 obj.Remove("additionalProperties");
+                if (additionalPropertiesNode is JsonValue additionalPropertiesValue &&
+                    additionalPropertiesValue.TryGetValue(out bool allowsAdditionalProperties))
+                {
+                    if (allowsAdditionalProperties)
+                    {
+                        constraints.Add($"additionalProperties={additionalPropertiesNode.ToJsonString()}");
+                    }
+                }
+                else if (additionalPropertiesNode is not null)
+                {
+                    constraints.Add($"additionalProperties={additionalPropertiesNode.ToJsonString()}");
+                }
+            }
+
+            if (obj.TryGetPropertyValue("propertyNames", out JsonNode? propertyNamesNode))
+            {
+                obj.Remove("propertyNames");
+                if (propertyNamesNode is not JsonObject propertyNamesObject ||
+                    propertyNamesObject.Count != 1 ||
+                    !propertyNamesObject.TryGetPropertyValue("type", out JsonNode? propertyNamesTypeNode) ||
+                    propertyNamesTypeNode?.GetValue<string>() != "string")
+                {
+                    constraints.Add($"propertyNames={propertyNamesNode?.ToJsonString() ?? "null"}");
+                }
+            }
+
+            if (obj.TryGetPropertyValue("const", out JsonNode? constNode))
+            {
+                obj.Remove("const");
+                obj["enum"] = new JsonArray(constNode?.DeepClone());
+            }
+
+            if (obj.TryGetPropertyValue("oneOf", out JsonNode? oneOfNode))
+            {
+                obj.Remove("oneOf");
+                if (!obj.ContainsKey("anyOf"))
+                {
+                    obj["anyOf"] = oneOfNode;
+                }
             }
 
             if (obj.TryGetPropertyValue("properties", out JsonNode? propsNode) && propsNode is JsonObject properties)
@@ -451,7 +494,7 @@ internal sealed class GeminiRequest
                     if (property.Value is JsonObject propertyObj)
                     {
                         // Handle enum properties - add "type": "string" if missing
-                        if (propertyObj.TryGetPropertyValue("enum", out JsonNode? enumNode) && !propertyObj.ContainsKey("type"))
+                        if (propertyObj.TryGetPropertyValue("enum", out _) && !propertyObj.ContainsKey("type"))
                         {
                             propertyObj["type"] = JsonValue.Create("string");
                         }
@@ -493,7 +536,170 @@ internal sealed class GeminiRequest
                     }
                 }
             }
+
+            if (obj.TryGetPropertyValue("anyOf", out JsonNode? rootAnyOfNode) && rootAnyOfNode is JsonArray rootAnyOfArray)
+            {
+                foreach (var anyOfObj in rootAnyOfArray.OfType<JsonObject>())
+                {
+                    TransformOpenApi3Object(anyOfObj);
+                }
+            }
+
+            foreach (var property in obj.ToList())
+            {
+                if (IsSupportedSchemaKeyword(property.Key))
+                {
+                    continue;
+                }
+
+                obj.Remove(property.Key);
+                if (IsDescriptionOnlySchemaKeyword(property.Key))
+                {
+                    constraints.Add($"{property.Key}={property.Value?.ToJsonString() ?? "null"}");
+                }
+            }
+
+            if (constraints.Count > 0)
+            {
+                string constraintDescription = $"Constraints: {string.Join(", ", constraints)}.";
+                obj["description"] = obj.TryGetPropertyValue("description", out var descriptionNode) &&
+                                     descriptionNode is JsonValue descriptionValue &&
+                                     descriptionValue.TryGetValue(out string? description) &&
+                                     !string.IsNullOrWhiteSpace(description) ?
+                    $"{description} {constraintDescription}" :
+                    constraintDescription;
+            }
         }
+
+        static void ResolveReferences(JsonNode? node, JsonObject referenceRoot, HashSet<string> referenceStack)
+        {
+            if (node is JsonObject obj)
+            {
+                if (obj.TryGetPropertyValue("$ref", out JsonNode? referenceNode) &&
+                    referenceNode is JsonValue referenceValue &&
+                    referenceValue.TryGetValue(out string? reference))
+                {
+                    if (!TryResolveReference(referenceRoot, reference, out JsonNode? referencedNode))
+                    {
+                        throw new InvalidOperationException($"Unresolved or external JSON schema reference: '{reference}'.");
+                    }
+
+                    if (!referenceStack.Add(reference))
+                    {
+                        obj.Remove("$ref");
+                        obj.TryAdd("type", JsonValue.Create("object"));
+                        obj["description"] = "Recursive schema omitted.";
+                        return;
+                    }
+
+                    if (referencedNode is JsonObject referencedObject)
+                    {
+                        JsonObject resolvedObject = (JsonObject)referencedObject.DeepClone();
+                        foreach (var property in obj.Where(p => p.Key != "$ref"))
+                        {
+                            resolvedObject[property.Key] = property.Value?.DeepClone();
+                        }
+
+                        obj.Clear();
+                        foreach (var property in resolvedObject)
+                        {
+                            obj[property.Key] = property.Value?.DeepClone();
+                        }
+
+                        ResolveReferences(obj, referenceRoot, referenceStack);
+                    }
+
+                    referenceStack.Remove(reference);
+                }
+
+                foreach (var property in obj.ToList())
+                {
+                    ResolveReferences(property.Value, referenceRoot, referenceStack);
+                }
+            }
+            else if (node is JsonArray array)
+            {
+                foreach (JsonNode? item in array)
+                {
+                    ResolveReferences(item, referenceRoot, referenceStack);
+                }
+            }
+        }
+
+        static bool TryResolveReference(JsonNode root, string reference, out JsonNode? referencedNode)
+        {
+            referencedNode = root;
+            if (reference == "#")
+            {
+                return true;
+            }
+
+            if (!reference.StartsWith("#/", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            foreach (string encodedSegment in reference[2..].Split('/'))
+            {
+                string segment = Uri.UnescapeDataString(encodedSegment)
+                    .Replace("~1", "/", StringComparison.Ordinal)
+                    .Replace("~0", "~", StringComparison.Ordinal);
+                if (referencedNode is JsonObject obj && obj.TryGetPropertyValue(segment, out referencedNode))
+                {
+                    continue;
+                }
+
+                if (referencedNode is JsonArray array &&
+                    int.TryParse(segment, out int index) &&
+                    index >= 0 &&
+                    index < array.Count)
+                {
+                    referencedNode = array[index];
+                    continue;
+                }
+
+                referencedNode = null;
+                return false;
+            }
+
+            return referencedNode is not null;
+        }
+
+        static bool IsSupportedSchemaKeyword(string keyword) => keyword is
+            "type" or
+            "format" or
+            "description" or
+            "nullable" or
+            "enum" or
+            "maxItems" or
+            "minItems" or
+            "properties" or
+            "required" or
+            "propertyOrdering" or
+            "items" or
+            "minimum" or
+            "maximum" or
+            "anyOf";
+
+        static bool IsDescriptionOnlySchemaKeyword(string keyword) => keyword is
+            "allOf" or
+            "default" or
+            "dependentRequired" or
+            "exclusiveMaximum" or
+            "exclusiveMinimum" or
+            "if" or
+            "maxContains" or
+            "maxLength" or
+            "maxProperties" or
+            "minContains" or
+            "minLength" or
+            "minProperties" or
+            "multipleOf" or
+            "not" or
+            "pattern" or
+            "then" or
+            "uniqueItems" or
+            "else";
     }
 
     private static JsonElement CreateSchema(
