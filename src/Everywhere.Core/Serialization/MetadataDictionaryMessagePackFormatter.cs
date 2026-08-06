@@ -67,6 +67,12 @@ public class MetadataDictionaryMessagePackFormatter : IMessagePackFormatter<Meta
         {
             var key = reader.ReadString() ?? throw new MessagePackSerializationException("Dictionary key cannot be null.");
 
+            if (reader.TryReadNil())
+            {
+                dict[key] = null;
+                continue;
+            }
+
             reader.ReadArrayHeader();
             var typeCode = reader.ReadInt32();
             if (typeCode == 0 || !CodeTypes.TryGetValue(typeCode, out var targetType))
