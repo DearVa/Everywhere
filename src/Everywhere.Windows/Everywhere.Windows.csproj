@@ -32,11 +32,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\3rd\EverythingNetCore\EverythingNet\EverythingNet.csproj"/>
-    <ProjectReference Include="..\..\3rd\OfficeCLI\src\officecli\officecli.csproj" />
+    <ProjectReference Include="..\..\3rd\OfficeCLI\src\officecli\officecli.csproj"/>
     <ProjectReference Include="..\Everywhere.Cloud\Everywhere.Cloud.csproj"/>
     <ProjectReference Include="..\Everywhere.Core\Everywhere.Core.csproj"/>
-    <ProjectReference Include="..\Everywhere.I18N.Abstractions\Everywhere.I18N.Abstractions.csproj" />
-    <ProjectReference Include="..\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\Everywhere.I18N.Abstractions\Everywhere.I18N.Abstractions.csproj"/>
+    <ProjectReference Include="..\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -63,7 +63,7 @@
     <None Remove="Assets\Icons\Windows11.svg"/>
   </ItemGroup>
 
-  <Import Project="..\Build.Patches.targets" />
+  <Import Project="..\Build.Patches.targets"/>
   <Import Project="..\Build.Watchdog.targets"/>
 
   <ItemGroup>
@@ -107,14 +107,54 @@
   <!-- Prune WPF/WinForms assemblies and localized resources natively without an external PowerShell script -->
   <Target Name="FilterPublishOutput" AfterTargets="ComputeResolvedFilesToPublishList">
     <ItemGroup>
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('Presentation'))" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('System.Windows.Forms'))" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('WindowsBase'))" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('WindowsFormsIntegration'))" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('wpfgfx'))" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.pdb'" />
-      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.xml'" />
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('Presentation'))"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('System.Windows.Forms'))"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('WindowsBase'))"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('WindowsFormsIntegration'))"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="$([System.String]::Copy('%(FileName)').StartsWith('wpfgfx'))"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.pdb'"/>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.xml'"/>
     </ItemGroup>
   </Target>
 
+  <!--
+    OfficeCLI is referenced as a managed project, so the SDK publishes its DLL
+    but does not publish the separate apphost used by OfficeCLIPlugin. Add the
+    apphost and its runtime sidecars to the SDK publish manifest so normal
+    publish copying, incremental tracking, and stale-file cleanup handle them.
+  -->
+  <Target Name="IncludeOfficeCliInPublish"
+          AfterTargets="FilterPublishOutput"
+          BeforeTargets="ILLink;_ComputeResolvedFilesToPublishTypes;_ComputeAssembliesToPostprocessOnPublish">
+    <PropertyGroup>
+      <OfficeCliAppHost>$(TargetDir)officecli.exe</OfficeCliAppHost>
+      <OfficeCliDepsFile>$(TargetDir)officecli.deps.json</OfficeCliDepsFile>
+      <OfficeCliRuntimeConfig>$(TargetDir)officecli.runtimeconfig.json</OfficeCliRuntimeConfig>
+    </PropertyGroup>
+
+    <Error Text="OfficeCLI apphost was not generated: $(OfficeCliAppHost)" Condition="!Exists('$(OfficeCliAppHost)')"/>
+    <Error Text="OfficeCLI deps file was not generated: $(OfficeCliDepsFile)" Condition="!Exists('$(OfficeCliDepsFile)')"/>
+    <Error Text="OfficeCLI runtimeconfig was not generated: $(OfficeCliRuntimeConfig)" Condition="!Exists('$(OfficeCliRuntimeConfig)')"/>
+
+    <ItemGroup>
+      <!-- The SDK may already contribute the runtimeconfig through the project reference. -->
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                             Condition="'%(RelativePath)' == 'officecli.exe'
+                                     Or '%(RelativePath)' == 'officecli.deps.json'
+                                     Or '%(RelativePath)' == 'officecli.runtimeconfig.json'"/>
+
+      <ResolvedFileToPublish Include="$(OfficeCliAppHost)">
+        <RelativePath>officecli.exe</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="$(OfficeCliDepsFile)">
+        <RelativePath>officecli.deps.json</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+      <ResolvedFileToPublish Include="$(OfficeCliRuntimeConfig)">
+        <RelativePath>officecli.runtimeconfig.json</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>
