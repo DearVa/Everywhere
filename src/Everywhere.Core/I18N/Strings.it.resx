@@ -160,6 +160,24 @@
     <data name="ChatWindow_History_ToolTip" xml:space="preserve">
         <value>Cronologia Chat (Ctrl+H)</value>
     </data>
+    <data name="ChatWindow_History_SearchBox_PlaceholderText" xml:space="preserve">
+        <value>Cerca nella cronologia</value>
+    </data>
+    <data name="ChatWindow_History_IncludeContentToggleButton_ToolTip" xml:space="preserve">
+        <value>Includi contenuto</value>
+    </data>
+    <data name="ChatWindow_TextSearch_PlaceholderText" xml:space="preserve">
+        <value>Cerca nella conversazione attuale</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Previous_ToolTip" xml:space="preserve">
+        <value>Risultato precedente (Shift+Invio)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Next_ToolTip" xml:space="preserve">
+        <value>Risultato successivo (Invio)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
+        <value>Chiudi ricerca (Esc)</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Crea Nuova Chat (Ctrl+N)</value>
     </data>

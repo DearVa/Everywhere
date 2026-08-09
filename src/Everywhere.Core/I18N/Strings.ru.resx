@@ -160,6 +160,24 @@
     <data name="ChatWindow_History_ToolTip" xml:space="preserve">
         <value>История чата (Ctrl+H)</value>
     </data>
+    <data name="ChatWindow_History_SearchBox_PlaceholderText" xml:space="preserve">
+        <value>Поиск истории</value>
+    </data>
+    <data name="ChatWindow_History_IncludeContentToggleButton_ToolTip" xml:space="preserve">
+        <value>Включить содержимое</value>
+    </data>
+    <data name="ChatWindow_TextSearch_PlaceholderText" xml:space="preserve">
+        <value>Найти в текущем разговоре</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Previous_ToolTip" xml:space="preserve">
+        <value>Предыдущий результат (Shift+Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Next_ToolTip" xml:space="preserve">
+        <value>Следующий результат (Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
+        <value>Закрыть поиск (Esc)</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Создать новый чат (Ctrl+N)</value>
     </data>

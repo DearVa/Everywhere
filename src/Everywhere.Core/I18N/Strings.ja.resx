@@ -160,6 +160,24 @@
     <data name="ChatWindow_History_ToolTip" xml:space="preserve">
         <value>チャット履歴 (Ctrl+H)</value>
     </data>
+    <data name="ChatWindow_History_SearchBox_PlaceholderText" xml:space="preserve">
+        <value>履歴を検索</value>
+    </data>
+    <data name="ChatWindow_History_IncludeContentToggleButton_ToolTip" xml:space="preserve">
+        <value>内容を含める</value>
+    </data>
+    <data name="ChatWindow_TextSearch_PlaceholderText" xml:space="preserve">
+        <value>現在の会話を検索</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Previous_ToolTip" xml:space="preserve">
+        <value>前の結果 (Shift+Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Next_ToolTip" xml:space="preserve">
+        <value>次の結果 (Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
+        <value>検索を閉じる (Esc)</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>新しいチャットを作成 (Ctrl+N)</value>
     </data>

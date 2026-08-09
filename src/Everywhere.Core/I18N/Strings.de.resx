@@ -160,6 +160,24 @@
     <data name="ChatWindow_History_ToolTip" xml:space="preserve">
         <value>Chat-Verlauf (Strg+H)</value>
     </data>
+    <data name="ChatWindow_History_SearchBox_PlaceholderText" xml:space="preserve">
+        <value>Suchverlauf durchsuchen</value>
+    </data>
+    <data name="ChatWindow_History_IncludeContentToggleButton_ToolTip" xml:space="preserve">
+        <value>Inhalte einbeziehen</value>
+    </data>
+    <data name="ChatWindow_TextSearch_PlaceholderText" xml:space="preserve">
+        <value>In diesem Gespräch suchen</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Previous_ToolTip" xml:space="preserve">
+        <value>Vorheriges Ergebnis (Shift+Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Next_ToolTip" xml:space="preserve">
+        <value>Nächstes Ergebnis (Enter)</value>
+    </data>
+    <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
+        <value>Suche schließen (Esc)</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Neuen Chat erstellen (Strg+N)</value>
     </data>
