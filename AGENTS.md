@@ -3,6 +3,9 @@
 This file contains repository-wide rules. Keep it short enough to read before every task.
 Topic-specific guidance lives under `docs/References` and must be read only when the task touches the corresponding area.
 
+## Code of Conduct
+- Never modify the code unless explicitly instructed to do so-for example, with a command such as "Start implementation". But you can still execute commands, write temporary probe code, or use other methods to gather information.
+
 ## Required References
 
 - For Avalonia controls, Views, Presentation objects, DynamicData-backed UI collections, virtualization, or UI animation, read [`docs/References/AvaloniaViewPresentation.md`](docs/References/AvaloniaViewPresentation.md) before making changes.
@@ -30,7 +33,9 @@ Topic-specific guidance lives under `docs/References` and must be read only when
 - Non-constant fields must be `private`. Constants may use the visibility appropriate to their API, including `public` or `internal`.
 - Public nested types may appear at the beginning or end of their containing type. Place private nested types at the end.
 - Do not retain unused positional-record parameters. They become captured state and implicitly participate in generated equality, hashing, and string formatting.
-- `#region` is allowed when it genuinely improves navigation; it is not a substitute for a well-factored type.
+- Never use `_ = DoAsync()` fire-and-forget pattern. Use `TaskExtensions.Detach` instead.
+- Avoid using `!` to suppress null warnings whenever possible. Best practices: Mark `out` parameters with the `NotNullWhenAttribute`; mark initialization methods with the `MemberNotNullAttribute`; use `if` statements to check for potential null fields in advance.
+- `#region` is allowed when it genuinely improves navigation; it is not a substitute for a well-factored type. `partial class` is preferred for large types that genuinely need to be split across files.
 
 ## Architecture and Production APIs
 

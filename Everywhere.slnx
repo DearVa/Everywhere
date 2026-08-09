@@ -43,6 +43,7 @@
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
     <File Path=".gitmodules" />
+    <File Path="AGENTS.md" />
     <File Path="CHANGELOG.md" />
     <File Path="DATA_AND_PRIVACY.md" />
     <File Path="Directory.Build.props" />
