@@ -74,6 +74,7 @@ public partial class ChatWindow :
 
         InitializeComponent();
         AddHandler(KeyDownEvent, HandleKeyDown, RoutingStrategies.Tunnel, true);
+        ViewModel.TextSearch.FocusRequested += HandleTextSearchFocusRequested;
 
         ChatInputArea.AddDisposableHandler(TextBox.TextChangedEvent, HandleChatInputAreaTextChanged);
         ChatInputArea.AddDisposableHandler(TextBox.PastingFromClipboardEvent, HandleChatInputAreaPastingFromClipboard);
@@ -118,7 +119,11 @@ public partial class ChatWindow :
         {
             case { Key: Key.Escape }:
             {
-                if (ViewModel.EditingMessageNode is not null)
+                if (ViewModel.TextSearch.IsOpen)
+                {
+                    ViewModel.TextSearch.CloseSearchCommand.Execute(null);
+                }
+                else if (ViewModel.EditingMessageNode is not null)
                 {
                     ViewModel.CancelEditing();
                 }
@@ -127,6 +132,12 @@ public partial class ChatWindow :
                     SetCloaked(true);
                 }
 
+                e.Handled = true;
+                break;
+            }
+            case { Key: Key.F, KeyModifiers: KeyModifiers.Control }:
+            {
+                ViewModel.TextSearch.OpenSearchCommand.Execute(null);
                 e.Handled = true;
                 break;
             }
@@ -146,6 +157,17 @@ public partial class ChatWindow :
                 break;
             }
         }
+    }
+
+    private void HandleTextSearchFocusRequested(object? sender, EventArgs e)
+    {
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                ChatTextSearchTextBox.Focus();
+                ChatTextSearchTextBox.SelectAll();
+            },
+            DispatcherPriority.Input);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)

@@ -152,8 +152,6 @@
                   <Panel VerticalAlignment="Center">
                     <shadui:Loading
                       x:Name="PART_RunningIndicator"
-                      Width="{DynamicResource FontSizeL}"
-                      Height="{DynamicResource FontSizeL}"
                       Classes.WaitingForUserInput="{Binding IsWaitingForUserInput}"
                       IsVisible="{Binding IsRunning}">
                       <shadui:Loading.Styles>
@@ -587,7 +585,14 @@
               <DataTemplate x:DataType="chat:AssistantChatMessageTextSpan">
                 <md:MarkdownRenderer
                   LinkCommand="{Binding $parent[v:ChatMessageItemsControl].OpenUrlCommand}"
-                  MarkdownBuilder="{Binding ContentMarkdownBuilder}"/>
+                  MarkdownBuilder="{Binding ContentMarkdownBuilder}">
+                  <Interaction.Behaviors>
+                    <in:ChatTextSearchSurfaceBehavior
+                      Coordinator="{Binding $parent[v:ChatMessageItemsControl].TextSearch}"
+                      Host="{Binding $parent[v:ChatMessageItemsControl]}"
+                      Row="{Binding $parent[v:ChatPresentationRowPresenter].Content}"/>
+                  </Interaction.Behaviors>
+                </md:MarkdownRenderer>
               </DataTemplate>
               <DataTemplate x:DataType="chat:AssistantChatMessageImageSpan">
                 <Image

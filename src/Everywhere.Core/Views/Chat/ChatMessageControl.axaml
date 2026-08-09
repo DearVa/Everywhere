@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="using:Everywhere.Views"
-  xmlns:vc="clr-namespace:Everywhere.ValueConverters">
+  xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:in="clr-namespace:Everywhere.Interactions"
+  xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:v="using:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters">
   <ControlTheme
     x:Key="{x:Type v:ChatMessageControl}"
     TargetType="v:ChatMessageControl">
@@ -74,7 +74,13 @@
                   <Binding Path="$parent[v:ChatMessageItemsControl].EditingMessageNode"/>
                 </MultiBinding>
               </Classes.Editing>
-              <SelectableTextBlock>
+              <md:MarkdownTextBlock>
+                <Interaction.Behaviors>
+                  <in:ChatTextSearchSurfaceBehavior
+                    Coordinator="{Binding $parent[v:ChatMessageItemsControl].TextSearch}"
+                    Host="{Binding $parent[v:ChatMessageItemsControl]}"
+                    Row="{Binding $parent[v:ChatPresentationRowPresenter].Content}"/>
+                </Interaction.Behaviors>
                 <InlineUIContainer BaselineAlignment="Center">
                   <shadui:Badge
                     VerticalAlignment="Center"
@@ -86,7 +92,7 @@
                 </InlineUIContainer>
 
                 <Run Text="{Binding Content}"/>
-              </SelectableTextBlock>
+              </md:MarkdownTextBlock>
             </Border>
 
             <v:ChatAttachmentItemsControl
@@ -146,7 +152,14 @@
                   <Binding Path="$parent[v:ChatMessageItemsControl].EditingMessageNode"/>
                 </MultiBinding>
               </Classes.Editing>
-              <SelectableTextBlock Text="{Binding Content}"/>
+              <md:MarkdownTextBlock Text="{Binding Content}">
+                <Interaction.Behaviors>
+                  <in:ChatTextSearchSurfaceBehavior
+                    Coordinator="{Binding $parent[v:ChatMessageItemsControl].TextSearch}"
+                    Host="{Binding $parent[v:ChatMessageItemsControl]}"
+                    Row="{Binding $parent[v:ChatPresentationRowPresenter].Content}"/>
+                </Interaction.Behaviors>
+              </md:MarkdownTextBlock>
             </Border>
 
             <v:ChatAttachmentItemsControl

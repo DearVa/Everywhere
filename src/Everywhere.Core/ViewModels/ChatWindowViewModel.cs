@@ -34,6 +34,8 @@ public sealed partial class ChatWindowViewModel :
 
     public IChatContextManager ChatContextManager { get; }
 
+    public ChatTextSearchViewModel TextSearch { get; }
+
     public bool IsOpened
     {
         get;
@@ -130,6 +132,8 @@ public sealed partial class ChatWindowViewModel :
         Settings = settings;
         PersistentState = persistentState;
         ChatContextManager = chatContextManager;
+        TextSearch = new ChatTextSearchViewModel(chatContextManager);
+        LifetimeDisposables.Add(TextSearch);
         SoftwareUpdater = softwareUpdater;
 
         _chatService = chatService;

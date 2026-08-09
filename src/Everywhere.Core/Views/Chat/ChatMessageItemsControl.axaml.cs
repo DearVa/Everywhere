@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.Input;
 using Everywhere.AI;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
+using Everywhere.Interactions;
+using Everywhere.ViewModels;
 using LiveMarkdown.Avalonia;
 using ShadUI;
 
@@ -10,6 +12,23 @@ namespace Everywhere.Views;
 
 public sealed partial class ChatMessageItemsControl : ItemsControl
 {
+    /// <summary>
+    /// Defines the <see cref="TextSearch"/> property.
+    /// </summary>
+    public static readonly StyledProperty<ChatTextSearchViewModel?> TextSearchProperty =
+        AvaloniaProperty.Register<ChatMessageItemsControl, ChatTextSearchViewModel?>(nameof(TextSearch));
+
+    /// <summary>
+    /// Gets or sets the current-conversation text-search coordinator.
+    /// </summary>
+    public ChatTextSearchViewModel? TextSearch
+    {
+        get => GetValue(TextSearchProperty);
+        set => SetValue(TextSearchProperty, value);
+    }
+
+    internal ChatTextSearchSurfaceRegistry TextSearchSurfaceRegistry { get; } = new();
+
     /// <summary>
     /// Defines the <see cref="ChatContext"/> property.
     /// </summary>

@@ -11,7 +11,7 @@
       </Style>
 
       <Style Selector="^.narrow">
-        <Style Selector="^ &gt; shadui|NavigationBar">
+        <Style Selector="^ > shadui|NavigationBar">
           <Setter Property="DockPanel.Dock" Value="Bottom"/>
           <Setter Property="Orientation" Value="Horizontal"/>
           <Setter Property="Margin" Value="0,8"/>

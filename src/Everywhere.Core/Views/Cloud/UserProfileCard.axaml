@@ -418,9 +418,7 @@
                   <StackPanel
                     IsVisible="{Binding Path=CloudSynchronizer.IsCloudSyncing}"
                     Orientation="Horizontal" Spacing="4">
-                    <shadui:Loading
-                      Width="{DynamicResource FontSizeS}"
-                      Height="{DynamicResource FontSizeS}"/>
+                    <shadui:Loading Size="{DynamicResource FontSizeS}"/>
                     <TextBlock
                       Classes="Caption Muted"
                       Text="{I18N {x:Static LocaleKey.UserProfilePresenter_SynchronizingTextBlock_Text}}"/>
@@ -464,10 +462,7 @@
                 Source="avares://Everywhere.Core/Assets/Images/Loading.png" Stretch="Uniform"/>
               <StackPanel
                 Orientation="Horizontal" Spacing="4">
-                <shadui:Loading
-                  Width="{DynamicResource FontSizeL}"
-                  Height="{DynamicResource FontSizeL}"
-                  HorizontalAlignment="Center"/>
+                <shadui:Loading HorizontalAlignment="Center"/>
                 <TextBlock
                   Classes="Large" HorizontalAlignment="Center"
                   FontWeight="SemiBold"

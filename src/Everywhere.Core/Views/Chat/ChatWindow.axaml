@@ -2,9 +2,9 @@
   x:Class="Everywhere.Views.ChatWindow" xmlns="https://github.com/avaloniaui"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:ai="clr-namespace:Everywhere.AI;assembly=Everywhere.Abstractions"
   xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:in="clr-namespace:Everywhere.Interactions"
-  xmlns:notification="clr-namespace:Everywhere.Common.Notification;assembly=Everywhere.Abstractions" xmlns:notifications="clr-namespace:Avalonia.Controls.Notifications;assembly=Avalonia.Controls"
-  xmlns:p="clr-namespace:Everywhere.Chat.Plugins" xmlns:se="clr-namespace:Everywhere.StrategyEngine"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:notification="clr-namespace:Everywhere.Common.Notification;assembly=Everywhere.Abstractions"
+  xmlns:notifications="clr-namespace:Avalonia.Controls.Notifications;assembly=Avalonia.Controls" xmlns:p="clr-namespace:Everywhere.Chat.Plugins"
+  xmlns:se="clr-namespace:Everywhere.StrategyEngine" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
   xmlns:v="clr-namespace:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters"
   xmlns:vm="clr-namespace:Everywhere.ViewModels" x:Name="Self"
   Title="{I18N {x:Static LocaleKey.ChatWindow_Title}}"
@@ -300,15 +300,56 @@
         <DockPanel
           x:Name="HistoryDockPanel"
           Background="{DynamicResource DialogBackgroundColor}">
+          <Panel
+            DockPanel.Dock="Top" Margin="8,8,8,4">
+            <TextBox
+              Padding="6,4,4,4" HorizontalAlignment="Stretch"
+              shadui:ControlAssist.MinHeight="0"
+              PlaceholderText="{I18N {x:Static LocaleKey.ChatWindow_History_SearchBox_PlaceholderText}}"
+              Text="{Binding ChatContextManager.HistorySearchQuery, Delay=500, Mode=TwoWay}">
+              <TextBox.InnerLeftContent>
+                <LucideIcon
+                  Kind="Search"
+                  Size="{DynamicResource FontSizeM}"/>
+              </TextBox.InnerLeftContent>
+              <TextBox.InnerRightContent>
+                <DockPanel HorizontalSpacing="4">
+                  <!--  ReSharper disable once Xaml.StaticResourceNotResolved  -->
+                  <Button
+                    DockPanel.Dock="Left"
+                    Command="{Binding $parent[TextBox].Clear}"
+                    Focusable="False"
+                    IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Theme="{StaticResource ClearButtonTheme}"/>
+                  <ToggleButton
+                    Classes="Ghost Compact Uniform" VerticalAlignment="Center"
+                    Focusable="False"
+                    IsChecked="{Binding ChatContextManager.HistorySearchIncludesContent, Mode=TwoWay}"
+                    ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_History_IncludeContentToggleButton_ToolTip}}">
+                    <LucideIcon
+                      Kind="TextSearch"
+                      Size="{DynamicResource FontSizeM}"/>
+                  </ToggleButton>
+                </DockPanel>
+              </TextBox.InnerRightContent>
+            </TextBox>
+
+            <ProgressBar
+              Height="1" Margin="6,0"
+              VerticalAlignment="Bottom" IsIndeterminate="True"
+              IsVisible="{Binding ChatContextManager.IsBusy, Delay=500}"/>
+          </Panel>
+
           <ScrollViewer
             HorizontalContentAlignment="Stretch" BringIntoViewOnFocusChange="False"
             HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <Interaction.Behaviors>
-              <in:AutoLoadBehavior Command="{Binding #Self.ViewModel.ChatContextManager.LoadMoreHistoryCommand}">
-                <in:AutoLoadBehavior.CommandParameter>
-                  <sys:Int32>20</sys:Int32>
-                </in:AutoLoadBehavior.CommandParameter>
-              </in:AutoLoadBehavior>
+              <in:IncrementalLoadBehavior
+                EstimatedItemHeight="40"
+                IsEnabled="{Binding #Self.ViewModel.PersistentState.IsChatWindowHistoryOpened}"
+                Loader="{Binding #Self.ViewModel.ChatContextManager}"
+                MaximumLoadCount="100" OverscanItemCount="2"
+                PageSize="20"/>
             </Interaction.Behaviors>
 
             <ItemsControl
@@ -394,25 +435,19 @@
                       <ListBox.ItemTemplate>
                         <DataTemplate DataType="chat:ChatContextMetadata">
                           <Grid
-                            MinHeight="24" ColumnDefinitions="Auto,*,Auto"
-                            ColumnSpacing="8">
+                            MinHeight="24" ColumnDefinitions="Auto,*,Auto">
                             <v:LazyIndexedContentControl
                               Grid.Column="0" HorizontalAlignment="Center"
                               VerticalAlignment="Center"
                               ItemIndex="{Binding States, Converter={x:Static vc:Int32Converters.FromEnum}}">
                               <!--  None  -->
-                              <ControlTemplate>
-                                <Border
-                                  Width="4" Height="4"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                  Background="{DynamicResource MutedColor}"
-                                  CornerRadius="2"/>
-                              </ControlTemplate>
+                              <shadui:EmptyControlTemplate/>
 
                               <!--  Busy  -->
                               <ControlTemplate>
                                 <LucideIcon
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Margin="0,0,8,0" HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Foreground="{DynamicResource WarningColor60}"
                                   Kind="CircleDashed"
                                   Size="{DynamicResource FontSizeS}"/>
@@ -423,7 +458,8 @@
                                 <Border
                                   Width="{DynamicResource FontSizeM}"
                                   Height="{DynamicResource FontSizeM}"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Margin="0,0,8,0" HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Background="{DynamicResource ErrorColor60}"
                                   CornerRadius="{DynamicResource FullCornerRadius}">
                                   <TextBlock
@@ -438,7 +474,8 @@
                                 <Border
                                   Width="{DynamicResource FontSizeM}"
                                   Height="{DynamicResource FontSizeM}"
-                                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Margin="0,0,8,0" HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
                                   Background="{DynamicResource ErrorColor60}"
                                   CornerRadius="{DynamicResource FullCornerRadius}">
                                   <TextBlock
@@ -466,16 +503,17 @@
 
                             <TextBlock
                               x:Name="DateColumn" Grid.Column="2"
-                              DockPanel.Dock="Right" VerticalAlignment="Center"
+                              DockPanel.Dock="Right" Margin="8,0,0,0"
+                              VerticalAlignment="Center"
                               Text="{Binding LocalDateModified, StringFormat='{}{0:G}'}"
                               TextTrimming="CharacterEllipsis"/>
 
                             <StackPanel
                               x:Name="ActionsPanel" Grid.Column="2"
-                              DockPanel.Dock="Right" Margin="0,0,-8,0"
+                              DockPanel.Dock="Right" Margin="8,0,-8,0"
                               Orientation="Horizontal" Spacing="2">
                               <Button
-                                Classes="Compact" VerticalAlignment="Center"
+                                Classes="Compact Uniform" VerticalAlignment="Center"
                                 Command="{Binding #Self.ViewModel.ChatContextManager.RemoveCommand}"
                                 CommandParameter="{Binding}"
                                 ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_ChatHistory_DeleteMenuItem_Header}}">
@@ -485,7 +523,7 @@
                               </Button>
 
                               <Button
-                                Classes="Compact" VerticalAlignment="Center"
+                                Classes="Compact Uniform" VerticalAlignment="Center"
                                 Content="{LucideIconContent Ellipsis}">
                                 <Button.Flyout>
                                   <MenuFlyout>
@@ -587,6 +625,7 @@
 
             <v:ChatMessageItemsControl
               Margin="12,8,12,0"
+              md:MarkdownTextBlock.HighlightStyles="{x:Static in:ChatTextSearchHighlightStyles.Instance}"
               ChatContext="{Binding ChatContextManager.Current}"
               ContinueMessageNodeCommand="{Binding ContinueMessageNodeCommand}"
               CopyMessageCommand="{Binding CopyMessageCommand}"
@@ -595,9 +634,92 @@
               IsVisible="{Binding $self.ItemCount, Converter={x:Static vc:Int32Converters.GreaterThan}, ConverterParameter=0}"
               RetryMessageNodeCommand="{Binding RetryMessageNodeCommand}"
               ShowStatistics="{Binding Settings.ChatWindow.ShowChatStatistics}"
-              SupportedModalities="{Binding Settings.Model.SelectedCustomAssistant?.InputModalities, TargetNullValue={x:Static ai:Modalities.None}}"/>
+              SupportedModalities="{Binding Settings.Model.SelectedCustomAssistant?.InputModalities, TargetNullValue={x:Static ai:Modalities.None}}"
+              TextSearch="{Binding TextSearch}">
+              <Interaction.Behaviors>
+                <in:ChatTextSearchNavigationBehavior
+                  Coordinator="{Binding TextSearch}"
+                  ScrollViewer="{Binding #ChatMessageScrollViewer}"/>
+              </Interaction.Behaviors>
+            </v:ChatMessageItemsControl>
           </StackPanel>
         </ScrollViewer>
+
+        <Border
+          Grid.Row="0" Margin="8"
+          Padding="6" HorizontalAlignment="Right"
+          VerticalAlignment="Top"
+          Background="{DynamicResource DialogBackgroundColor}"
+          BorderBrush="{DynamicResource BorderColor}"
+          BorderThickness="1"
+          CornerRadius="{DynamicResource XlCornerRadius}"
+          IsVisible="{Binding TextSearch.IsOpen}"
+          ZIndex="10">
+          <Border.Effect>
+            <DropShadowEffect
+              BlurRadius="11" OffsetX="0"
+              OffsetY="2" Opacity="0.3"/>
+          </Border.Effect>
+
+          <Grid ColumnDefinitions="220,Auto,Auto,Auto,Auto">
+            <TextBox
+              x:Name="ChatTextSearchTextBox" Classes="Clearable"
+              Grid.Column="0" Padding="6,4"
+              shadui:ControlAssist.MinHeight="0"
+              PlaceholderText="{I18N {x:Static LocaleKey.ChatWindow_TextSearch_PlaceholderText}}"
+              Text="{Binding TextSearch.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+              <TextBox.KeyBindings>
+                <KeyBinding
+                  Command="{Binding TextSearch.PreviousResultCommand}"
+                  Gesture="Shift+Enter"/>
+                <KeyBinding
+                  Command="{Binding TextSearch.NextResultCommand}"
+                  Gesture="Enter"/>
+              </TextBox.KeyBindings>
+            </TextBox>
+
+            <Panel
+              Grid.Column="1" MinWidth="48"
+              VerticalAlignment="Center">
+              <TextBlock
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding !TextSearch.IsBusy}"
+                Text="{Binding TextSearch.SearchResultCountText}"
+                TextAlignment="Center"/>
+              <shadui:Loading
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding TextSearch.IsBusy}"
+                Size="{DynamicResource FontSizeM}"/>
+            </Panel>
+
+            <Button
+              Classes="Ghost Compact Uniform" Grid.Column="2"
+              Command="{Binding TextSearch.PreviousResultCommand}"
+              IsEnabled="{Binding TextSearch.HasMatches}"
+              ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_TextSearch_Previous_ToolTip}}">
+              <LucideIcon
+                Kind="ChevronUp"
+                Size="{DynamicResource FontSizeM}"/>
+            </Button>
+            <Button
+              Classes="Ghost Compact Uniform" Grid.Column="3"
+              Command="{Binding TextSearch.NextResultCommand}"
+              IsEnabled="{Binding TextSearch.HasMatches}"
+              ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_TextSearch_Next_ToolTip}}">
+              <LucideIcon
+                Kind="ChevronDown"
+                Size="{DynamicResource FontSizeM}"/>
+            </Button>
+            <Button
+              Classes="Ghost Compact Uniform" Grid.Column="4"
+              Command="{Binding TextSearch.CloseSearchCommand}"
+              ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_TextSearch_Close_ToolTip}}">
+              <LucideIcon
+                Kind="X"
+                Size="{DynamicResource FontSizeM}"/>
+            </Button>
+          </Grid>
+        </Border>
 
         <Button
           Classes="Primary Rounded" Grid.Row="0"
