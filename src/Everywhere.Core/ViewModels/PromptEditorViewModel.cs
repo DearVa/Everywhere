@@ -60,8 +60,6 @@ public sealed partial class PromptEditorViewModel(
 
     public bool IsQuickMode => !IsAdvancedEditing;
 
-    public bool IsAdvancedMode => IsAdvancedEditing;
-
     public bool IsDirty => EditingPromptId is null || IsSaveDraftDirty(CreateSaveDraft());
 
     public bool CanSave =>
@@ -78,7 +76,6 @@ public sealed partial class PromptEditorViewModel(
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsQuickMode))]
-    [NotifyPropertyChangedFor(nameof(IsAdvancedMode))]
     [NotifyPropertyChangedFor(nameof(IsDirty))]
     [NotifyPropertyChangedFor(nameof(CanSave))]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]

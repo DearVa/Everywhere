@@ -90,7 +90,7 @@
     </Setter>
 
     <Style Selector="^ /template/ StackPanel#PART_NamePanel">
-      <Style Selector="^ &gt; Button">
+      <Style Selector="^ > Button">
         <Setter Property="IsHitTestVisible" Value="False"/>
         <Setter Property="Opacity" Value="0"/>
       </Style>
@@ -102,7 +102,7 @@
     </Style>
 
     <Style Selector="^ /template/ DockPanel#PART_DescriptionPanel">
-      <Style Selector="^ &gt; Button">
+      <Style Selector="^ > Button">
         <Setter Property="IsHitTestVisible" Value="False"/>
         <Setter Property="Opacity" Value="0"/>
       </Style>

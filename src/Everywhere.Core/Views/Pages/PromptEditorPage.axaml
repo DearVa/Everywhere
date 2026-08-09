@@ -1,8 +1,10 @@
+<!--  ReSharper disable Xaml.RedundantResource  -->
 <UserControl
   x:Class="Everywhere.Views.Pages.PromptEditorPage" xmlns="https://github.com/avaloniaui"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
-  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vm="clr-namespace:Everywhere.ViewModels"
-  x:Name="Self" x:DataType="vm:PromptEditorViewModel">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:motion="using:Motion.Avalonia"
+  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
+  xmlns:vm="clr-namespace:Everywhere.ViewModels" x:Name="Self"
+  x:DataType="vm:PromptEditorViewModel">
   <UserControl.Styles>
     <Style Selector="Button.RecipeOption">
       <Setter Property="Padding" Value="12,8"/>
@@ -69,7 +71,7 @@
         Command="{Binding SwitchToQuickCommand}"
         Content="{I18N {x:Static LocaleKey.PromptCreate_SwitchToQuick_Content}}"
         CornerRadius="{DynamicResource FullCornerRadius}"
-        IsVisible="{Binding IsAdvancedMode}"/>
+        IsVisible="{Binding !IsQuickMode}"/>
 
       <Button
         Classes="Primary" Grid.Column="3"
@@ -80,236 +82,301 @@
         CornerRadius="{DynamicResource FullCornerRadius}"/>
     </Grid>
 
-    <Grid
-      ColumnDefinitions="420,*" ColumnSpacing="24">
+    <motion:MotionPanel>
+      <motion:MotionPanel.Motion>
+        <motion:StateMotion
+          Easing="CubicEaseInOut"
+          State="{Binding IsQuickMode}"
+          Duration="0:0:0.4">
+          <motion:MotionState>
+            <motion:MotionState.Key>
+              <x:Boolean>True</x:Boolean>
+            </motion:MotionState.Key>
+            <DataTemplate>
+              <Panel>
+                <motion:MotionSlot
+                  x:Name="EditPanel" MaxWidth="600"
+                  HorizontalAlignment="Center">
+                  <motion:MotionSlot.TargetStyles>
+                    <Style Selector="Grid#EditPanel TextBlock#QuickModeDescription">
+                      <Setter Property="Opacity" Value="1"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel TextBlock#AdvancedModeDescription">
+                      <Setter Property="Opacity" Value="0"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel ScrollViewer#QuickModeScrollViewer">
+                      <Setter Property="Opacity" Value="1"/>
+                      <Setter Property="IsHitTestVisible" Value="True"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel v|PromptAdvancedEditorControl#PromptAdvancedEditorControl">
+                      <Setter Property="Opacity" Value="0"/>
+                      <Setter Property="IsHitTestVisible" Value="False"/>
+                    </Style>
+                  </motion:MotionSlot.TargetStyles>
+                </motion:MotionSlot>
+                <motion:MotionSlot
+                  x:Name="PreviewPanel" Margin="600,0,-600,0"
+                  motion:Motion.Presence="0"/>
+              </Panel>
+            </DataTemplate>
+          </motion:MotionState>
+
+          <motion:MotionState>
+            <motion:MotionState.Key>
+              <x:Boolean>False</x:Boolean>
+            </motion:MotionState.Key>
+            <DataTemplate>
+              <DockPanel HorizontalSpacing="24">
+                <motion:MotionSlot
+                  x:Name="EditPanel" DockPanel.Dock="Left"
+                  MaxWidth="420">
+                  <motion:MotionSlot.TargetStyles>
+                    <Style Selector="Grid#EditPanel TextBlock#QuickModeDescription">
+                      <Setter Property="Opacity" Value="0"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel TextBlock#AdvancedModeDescription">
+                      <Setter Property="Opacity" Value="1"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel ScrollViewer#QuickModeScrollViewer">
+                      <Setter Property="Opacity" Value="0"/>
+                      <Setter Property="IsHitTestVisible" Value="False"/>
+                    </Style>
+                    <Style Selector="Grid#EditPanel v|PromptAdvancedEditorControl#PromptAdvancedEditorControl">
+                      <Setter Property="Opacity" Value="1"/>
+                      <Setter Property="IsHitTestVisible" Value="True"/>
+                    </Style>
+                  </motion:MotionSlot.TargetStyles>
+                </motion:MotionSlot>
+                <motion:MotionSlot
+                  x:Name="PreviewPanel" motion:Motion.Presence="1"/>
+              </DockPanel>
+            </DataTemplate>
+          </motion:MotionState>
+        </motion:StateMotion>
+      </motion:MotionPanel.Motion>
+
       <Grid
-        Grid.Column="0" RowDefinitions="Auto,*"
+        x:Name="EditPanel" RowDefinitions="Auto,*"
         RowSpacing="12">
-        <StackPanel
-          Grid.Row="0" Spacing="4">
+        <Grid Grid.Row="0">
           <TextBlock
-            Classes="Muted Caption"
-            IsVisible="{Binding IsQuickMode}"
+            x:Name="QuickModeDescription" Classes="Muted Caption"
             Text="{I18N {x:Static LocaleKey.PromptCreate_QuickMode_Description}}"
             TextWrapping="Wrap"/>
           <TextBlock
-            Classes="Muted Caption"
-            IsVisible="{Binding IsAdvancedMode}"
+            x:Name="AdvancedModeDescription" Classes="Muted Caption"
             Text="{I18N {x:Static LocaleKey.PromptCreate_AdvancedMode_Description}}"
             TextWrapping="Wrap"/>
-        </StackPanel>
+        </Grid>
 
-        <Panel Grid.Row="1">
-          <ScrollViewer
-            HorizontalScrollBarVisibility="Disabled"
-            IsVisible="{Binding IsQuickMode}"
-            VerticalScrollBarVisibility="Hidden">
-            <StackPanel Spacing="8">
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="TextInitial"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptEditor_NameLabel}}"/>
-                </StackPanel>
-                <TextBox
-                  Classes="Clearable" CornerRadius="6"
-                  PlaceholderText="{I18N {x:Static LocaleKey.PromptEditor_NamePlaceholder}}"
-                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <ScrollViewer
+          x:Name="QuickModeScrollViewer" Grid.Row="1"
+          HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+          <StackPanel Spacing="8">
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="TextInitial"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptEditor_NameLabel}}"/>
               </StackPanel>
-
-              <StackPanel
-                Margin="0,4,0,0" Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="MessageCircleQuestionMark"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_PreferredUserNameLabel}}"/>
-                </StackPanel>
-                <TextBox
-                  Classes="Clearable" CornerRadius="6"
-                  PlaceholderText="{I18N {x:Static LocaleKey.PromptCreate_PreferredUserNamePlaceholder}}"
-                  Text="{Binding PreferredUserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="Settings2"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_PersonaLabel}}"/>
-                </StackPanel>
-                <ItemsControl ItemsSource="{Binding PersonaOptions}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel Classes="RecipePanel"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:PromptRecipeOptionItem">
-                      <Button
-                        Classes="Outline RecipeOption"
-                        Classes.Selected="{Binding IsSelected}"
-                        Command="{Binding #Self.ViewModel.SelectPersonaCommand}"
-                        CommandParameter="{Binding}">
-                        <TextBlock Text="{Binding NameKey^}"/>
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="FileText"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_ScenarioLabel}}"/>
-                </StackPanel>
-                <ItemsControl ItemsSource="{Binding ScenarioOptions}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel Classes="RecipePanel"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:PromptRecipeOptionItem">
-                      <Button
-                        Classes="Outline RecipeOption"
-                        Classes.Selected="{Binding IsSelected}"
-                        Command="{Binding #Self.ViewModel.ToggleScenarioCommand}"
-                        CommandParameter="{Binding}">
-                        <shadui:ButtonAssist.Icon>
-                          <LucideIcon Kind="{Binding Icon}"/>
-                        </shadui:ButtonAssist.Icon>
-                        <TextBlock Text="{Binding NameKey^}"/>
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="Pencil"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_ToneLabel}}"/>
-                </StackPanel>
-                <ItemsControl ItemsSource="{Binding ToneOptions}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel Classes="RecipePanel"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:PromptRecipeOptionItem">
-                      <Button
-                        Classes="Outline RecipeOption"
-                        Classes.Selected="{Binding IsSelected}"
-                        Command="{Binding #Self.ViewModel.SelectToneCommand}"
-                        CommandParameter="{Binding}">
-                        <shadui:ButtonAssist.Icon>
-                          <LucideIcon Kind="{Binding Icon}"/>
-                        </shadui:ButtonAssist.Icon>
-                        <TextBlock Text="{Binding NameKey^}"/>
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="FileText"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_DetailLabel}}"/>
-                </StackPanel>
-                <ItemsControl ItemsSource="{Binding DetailOptions}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel Classes="RecipePanel"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:PromptRecipeOptionItem">
-                      <Button
-                        Classes="Outline RecipeOption"
-                        Classes.Selected="{Binding IsSelected}"
-                        Command="{Binding #Self.ViewModel.SelectDetailCommand}"
-                        CommandParameter="{Binding}">
-                        <shadui:ButtonAssist.Icon>
-                          <LucideIcon Kind="{Binding Icon}"/>
-                        </shadui:ButtonAssist.Icon>
-                        <TextBlock Text="{Binding NameKey^}"/>
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="Settings2"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_OrganizationLabel}}"/>
-                </StackPanel>
-                <ItemsControl ItemsSource="{Binding OrganizationOptions}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <WrapPanel Classes="RecipePanel"/>
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="vm:PromptRecipeOptionItem">
-                      <Button
-                        Classes="Outline RecipeOption"
-                        Classes.Selected="{Binding IsSelected}"
-                        Command="{Binding #Self.ViewModel.SelectOrganizationCommand}"
-                        CommandParameter="{Binding}">
-                        <shadui:ButtonAssist.Icon>
-                          <LucideIcon Kind="{Binding Icon}"/>
-                        </shadui:ButtonAssist.Icon>
-                        <TextBlock Text="{Binding NameKey^}"/>
-                      </Button>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </StackPanel>
-
-              <StackPanel Spacing="6">
-                <StackPanel Classes="RecipeLabel">
-                  <LucideIcon Kind="Pencil"/>
-                  <TextBlock
-                    Classes="Muted Caption"
-                    Text="{I18N {x:Static LocaleKey.PromptCreate_AdditionalRequirementsLabel}}"/>
-                </StackPanel>
-                <TextBox
-                  Classes="Clearable" MinHeight="72"
-                  AcceptsReturn="True" CornerRadius="6"
-                  PlaceholderText="{I18N {x:Static LocaleKey.PromptCreate_AdditionalRequirementsPlaceholder}}"
-                  Text="{Binding AdditionalRequirements, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  TextWrapping="Wrap"/>
-              </StackPanel>
+              <TextBox
+                Classes="Clearable"
+                PlaceholderText="{I18N {x:Static LocaleKey.PromptEditor_NamePlaceholder}}"
+                Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
-          </ScrollViewer>
 
-          <v:PromptAdvancedEditorControl
-            IsVisible="{Binding IsAdvancedMode}"
-            PlaceholderReferences="{Binding PlaceholderReferences}"
-            PromptName="{Binding Name, Mode=TwoWay}"
-            PromptText="{Binding Template, Mode=TwoWay}"/>
-        </Panel>
+            <StackPanel
+              Margin="0,4,0,0" Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="MessageCircleQuestionMark"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_PreferredUserNameLabel}}"/>
+              </StackPanel>
+              <TextBox
+                Classes="Clearable"
+                PlaceholderText="{I18N {x:Static LocaleKey.PromptCreate_PreferredUserNamePlaceholder}}"
+                Text="{Binding PreferredUserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="Settings2"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_PersonaLabel}}"/>
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding PersonaOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Classes="RecipePanel"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:PromptRecipeOptionItem">
+                    <Button
+                      Classes="Outline RecipeOption"
+                      Classes.Selected="{Binding IsSelected}"
+                      Command="{Binding #Self.ViewModel.SelectPersonaCommand}"
+                      CommandParameter="{Binding}">
+                      <TextBlock Text="{Binding NameKey^}"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="FileText"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_ScenarioLabel}}"/>
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding ScenarioOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Classes="RecipePanel"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:PromptRecipeOptionItem">
+                    <Button
+                      Classes="Outline RecipeOption"
+                      Classes.Selected="{Binding IsSelected}"
+                      Command="{Binding #Self.ViewModel.ToggleScenarioCommand}"
+                      CommandParameter="{Binding}">
+                      <shadui:ButtonAssist.Icon>
+                        <LucideIcon Kind="{Binding Icon}"/>
+                      </shadui:ButtonAssist.Icon>
+                      <TextBlock Text="{Binding NameKey^}"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="Pencil"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_ToneLabel}}"/>
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding ToneOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Classes="RecipePanel"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:PromptRecipeOptionItem">
+                    <Button
+                      Classes="Outline RecipeOption"
+                      Classes.Selected="{Binding IsSelected}"
+                      Command="{Binding #Self.ViewModel.SelectToneCommand}"
+                      CommandParameter="{Binding}">
+                      <shadui:ButtonAssist.Icon>
+                        <LucideIcon Kind="{Binding Icon}"/>
+                      </shadui:ButtonAssist.Icon>
+                      <TextBlock Text="{Binding NameKey^}"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="FileText"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_DetailLabel}}"/>
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding DetailOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Classes="RecipePanel"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:PromptRecipeOptionItem">
+                    <Button
+                      Classes="Outline RecipeOption"
+                      Classes.Selected="{Binding IsSelected}"
+                      Command="{Binding #Self.ViewModel.SelectDetailCommand}"
+                      CommandParameter="{Binding}">
+                      <shadui:ButtonAssist.Icon>
+                        <LucideIcon Kind="{Binding Icon}"/>
+                      </shadui:ButtonAssist.Icon>
+                      <TextBlock Text="{Binding NameKey^}"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="Settings2"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_OrganizationLabel}}"/>
+              </StackPanel>
+              <ItemsControl ItemsSource="{Binding OrganizationOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel Classes="RecipePanel"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="vm:PromptRecipeOptionItem">
+                    <Button
+                      Classes="Outline RecipeOption"
+                      Classes.Selected="{Binding IsSelected}"
+                      Command="{Binding #Self.ViewModel.SelectOrganizationCommand}"
+                      CommandParameter="{Binding}">
+                      <shadui:ButtonAssist.Icon>
+                        <LucideIcon Kind="{Binding Icon}"/>
+                      </shadui:ButtonAssist.Icon>
+                      <TextBlock Text="{Binding NameKey^}"/>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+              <StackPanel Classes="RecipeLabel">
+                <LucideIcon Kind="Pencil"/>
+                <TextBlock
+                  Classes="Muted Caption"
+                  Text="{I18N {x:Static LocaleKey.PromptCreate_AdditionalRequirementsLabel}}"/>
+              </StackPanel>
+              <TextBox
+                Classes="Clearable" MinHeight="72"
+                AcceptsReturn="True" CornerRadius="6"
+                PlaceholderText="{I18N {x:Static LocaleKey.PromptCreate_AdditionalRequirementsPlaceholder}}"
+                Text="{Binding AdditionalRequirements, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap"/>
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+
+        <v:PromptAdvancedEditorControl
+          x:Name="PromptAdvancedEditorControl" Grid.Row="1"
+          PlaceholderReferences="{Binding PlaceholderReferences}"
+          PromptName="{Binding Name, Mode=TwoWay}"
+          PromptText="{Binding Template, Mode=TwoWay}"/>
       </Grid>
 
       <DockPanel
-        Grid.Column="1" LastChildFill="True"
+        x:Name="PreviewPanel" LastChildFill="True"
         VerticalSpacing="8">
         <ItemsControl
           DockPanel.Dock="Bottom"
@@ -357,6 +424,6 @@
           </ScrollViewer>
         </Border>
       </DockPanel>
-    </Grid>
+    </motion:MotionPanel>
   </DockPanel>
 </UserControl>

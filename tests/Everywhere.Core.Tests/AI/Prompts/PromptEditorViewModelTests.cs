@@ -98,7 +98,7 @@ public sealed class PromptEditorViewModelTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(viewModel.IsAdvancedMode, Is.True);
+            Assert.That(viewModel.IsQuickMode, Is.False);
             Assert.That(saved.Source, Is.EqualTo(PromptSource.Guided));
             Assert.That(saved.Template, Does.Contain("Manual Edit"));
             Assert.That(snapshot.IsDetachedFromRecipe, Is.True);
@@ -151,7 +151,7 @@ public sealed class PromptEditorViewModelTests
         var viewModel = CreateViewModel(promptService);
 
         Assert.That(await viewModel.OpenForEditAsync(prompt.Id), Is.True);
-        Assert.That(viewModel.IsAdvancedMode, Is.True);
+        Assert.That(viewModel.IsQuickMode, Is.False);
 
         await viewModel.SwitchToQuickCommand.ExecuteAsync(null);
         await viewModel.SaveCommand.ExecuteAsync(null);
@@ -185,7 +185,7 @@ public sealed class PromptEditorViewModelTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(viewModel.IsAdvancedMode, Is.True);
+            Assert.That(viewModel.IsQuickMode, Is.False);
             Assert.That(promptService.UserPrompts[0].Template, Is.EqualTo("Updated imported template"));
             Assert.That(promptService.UserPrompts[0].Source, Is.EqualTo(PromptSource.Import));
             Assert.That(promptService.UserPrompts[0].MetadataPayload, Is.EqualTo(metadata));
