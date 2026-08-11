@@ -4,7 +4,7 @@
     <MEAIVersion>10.5.2</MEAIVersion>
     <EntityFrameworkVersion>10.0.9</EntityFrameworkVersion>
     <SemanticKernelVersion>1.75.0</SemanticKernelVersion>
-    <OpenTelemetryVersion>1.16.0</OpenTelemetryVersion>
+    <OpenTelemetryVersion>1.17.0</OpenTelemetryVersion>
     <SentryVersion>6.6.0</SentryVersion>
     <AvaloniaVersion>12.1.0</AvaloniaVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup Label="Common">
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageVersion Include="DiffPlex" Version="1.9.0" />
     <PackageVersion Include="DynamicData" Version="9.4.31" />
     <PackageVersion Include="FuzzySharp" Version="2.0.2" />
     <PackageVersion Include="GnomeStack.Os.Secrets" Version="0.1.3" />
@@ -38,7 +39,6 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftPackageVersion)" />
     <PackageVersion Include="Microsoft.Windows.Console.ConPTY" Version="1.24.260303001" />
     <PackageVersion Include="MonoMod.Patcher" Version="25.0.1" />
-    <PackageVersion Include="NSubstitute" Version="5.3.0" />
     <PackageVersion Include="ObservableCollections" Version="3.3.4" />
     <PackageVersion Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
     <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryVersion)" />
@@ -119,6 +119,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.1" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
+    <PackageVersion Include="NSubstitute" Version="6.1.0" />
     <PackageVersion Include="NUnit" Version="4.6.1" />
     <PackageVersion Include="NUnit.Analyzers" Version="4.14.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="6.2.0" />

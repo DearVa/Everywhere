@@ -1180,10 +1180,10 @@ La mia intelligenza è fornita da un grande modello linguistico e ho bisogno del
         <value>Ripristina</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> righe aggiunte</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> righe eliminate</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Accetta Tutto</value>
@@ -3587,7 +3587,7 @@ Vuoi comunque eliminare permanentemente “{1}”?</value>
         <value>Requisiti Aggiuntivi</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Aggiungi limitazioni, riferimenti o preferenze da rispettare per questo prompt.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Anteprima Live</value>
@@ -3686,7 +3686,7 @@ Vuoi comunque eliminare permanentemente “{1}”?</value>
         <value>Dettagliato</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Strutturato (Consigliato)</value>
+        <value>Strutturato</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Conclusione Prima</value>

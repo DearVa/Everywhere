@@ -502,9 +502,9 @@
                               TextTrimming="CharacterEllipsis"/>
 
                             <TextBlock
-                              x:Name="DateColumn" Grid.Column="2"
-                              DockPanel.Dock="Right" Margin="8,0,0,0"
-                              VerticalAlignment="Center"
+                              x:Name="DateColumn" Classes="Muted"
+                              Grid.Column="2" DockPanel.Dock="Right"
+                              Margin="8,0,0,0" VerticalAlignment="Center"
                               Text="{Binding LocalDateModified, StringFormat='{}{0:G}'}"
                               TextTrimming="CharacterEllipsis"/>
 

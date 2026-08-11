@@ -58,13 +58,6 @@ public interface IChatPluginDisplaySink
     void AppendFileReferences(params IReadOnlyList<ChatPluginFileReference> references);
 
     /// <summary>
-    /// Appends a text file difference to the display sink and waits for the user to review it.
-    /// </summary>
-    /// <param name="difference"></param>
-    /// <param name="originalText"></param>
-    void AppendFileDifference(TextDifference difference, string originalText);
-
-    /// <summary>
     /// Appends a list of URLs to the display sink.
     /// </summary>
     /// <param name="urls"></param>

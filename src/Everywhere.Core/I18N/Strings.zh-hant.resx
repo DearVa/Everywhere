@@ -1180,10 +1180,10 @@
         <value>還原</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> 行已新增</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> 行已刪除</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>全部接受</value>
@@ -3587,7 +3587,7 @@
         <value>額外要求</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>補充此提示詞需要遵守的限制、參考資料或偏好。</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>即時預覽</value>
@@ -3686,7 +3686,7 @@
         <value>詳細</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>結構化（推薦）</value>
+        <value>結構化</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>結論先行</value>

@@ -1180,10 +1180,10 @@
         <value>Отменить</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> строк добавлено</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> строк удалено</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Принять все</value>
@@ -3587,7 +3587,7 @@
         <value>Дополнительные требования</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Укажите ограничения, источники или предпочтения для этой подсказки.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Живой предварительный просмотр</value>
@@ -3686,7 +3686,7 @@
         <value>Подробно</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Автоматическая структура (рекомендуется)</value>
+        <value>Автоматическая структура</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Сначала вывод</value>

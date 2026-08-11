@@ -19,8 +19,3 @@ public sealed record FileContentMatch(
     int Length,
     int? PageNumber = null
 );
-
-/// <summary>
-/// Carries the user's decision and model-facing summary for a reviewed replacement.
-/// </summary>
-public readonly record struct FileReviewResult(string? AcceptedContent, string Summary);

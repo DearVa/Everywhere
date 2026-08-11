@@ -114,7 +114,14 @@
 
         <DataTemplate DataType="plugins:ChatPluginFileDifferenceDisplayBlock">
           <v:TextDifferenceSummaryView
+            AddedLineCount="{Binding AddedLineCount}"
+            CanReview="{Binding CanReview}"
+            FilePath="{Binding FilePath}"
+            HasLineChanges="{Binding HasLineChanges}"
             OriginalText="{Binding OriginalText}"
+            RemovedLineCount="{Binding RemovedLineCount}"
+            ReviewKind="{Binding ReviewKind}"
+            SourcePath="{Binding SourcePath}"
             TextDifference="{Binding Difference}"/>
         </DataTemplate>
 

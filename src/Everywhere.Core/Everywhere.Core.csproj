@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Everywhere.Core.Tests" />
+    <InternalsVisibleTo Include="Everywhere.Core.Tests"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -20,9 +20,10 @@
     <PackageReference Include="Avalonia"/>
     <PackageReference Include="Avalonia.Fonts.Inter"/>
     <PackageReference Include="Avalonia.AvaloniaEdit"/>
-    <PackageReference Include="Avalonia.HtmlRenderer" />
+    <PackageReference Include="Avalonia.HtmlRenderer"/>
     <PackageReference Include="AvaloniaEdit.TextMate"/>
-    <PackageReference Include="ClassicDiagnostics.Avalonia" />
+    <PackageReference Include="ClassicDiagnostics.Avalonia"/>
+    <PackageReference Include="DiffPlex"/>
     <PackageReference Include="FuzzySharp"/>
     <PackageReference Include="GnomeStack.Os.Secrets"/>
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="JetBrains.Profiler.Api"/>
@@ -42,8 +43,8 @@
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.Extensions.Logging"/>
-    <PackageReference Include="Microsoft.ML.Tokenizers" />
-    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase" />
+    <PackageReference Include="Microsoft.ML.Tokenizers"/>
+    <PackageReference Include="Microsoft.ML.Tokenizers.Data.O200kBase"/>
     <PackageReference Include="Microsoft.SemanticKernel.Abstractions"/>
     <PackageReference Include="Microsoft.SemanticKernel.Core"/>
     <PackageReference Include="ModelContextProtocol"/>
@@ -51,8 +52,8 @@
     <PackageReference Include="OpenTelemetry"/>
     <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
     <PackageReference Include="PuppeteerSharp"/>
-    <PackageReference Include="PdfPig" />
-    <PackageReference Include="ReverseMarkdown" />
+    <PackageReference Include="PdfPig"/>
+    <PackageReference Include="ReverseMarkdown"/>
     <PackageReference Include="Sentry"/>
     <PackageReference Include="Sentry.OpenTelemetry"/>
     <PackageReference Include="Sentry.Serilog"/>
@@ -60,24 +61,24 @@
     <PackageReference Include="Serilog.Extensions.Logging"/>
     <PackageReference Include="Serilog.Sinks.Console"/>
     <PackageReference Include="Serilog.Sinks.File"/>
-    <PackageReference Include="SharpYaml" />
+    <PackageReference Include="SharpYaml"/>
     <PackageReference Include="Svg.Controls.Skia.Avalonia"/>
-    <PackageReference Include="Sylinko.CSharpMath.Avalonia" />
+    <PackageReference Include="Sylinko.CSharpMath.Avalonia"/>
     <PackageReference Include="System.Drawing.Common"/>
-    <PackageReference Include="TextMateSharp.Grammars" />
+    <PackageReference Include="TextMateSharp.Grammars"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Condition="'$(Configuration)' == 'Debug'" Include="..\..\3rd\ClassicDiagnostics.Avalonia\src\ClassicDiagnostics.Avalonia.csproj" />
+    <ProjectReference Condition="'$(Configuration)' == 'Debug'" Include="..\..\..\ClassicDiagnostics.Avalonia\src\ClassicDiagnostics.Avalonia.csproj"/>
     <ProjectReference Include="..\..\3rd\MessagePack-CSharp\src\MessagePack.SourceGenerator\MessagePack.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
     <ProjectReference Include="..\..\3rd\semantic-kernel-patch\Connectors.Google\Connectors.Google.csproj"/>
     <ProjectReference Include="..\..\3rd\Motion.Avalonia\src\Motion.Avalonia\Motion.Avalonia.csproj"/>
     <ProjectReference Include="..\..\3rd\shad-ui\src\ShadUI\ShadUI.csproj"/>
     <ProjectReference Include="..\Everywhere.Abstractions\Everywhere.Abstractions.csproj"/>
     <ProjectReference Include="..\Everywhere.Configuration.SourceGenerator\Everywhere.Configuration.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
-    <ProjectReference Include="..\Everywhere.I18N.Abstractions\Everywhere.I18N.Abstractions.csproj" />
-    <ProjectReference Include="..\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
-    <ProjectReference Include="..\Everywhere.Terminal\Everywhere.Terminal.csproj" />
+    <ProjectReference Include="..\Everywhere.I18N.Abstractions\Everywhere.I18N.Abstractions.csproj"/>
+    <ProjectReference Include="..\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\Everywhere.Terminal\Everywhere.Terminal.csproj"/>
 
   </ItemGroup>
 
@@ -109,7 +110,7 @@
 
   <ItemGroup>
     <!-- Keep skill paths intact so EmbeddedSkillProvider can enumerate them without relying on platform-specific resource names. -->
-    <EmbeddedResource Include="Assets\Skills\**" LogicalName="skills/$([System.String]::Copy('%(RecursiveDir)').Replace('\','/'))%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Assets\Skills\**" LogicalName="skills/$([System.String]::Copy('%(RecursiveDir)').Replace('\','/'))%(Filename)%(Extension)"/>
   </ItemGroup>
 
   <ItemGroup>

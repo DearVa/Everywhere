@@ -62,10 +62,11 @@
                 <DataTemplate x:DataType="plugins:ChatPluginFileReference">
                   <Button
                     x:Name="FileReferenceButton" Classes="Ghost Compact"
-                    Padding="5,1"
+                    Margin="-5,0,5,0" Padding="5,1"
                     shadui:ButtonAssist.Icon="{LucideIconContent File}"
                     shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
-                    Command="{Binding OpenFileLocationCommand}">
+                    Command="{Binding OpenFileLocationCommand}"
+                    Foreground="{DynamicResource MutedColor}">
                     <TextBlock
                       FontSize="{DynamicResource FontSizeXs}"
                       Text="{Binding FullPath}"
@@ -84,13 +85,15 @@
         </DataTemplate>
 
         <DataTemplate x:DataType="plugins:ChatPluginFileTransferActivityPreview">
-          <StackPanel Orientation="Horizontal">
+          <StackPanel
+            Margin="-5,0,5,0" Orientation="Horizontal">
             <Button
               x:Name="SourceFileButton" Classes="Ghost Compact"
               Padding="5,1"
               shadui:ButtonAssist.Icon="{LucideIconContent File}"
               shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
-              Command="{Binding Source.OpenFileLocationCommand}">
+              Command="{Binding Source.OpenFileLocationCommand}"
+              Foreground="{DynamicResource MutedColor}">
               <TextBlock
                 FontSize="{DynamicResource FontSizeXs}"
                 Text="{Binding Source.FullPath}"
@@ -111,7 +114,8 @@
               Padding="5,1"
               shadui:ButtonAssist.Icon="{LucideIconContent File}"
               shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
-              Command="{Binding Destination.OpenFileLocationCommand}">
+              Command="{Binding Destination.OpenFileLocationCommand}"
+              Foreground="{DynamicResource MutedColor}">
               <TextBlock
                 FontSize="{DynamicResource FontSizeXs}"
                 Text="{Binding Destination.FullPath}"

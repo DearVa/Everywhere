@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Avalonia.Platform.Storage;
@@ -6,6 +7,7 @@ using Avalonia.Threading;
 using Everywhere.Chat.Documents;
 using Everywhere.Chat.Permissions;
 using Everywhere.Chat.Plugins.BuiltIn.FileSystem;
+using Everywhere.Chat.Plugins.BuiltIn.FileSystem.Patching;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Lucide.Avalonia;
@@ -43,11 +45,10 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             list.Add(new BuiltInChatFunction(GetFileInformationAsync, ChatFunctionPermissions.FileRead));
             list.Add(new BuiltInChatFunction(SearchFileContentAsync, ChatFunctionPermissions.FileRead));
             list.Add(new BuiltInChatFunction(ReadFileAsync, ChatFunctionPermissions.FileRead));
-            list.Add(new BuiltInChatFunction(TransferFileAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
-            list.Add(new BuiltInChatFunction(DeleteFilesAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
+            list.Add(new BuiltInChatFunction(TransferPathAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
+            list.Add(new BuiltInChatFunction(DeletePathsAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
             list.Add(new BuiltInChatFunction(CreateDirectoryAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
-            list.Add(new BuiltInChatFunction(WriteToFileAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
-            list.Add(new BuiltInChatFunction(ReplaceFileContentAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
+            list.Add(new BuiltInChatFunction(ApplyPatchAsync, ChatFunctionPermissions.FileAccess, onPermissionConsent: _ => true));
         });
     }
 
@@ -305,15 +306,15 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         return BuildReadOutput(context.Path, result);
     }
 
-    [KernelFunction("transfer_file")]
+    [KernelFunction("transfer_path")]
     [Description(
         "Copies or moves a local file or directory to a new path. Moving to a new name renames it. " +
         "The destination must not already exist.")]
     [DynamicLocaleKey(
-        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Header,
-        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Description)]
+        LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_Header,
+        LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_Description)]
     [FriendlyFunctionCallContentRenderer(typeof(FileTransferRenderer))]
-    private async Task TransferFileAsync(
+    private async Task TransferPathAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [FromKernelServices] ChatContext chatContext,
         [Description("The existing local file or directory to copy or move.")] string source,
@@ -335,7 +336,7 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
                 new ArgumentOutOfRangeException(
                     nameof(operation),
                     operation,
-                    "The transfer_file operation must be either Copy or Move."),
+                    "The transfer_path operation must be either Copy or Move."),
                 LocaleKey.HandledSystemException_ArgumentOutOfRange);
         }
 
@@ -343,8 +344,8 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             new ChatPluginFileReference(source),
             new DynamicLocaleKey(
                 operation is FileTransferOperation.Copy ?
-                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyTo :
-                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveTo),
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_CopyTo :
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_MoveTo),
             new ChatPluginFileReference(destination));
         userInterface.DisplaySink.AppendFileReferences(
             new ChatPluginFileReference(source),
@@ -362,7 +363,7 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         if (string.Equals(
                 Path.TrimEndingDirectorySeparator(source),
                 Path.TrimEndingDirectorySeparator(destination),
-                PathContainment.GetPathComparison()))
+                PathContainment.SystemPathComparison))
         {
             throw new HandledException(
                 new IOException($"The source and destination resolve to the same path, so the {operationName} operation cannot be performed."),
@@ -404,10 +405,12 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new DynamicLocaleKey(
+            new FormattedDynamicLocaleKey(
                 operation is FileTransferOperation.Copy ?
-                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header :
-                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header),
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_CopyConsent_Header :
+                    LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_MoveConsent_Header,
+                new DirectLocaleKey(Path.GetFileName(Path.TrimEndingDirectorySeparator(source))),
+                new DirectLocaleKey(Path.GetFileName(Path.TrimEndingDirectorySeparator(destination)))),
             [source, destination],
             () => CreateFileTransferContent(source, destination, operation),
             cancellationToken);
@@ -430,64 +433,65 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         }
     }
 
-    [KernelFunction("delete_files")]
-    [Description("Delete local files and directories matching a regex.")]
-    [DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_Header, LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_Description)]
-    [FriendlyFunctionCallContentRenderer(typeof(FileRenderer))]
-    private async Task<string> DeleteFilesAsync(
+    [KernelFunction("delete_paths")]
+    [Description("Delete explicitly listed local files or directories. Non-empty directories require recursive=true.")]
+    [DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_Header, LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_Description)]
+    private async Task<string> DeletePathsAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [FromKernelServices] ChatContext chatContext,
-        string path,
-        string filePattern = ".*",
+        [Description("Explicit local file or directory paths to delete.")] IReadOnlyList<string> paths,
+        [Description("Whether non-empty directories may be deleted recursively.")] bool recursive = false,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Deleting file at {Path}", path);
-
-        path = ExpandLocalPath(chatContext, path);
-        userInterface.ActivityPreview = CreateFilePreview(
-            path,
-            filePattern is ".*" ? null : new DirectLocaleKey(filePattern));
-        userInterface.DisplaySink.AppendFileReferences(new ChatPluginFileReference(path));
-        if (Path.GetDirectoryName(path) is null)
+        _logger.LogDebug("Deleting paths: {Paths}, recursive: {Recursive}", paths, recursive);
+        if (paths.Count == 0)
         {
             throw new HandledException(
-                new UnauthorizedAccessException(
-                    "The requested path is a filesystem root, and root directories cannot be deleted."),
-                LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage);
+                new ArgumentException("At least one path must be provided.", nameof(paths)),
+                LocaleKey.BuiltInChatPlugin_FileSystem_InvalidPath_ErrorMessage);
         }
 
-        var root = EnsureFileSystemInfo(path);
-        if (root.Attributes.HasFlag(FileAttributes.System))
-        {
-            throw new HandledException(
-                new UnauthorizedAccessException(
-                    "The requested path is marked as a system file or directory and cannot be deleted."),
-                LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage);
-        }
-
-        var regex = CreateRegex(filePattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        var targets = root is FileInfo ? [root] : EnumerateLocalEntries((DirectoryInfo)root, regex, cancellationToken).ToArray();
+        var workingDirectory = chatContext.EnsureWorkingDirectory();
+        var targets = paths
+            .AsValueEnumerable()
+            .Select(path => ExpandLocalPath(chatContext, path))
+            .Distinct(PathContainment.SystemPathComparer)
+            .Select(path => PrepareDeleteTarget(path, workingDirectory, recursive, cancellationToken))
+            .ToArray();
         if (targets.Length == 0) return "No files or directories to delete.";
 
-        var paths = targets.AsValueEnumerable().Select(info => info.FullName).Order().ToArray();
+        var targetPaths = targets
+            .AsValueEnumerable()
+            .Select(static info => info.FullName)
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToArray();
+        userInterface.ActivityPreview = new ChatPluginFileReferencesActivityPreview(
+            targetPaths.AsValueEnumerable().Select(static path => new ChatPluginFileReference(path)).ToArray());
+        userInterface.DisplaySink.AppendFileReferences(
+            targetPaths.AsValueEnumerable().Select(static path => new ChatPluginFileReference(path)).ToArray());
+        var requiresExplicitApproval = recursive && targets.AsValueEnumerable().Any(static target => target is DirectoryInfo);
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header),
-            paths,
+            new FormattedDynamicLocaleKey(
+                LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_DeletionConsent_Header,
+                targets.Length),
+            targetPaths,
             null,
-            cancellationToken);
+            cancellationToken,
+            forceConsent: requiresExplicitApproval);
 
         var success = 0;
         var errors = 0;
-        foreach (var target in targets.OrderByDescending(info => info.FullName.Length))
+        foreach (var target in targets.OrderByDescending(static info => info.FullName.Length))
         {
             cancellationToken.ThrowIfCancellationRequested();
             try
             {
+                target.Refresh();
                 if (target.Exists)
                 {
-                    if (target is DirectoryInfo directory) directory.Delete(true);
+                    if (target is DirectoryInfo directory) directory.Delete(recursive);
                     else target.Delete();
                 }
 
@@ -503,6 +507,63 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         return errors == 0 ?
             $"{success} files/directories were deleted successfully." :
             $"{success} files/directories were deleted successfully, {errors} errors occurred.";
+    }
+
+    private static FileSystemInfo PrepareDeleteTarget(
+        string path,
+        string workingDirectory,
+        bool recursive,
+        CancellationToken cancellationToken)
+    {
+        var normalizedPath = Path.TrimEndingDirectorySeparator(path);
+        var root = Path.TrimEndingDirectorySeparator(Path.GetPathRoot(path) ?? string.Empty);
+        if (string.Equals(normalizedPath, root, PathContainment.SystemPathComparison))
+        {
+            throw new HandledException(
+                new UnauthorizedAccessException(
+                    "The requested path is a filesystem root, and root directories cannot be deleted."),
+                LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_RootDirectory_Deletion_ErrorMessage);
+        }
+
+        var normalizedWorkingDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(workingDirectory));
+        if (string.Equals(normalizedPath, normalizedWorkingDirectory, PathContainment.SystemPathComparison))
+        {
+            throw new HandledException(
+                new UnauthorizedAccessException(
+                    "The chat working directory cannot be deleted by this tool."),
+                LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_WorkingDirectory_Deletion_ErrorMessage);
+        }
+
+        var target = EnsureFileSystemInfo(path);
+        if (target.Attributes.HasFlag(FileAttributes.System))
+        {
+            throw new HandledException(
+                new UnauthorizedAccessException(
+                    "The requested path is marked as a system file or directory and cannot be deleted."),
+                LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_SystemFile_Deletion_ErrorMessage);
+        }
+
+        if (target.Attributes.HasFlag(FileAttributes.ReparsePoint))
+        {
+            throw new HandledException(
+                new NotSupportedException(
+                    $"The requested path is a symbolic link, junction, or other reparse point and cannot be deleted: '{path}'."),
+                LocaleKey.HandledSystemException_NotSupported);
+        }
+
+        if (target is DirectoryInfo directory)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!recursive && directory.EnumerateFileSystemInfos().Any())
+            {
+                throw new HandledException(
+                    new IOException(
+                        $"The directory '{path}' is not empty. Set recursive=true to delete its contents."),
+                    LocaleKey.BuiltInChatPlugin_FileSystem_DeletePaths_NonEmptyDirectory_ErrorMessage);
+            }
+        }
+
+        return target;
     }
 
     [KernelFunction("create_directory")]
@@ -534,111 +595,410 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         await RequestFileOperationConsentAsync(
             userInterface,
             chatContext,
-            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header),
+            new FormattedDynamicLocaleKey(
+                LocaleKey.BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header,
+                new DirectLocaleKey(Path.GetFileName(Path.TrimEndingDirectorySeparator(path)))),
             [path],
             null,
             cancellationToken);
         Directory.CreateDirectory(path);
     }
 
-    [KernelFunction("write_to_file")]
-    [Description("Writes content to a text file. Unsupported handlers reject the operation.")]
-    [DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_Header, LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_Description)]
-    [FriendlyFunctionCallContentRenderer(typeof(FileRenderer))]
-    private async Task WriteToFileAsync(
+    [KernelFunction("apply_patch")]
+    [Description(
+        """
+        Apply local text-file changes using this EXACT protocol:
+
+        *** Begin Patch
+        [one or more file operations]
+        *** End Patch
+
+        ## File operations
+
+        *** Add File: <path>
+        +<new line>
+
+        *** Delete File: <path>
+
+        *** Update File: <path>
+        [*** Move to: <destination>]
+        [one or more complete hunks]
+
+        Each resolved file path MUST appear in exactly one file operation. Paths may be relative, absolute, or `file://` URIs.
+        To edit several locations in one file, use a single `*** Update File` operation and place multiple complete `@@` hunks under it. MUST in top-to-bottom source order or they will fail.
+
+        ## Update hunks
+
+        Every update hunk begins with exactly one complete physical header line:
+        1. Bare header (for most cases): `@@`
+        2. Anchored header: `@@ <exact source line BEFORE the target>`
+
+        A bare `@@` searches forward for the first matching context/removal lines, starting at or after the previous hunk's end. Line numbers and anchors are therefore normally unnecessary.
+        DO NOT use an anchored header unless you MUST begin searching after a particular occurrence, such as when identical text appears earlier in the file and MUST be skipped.
+        The anchor moves the search position to immediately after that exact source line. It is not part of the hunk body and cannot itself be modified by that hunk.
+        DO NOT surround anchor text with quotes. Quotes would be matched literally.
+        If the source line is indented, preserve that indentation after the single separator space following `@@`.
+
+        ## Hunk body lines
+
+        Every hunk body line starts with EXACTLY ONE marker, otherwise it is ILLEGAL:
+         : unchanged context; the line remains in the file.
+        -: existing text to remove.
+        +: new text to add.
+
+        Copy leading whitespace EXACTLY AFTER the marker, especially on `-` and `+` lines.
+        Matching may tolerate whitespace differences in existing lines, but `+` lines are written EXACTLY as supplied.
+        Even an empty body line must have a marker.
+        Every `@@` starts a new independent hunk. Every hunk must contain at least one `+` or `-` line before the next `@@`, file operation, or patch terminator.
+
+        ## Samples
+
+        Replace existing text:
+        @@
+        -old text
+        +new text
+
+        Replace existing text with an anchor:
+        @@ void Reset()
+        -state = 0;
+        +state = 1;
+
+        Delete existing text:
+        @@
+        -text to delete
+
+        Insert after an unchanged line:
+        @@
+         unchanged line
+        +new text
+
+        ## Examples of Errors
+
+        The body line starts AFTER the anchor text, not on the same line:
+        @@ state = 0;
+        -state = 0;
+        +state = 1;
+
+        Missing a marker on a body line:
+        @@
+        state = 0;
+        +state = 1;
+
+        The old text is retained:
+        @@
+         old text
+        +new text
+
+        ## Search and append behavior
+
+        Each bare `@@` searches for its context/removal lines at or after the previous hunk's end. It does not automatically append content to the file.
+
+        For an addition-only hunk, use one of these forms:
+        * Use `@@ <anchor>` to insert after a specific source line.
+        * To append at the end of the file, use a bare `@@` followed by additions and `*** End of File`.
+
+        Example append:
+        @@
+        +new line
+        *** End of File
+        """)]
+    [DynamicLocaleKey(
+        LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_Header,
+        LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_Description)]
+    private async Task<PromptNode> ApplyPatchAsync(
         [FromKernelServices] IChatPluginUserInterface userInterface,
         [FromKernelServices] ChatContext chatContext,
-        string path,
-        string? content,
-        bool append = false,
+        [Description("The complete patch document, including the *** Begin Patch and *** End Patch markers.")]
+        string? patch,
         CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Writing text file at {Path}, append: {Append}", path, append);
+        _logger.LogDebug("Applying a file patch with {CharacterCount} characters", patch?.Length ?? 0);
+        if (string.IsNullOrWhiteSpace(patch))
+        {
+            throw new HandledException(
+                new ArgumentException("The apply_patch tool requires a non-empty patch.", nameof(patch)),
+                LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage);
+        }
 
-        var context = await _contextFactory.CreateAsync(path, chatContext.EnsureWorkingDirectory(), cancellationToken);
-        userInterface.ActivityPreview = CreateFilePreview(context.Path);
-        userInterface.DisplaySink.AppendFileReferences(new ChatPluginFileReference(context.Path));
-        var exists = context.FileSystemInfo is FileInfo { Exists: true };
-        await RequestFileOperationConsentAsync(
-            userInterface,
-            chatContext,
-            new DynamicLocaleKey(
-                exists ?
-                    append ?
-                        LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header :
-                        LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header :
-                    LocaleKey.BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header),
-            [context.Path],
-            null,
-            cancellationToken);
-        await context.Handler.WriteAsync(context, content, append, cancellationToken);
+        PatchPlan plan;
+        try
+        {
+            var document = PatchParser.Parse(patch);
+            plan = await PatchPlanBuilder.BuildAsync(
+                document,
+                chatContext.EnsureWorkingDirectory(),
+                PatchLimits.Default,
+                cancellationToken);
+        }
+        catch (Exception ex) when (ex is PatchParseException or PatchPlanException or PatchMatchException)
+        {
+            throw new HandledException(
+                ex,
+                LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage,
+                showDetails: true);
+        }
+
+        var references = CreatePatchReferences(plan);
+        userInterface.ActivityPreview = new ChatPluginFileReferencesActivityPreview(references);
+
+        using var review = PatchReviewSession.Create(plan);
+
+        IReadOnlyList<PatchFileDecision> decisions;
+        try
+        {
+            decisions = await review.ReviewAsync(
+                (item, token) => RequestPatchFileDecisionAsync(userInterface, chatContext, item, token),
+                userInterface.DisplaySink,
+                cancellationToken);
+        }
+        catch (PatchReviewException ex)
+        {
+            throw new HandledException(
+                ex,
+                LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage,
+                showDetails: true);
+        }
+
+        PatchCommitResult result;
+        try
+        {
+            result = await PatchCommitter.CommitAsync(
+                plan,
+                decisions,
+                PatchLimits.Default,
+                cancellationToken);
+        }
+        catch (PatchCommitException ex)
+        {
+            throw new HandledException(
+                ex,
+                LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage,
+                showDetails: true);
+        }
+
+        return new PromptTokenLimit(40000, FormatPatchCommitResult(result, plan));
     }
 
-    [KernelFunction("replace_file_content")]
-    [Description("Replaces text in one file after presenting a diff for review.")]
-    [DynamicLocaleKey(
-        LocaleKey.BuiltInChatPlugin_FileSystem_ReplaceFileContent_Header,
-        LocaleKey.BuiltInChatPlugin_FileSystem_ReplaceFileContent_Description)]
-    [FriendlyFunctionCallContentRenderer(typeof(FileRenderer))]
-    private async Task<string> ReplaceFileContentAsync(
-        [FromKernelServices] IChatPluginUserInterface userInterface,
-        [FromKernelServices] ChatContext chatContext,
-        string path,
-        IReadOnlyList<string> patterns,
-        IReadOnlyList<string> replacements,
-        bool isRegex = true,
-        bool ignoreCase = false,
-        CancellationToken cancellationToken = default)
+    private static ChatPluginFileReference[] CreatePatchReferences(PatchPlan plan)
     {
-        _logger.LogDebug(
-            "Replacing file content at {Path} with patterns: {Patterns}, replacements: {Replacements}, isRegex: {IsRegex}, ignoreCase: {IgnoreCase}",
-            path,
-            patterns,
-            replacements,
-            isRegex,
-            ignoreCase);
-
-        if (patterns.Count == 0)
+        var paths = new List<string>(plan.Files.Count * 2);
+        foreach (var file in plan.Files)
         {
-            throw new HandledException(
-                new ArgumentException(
-                    "The replace_file_content tool requires at least one search pattern.",
-                    nameof(patterns)),
-                LocaleKey.BuiltInChatPlugin_FileSystem_InvalidReplacement_ErrorMessage);
+            paths.Add(file.SourcePath);
+            if (file is PatchMovePlanFile move) paths.Add(move.DestinationPath);
         }
 
-        if (patterns.Count != replacements.Count)
-        {
-            throw new HandledException(
-                new ArgumentException(
-                    $"The replace_file_content tool received {patterns.Count} patterns but {replacements.Count} replacements. Each pattern must have exactly one replacement.",
-                    nameof(replacements)),
-                LocaleKey.BuiltInChatPlugin_FileSystem_InvalidReplacement_ErrorMessage);
-        }
+        return paths
+            .AsValueEnumerable()
+            .Distinct(PathContainment.SystemPathComparer)
+            .Select(static path => new ChatPluginFileReference(path))
+            .ToArray();
+    }
 
-        var context = await _contextFactory.CreateAsync(path, chatContext.EnsureWorkingDirectory(), cancellationToken);
-        userInterface.ActivityPreview = CreateFilePreview(context.Path);
-        userInterface.DisplaySink.AppendFileReferences(new ChatPluginFileReference(context.Path));
-        return await context.Handler.ReplaceContentAsync(
-            context,
-            patterns,
-            replacements,
-            isRegex,
-            ignoreCase,
-            async (original, proposed, token) =>
+    private Task<RequestConsentResult> RequestPatchFileDecisionAsync(
+        IChatPluginUserInterface userInterface,
+        ChatContext chatContext,
+        PatchReviewItem item,
+        CancellationToken cancellationToken)
+    {
+        var paths = item.File is PatchMovePlanFile move ? new[] { move.SourcePath, move.DestinationPath } : new[] { item.File.ReviewPath };
+        return RequestFileOperationConsentResultAsync(
+            userInterface,
+            chatContext,
+            new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_ApplyPatch_FileOperationReview_Header),
+            paths,
+            () => item.DisplayBlock,
+            cancellationToken);
+    }
+
+    private static string FormatPatchCommitResult(PatchCommitResult result, PatchPlan plan)
+    {
+        var hasCommittedFile = false;
+        var hasRejectedFile = false;
+        var hasRejectedChange = false;
+        var appliedAddedLineCount = 0;
+        var appliedRemovedLineCount = 0;
+        foreach (var fileResult in result.Files.AsValueEnumerable())
+        {
+            if (fileResult.Status is PatchCommitStatus.Committed) hasCommittedFile = true;
+            if (fileResult.Status is PatchCommitStatus.RejectedByUser) hasRejectedFile = true;
+
+            foreach (var change in fileResult.Decision.Changes.AsValueEnumerable())
             {
-                var difference = new TextDifference(context.Path);
-                TextDifferenceBuilder.BuildLineDiff(difference, original, proposed);
-                userInterface.DisplaySink.AppendFileDifference(difference, original);
-                await difference.WaitForAcceptanceAsync(token);
-                if (!difference.Changes.AsValueEnumerable().Any(change => change.Accepted is true))
+                if (!change.Accepted)
                 {
-                    return new FileReviewResult(null, "All changes were rejected by user.");
+                    hasRejectedChange = true;
+                    continue;
                 }
 
-                return new FileReviewResult(difference.Apply(original), difference.ToModelSummary(original, default));
-            },
-            cancellationToken);
+                if (fileResult.Status is not PatchCommitStatus.Committed) continue;
+                appliedAddedLineCount += change.AddedLineCount;
+                appliedRemovedLineCount += change.RemovedLineCount;
+            }
+        }
+
+        var output = new StringBuilder(256 + result.Files.Count * 128);
+        output
+            .AppendLine(
+                !result.Succeeded ?
+                    "Patch was not fully applied." :
+                    hasCommittedFile ?
+                        "Patch applied successfully." :
+                        "Patch completed with no file changes.")
+            .Append("Applied line changes: ");
+        AppendLineChangeSummary(output, appliedAddedLineCount, appliedRemovedLineCount);
+        output.AppendLine(".");
+
+        if (hasRejectedFile || hasRejectedChange)
+        {
+            output
+                .AppendLine(
+                    hasCommittedFile ?
+                        "The patch parsed and matched successfully; some proposed changes were rejected during user review." :
+                        "The patch parsed and matched successfully; the proposed changes were rejected during user review.")
+                .AppendLine("Accepted/rejected counts below refer to review-generated text changes, not patch hunks.")
+                .AppendLine("Rejected changes are user decisions, not patch syntax or matching errors, and were not written.")
+                .AppendLine("Do not retry rejected changes unless the user requests it.");
+        }
+
+        AppendPatchMatchWarnings(output, plan, result);
+
+        output.AppendLine("Files:");
+        foreach (var file in result.Files)
+        {
+            var status = GetPatchCommitStatusText(file.Status);
+            var fileAddedLineCount = 0;
+            var fileRemovedLineCount = 0;
+            var acceptedChangeCount = 0;
+            var rejectedChangeCount = 0;
+            foreach (var change in file.Decision.Changes.AsValueEnumerable())
+            {
+                if (change.Accepted)
+                {
+                    acceptedChangeCount++;
+                    if (file.Status is not PatchCommitStatus.Committed) continue;
+                    fileAddedLineCount += change.AddedLineCount;
+                    fileRemovedLineCount += change.RemovedLineCount;
+                }
+                else
+                {
+                    rejectedChangeCount++;
+                }
+            }
+
+            output.Append("- ").Append(status).Append(": ").Append(file.Path).Append(" — ");
+            AppendLineChangeSummary(output, fileAddedLineCount, fileRemovedLineCount);
+            if (file.Decision.Changes.Count > 0)
+            {
+                output
+                    .Append("; review-generated changes: ")
+                    .Append(acceptedChangeCount)
+                    .Append(" accepted, ")
+                    .Append(rejectedChangeCount)
+                    .Append(" rejected");
+            }
+
+            if (file.Decision is PatchRejectedFileDecision { Reason: { Length: > 0 } rejectionReason })
+            {
+                output.Append(" — user reason: ").Append(rejectionReason);
+            }
+
+            if (file.Error is { Length: > 0 } errorMessage)
+            {
+                output.Append(" — ").Append(errorMessage);
+            }
+
+            output.AppendLine();
+
+            foreach (var change in file.Decision.Changes.Where(static change => !string.IsNullOrWhiteSpace(change.Comment)))
+            {
+                var selection = change.Accepted ? "accepted" : "rejected";
+                output
+                    .Append("  user comment on ").Append(selection).Append(" change ")
+                    .Append(change.Id.AsSpan(0, Math.Min(6, change.Id.Length))).Append(": ")
+                    .AppendLine(change.Comment);
+            }
+        }
+
+        if (result.Error is { Length: > 0 } && result.Files.All(static file => file.Error is null))
+        {
+            output.Append("Error: ").AppendLine(result.Error);
+        }
+
+        return output.TrimEnd().ToString();
+    }
+
+    private static void AppendPatchMatchWarnings(StringBuilder output, PatchPlan plan, PatchCommitResult result)
+    {
+        if (!plan.Files.AsValueEnumerable().Any(static file => file.MatchDiagnostics.Count > 0)) return;
+
+        var resultsByPath = result.Files.ToDictionary(
+            static file => file.Path,
+            PathContainment.SystemPathComparer);
+        output.AppendLine("Warnings: tolerant matching was used while planning this patch:");
+        foreach (var file in plan.Files)
+        {
+            if (file.MatchDiagnostics.Count == 0) continue;
+
+            var status = resultsByPath.TryGetValue(file.ReviewPath, out var fileResult) ?
+                GetPatchCommitStatusText(fileResult.Status) :
+                "unknown status";
+            foreach (var diagnostic in file.MatchDiagnostics)
+            {
+                output
+                    .Append("- ").Append(status).Append(": ")
+                    .Append(file.ReviewPath).Append(", ")
+                    .Append(IsContextMatch(diagnostic.Kind) ? "anchored hunk #" : "hunk #")
+                    .Append(diagnostic.HunkNumber)
+                    .Append(" (patch header line ").Append(diagnostic.HeaderLineNumber).Append(") matched ")
+                    .AppendLine(DescribePatchMatchFallback(diagnostic.Kind));
+            }
+        }
+
+        output
+            .AppendLine("Added lines were kept exactly as supplied; tolerant matching does not repair their whitespace or punctuation.")
+            .AppendLine("For committed files, re-read the affected lines and verify indentation and intended text.")
+            .AppendLine("These were successful fallback matches, not patch errors. Do not retry automatically.");
+    }
+
+    private static string DescribePatchMatchFallback(PatchMatchKind kind) => kind switch
+    {
+        PatchMatchKind.TrailingWhitespaceFallback or PatchMatchKind.ContextTrailingWhitespaceFallback =>
+            "after ignoring trailing whitespace.",
+        PatchMatchKind.OuterWhitespaceFallback or PatchMatchKind.ContextOuterWhitespaceFallback =>
+            "after ignoring leading and trailing whitespace.",
+        PatchMatchKind.UnicodeCompatibilityFallback or PatchMatchKind.ContextUnicodeCompatibilityFallback =>
+            "after normalizing compatible Unicode whitespace or punctuation.",
+        _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, "The match kind is not a tolerant fallback.")
+    };
+
+    private static bool IsContextMatch(PatchMatchKind kind) => kind is
+        PatchMatchKind.ContextTrailingWhitespaceFallback or
+        PatchMatchKind.ContextOuterWhitespaceFallback or
+        PatchMatchKind.ContextUnicodeCompatibilityFallback;
+
+    private static string GetPatchCommitStatusText(PatchCommitStatus status) => status switch
+    {
+        PatchCommitStatus.Committed => "committed",
+        PatchCommitStatus.NoChanges => "no changes",
+        PatchCommitStatus.RejectedByUser => "rejected by user",
+        PatchCommitStatus.Conflict => "conflict",
+        PatchCommitStatus.Failed => "failed",
+        PatchCommitStatus.NotAttempted => "not attempted",
+        _ => status.ToString()
+    };
+
+    private static void AppendLineChangeSummary(StringBuilder output, int addedLineCount, int removedLineCount)
+    {
+        output
+            .Append(addedLineCount)
+            .Append(' ')
+            .Append(Pluralize(addedLineCount, "line", "lines"))
+            .Append(" added, ")
+            .Append(removedLineCount)
+            .Append(' ')
+            .Append(Pluralize(removedLineCount, "line", "lines"))
+            .Append(" deleted");
     }
 
     private static PromptNode BuildReadOutput(string path, FileReadResult result)
@@ -657,9 +1017,7 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         var details = result.Total is { } total ? $" ({total} {result.Unit}s total)" : string.Empty;
         var metadata = string.Join(
             string.Empty,
-            result.Metadata
-                .Where(static item => item.Value is not null)
-                .Select(static item => $", {item.Key}={item.Value}"));
+            result.Metadata.Where(static item => item.Value is not null).Select(static item => $", {item.Key}={item.Value}"));
         var output = new PromptTokenLimit(40000)
         {
             $"File: `{path}`. {unitName} starting at {result.Offset}{details}{metadata}:{Environment.NewLine}"
@@ -884,14 +1242,14 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         new()
         {
             new ChatPluginDynamicLocaleKeyDisplayBlock(
-                new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_Consent_From),
+                new DynamicLocaleKey(LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_Consent_From),
                 "Muted"),
             new ChatPluginFileReferencesDisplayBlock(new ChatPluginFileReference(source)),
             new ChatPluginDynamicLocaleKeyDisplayBlock(
                 new DynamicLocaleKey(
                     operation is FileTransferOperation.Copy ?
-                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_CopyTo :
-                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferFile_MoveTo),
+                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_CopyTo :
+                        LocaleKey.BuiltInChatPlugin_FileSystem_TransferPath_MoveTo),
                 "Muted"),
             new ChatPluginFileReferencesDisplayBlock(new ChatPluginFileReference(destination))
         };
@@ -958,18 +1316,49 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         IDynamicLocaleKey headerKey,
         string[] paths,
         Func<ChatPluginDisplayBlock>? contentFactory,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool forceConsent = false)
     {
-        if (chatContext.FunctionCallContext.Value?.BypassesApproval is true) return;
+        var consent = await RequestFileOperationConsentResultAsync(
+            userInterface,
+            chatContext,
+            headerKey,
+            paths,
+            contentFactory,
+            cancellationToken,
+            forceConsent);
+        if (consent) return;
+
+        throw new HandledException(
+            new UnauthorizedAccessException(
+                consent.FormatReason(
+                    "The user denied the file-operation approval request, so the operation was not performed.")),
+            LocaleKey.BuiltInChatPlugin_FileSystem_ConsentDenied_ErrorMessage);
+    }
+
+    /// <summary>
+    /// Returns the effective file-operation approval after applying tool, working-directory, and
+    /// persisted path rules, requesting consent only when none of those rules covers every path.
+    /// </summary>
+    private async Task<RequestConsentResult> RequestFileOperationConsentResultAsync(
+        IChatPluginUserInterface userInterface,
+        ChatContext chatContext,
+        IDynamicLocaleKey headerKey,
+        string[] paths,
+        Func<ChatPluginDisplayBlock>? contentFactory,
+        CancellationToken cancellationToken,
+        bool forceConsent = false)
+    {
+        if (chatContext.FunctionCallContext.Value?.BypassesApproval is true) return RequestConsentResult.Accept;
 
         var workingDirectory = chatContext.EnsureWorkingDirectory();
-        if (paths.Length > 0 &&
+        if (!forceConsent && paths.Length > 0 &&
             paths.AsValueEnumerable().All(path => Path.IsPathFullyQualified(path) && PathContainment.IsInsideDirectory(path, workingDirectory)))
         {
-            return;
+            return RequestConsentResult.Accept;
         }
 
-        if (_fileSystemSettings.ArePathsApproved(paths)) return;
+        if (!forceConsent && _fileSystemSettings.ArePathsApproved(paths)) return RequestConsentResult.Accept;
 
         var content = contentFactory?.Invoke() ??
             new ChatPluginFileReferencesDisplayBlock(paths.AsValueEnumerable().Select(path => new ChatPluginFileReference(path)).ToArray())
@@ -1013,16 +1402,9 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             customOptions,
             cancellationToken: cancellationToken);
 
-        if (!consent)
-        {
-            throw new HandledException(
-                new UnauthorizedAccessException(
-                    consent.FormatReason(
-                        "The user denied the file-operation approval request, so the operation was not performed.")),
-                LocaleKey.BuiltInChatPlugin_FileSystem_ConsentDenied_ErrorMessage);
-        }
+        if (!consent) return consent;
 
-        if (consent.CustomOption?.Key is not FileSystemConsentOption option) return;
+        if (consent.CustomOption?.Key is not FileSystemConsentOption option) return consent;
 
         switch (option)
         {
@@ -1089,6 +1471,8 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
             }
         }
 
+        return consent;
+
         bool CanPickCustomDirectory()
         {
             try
@@ -1123,32 +1507,6 @@ public sealed class FileSystemPlugin : BuiltInChatPlugin
         throw new HandledException(
             new FileNotFoundException($"The requested path does not exist: '{path}'.", path),
             LocaleKey.BuiltInChatPlugin_FileSystem_EnsureFileSystemInfo_PathNotExist_ErrorMessage);
-    }
-
-    private static IEnumerable<FileSystemInfo> EnumerateLocalEntries(DirectoryInfo root, Regex regex, CancellationToken cancellationToken)
-    {
-        var pending = new Stack<(DirectoryInfo Directory, int Depth)>();
-        pending.Push((root, 0));
-
-        while (pending.TryPop(out var current))
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            FileSystemInfo[] entries;
-            try
-            {
-                entries = current.Directory.GetFileSystemInfos();
-            }
-            catch (Exception ex) when (ex is UnauthorizedAccessException or IOException)
-            {
-                continue;
-            }
-
-            foreach (var entry in entries)
-            {
-                if (regex.IsMatch(entry.Name)) yield return entry;
-                if (entry is DirectoryInfo directory && current.Depth < 32) pending.Push((directory, current.Depth + 1));
-            }
-        }
     }
 
     /// <summary>

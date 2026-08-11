@@ -80,31 +80,6 @@ public abstract class FileHandler
         ValueTask.FromException<FileContentSearchResult>(UnsupportedOperation(context, "search content"));
 
     /// <summary>
-    /// Writes or appends content to a resource.
-    /// </summary>
-    /// <remarks>The default implementation reports that the operation is unsupported.</remarks>
-    public virtual ValueTask WriteAsync(
-        FileHandlerContext context,
-        string? content,
-        bool append,
-        CancellationToken cancellationToken) =>
-        ValueTask.FromException(UnsupportedOperation(context, append ? "append" : "write"));
-
-    /// <summary>
-    /// Produces replacement content, requests review, and applies the accepted result.
-    /// </summary>
-    /// <remarks>The default implementation reports that the operation is unsupported.</remarks>
-    public virtual ValueTask<string> ReplaceContentAsync(
-        FileHandlerContext context,
-        IReadOnlyList<string> patterns,
-        IReadOnlyList<string> replacements,
-        bool isRegex,
-        bool ignoreCase,
-        Func<string, string, CancellationToken, Task<FileReviewResult>> reviewAsync,
-        CancellationToken cancellationToken) =>
-        ValueTask.FromException<string>(UnsupportedOperation(context, "replace content"));
-
-    /// <summary>
     /// Converts regex matches in a text segment into structured, line-oriented search results.
     /// </summary>
     /// <remarks>

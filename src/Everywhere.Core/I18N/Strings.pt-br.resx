@@ -1181,10 +1181,10 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
         <value>Reverter</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> linhas adicionadas</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> linhas removidas</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Aceitar tudo</value>
@@ -3588,7 +3588,7 @@ Deseja realmente excluir “{1}” permanentemente?</value>
         <value>Requisitos Adicionais</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Adicione limitações, referências ou preferências que este prompt deve seguir.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Pré-visualização Ao Vivo</value>
@@ -3687,7 +3687,7 @@ Deseja realmente excluir “{1}” permanentemente?</value>
         <value>Detalhado</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Estruturado (Recomendado)</value>
+        <value>Estruturado</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Conclusão Primeiro</value>

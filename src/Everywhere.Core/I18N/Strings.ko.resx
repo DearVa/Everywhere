@@ -1180,10 +1180,10 @@
         <value>되돌리기</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> 줄 추가됨</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> 줄 삭제됨</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>모두 수락</value>
@@ -3587,7 +3587,7 @@
         <value>추가 요구 사항</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>이 프롬프트에 따라야 할 제한 사항, 참고 자료 또는 선호 사항을 추가하세요.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>실시간 미리보기</value>
@@ -3686,7 +3686,7 @@
         <value>상세한</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>구조화된(추천)</value>
+        <value>구조화된</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>결론 우선</value>

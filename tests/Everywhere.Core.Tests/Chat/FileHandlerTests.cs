@@ -147,35 +147,6 @@ public class FileHandlerTests
     }
 
     [Test]
-    public async Task TextHandler_WritesAndAppends_WhileBinaryRejectsWrite()
-    {
-        var directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-        Directory.CreateDirectory(directory);
-        var textPath = Path.Combine(directory, "notes.txt");
-        var binaryPath = Path.Combine(directory, "data.bin");
-        await File.WriteAllBytesAsync(binaryPath, Enumerable.Range(0, 256).Select(value => (byte)value).ToArray());
-        try
-        {
-            var factory = CreateLocalFactory();
-            var text = await factory.CreateAsync(textPath, directory);
-            await text.Handler.WriteAsync(text, "first", false, CancellationToken.None);
-            await text.Handler.WriteAsync(text, " second", true, CancellationToken.None);
-            var binary = await factory.CreateAsync(binaryPath, directory);
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(File.ReadAllText(textPath), Is.EqualTo("first second"));
-                Assert.ThrowsAsync<HandledException>(async () =>
-                    await binary.Handler.WriteAsync(binary, "no", false, CancellationToken.None));
-            });
-        }
-        finally
-        {
-            Directory.Delete(directory, true);
-        }
-    }
-
-    [Test]
     public async Task PdfHandler_ReadsLogicalLinesAcrossPages_WithPageMetadata()
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
@@ -246,44 +217,6 @@ public class FileHandlerTests
     }
 
     [Test]
-    public async Task TextHandler_ReplacementDoesNotLockDuringReview_AndDetectsConflict()
-    {
-        var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".txt");
-        await File.WriteAllTextAsync(path, "original value");
-        try
-        {
-            var context = await CreateLocalFactory().CreateAsync(path, Path.GetTempPath());
-            var exception = Assert.ThrowsAsync<HandledException>(async () =>
-                await context.Handler.ReplaceContentAsync(
-                    context,
-                    ["original"],
-                    ["proposed"],
-                    false,
-                    false,
-                    async (_, proposed, cancellationToken) =>
-                    {
-                        await using (File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
-                        {
-                        }
-
-                        await File.WriteAllTextAsync(path, "external change", cancellationToken);
-                        return new FileReviewResult(proposed, "accepted");
-                    },
-                    CancellationToken.None));
-
-            Assert.Multiple(() =>
-            {
-                Assert.That(exception!.Message, Does.Contain("changed while"));
-                Assert.That(File.ReadAllText(path), Is.EqualTo("external change"));
-            });
-        }
-        finally
-        {
-            File.Delete(path);
-        }
-    }
-
-    [Test]
     public async Task SkillHandler_ReadsPhysicalAndVirtualResources_AndRejectsTraversal()
     {
         var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
@@ -338,12 +271,6 @@ public class FileHandlerTests
                 Assert.That(virtualRead.Items.Single().Content, Is.EqualTo("virtual resource"));
                 Assert.That(manager.GetPrompt(ToolCallStatus.Enabled), Does.Contain("skill://builtin.demo/SKILL.md"));
                 Assert.That(topLevelResources, Does.Contain("skill://builtin.demo/references"));
-                Assert.ThrowsAsync<HandledException>(async () =>
-                    await virtualContext.Handler.WriteAsync(
-                        virtualContext,
-                        "not allowed",
-                        false,
-                        CancellationToken.None));
             });
 
             Assert.ThrowsAsync<HandledException>(async () =>

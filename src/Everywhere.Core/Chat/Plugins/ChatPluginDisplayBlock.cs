@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Everywhere.Collections;
@@ -8,7 +7,6 @@ using Everywhere.Interop;
 using Everywhere.Terminal;
 using Lucide.Avalonia;
 using MessagePack;
-using ZLinq;
 
 namespace Everywhere.Chat.Plugins;
 
@@ -185,7 +183,8 @@ public partial class ChatPluginFileReference(
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
 public readonly partial record struct ChatPluginFileReferenceLocation(
     [property: Key(0)] int Line,
-    [property: Key(1)] int Column);
+    [property: Key(1)] int Column
+);
 
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
 public sealed partial class ChatPluginFileReferencesDisplayBlock(params IReadOnlyList<ChatPluginFileReference> references) : ChatPluginDisplayBlock
@@ -200,34 +199,106 @@ public sealed partial class ChatPluginFileReferencesDisplayBlock(params IReadOnl
     public bool HasMoreReferences => TotalReferenceCount > References.Count;
 }
 
+/// <summary>
+/// Presents a file operation as an interactive consent review or a completed lightweight summary.
+/// </summary>
+/// <remarks>
+/// Detailed text and change objects exist only while consent is pending. <see cref="CompleteReview"/>
+/// removes them before the block is appended to a durable DisplaySink.
+/// </remarks>
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-[method: SerializationConstructor]
-public sealed partial class ChatPluginFileDifferenceDisplayBlock(TextDifference difference) : ChatPluginDisplayBlock
+public sealed partial class ChatPluginFileDifferenceDisplayBlock : ChatPluginDisplayBlock
 {
     [Key(0)]
-    public TextDifference Difference { get; } = difference;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanReview))]
+    public partial TextDifference? Difference { get; private set; }
 
-    public string? OriginalText { get; init; }
+    [Key(1)]
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanReview))]
+    public partial string? OriginalText { get; private set; }
 
-    public override bool IsWaitingForUserInput => Difference.Acceptance is null;
+    [Key(2)]
+    public TextDifferenceReviewKind ReviewKind { get; }
 
-    public ChatPluginFileDifferenceDisplayBlock(TextDifference difference, string originalText) : this(difference)
+    [Key(3)]
+    public string? SourcePath { get; }
+
+    [Key(4)]
+    public string FilePath { get; }
+
+    [Key(5)]
+    public int AddedLineCount { get; }
+
+    [Key(6)]
+    public int RemovedLineCount { get; }
+
+    [IgnoreMember]
+    public bool HasLineChanges => AddedLineCount > 0 || RemovedLineCount > 0;
+
+    [IgnoreMember]
+    public bool CanReview => Difference is { TotalChangesCount: > 0 } && OriginalText is not null;
+
+    /// <summary>
+    /// Initializes a file-difference block for consent review.
+    /// </summary>
+    public ChatPluginFileDifferenceDisplayBlock(
+        TextDifference difference,
+        string originalText,
+        TextDifferenceReviewKind reviewKind,
+        string? sourcePath)
     {
+        Difference = difference;
         OriginalText = originalText;
+        ReviewKind = reviewKind;
+        SourcePath = sourcePath;
+        FilePath = difference.FilePath;
+        AddedLineCount = CountAddedLines(difference);
+        RemovedLineCount = CountRemovedLines(difference, originalText);
+    }
 
-        // Only subscribe to property changes in this constructor since deserialization will not change the Difference property.
-        difference.PropertyChanged += HandleDifferencePropertyChanged;
+    [SerializationConstructor]
+    private ChatPluginFileDifferenceDisplayBlock(
+        TextDifference? difference,
+        string? originalText,
+        TextDifferenceReviewKind reviewKind,
+        string? sourcePath,
+        string? filePath,
+        int addedLineCount,
+        int removedLineCount)
+    {
+        Difference = null;
+        OriginalText = null;
+        ReviewKind = reviewKind;
+        SourcePath = sourcePath;
+        FilePath = filePath ?? difference?.FilePath ?? sourcePath ?? string.Empty;
+        AddedLineCount = addedLineCount != 0 || difference is null ?
+            addedLineCount :
+            CountAddedLines(difference);
+        RemovedLineCount = removedLineCount != 0 || difference is null || originalText is null ?
+            removedLineCount :
+            CountRemovedLines(difference, originalText);
     }
 
     /// <summary>
-    /// Handles property changes on the TextDifference to update the IsWaitingForUserInput property.
+    /// Releases detailed review content before this block becomes durable DisplaySink output.
     /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="e"></param>
-    private void HandleDifferencePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    internal void CompleteReview()
     {
-        if (e.PropertyName == nameof(TextDifference.Acceptance)) OnPropertyChanged(nameof(IsWaitingForUserInput));
+        Difference = null;
+        OriginalText = null;
     }
+
+    private static int CountAddedLines(TextDifference difference) => difference.GetFilteredChanges(default)
+        .AsValueEnumerable()
+        .Where(static change => change.Kind is TextChangeKind.Insert or TextChangeKind.Replace)
+        .Sum(static change => TextDifference.CountLines(change.NewText ?? string.Empty));
+
+    private static int CountRemovedLines(TextDifference difference, string originalText) => difference.GetFilteredChanges(default)
+        .AsValueEnumerable()
+        .Where(static change => change.Kind is TextChangeKind.Delete or TextChangeKind.Replace)
+        .Sum(change => TextDifference.CountLines(change.GetOriginalSlice(originalText)));
 }
 
 /// <summary>

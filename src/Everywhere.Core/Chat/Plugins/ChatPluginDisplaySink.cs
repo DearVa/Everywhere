@@ -1,8 +1,6 @@
-﻿using DynamicData;
-using Everywhere.Common;
+﻿using Everywhere.Common;
 using MessagePack;
 using MessagePack.Formatters;
-using ZLinq;
 
 namespace Everywhere.Chat.Plugins;
 
@@ -69,11 +67,6 @@ public sealed class ChatPluginDisplaySink : IReadOnlyList<ChatPluginDisplayBlock
     public void AppendFileReferences(params IReadOnlyList<ChatPluginFileReference> references)
     {
         _itemsSource.Add(new ChatPluginFileReferencesDisplayBlock(references));
-    }
-
-    public void AppendFileDifference(TextDifference difference, string originalText)
-    {
-        _itemsSource.Add(new ChatPluginFileDifferenceDisplayBlock(difference, originalText));
     }
 
     public void AppendUrls(IReadOnlyList<ChatPluginUrl> urls)

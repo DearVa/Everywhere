@@ -5,6 +5,30 @@ namespace Everywhere.Common;
 /// </summary>
 public static class PathContainment
 {
+    public static StringComparison SystemPathComparison
+    {
+        get
+        {
+#if WINDOWS
+            return StringComparison.OrdinalIgnoreCase;
+#else
+            return StringComparison.Ordinal;
+#endif
+        }
+    }
+
+    public static StringComparer SystemPathComparer
+    {
+        get
+        {
+#if WINDOWS
+            return StringComparer.OrdinalIgnoreCase;
+#else
+            return StringComparer.Ordinal;
+#endif
+        }
+    }
+
     /// <summary>
     /// Determines whether a path resolves inside a directory, including paths containing existing links.
     /// </summary>
@@ -93,7 +117,7 @@ public static class PathContainment
 
         for (var i = 1; i < paths.Count; i++)
         {
-            if (GetParentDirectory(paths[i]) is not { } parent || !string.Equals(parent, firstParent, GetPathComparison()))
+            if (GetParentDirectory(paths[i]) is not { } parent || !string.Equals(parent, firstParent, SystemPathComparison))
             {
                 return null;
             }
@@ -120,16 +144,7 @@ public static class PathContainment
     {
         var fullPath = Path.TrimEndingDirectorySeparator(Path.GetFullPath(path));
         var fullDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(directory));
-        return fullPath.Equals(fullDirectory, GetPathComparison()) ||
-            fullPath.StartsWith(fullDirectory + Path.DirectorySeparatorChar, GetPathComparison());
-    }
-
-    public static StringComparison GetPathComparison()
-    {
-#if WINDOWS
-        return StringComparison.OrdinalIgnoreCase;
-#else
-        return StringComparison.Ordinal;
-#endif
+        return fullPath.Equals(fullDirectory, SystemPathComparison) ||
+            fullPath.StartsWith(fullDirectory + Path.DirectorySeparatorChar, SystemPathComparison);
     }
 }

@@ -19,59 +19,152 @@
             </Style>
           </StackPanel.Styles>
 
-          <HyperlinkButton
-            Padding="0"
-            Command="{Binding OpenFileCommand, RelativeSource={RelativeSource TemplatedParent}}"
-            Content="{Binding TextDifference.FilePath, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}, Converter={x:Static vc:CommonConverters.FullPathToFileName}}">
-            <ToolTip.Tip>
-              <TextBlock
-                Text="{Binding TextDifference.FilePath, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
-                TextDecorations="{x:Null}"/>
-            </ToolTip.Tip>
-          </HyperlinkButton>
-          <TextBlock
-            FontSize="{TemplateBinding FontSize}"
-            Foreground="{DynamicResource SuccessColor60}">
-            <Run
-              Classes="Monospace" Text="+ "/>
-            <Run
-              Classes="Monospace"
-              Text="{Binding AddedLineCount, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=0}"/>
-            <Run Text="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_AddedLineCountTextRun_Text}}"/>
-          </TextBlock>
-          <TextBlock
-            FontSize="{TemplateBinding FontSize}"
-            Foreground="{DynamicResource ErrorColor60}">
-            <Run
-              Classes="Monospace" Text="- "/>
-            <Run
-              Classes="Monospace"
-              Text="{Binding RemovedLineCount, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=0}"/>
-            <Run Text="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_RemovedLineCountTextRun_Text}}"/>
-          </TextBlock>
+          <v:LazyIndexedContentControl
+            ContentDataBinding="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+            ItemIndex="{TemplateBinding ReviewKind, Converter={x:Static vc:Int32Converters.FromEnum}}">
+            <!--  Update  -->
+            <ControlTemplate x:DataType="v:TextDifferenceSummaryView">
+              <HyperlinkButton
+                Padding="0" HorizontalAlignment="Left"
+                Command="{Binding OpenFileCommand}"
+                FontSize="{DynamicResource FontSizeM}"
+                FontWeight="SemiBold"
+                ToolTip.Tip="{Binding FilePath}">
+                <HyperlinkButton.Content>
+                  <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_UpdateHeader}">
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="FilePath"/>
+                  </I18N>
+                </HyperlinkButton.Content>
+              </HyperlinkButton>
+            </ControlTemplate>
+
+            <!--  Create  -->
+            <ControlTemplate x:DataType="v:TextDifferenceSummaryView">
+              <HyperlinkButton
+                Padding="0" HorizontalAlignment="Left"
+                Command="{Binding OpenFileCommand}"
+                FontSize="{DynamicResource FontSizeM}"
+                FontWeight="SemiBold"
+                ToolTip.Tip="{Binding FilePath}">
+                <HyperlinkButton.Content>
+                  <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_CreateHeader}">
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="FilePath"/>
+                  </I18N>
+                </HyperlinkButton.Content>
+              </HyperlinkButton>
+            </ControlTemplate>
+
+            <!--  Delete  -->
+            <ControlTemplate x:DataType="v:TextDifferenceSummaryView">
+              <HyperlinkButton
+                Padding="0" HorizontalAlignment="Left"
+                Command="{Binding OpenFileCommand}"
+                FontSize="{DynamicResource FontSizeM}"
+                FontWeight="SemiBold"
+                ToolTip.Tip="{Binding FilePath}">
+                <HyperlinkButton.Content>
+                  <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_DeleteHeader}">
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="FilePath"/>
+                  </I18N>
+                </HyperlinkButton.Content>
+              </HyperlinkButton>
+            </ControlTemplate>
+
+            <!--  MoveAndUpdate  -->
+            <ControlTemplate x:DataType="v:TextDifferenceSummaryView">
+              <HyperlinkButton
+                Padding="0" HorizontalAlignment="Left"
+                Command="{Binding OpenFileCommand}"
+                FontSize="{DynamicResource FontSizeM}"
+                FontWeight="SemiBold"
+                ToolTip.Tip="{Binding FilePath}">
+                <HyperlinkButton.Content>
+                  <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_MoveAndUpdateHeader}">
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="SourcePath"/>
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="FilePath"/>
+                  </I18N>
+                </HyperlinkButton.Content>
+              </HyperlinkButton>
+            </ControlTemplate>
+
+            <!--  Move  -->
+            <ControlTemplate x:DataType="v:TextDifferenceSummaryView">
+              <HyperlinkButton
+                Padding="0" HorizontalAlignment="Left"
+                Command="{Binding OpenFileCommand}"
+                FontSize="{DynamicResource FontSizeM}"
+                FontWeight="SemiBold"
+                ToolTip.Tip="{Binding FilePath}">
+                <HyperlinkButton.Content>
+                  <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_MoveHeader}">
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="SourcePath"/>
+                    <Binding
+                      Converter="{x:Static vc:CommonConverters.FullPathToFileName}"
+                      Path="FilePath"/>
+                  </I18N>
+                </HyperlinkButton.Content>
+              </HyperlinkButton>
+            </ControlTemplate>
+          </v:LazyIndexedContentControl>
+
+          <StackPanel
+            IsVisible="{TemplateBinding HasLineChanges}"
+            Orientation="Horizontal" Spacing="8">
+            <TextBlock
+              FontSize="{TemplateBinding FontSize}"
+              Foreground="{DynamicResource SuccessColor60}"
+              IsVisible="{Binding !!AddedLineCount, RelativeSource={RelativeSource TemplatedParent}}">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_AddedLineCountTextRun_Text}">
+                  <TemplateBinding Property="AddedLineCount"/>
+                </I18N>
+              </TextBlock.Text>
+            </TextBlock>
+            <TextBlock
+              FontSize="{TemplateBinding FontSize}"
+              Foreground="{DynamicResource ErrorColor60}"
+              IsVisible="{Binding !!RemovedLineCount, RelativeSource={RelativeSource TemplatedParent}}">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.TextDifferenceSummaryView_RemovedLineCountTextRun_Text}">
+                  <TemplateBinding Property="RemovedLineCount"/>
+                </I18N>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
           <StackPanel
             Margin="0,4,0,0"
-            IsVisible="{Binding TextDifference.Acceptance, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False, Converter={x:Static ObjectConverters.IsNull}}"
-            Orientation="Horizontal" Spacing="4">
+            IsVisible="{TemplateBinding CanReview}"
+            Spacing="4">
+            <TextBlock Foreground="{DynamicResource MutedColor}">
+              <TextBlock.Text>
+                <I18N Key="{x:Static LocaleKey.Common_TextDifference_ChangeSelectionSummary}">
+                  <Binding
+                    Path="TextDifference?.TotalChangesCount"
+                    RelativeSource="{RelativeSource TemplatedParent}"/>
+                  <Binding
+                    Path="TextDifference?.AcceptedChangesCount"
+                    RelativeSource="{RelativeSource TemplatedParent}"/>
+                </I18N>
+              </TextBlock.Text>
+            </TextBlock>
             <Button
-              Classes="Secondary Compact"
+              Classes="Secondary Compact" HorizontalAlignment="Left"
               shadui:ButtonAssist.Icon="{LucideIconContent SquarePen}"
+              shadui:ButtonAssist.IconSize="{DynamicResource FontSizeM}"
               Command="{Binding EditCommand, RelativeSource={RelativeSource TemplatedParent}}"
-              Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_EditButton_Content}}"/>
-            <Button
-              Classes="Compact"
-              shadui:ButtonAssist.HoverBackground="{DynamicResource SuccessColor10}"
-              shadui:ButtonAssist.Icon="{LucideIconContent CheckCheck}"
-              Background="{DynamicResource SuccessColor20}"
-              Command="{Binding AcceptAllCommand, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
-              Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_AcceptAllButton_Content}}"/>
-            <Button
-              Classes="Compact"
-              shadui:ButtonAssist.HoverBackground="{DynamicResource ErrorColor10}"
-              shadui:ButtonAssist.Icon="{LucideIconContent X}"
-              Background="{DynamicResource ErrorColor20}"
-              Command="{Binding DiscardAllCommand, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
-              Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_DiscardAllButton_Content}}"/>
+              Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_ReviewChangesButton_Content}}"/>
           </StackPanel>
         </StackPanel>
       </ControlTemplate>

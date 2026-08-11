@@ -1180,10 +1180,10 @@ Meine Intelligenz wird von einem großen Sprachmodell bereitgestellt, und ich be
         <value>Rückgängig machen</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> Zeilen hinzugefügt</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> Zeilen gelöscht</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Alle akzeptieren</value>
@@ -3587,7 +3587,7 @@ Möchten Sie „{1}“ trotzdem dauerhaft löschen?</value>
         <value>Zusätzliche Anforderungen</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Gib Einschränkungen, Referenzen oder Präferenzen an, die für diesen Prompt gelten sollen.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Echtzeitvorschau</value>
@@ -3686,7 +3686,7 @@ Möchten Sie „{1}“ trotzdem dauerhaft löschen?</value>
         <value>Detailliert</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Strukturiert (Empfohlen)</value>
+        <value>Strukturiert</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Schlussfolgerung Zuerst</value>

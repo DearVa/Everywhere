@@ -1,6 +1,7 @@
-﻿<ResourceDictionary
+<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI" xmlns:v="using:Everywhere.Views">
+  xmlns:in="clr-namespace:Everywhere.Interactions" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
+  xmlns:v="using:Everywhere.Views">
   <Design.PreviewWith>
     <v:TextDifferenceEditor/>
   </Design.PreviewWith>
@@ -8,193 +9,471 @@
   <ControlTheme
     x:Key="{x:Type v:TextDifferenceEditor}"
     TargetType="v:TextDifferenceEditor">
+    <Setter Property="LineHeight" Value="{DynamicResource LineHeightS}"/>
     <Setter Property="Template">
-      <ControlTemplate>
-        <Border
-          Padding="4"
-          BorderBrush="{DynamicResource ThemeBorderLowBrush}"
-          BorderThickness="1">
-          <Panel>
-            <ScrollViewer
-              Focusable="False" HorizontalScrollBarVisibility="Auto">
-              <ItemsControl
-                Margin="4,6,12,6" ClipToBounds="False"
-                Grid.IsSharedSizeScope="True"
-                ItemsSource="{TemplateBinding Blocks}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate DataType="v:TextDifferenceBlock">
-                    <Border BorderBrush="{DynamicResource ThemeBorderLowBrush}">
-                      <Border.Styles>
-                        <Style Selector="Panel.Changed">
-                          <Setter Property="Background" Value="{DynamicResource BorderColor}"/>
-                          <Style Selector="^:pointerover">
-                            <Style Selector="^ Border.Highlight">
-                              <Setter Property="IsVisible" Value="True"/>
+      <ControlTemplate TargetType="v:TextDifferenceEditor">
+        <DockPanel>
+          <Border
+            DockPanel.Dock="Top" Padding="16,8"
+            Background="{DynamicResource CardBackgroundColor}"
+            BorderBrush="{DynamicResource BorderColor}"
+            BorderThickness="0,1">
+            <Grid
+              ColumnDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="6">
+              <LucideIcon
+                Grid.Column="0" VerticalAlignment="Center"
+                Kind="File"
+                Size="{DynamicResource FontSizeL}"/>
+              <TextBlock
+                Grid.Column="1" Margin="0,0,6,0"
+                VerticalAlignment="Center"
+                Text="{Binding TextDifference?.FilePath, RelativeSource={RelativeSource TemplatedParent}}"
+                TextTrimming="{x:Static TextTrimming.PathSegmentEllipsis}"
+                TextWrapping="NoWrap"/>
+              <TextBlock
+                Grid.Column="2"
+                FontSize="{TemplateBinding FontSize}"
+                Foreground="{DynamicResource SuccessColor60}"
+                IsVisible="{Binding !!AddedLineCount, RelativeSource={RelativeSource TemplatedParent}}">
+                <Run Text="+"/><Run Text="{Binding AddedLineCount, RelativeSource={RelativeSource TemplatedParent}}"/>
+              </TextBlock>
+              <TextBlock
+                Grid.Column="3"
+                FontSize="{TemplateBinding FontSize}"
+                Foreground="{DynamicResource ErrorColor60}"
+                IsVisible="{Binding !!RemovedLineCount, RelativeSource={RelativeSource TemplatedParent}}">
+                <Run Text="-"/><Run Text="{Binding RemovedLineCount, RelativeSource={RelativeSource TemplatedParent}}"/>
+              </TextBlock>
+            </Grid>
+          </Border>
+
+          <Border
+            DockPanel.Dock="Bottom" Padding="16,8"
+            Background="{DynamicResource PopupBackgroundColor}"
+            ZIndex="1">
+            <Grid
+              ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="6">
+              <TextBlock
+                Grid.Column="0" Margin="0,0,6,0"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource MutedColor}">
+                <TextBlock.Text>
+                  <I18N Key="{x:Static LocaleKey.Common_TextDifference_ChangeSelectionSummary}">
+                    <Binding
+                      Path="TextDifference?.TotalChangesCount"
+                      RelativeSource="{RelativeSource TemplatedParent}"/>
+                    <Binding
+                      Path="TextDifference?.AcceptedChangesCount"
+                      RelativeSource="{RelativeSource TemplatedParent}"/>
+                  </I18N>
+                </TextBlock.Text>
+              </TextBlock>
+              <Button
+                Classes="Secondary" Grid.Column="1"
+                VerticalAlignment="Center"
+                shadui:ButtonAssist.Icon="{LucideIconContent CheckCheck}"
+                Command="{Binding AcceptAllCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_AcceptAllButton_Content}}"
+                CornerRadius="{DynamicResource FullCornerRadius}"/>
+              <Button
+                Classes="Secondary" Grid.Column="2"
+                VerticalAlignment="Center"
+                shadui:ButtonAssist.Icon="{LucideIconContent X}"
+                Command="{Binding RejectAllCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_RejectAllButton_Content}}"
+                CornerRadius="{DynamicResource FullCornerRadius}"/>
+
+              <Button
+                Classes="Primary" Grid.Column="4"
+                VerticalAlignment="Center"
+                shadui:ButtonAssist.Icon="{LucideIconContent Check}"
+                Command="{Binding ConfirmCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_ConfirmButton_Content}}"
+                CornerRadius="{DynamicResource FullCornerRadius}">
+                <ToolTip.Tip>
+                  <TextBlock Text="{I18N {x:Static LocaleKey.TextDifferenceEditor_ConfirmButton_ToolTip}}"/>
+                </ToolTip.Tip>
+              </Button>
+            </Grid>
+          </Border>
+
+          <v:ConditionalContentControl
+            ClipToBounds="True"
+            Condition="{Binding IsLoading, RelativeSource={RelativeSource TemplatedParent}, Delay=300}"
+            ContentDataBinding="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+            <v:ConditionalContentControl.TrueContent>
+              <DataTemplate>
+                <StackPanel
+                  Width="360" Margin="24"
+                  HorizontalAlignment="Left" VerticalAlignment="Top"
+                  IsHitTestVisible="False" Spacing="10">
+                  <shadui:Skeleton
+                    Height="18" CornerRadius="4"/>
+                  <shadui:Skeleton
+                    Width="280" Height="18"
+                    CornerRadius="4"/>
+                  <shadui:Skeleton
+                    Width="320" Height="18"
+                    CornerRadius="4"/>
+                  <shadui:Skeleton
+                    Width="240" Height="18"
+                    CornerRadius="4"/>
+                </StackPanel>
+              </DataTemplate>
+            </v:ConditionalContentControl.TrueContent>
+
+            <v:ConditionalContentControl.NullContent>
+              <DataTemplate>
+                <Border
+                  Margin="24" Padding="12"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Background="{DynamicResource ErrorColor20}"
+                  CornerRadius="6">
+                  <TextBlock
+                    Foreground="{DynamicResource ErrorColor}"
+                    Text="{I18N {x:Static LocaleKey.TextDifferenceEditor_LoadErrorTextBlock_Text}}"
+                    TextWrapping="Wrap"/>
+                </Border>
+              </DataTemplate>
+            </v:ConditionalContentControl.NullContent>
+
+            <v:ConditionalContentControl.FalseContent>
+              <DataTemplate x:DataType="v:TextDifferenceEditor">
+                <ScrollViewer
+                  Padding="8,0,12,0" ClipToBounds="False"
+                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                  <Interaction.Behaviors>
+                    <in:SelfBehavior Self="{Binding ScrollViewer, Mode=OneWayToSource}"/>
+                  </Interaction.Behaviors>
+
+                  <Panel Grid.IsSharedSizeScope="True">
+                    <ItemsControl
+                      HorizontalAlignment="Stretch" ClipToBounds="False"
+                      ItemsSource="{Binding Rows}">
+                      <ItemsControl.ItemContainerTheme>
+                        <ControlTheme TargetType="ContentPresenter">
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                          <Setter Property="ClipToBounds" Value="False"/>
+                        </ControlTheme>
+                      </ItemsControl.ItemContainerTheme>
+                      <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                          <VirtualizingStackPanel/>
+                        </ItemsPanelTemplate>
+                      </ItemsControl.ItemsPanel>
+
+                      <ItemsControl.Styles>
+                        <Style Selector="Border.CodeLine">
+                          <Setter Property="Margin" Value="-12,0"/>
+                          <Setter Property="Padding" Value="4,0,0,0"/>
+
+                          <Style Selector="^.Added">
+                            <Style Selector="^ Border.Indicator">
+                              <Setter Property="Background" Value="#AA3EAA69"/>
                             </Style>
-                            <Style Selector="^ Border.Actions">
-                              <Setter Property="IsVisible" Value="True"/>
+                            <Style Selector="^ Border.LineNumber">
+                              <Setter Property="Background" Value="#113EAA69"/>
+                            </Style>
+                            <Style Selector="^ Border.Code">
+                              <Setter Property="Background" Value="#333EAA69"/>
                             </Style>
                           </Style>
+
+                          <Style Selector="^.Removed">
+                            <Style Selector="^ Border.Indicator">
+                              <Setter Property="Background" Value="#AAD2484E"/>
+                            </Style>
+                            <Style Selector="^ Border.LineNumber">
+                              <Setter Property="Background" Value="#11D2484E"/>
+                            </Style>
+                            <Style Selector="^ Border.Code">
+                              <Setter Property="Background" Value="#33D2484E"/>
+                            </Style>
+                          </Style>
+
+                          <Style Selector="^.Changed.Rejected">
+                            <Setter Property="Opacity" Value="0.55"/>
+                          </Style>
                         </Style>
-                      </Border.Styles>
 
-                      <Panel
-                        Background="Transparent"
-                        Classes.Changed="{Binding ChangeId, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <ItemsControl ItemsSource="{Binding Lines}">
-                          <ItemsControl.Styles>
-                            <Style Selector="Panel.Added">
-                              <Setter Property="Background" Value="{DynamicResource SuccessColor20}"/>
-                            </Style>
-                            <Style Selector="Panel.Removed">
-                              <Setter Property="Background" Value="{DynamicResource ErrorColor20}"/>
-                            </Style>
-                            <Style Selector="TextBlock.Code">
-                              <Setter Property="FontFamily" Value="{StaticResource MonospaceFontFamily}"/>
-                              <Setter Property="VerticalAlignment" Value="Center"/>
-                              <Style Selector="^.LineNumber">
-                                <Setter Property="Foreground" Value="{DynamicResource MutedColor}"/>
-                                <Setter Property="FontSize" Value="12"/>
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
-                              </Style>
-                            </Style>
-                          </ItemsControl.Styles>
+                        <Style Selector="TextBlock.Code">
+                          <Setter Property="FontSize" Value="{DynamicResource FontSizeS}"/>
+                          <Setter Property="FontFamily" Value="{StaticResource MonospaceFontFamily}"/>
+                          <Setter Property="VerticalAlignment" Value="Center"/>
 
-                          <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="v:TextDifferenceLine">
-                              <Panel
-                                Classes="CodeLine"
-                                Classes.Added="{Binding Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static v:TextDifferenceLineKind.Added}}"
-                                Classes.Removed="{Binding Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static v:TextDifferenceLineKind.Removed}}">
-                                <Grid ColumnSpacing="4">
-                                  <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                      Width="Auto" SharedSizeGroup="LineNumber"/>
-                                    <ColumnDefinition
-                                      Width="Auto" SharedSizeGroup="NewLineNumber"/>
-                                    <ColumnDefinition Width="3"/>
-                                    <ColumnDefinition/>
-                                  </Grid.ColumnDefinitions>
+                          <Style Selector="^.LineNumber">
+                            <Setter Property="Foreground" Value="{DynamicResource MutedColor}"/>
+                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                          </Style>
+                        </Style>
+                      </ItemsControl.Styles>
 
-                                  <TextBlock
-                                    Classes="Code LineNumber" Grid.Column="0"
-                                    Text="{Binding LineNumber}">
-                                    <TextBlock.IsVisible>
-                                      <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="$parent[v:TextDifferenceEditor].ShowLineNumbers"/>
-                                        <Binding
-                                          Converter="{x:Static ObjectConverters.IsNotNull}"
-                                          Path="LineNumber"/>
-                                      </MultiBinding>
-                                    </TextBlock.IsVisible>
-                                  </TextBlock>
+                      <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="v:TextDifferenceContextLine">
+                          <Border
+                            Classes="CodeLine"
+                            Height="{DynamicResource LineHeightS}">
+                            <Grid>
+                              <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                  Width="Auto" SharedSizeGroup="LineNumber"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition/>
+                              </Grid.ColumnDefinitions>
 
-                                  <TextBlock
-                                    Classes="Code LineNumber" Grid.Column="1"
-                                    Text="{Binding NewLineNumber}">
-                                    <TextBlock.IsVisible>
-                                      <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="$parent[v:TextDifferenceEditor].ShowLineNumbers"/>
-                                        <Binding
-                                          Converter="{x:Static ObjectConverters.IsNotNull}"
-                                          Path="NewLineNumber"/>
-                                      </MultiBinding>
-                                    </TextBlock.IsVisible>
-                                  </TextBlock>
+                              <Border
+                                Classes="LineNumber" Grid.Column="0"/>
+                              <Border
+                                Classes="Indicator" Grid.Column="0"
+                                Width="3" HorizontalAlignment="Left"/>
+                              <TextBlock
+                                Classes="Code LineNumber" Grid.Column="0"
+                                Margin="12,0,4,0"
+                                IsVisible="{Binding $parent[v:TextDifferenceEditor].ShowLineNumbers}"
+                                Text="{Binding NewLineNumber}"/>
 
-                                  <Border
-                                    Grid.Column="2" Width="0.5"
-                                    Background="{DynamicResource MutedColor}"/>
+                              <Border
+                                Classes="Code" Grid.Column="2"/>
+                              <TextBlock
+                                Classes="Code" Grid.Column="2"
+                                Margin="12,0"
+                                Text="{Binding Text}"
+                                TextWrapping="NoWrap"/>
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
 
-                                  <TextBlock
-                                    Classes="Code" Grid.Column="3"
-                                    Text="{Binding Text}"/>
-                                </Grid>
-                              </Panel>
-                            </DataTemplate>
-                          </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        <DataTemplate DataType="v:TextDifferenceAddedLine">
+                          <Border
+                            Classes="CodeLine Added Changed"
+                            Height="{DynamicResource LineHeightS}"
+                            Classes.Rejected="{Binding Change.IsAccepted, Converter={x:Static BoolConverters.Not}}">
+                            <Grid>
+                              <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                  Width="Auto" SharedSizeGroup="LineNumber"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition/>
+                              </Grid.ColumnDefinitions>
 
-                        <Border
-                          Classes="Highlight" Margin="-2"
-                          BorderBrush="{DynamicResource InfoColor}"
-                          BorderThickness="1" CornerRadius="3"
-                          IsVisible="False"/>
+                              <Border
+                                Classes="LineNumber" Grid.Column="0"/>
+                              <Border
+                                Classes="Indicator" Grid.Column="0"
+                                Width="3" HorizontalAlignment="Left"/>
+                              <TextBlock
+                                Classes="Code LineNumber" Grid.Column="0"
+                                Margin="12,0,4,0"
+                                IsVisible="{Binding $parent[v:TextDifferenceEditor].ShowLineNumbers}"
+                                Text="{Binding NewLineNumber}"/>
 
-                        <Border
-                          Classes="Actions" Margin="-14,0,0,-14"
-                          Padding="2,2" HorizontalAlignment="Right"
-                          VerticalAlignment="Top"
-                          Background="{DynamicResource CardBackgroundColor}"
-                          CornerRadius="6" IsVisible="False">
-                          <StackPanel
-                            Margin="2" Orientation="Horizontal"
-                            Spacing="4">
-                            <Button
-                              Classes="Compact"
-                              shadui:ButtonAssist.HoverBackground="{DynamicResource SuccessColor20}"
-                              shadui:ButtonAssist.Icon="{LucideIconContent Check}"
-                              Background="{DynamicResource SuccessColor60}"
-                              Command="{Binding $parent[v:TextDifferenceEditor].AcceptBlockCommand}"
-                              CommandParameter="{Binding ChangeId}"
-                              Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_AcceptButton_Content}}"
-                              IsVisible="{Binding Accepted, Converter={x:Static ObjectConverters.IsNull}}"/>
-                            <Button
-                              Classes="Compact"
-                              shadui:ButtonAssist.HoverBackground="{DynamicResource ErrorColor20}"
-                              shadui:ButtonAssist.Icon="{LucideIconContent X}"
-                              Background="{DynamicResource ErrorColor60}"
-                              Command="{Binding $parent[v:TextDifferenceEditor].DiscardBlockCommand}"
-                              CommandParameter="{Binding ChangeId}"
-                              Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_DiscardButton_Content}}"
-                              IsVisible="{Binding Accepted, Converter={x:Static ObjectConverters.IsNull}}"/>
-                            <Button
-                              Classes="Secondary Compact"
-                              shadui:ButtonAssist.Icon="{LucideIconContent RotateCcw}"
-                              Command="{Binding $parent[v:TextDifferenceEditor].UndoBlockCommand}"
-                              CommandParameter="{Binding ChangeId}"
-                              Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_RevertButton_Content}}"
-                              IsVisible="{Binding Accepted, Converter={x:Static ObjectConverters.IsNotNull}}"/>
-                          </StackPanel>
-                        </Border>
-                      </Panel>
-                    </Border>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </ScrollViewer>
+                              <Border
+                                Classes="Code" Grid.Column="2"/>
+                              <TextBlock
+                                Classes="Code" Grid.Column="2"
+                                Margin="12,0"
+                                Text="{Binding Text}"
+                                TextWrapping="NoWrap"/>
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
 
-            <Border
-              Margin="16" Padding="4"
-              HorizontalAlignment="Center" VerticalAlignment="Bottom"
-              Background="{DynamicResource DialogBackgroundColor}"
-              CornerRadius="6">
-              <StackPanel
-                Orientation="Horizontal" Spacing="8">
-                <Button
-                  Classes="Compact"
-                  shadui:ButtonAssist.HoverBackground="{DynamicResource SuccessColor20}"
-                  shadui:ButtonAssist.Icon="{LucideIconContent CheckCheck}"
-                  Background="{DynamicResource SuccessColor60}"
-                  Command="{Binding AcceptAllCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                  Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_AcceptAllButton_Content}}"/>
-                <Button
-                  Classes="Compact"
-                  shadui:ButtonAssist.HoverBackground="{DynamicResource ErrorColor20}"
-                  shadui:ButtonAssist.Icon="{LucideIconContent X}"
-                  Background="{DynamicResource ErrorColor60}"
-                  Command="{Binding DiscardAllCommand, RelativeSource={RelativeSource TemplatedParent}}"
-                  Content="{I18N {x:Static LocaleKey.TextDifferenceSummaryView_DiscardAllButton_Content}}"/>
+                        <DataTemplate DataType="v:TextDifferenceRemovedLine">
+                          <Border
+                            Classes="CodeLine Removed Changed"
+                            Height="{DynamicResource LineHeightS}"
+                            Classes.Rejected="{Binding Change.IsAccepted, Converter={x:Static BoolConverters.Not}}">
+                            <Grid>
+                              <Grid.ColumnDefinitions>
+                                <ColumnDefinition
+                                  Width="Auto" SharedSizeGroup="LineNumber"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition/>
+                              </Grid.ColumnDefinitions>
 
-                <TextBlock VerticalAlignment="Center">
-                  <Run Text="{Binding TextDifference.NotPendingChangesCount, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=0}"/>
-                  <Run Text="/"/>
-                  <Run Text="{Binding TextDifference.TotalChangesCount, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=0}"/>
-                </TextBlock>
-              </StackPanel>
-            </Border>
-          </Panel>
-        </Border>
+                              <Border
+                                Classes="LineNumber" Grid.Column="0"/>
+                              <Border
+                                Classes="Indicator" Grid.Column="0"
+                                Width="3" HorizontalAlignment="Left"/>
+                              <TextBlock
+                                Classes="Code LineNumber" Grid.Column="0"
+                                Margin="12,0,4,0"
+                                IsVisible="{Binding $parent[v:TextDifferenceEditor].ShowLineNumbers}"
+                                Text="{Binding OldLineNumber}"/>
+
+                              <Border
+                                Classes="Code" Grid.Column="2"/>
+                              <TextBlock
+                                Classes="Code" Grid.Column="2"
+                                Margin="12,0"
+                                Text="{Binding Text}"
+                                TextWrapping="NoWrap"/>
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+
+                        <DataTemplate DataType="v:TextDifferenceOmittedLine">
+                          <Button
+                            Classes="NoScale"
+                            Height="{DynamicResource LineHeightS}"
+                            Margin="-12,0" Padding="6,0"
+                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                            shadui:ButtonAssist.HoverBackground="{DynamicResource SecondaryColor50}"
+                            shadui:ButtonAssist.Icon="{LucideIconContent ChevronsUpDown}"
+                            shadui:ButtonAssist.IconSize="{DynamicResource FontSizeS}"
+                            shadui:ButtonAssist.ShowProgress="{Binding IsLoading, Delay=200}"
+                            Background="{DynamicResource SecondaryColor}"
+                            BorderThickness="0"
+                            Command="{Binding $parent[v:TextDifferenceEditor].ExpandContextCommand}"
+                            CommandParameter="{Binding}"
+                            CornerRadius="0"
+                            IsEnabled="{Binding !IsLoading}"
+                            ToolTip.Tip="{I18N {x:Static LocaleKey.TextDifferenceEditor_OmittedLineButton_ToolTip}}">
+                            <Button.Content>
+                              <TextBlock
+                                Classes="Muted"
+                                FontSize="{DynamicResource FontSizeS}">
+                                <TextBlock.Text>
+                                  <I18N Key="{x:Static LocaleKey.TextDifferenceEditor_OmittedLineButton_Content}">
+                                    <Binding Path="LineCount"/>
+                                  </I18N>
+                                </TextBlock.Text>
+                              </TextBlock>
+                            </Button.Content>
+                          </Button>
+                        </DataTemplate>
+                      </ItemsControl.DataTemplates>
+                    </ItemsControl>
+
+                    <ItemsControl
+                      x:Name="PART_RegionItems"
+                      Width="{Binding ScrollViewportWidth}"
+                      HorizontalAlignment="Left" ClipToBounds="False"
+                      ItemsPanel="{x:Static v:TextDifferenceEditor.RegionItemsPanelTemplate}"
+                      ItemsSource="{Binding Regions}">
+                      <ItemsControl.RenderTransform>
+                        <TranslateTransform X="{Binding HorizontalOffset}"/>
+                      </ItemsControl.RenderTransform>
+
+                      <ItemsControl.ItemContainerTheme>
+                        <ControlTheme TargetType="ContentPresenter">
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                          <Setter Property="ClipToBounds" Value="False"/>
+                          <Setter Property="ZIndex" Value="0"/>
+                          <Style Selector="^:pointerover">
+                            <Setter Property="ZIndex" Value="1"/>
+                          </Style>
+                          <Style Selector="^:focus-within">
+                            <Setter Property="ZIndex" Value="1"/>
+                          </Style>
+                        </ControlTheme>
+                      </ItemsControl.ItemContainerTheme>
+                      <ItemsControl.Styles>
+                        <Style Selector="Border.RegionOutline">
+                          <Setter Property="Opacity" Value="0"/>
+                        </Style>
+                        <Style Selector="StackPanel.RegionActions">
+                          <Setter Property="Opacity" Value="0"/>
+                          <Setter Property="IsHitTestVisible" Value="False"/>
+                        </Style>
+                        <Style Selector="Panel.DifferenceRegion:pointerover Border.RegionOutline">
+                          <Setter Property="Opacity" Value="1"/>
+                        </Style>
+                        <Style Selector="Panel.DifferenceRegion:pointerover StackPanel.RegionActions">
+                          <Setter Property="Opacity" Value="1"/>
+                          <Setter Property="IsHitTestVisible" Value="True"/>
+                        </Style>
+                        <Style Selector="Panel.DifferenceRegion:focus-within Border.RegionOutline">
+                          <Setter Property="Opacity" Value="1"/>
+                        </Style>
+                        <Style Selector="Panel.DifferenceRegion:focus-within StackPanel.RegionActions">
+                          <Setter Property="Opacity" Value="1"/>
+                          <Setter Property="IsHitTestVisible" Value="True"/>
+                        </Style>
+                      </ItemsControl.Styles>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="v:TextDifferenceRegionItem">
+                          <Panel
+                            Classes="DifferenceRegion" Margin="0,0,12,0"
+                            ClipToBounds="False">
+                            <Border
+                              Margin="{Binding InteractionMargin}"
+                              Background="Transparent"/>
+                            <Border
+                              Classes="RegionOutline"
+                              BorderBrush="{DynamicResource PrimaryColor}"
+                              BorderThickness="2" CornerRadius="5"
+                              IsHitTestVisible="False"/>
+                            <StackPanel
+                              Classes="RegionActions" Margin="6,4"
+                              HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Orientation="Horizontal" Spacing="4">
+                              <StackPanel.RenderTransform>
+                                <TranslateTransform Y="{Binding StickyActionOffset}"/>
+                              </StackPanel.RenderTransform>
+
+                              <Button
+                                Classes="Compact"
+                                shadui:ButtonAssist.HoverBackground="{DynamicResource SuccessColor10}"
+                                Background="{DynamicResource SelectionColor}"
+                                BorderBrush="{DynamicResource SuccessColor60}"
+                                BorderThickness="1"
+                                Command="{Binding $parent[v:TextDifferenceEditor].AcceptBlockCommand}"
+                                CommandParameter="{Binding Change}"
+                                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_AcceptButton_Content}}"
+                                IsVisible="{Binding Change.IsAccepted, Converter={x:Static BoolConverters.Not}}">
+                                <shadui:ButtonAssist.Icon>
+                                  <LucideIcon
+                                    Foreground="{DynamicResource SuccessColor60}"
+                                    Kind="Check"/>
+                                </shadui:ButtonAssist.Icon>
+                              </Button>
+                              <Button
+                                Classes="Compact"
+                                shadui:ButtonAssist.HoverBackground="{DynamicResource ErrorColor20}"
+                                Background="{DynamicResource SelectionColor}"
+                                BorderBrush="{DynamicResource ErrorColor60}"
+                                BorderThickness="1"
+                                Command="{Binding $parent[v:TextDifferenceEditor].RejectBlockCommand}"
+                                CommandParameter="{Binding Change}"
+                                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_RejectButton_Content}}"
+                                IsVisible="{Binding Change.IsAccepted}">
+                                <shadui:ButtonAssist.Icon>
+                                  <LucideIcon
+                                    Foreground="{DynamicResource ErrorColor60}"
+                                    Kind="X"/>
+                                </shadui:ButtonAssist.Icon>
+                              </Button>
+                              <Button
+                                Classes="Outline Compact"
+                                shadui:ButtonAssist.Icon="{LucideIconContent MessageCircle}"
+                                Content="{I18N {x:Static LocaleKey.TextDifferenceEditor_CommentButton_Content}}">
+                                <Button.Flyout>
+                                  <Flyout Placement="BottomEdgeAlignedRight">
+                                    <StackPanel
+                                      Width="320" Spacing="8">
+                                      <TextBox
+                                        MinHeight="80" MaxHeight="180"
+                                        AcceptsReturn="True"
+                                        PlaceholderText="{I18N {x:Static LocaleKey.TextDifferenceEditor_CommentTextBox_PlaceholderText}}"
+                                        Text="{Binding Change.ReviewComment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                  </Flyout>
+                                </Button.Flyout>
+                              </Button>
+                            </StackPanel>
+                          </Panel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </Panel>
+                </ScrollViewer>
+              </DataTemplate>
+            </v:ConditionalContentControl.FalseContent>
+          </v:ConditionalContentControl>
+        </DockPanel>
       </ControlTemplate>
     </Setter>
   </ControlTheme>

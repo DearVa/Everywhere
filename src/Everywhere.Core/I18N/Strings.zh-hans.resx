@@ -1177,71 +1177,101 @@
     <data name="TextDifferenceEditor_AcceptButton_Content" xml:space="preserve">
         <value>接受</value>
     </data>
-    <data name="TextDifferenceEditor_RevertButton_Content" xml:space="preserve">
-        <value>重置</value>
+    <data name="TextDifferenceEditor_RejectButton_Content" xml:space="preserve">
+        <value>拒绝</value>
+    </data>
+    <data name="TextDifferenceEditor_CommentButton_Content" xml:space="preserve">
+        <value>添加批注</value>
+    </data>
+    <data name="TextDifferenceEditor_CommentTextBox_PlaceholderText" xml:space="preserve">
+        <value>在当前行添加批注来引导助手…</value>
+    </data>
+    <data name="TextDifferenceEditor_AcceptAllButton_Content" xml:space="preserve">
+        <value>全部接受</value>
+    </data>
+    <data name="TextDifferenceEditor_RejectAllButton_Content" xml:space="preserve">
+        <value>全部拒绝</value>
+    </data>
+    <data name="TextDifferenceEditor_ConfirmButton_Content" xml:space="preserve">
+        <value>确认</value>
+    </data>
+    <data name="TextDifferenceEditor_ConfirmButton_ToolTip" xml:space="preserve">
+        <value>应用已接受的修改并继续</value>
+    </data>
+    <data name="Common_TextDifference_ChangeSelectionSummary" xml:space="preserve">
+        <value>共 {0} 个修改，接受了 {1} 个</value>
+    </data>
+    <data name="TextDifferenceEditor_WindowTitle" xml:space="preserve">
+        <value>审阅更改</value>
+    </data>
+    <data name="TextDifferenceEditor_OmittedLineButton_Content" xml:space="preserve">
+        <value>{0} 行未修改内容</value>
+    </data>
+    <data name="TextDifferenceEditor_LoadErrorTextBlock_Text" xml:space="preserve">
+        <value>无法加载详细差异预览。</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> 行添加</value>
+        <value>新增 {0} 行</value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> 行删除</value>
+        <value>删除 {0} 行</value>
     </data>
-    <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
-        <value>接受所有</value>
+    <data name="TextDifferenceSummaryView_UpdateHeader" xml:space="preserve">
+        <value>修改 {0}</value>
     </data>
-    <data name="TextDifferenceSummaryView_EditButton_Content" xml:space="preserve">
-        <value>编辑</value>
+    <data name="TextDifferenceSummaryView_CreateHeader" xml:space="preserve">
+        <value>新建 {0}</value>
     </data>
-    <data name="TextDifferenceSummaryView_DiscardAllButton_Content" xml:space="preserve">
-        <value>拒绝所有</value>
+    <data name="TextDifferenceSummaryView_DeleteHeader" xml:space="preserve">
+        <value>删除 {0}</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header" xml:space="preserve">
-        <value>允许删除下列文件或文件夹？</value>
+    <data name="TextDifferenceSummaryView_MoveAndUpdateHeader" xml:space="preserve">
+        <value>移动并修改 {0} → {1}</value>
+    </data>
+    <data name="TextDifferenceSummaryView_MoveHeader" xml:space="preserve">
+        <value>移动 {0} → {1}</value>
+    </data>
+    <data name="TextDifferenceSummaryView_ReviewChangesButton_Content" xml:space="preserve">
+        <value>审阅差异</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_DeletionConsent_Header" xml:space="preserve">
+        <value>删除明确选择的 {0} 个文件或文件夹？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>允许移动文件？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
-        <value>允许复制下列文件或文件夹？</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_CopyConsent_Header" xml:space="preserve">
+        <value>将 {0} 复制到 {1}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
-        <value>允许移动下列文件或文件夹？</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_MoveConsent_Header" xml:space="preserve">
+        <value>将 {0} 移动到 {1}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Consent_From" xml:space="preserve">
         <value>从</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_CopyTo" xml:space="preserve">
         <value>复制到</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_MoveTo" xml:space="preserve">
         <value>移动到</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
-        <value>允许创建下列文件夹？</value>
+        <value>新建文件夹 {0}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
-        <value>允许写入文件？</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_FileOperationReview_Header" xml:space="preserve">
+        <value>允许执行此文件操作？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
-        <value>允许创建并写入下列文件？</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_CreateFileReview_Header" xml:space="preserve">
+        <value>新建 {0}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
-        <value>允许向下列文件追加内容？</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_UpdateFileReview_Header" xml:space="preserve">
+        <value>更新 {0}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
-        <value>允许覆盖写入下列文件？</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_DeleteFileReview_Header" xml:space="preserve">
+        <value>删除 {0}？</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
-        <value>创建此文件。</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Description" xml:space="preserve">
-        <value>追加到此文件。</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Description" xml:space="preserve">
-        <value>覆盖此文件。</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Consent_Header" xml:space="preserve">
-        <value>允许替换文件内容？</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_MoveFileReview_Header" xml:space="preserve">
+        <value>将 {0} 移动到 {1}？</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_Consent_AllowExactPaths" xml:space="preserve">
         <value>总是允许上述路径</value>
@@ -1252,11 +1282,8 @@
     <data name="BuiltInChatPlugin_FileSystem_Consent_AllowCustomDirectory" xml:space="preserve">
         <value>总是允许选择的文件夹…</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_SystemFile_DeletionConsent_Header" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_SystemFile_DeletionConsent_Header" xml:space="preserve">
         <value>即将删除系统文件或文件夹</value>
-    </data>
-    <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
-        <value>拒绝</value>
     </data>
     <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
         <value>是否允许“{0}”执行？它需要“{1}”权限。</value>
@@ -1300,20 +1327,17 @@
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>移动或重命名文件</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
-        <value>复制或移动文件</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Header" xml:space="preserve">
+        <value>复制或移动路径</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
-        <value>删除一个或多个文件</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_Header" xml:space="preserve">
+        <value>删除路径</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_Header" xml:space="preserve">
         <value>创建文件夹</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_Header" xml:space="preserve">
-        <value>写到文件</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Header" xml:space="preserve">
-        <value>修改文件内容</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_Header" xml:space="preserve">
+        <value>应用 Patch</value>
     </data>
     <data name="BuiltInChatPlugin_Web_WebSearch_Searching" xml:space="preserve">
         <value>🔎 {0}</value>
@@ -1399,20 +1423,17 @@
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>移动或重命名文件或文件夹。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
-        <value>复制或移动文件或文件夹。</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Description" xml:space="preserve">
+        <value>复制或移动文件或文件夹，但不修改其内容。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
-        <value>删除指定路径的文件或文件夹。</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_Description" xml:space="preserve">
+        <value>删除明确列出的文件或文件夹。非空文件夹需要 recursive=true。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
         <value>在指定路径下创建文件夹。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
-        <value>将内容写入指定路径下的文本文件。</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
-        <value>替换指定文本文件中的内容。</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_Description" xml:space="preserve">
+        <value>使用 Codex 风格 patch 新增、更新、删除或移动本地文本文件。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>文件大小超过 {0} MB，无法读取。</value>
@@ -1420,23 +1441,23 @@
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
         <value>无法创建文件夹。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
         <value>无法删除根目录。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_WorkingDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>无法删除聊天工作目录。</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
         <value>无法删除系统文件或文件夹。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
-        <value>无法写入二进制文件。</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_NonEmptyDirectory_ErrorMessage" xml:space="preserve">
+        <value>文件夹不为空。请设置 recursive=true 以删除其中的内容。</value>
     </data>
     <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
         <value>模型为参数“{0}”提供了无效值，这可能是由模型幻觉导致的。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
-        <value>文件大小超过 10 MB，无法替换内容。</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
-        <value>无法替换二进制文件内容。</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage" xml:space="preserve">
+        <value>无法应用 patch。请检查 patch 后重试。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
         <value>指定的路径是文件，而非文件夹。</value>
@@ -3588,7 +3609,7 @@
         <value>额外要求</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>补充此提示词需要遵守的限制、参考资料或偏好。</value>
+        <value>（可选）补充此提示词需要遵守的限制、参考资料或偏好。</value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>实时预览</value>
@@ -3687,7 +3708,7 @@
         <value>详细</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>结构化（推荐）</value>
+        <value>结构化</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>结论先行</value>
@@ -3773,9 +3794,6 @@
     <data name="BuiltInChatPlugin_FileSystem_ReadFile_BinaryFile_ErrorMessage" xml:space="preserve">
         <value>无法将此文件作为文本读取。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Conflict_ErrorMessage" xml:space="preserve">
-        <value>文件在你审阅期间已发生变化，因此没有保存任何修改。</value>
-    </data>
     <data name="BuiltInChatPlugin_FileSystem_PdfNoText_ErrorMessage" xml:space="preserve">
         <value>此 PDF 中没有可读取的文本，它可能包含扫描页面。</value>
     </data>
@@ -3791,9 +3809,6 @@
     <data name="BuiltInChatPlugin_FileSystem_LocalPathOnly_ErrorMessage" xml:space="preserve">
         <value>此操作仅适用于本设备上的文件。</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_InvalidReplacement_ErrorMessage" xml:space="preserve">
-        <value>替换请求不完整或无效。</value>
-    </data>
     <data name="BuiltInChatPlugin_FileSystem_ConsentDenied_ErrorMessage" xml:space="preserve">
         <value>文件操作未获允许。</value>
     </data>
@@ -3801,7 +3816,7 @@
         <value>请输入带有有效 glob 模式的完整路径。</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_InvalidPattern_ErrorMessage" xml:space="preserve">
-        <value>搜索或替换模式无效。</value>
+        <value>搜索模式无效。</value>
     </data>
     <data name="FontFamilyPicker_PlaceholderText" xml:space="preserve">
         <value>搜索字体</value>
@@ -3838,5 +3853,8 @@
     </data>
     <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
         <value>可选：输入补充回答…</value>
+    </data>
+    <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
+        <value>点击展开</value>
     </data>
 </root>

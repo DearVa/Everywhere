@@ -1180,10 +1180,10 @@ Mon intelligence est alimentée par un grand modèle de langage, et j'ai besoin 
         <value>Rétablir</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> lignes ajoutées</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> lignes supprimées</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Tout accepter</value>
@@ -3587,7 +3587,7 @@ Voulez-vous toujours supprimer “{1}” de façon permanente ?</value>
         <value>Exigences Supplémentaires</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Ajoutez des restrictions, des références ou des préférences à respecter pour ce prompt.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Aperçu en Direct</value>
@@ -3686,7 +3686,7 @@ Voulez-vous toujours supprimer “{1}” de façon permanente ?</value>
         <value>Détaillé</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Structuré (recommandé)</value>
+        <value>Structuré</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Conclusion en premier</value>

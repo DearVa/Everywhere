@@ -1180,10 +1180,10 @@ Zekam büyük dil modeli tarafından sağlanıyor, senin yardımınla yapıland�
         <value>Geri Al</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value> satır eklendi</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value> satır silindi</value>
+        <value></value>
     </data>
     <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
         <value>Tümünü Kabul Et</value>
@@ -3587,7 +3587,7 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
         <value>Ekstra Gereksinimler</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value>Bu ipucu için uyulması gereken sınırlamalar, referanslar veya tercihleri ekleyin.</value>
+        <value></value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Canlı Önizleme</value>
@@ -3686,7 +3686,7 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
         <value>Ayrıntılı</value>
     </data>
     <data name="PromptRecipe_Organization_Automatic" xml:space="preserve">
-        <value>Yapılandırılmış (Önerilen)</value>
+        <value>Yapılandırılmış</value>
     </data>
     <data name="PromptRecipe_Organization_ConclusionFirst" xml:space="preserve">
         <value>Önce Sonuç</value>
