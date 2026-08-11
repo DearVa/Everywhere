@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary
   xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:aai="clr-namespace:Everywhere.AI;assembly=Everywhere.Abstractions" xmlns:ai="clr-namespace:Everywhere.AI"
-  xmlns:common="clr-namespace:Everywhere.Common;assembly=Everywhere.Abstractions" xmlns:in="clr-namespace:Everywhere.Interactions"
-  xmlns:shadui="clr-namespace:ShadUI;assembly=ShadUI" xmlns:v="clr-namespace:Everywhere.Views"
-  xmlns:vc="clr-namespace:Everywhere.ValueConverters">
+  xmlns:chat="clr-namespace:Everywhere.Chat" xmlns:common="clr-namespace:Everywhere.Common;assembly=Everywhere.Abstractions"
+  xmlns:in="clr-namespace:Everywhere.Interactions" xmlns:shadui="clr-namespace:ShadUI;assembly=ShadUI"
+  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters">
   <ControlTheme
     x:Key="{x:Type v:ChatInputArea}"
     TargetType="v:ChatInputArea">
@@ -301,9 +301,134 @@
           <StackPanel
             Grid.Row="2" Grid.Column="1"
             Margin="8,0,0,0" Orientation="Horizontal"
-            Spacing="4">
+            Spacing="8">
+            <v:ContextUsageRing
+              VerticalAlignment="Center"
+              IndicatorBrush="{DynamicResource PrimaryColor}"
+              IsIndeterminate="{Binding ContextCompaction?.IsRunning, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}"
+              IsVisible="{Binding IsContextUsageRingVisible, RelativeSource={RelativeSource TemplatedParent}}"
+              Size="{DynamicResource FontSizeL}"
+              StrokeThickness="2"
+              TrackBrush="{DynamicResource BorderColor}"
+              Value="{Binding ContextUsage?.Snapshot.UsageRatio, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue=0}">
+              <v:ContextUsageRing.Styles>
+                <Style Selector="FlyoutPresenter">
+                  <Setter Property="CornerRadius" Value="{DynamicResource 2XlCornerRadius}"/>
+                  <Style.Animations>
+                    <Animation
+                      Easing="CubicEaseInOut" FillMode="None"
+                      IterationCount="1" Duration="0:0:0.15">
+                      <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.8"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.8"/>
+                      </KeyFrame>
+
+                      <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                      </KeyFrame>
+                    </Animation>
+                  </Style.Animations>
+                </Style>
+              </v:ContextUsageRing.Styles>
+
+              <v:ContextUsageRing.Flyout>
+                <Flyout
+                  Placement="Top" VerticalOffset="-4">
+                  <StackPanel
+                    Width="220" Margin="6"
+                    Spacing="8">
+                    <TextBlock
+                      FontSize="{DynamicResource FontSizeL}"
+                      FontWeight="SemiBold"
+                      Text="{I18N {x:Static LocaleKey.ChatInputArea_ContextUsage_Header}}"/>
+
+                    <TextBlock
+                      FontWeight="SemiBold"
+                      IsVisible="{Binding ContextUsage?.Snapshot.HasUsageRatio, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}">
+                      <TextBlock.Text>
+                        <I18N Key="{x:Static LocaleKey.ChatInputArea_ContextUsage_UsedPercentage}">
+                          <Binding
+                            Path="ContextUsage?.Snapshot.UsagePercentage"
+                            RelativeSource="{RelativeSource TemplatedParent}"/>
+                        </I18N>
+                      </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock IsVisible="{Binding ContextUsage?.Snapshot.HasUsageRatio, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}">
+                      <TextBlock.Text>
+                        <I18N Key="{x:Static LocaleKey.ChatInputArea_ContextUsage_Tokens}">
+                          <Binding
+                            Converter="{x:Static vc:TokenCountHumanizationConverter.Shared}"
+                            Path="ContextUsage?.Snapshot.TotalTokenCount"
+                            RelativeSource="{RelativeSource TemplatedParent}"/>
+                          <Binding
+                            Converter="{x:Static vc:TokenCountHumanizationConverter.Shared}"
+                            Path="ContextUsage?.Snapshot.ContextLimit"
+                            RelativeSource="{RelativeSource TemplatedParent}"/>
+                        </I18N>
+                      </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock IsVisible="{Binding ContextUsage?.Snapshot.HasUsageWithoutContextLimit, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}">
+                      <TextBlock.Text>
+                        <I18N Key="{x:Static LocaleKey.ChatInputArea_ContextUsage_ReportedTokens}">
+                          <Binding
+                            Converter="{x:Static vc:TokenCountHumanizationConverter.Shared}"
+                            Path="ContextUsage?.Snapshot.TotalTokenCount"
+                            RelativeSource="{RelativeSource TemplatedParent}"/>
+                        </I18N>
+                      </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock
+                      Classes="Caption Muted"
+                      IsVisible="{Binding ContextUsage?.Snapshot.HasUsage, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}">
+                      <TextBlock.Text>
+                        <I18N Key="{x:Static LocaleKey.ChatInputArea_ContextUsage_CachedTokens}">
+                          <Binding
+                            Converter="{x:Static vc:TokenCountHumanizationConverter.Shared}"
+                            Path="ContextUsage?.Snapshot.CachedInputTokenCount"
+                            RelativeSource="{RelativeSource TemplatedParent}"/>
+                        </I18N>
+                      </TextBlock.Text>
+                    </TextBlock>
+
+                    <TextBlock
+                      Classes="Muted"
+                      IsVisible="{Binding ContextUsage?.Snapshot.ShouldShowUnavailableMessage, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}"
+                      Text="{I18N {x:Static LocaleKey.ChatInputArea_ContextUsage_Unavailable}}"
+                      TextWrapping="Wrap"/>
+
+                    <TextBlock
+                      Classes="Caption Muted"
+                      IsVisible="{Binding ContextUsage?.Snapshot.Kind, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static chat:ContextUsageKind.Estimated}, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}"
+                      Text="{I18N {x:Static LocaleKey.ChatInputArea_ContextUsage_Estimated}}"
+                      TextWrapping="Wrap"/>
+
+                    <TextBlock
+                      Classes="Caption Muted"
+                      IsVisible="{Binding ContextUsage?.Snapshot.IsCompactedAwaitingMeasurement, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}"
+                      Text="{I18N {x:Static LocaleKey.ChatInputArea_ContextUsage_Compacted}}"
+                      TextWrapping="Wrap"/>
+
+                    <Button
+                      Classes="Secondary Compact" HorizontalAlignment="Stretch"
+                      shadui:ButtonAssist.IconSize="{DynamicResource FontSizeM}"
+                      shadui:ButtonAssist.ShowProgress="{Binding ContextCompaction?.IsRunning, RelativeSource={RelativeSource TemplatedParent}, TargetNullValue={x:False}}"
+                      Command="{Binding CompactContextCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                      Content="{I18N {x:Static LocaleKey.ChatInputArea_ContextUsage_CompactButton}}"
+                      CornerRadius="{DynamicResource FullCornerRadius}"/>
+                  </StackPanel>
+                </Flyout>
+              </v:ContextUsageRing.Flyout>
+            </v:ContextUsageRing>
+
             <Button
               x:Name="PART_SendButton" Classes="Primary Rounded"
+              VerticalAlignment="Center"
               IsVisible="{Binding !IsVisible, ElementName=PART_CancelButton}"
               ToolTip.Tip="{I18N {x:Static LocaleKey.ChatInputArea_SendButton_ToolTip}}">
               <Button.IsEnabled>

@@ -32,6 +32,11 @@ public interface IChatService
     void Continue(ChatMessageNode node);
 
     /// <summary>
+    /// Replaces the current conversation prefix with a persisted compression summary.
+    /// </summary>
+    void CompactContext();
+
+    /// <summary>
     /// Generates a response for the given chat context and assistant chat message.
     /// </summary>
     /// <param name="chatContext"></param>

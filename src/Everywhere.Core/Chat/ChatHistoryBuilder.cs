@@ -14,6 +14,10 @@ namespace Everywhere.Chat;
 /// </summary>
 public static class ChatHistoryBuilder
 {
+    private const int MaximumRetainedUserMessageTokens = 20_000;
+    private const double RetainedUserMessageContextRatio = 0.1d;
+    private const string RetainedUserMessageOmissionMarker = "[... older content omitted from retained user message ...]";
+
     public static async ValueTask<ChatHistory> BuildChatHistoryAsync(
         IPromptRenderer promptRenderer,
         string systemPrompt,
@@ -22,12 +26,44 @@ public static class ChatHistoryBuilder
         Modalities supportedModalities,
         CancellationToken cancellationToken = default)
     {
+        var selectedMessages = SelectContextMessages(chatMessages, maxContextRounds);
+        return await BuildSelectedChatHistoryAsync(
+            promptRenderer,
+            systemPrompt,
+            selectedMessages,
+            supportedModalities,
+            cancellationToken);
+    }
+
+    public static async ValueTask<ChatHistory> BuildChatHistoryAsync(
+        IPromptRenderer promptRenderer,
+        string systemPrompt,
+        IReadOnlyList<ChatMessageNode> chatNodes,
+        int maxContextRounds,
+        Modalities supportedModalities,
+        int declaredContextLimit,
+        CancellationToken cancellationToken = default)
+    {
+        var selectedMessages = SelectContextMessages(chatNodes, maxContextRounds, declaredContextLimit);
+        return await BuildSelectedChatHistoryAsync(
+            promptRenderer,
+            systemPrompt,
+            selectedMessages,
+            supportedModalities,
+            cancellationToken);
+    }
+
+    public static async ValueTask<ChatHistory> BuildSelectedChatHistoryAsync(
+        IPromptRenderer promptRenderer,
+        string systemPrompt,
+        IReadOnlyList<ChatMessage> selectedMessages,
+        Modalities supportedModalities,
+        CancellationToken cancellationToken = default)
+    {
         var chatHistory = new ChatHistory();
         chatHistory.AddSystemMessage(systemPrompt);
 
-        var startIndex = ResolveStartIndex(chatMessages, maxContextRounds);
-
-        foreach (var chatMessage in chatMessages.Skip(startIndex))
+        foreach (var chatMessage in selectedMessages)
         {
             await foreach (var chatMessageContent in CreateChatMessageContentsAsync(
                                promptRenderer,
@@ -42,16 +78,147 @@ public static class ChatHistoryBuilder
         return chatHistory;
     }
 
-    private static int ResolveStartIndex(IReadOnlyList<ChatMessage> chatMessages, int maxContextRounds)
+    public static IReadOnlyList<ChatMessage> SelectContextMessages(
+        IReadOnlyList<ChatMessage> chatMessages,
+        int maxContextRounds)
+    {
+        var compressionIndex = FindLastSuccessfulCompressionIndex(chatMessages);
+        if (compressionIndex < 0)
+        {
+            var startIndex = ResolveStartIndex(chatMessages, maxContextRounds, 0);
+            return chatMessages
+                .Skip(startIndex)
+                .Where(static message => message is not ContextCompressionChatMessage and not RootChatMessage)
+                .ToArray();
+        }
+
+        var suffixStartIndex = ResolveStartIndex(chatMessages, maxContextRounds, compressionIndex + 1);
+        var result = new List<ChatMessage>(chatMessages.Count - suffixStartIndex + 1)
+        {
+            chatMessages[compressionIndex]
+        };
+        result.AddRange(
+            chatMessages
+                .Skip(suffixStartIndex)
+                .Where(static message => message is not ContextCompressionChatMessage and not RootChatMessage));
+        return result;
+    }
+
+    public static IReadOnlyList<ChatMessage> SelectContextMessages(
+        IReadOnlyList<ChatMessageNode> chatNodes,
+        int maxContextRounds,
+        int declaredContextLimit)
+    {
+        var compressionIndex = FindLastSuccessfulCompressionIndex(chatNodes, out var anchorIndex);
+        if (compressionIndex < 0)
+        {
+            var messages = chatNodes
+                .AsValueEnumerable()
+                .Select(static node => node.Message)
+                .Where(static message => message is not ContextCompressionChatMessage and not RootChatMessage)
+                .ToArray();
+            var startIndex = ResolveStartIndex(messages, maxContextRounds, 0);
+            return messages.AsValueEnumerable().Skip(startIndex).ToArray();
+        }
+
+        var suffix = chatNodes
+            .AsValueEnumerable()
+            .Skip(anchorIndex + 1)
+            .Select(static node => node.Message)
+            .Where(static message => message is not ContextCompressionChatMessage and not RootChatMessage)
+            .ToArray();
+        var suffixStartIndex = ResolveStartIndex(suffix, maxContextRounds, 0);
+        var retainedUserMessages = SelectRetainedUserMessages(chatNodes, anchorIndex, declaredContextLimit);
+        var result = new List<ChatMessage>(retainedUserMessages.Count + suffix.Length - suffixStartIndex + 1);
+        result.AddRange(retainedUserMessages);
+        result.Add(chatNodes[compressionIndex].Message);
+        result.AddRange(suffix.Skip(suffixStartIndex));
+        return result;
+    }
+
+    private static int FindLastSuccessfulCompressionIndex(IReadOnlyList<ChatMessage> chatMessages)
+    {
+        for (var i = chatMessages.Count - 1; i >= 0; i--)
+        {
+            if (chatMessages[i] is ContextCompressionChatMessage { HasSummary: true }) return i;
+        }
+
+        return -1;
+    }
+
+    private static int FindLastSuccessfulCompressionIndex(IReadOnlyList<ChatMessageNode> chatNodes, out int anchorIndex)
+    {
+        for (var compressionIndex = chatNodes.Count - 1; compressionIndex >= 0; compressionIndex--)
+        {
+            if (chatNodes[compressionIndex].Message is not ContextCompressionChatMessage { HasSummary: true } compression)
+            {
+                continue;
+            }
+
+            anchorIndex = compression.CoveredThroughNodeId == Guid.Empty
+                ? -1
+                : FindNodeIndex(chatNodes, compression.CoveredThroughNodeId);
+            if (compression.CoveredThroughNodeId != Guid.Empty && anchorIndex < 0) continue;
+            if (anchorIndex < compressionIndex) return compressionIndex;
+        }
+
+        anchorIndex = -1;
+        return -1;
+    }
+
+    private static int FindNodeIndex(IReadOnlyList<ChatMessageNode> chatNodes, Guid nodeId)
+    {
+        for (var i = 0; i < chatNodes.Count; i++)
+        {
+            if (chatNodes[i].Id == nodeId) return i;
+        }
+
+        return -1;
+    }
+
+    private static List<ChatMessage> SelectRetainedUserMessages(IReadOnlyList<ChatMessageNode> chatNodes, int anchorIndex, int declaredContextLimit)
+    {
+        var tokenBudget = declaredContextLimit > 0
+            ? Math.Min(MaximumRetainedUserMessageTokens, (int)(declaredContextLimit * RetainedUserMessageContextRatio))
+            : 0;
+        if (tokenBudget <= 0 || anchorIndex < 0) return [];
+
+        var remainingTokens = tokenBudget;
+        var retainedMessages = new List<ChatMessage>();
+        for (var i = anchorIndex; i >= 0 && remainingTokens > 0; i--)
+        {
+            if (chatNodes[i].Message is not UserChatMessage userMessage) continue;
+
+            var estimatedTokens = TokenHelper.EstimateTokenCount(userMessage.Content);
+            if (estimatedTokens <= remainingTokens)
+            {
+                retainedMessages.Add(new UserChatMessage(userMessage.Content, []));
+                remainingTokens -= estimatedTokens;
+                continue;
+            }
+
+            var retainedContent = TokenHelper.Omit(userMessage.Content, remainingTokens, RetainedUserMessageOmissionMarker);
+            if (!string.IsNullOrWhiteSpace(retainedContent))
+            {
+                retainedMessages.Add(new UserChatMessage(retainedContent, []));
+            }
+            break;
+        }
+
+        retainedMessages.Reverse();
+        return retainedMessages;
+    }
+
+    private static int ResolveStartIndex(IReadOnlyList<ChatMessage> chatMessages, int maxContextRounds, int minimumIndex)
     {
         if (chatMessages.Count == 0 || maxContextRounds <= -1)
         {
-            return 0;
+            return minimumIndex;
         }
 
         var matchedUserRounds = 0;
 
-        for (var i = chatMessages.Count - 1; i >= 0; i--)
+        for (var i = chatMessages.Count - 1; i >= minimumIndex; i--)
         {
             if (chatMessages[i].Role != AuthorRole.User)
             {
@@ -65,7 +232,7 @@ public static class ChatHistoryBuilder
             }
         }
 
-        return 0;
+        return minimumIndex;
     }
 
     /// <summary>
@@ -123,15 +290,16 @@ public static class ChatHistoryBuilder
                                     {
                                         // Preserve the node in chat history and render only the temporary
                                         // provider-facing copy, including any declared local token limit.
-                                        resultItems.Add(new FunctionResultContent(
-                                            resultContent.FunctionName,
-                                            resultContent.PluginName,
-                                            resultContent.CallId,
-                                            promptNode.ToString())
-                                        {
-                                            Metadata = resultContent.Metadata,
-                                            InnerContent = resultContent.InnerContent
-                                        });
+                                        resultItems.Add(
+                                            new FunctionResultContent(
+                                                resultContent.FunctionName,
+                                                resultContent.PluginName,
+                                                resultContent.CallId,
+                                                promptNode.ToString())
+                                            {
+                                                Metadata = resultContent.Metadata,
+                                                InnerContent = resultContent.InnerContent
+                                            });
                                     }
                                     else
                                     {
@@ -226,6 +394,11 @@ public static class ChatHistoryBuilder
                 }
 
                 yield return new ChatMessageContent(AuthorRole.User, items);
+                break;
+            }
+            case ContextCompressionChatMessage { HasSummary: true } compression:
+            {
+                yield return new ChatMessageContent(AuthorRole.User, compression.ToString());
                 break;
             }
             case { Role.Label: "system" or "user" or "developer" or "tool" } when chatMessage.ToString() is { Length: > 0 } content:

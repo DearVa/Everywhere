@@ -37,10 +37,16 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     public ChatContextMetadata Metadata { get; }
 
     /// <summary>
-    /// Items in the current branch, excluding the root system prompt node. Used for UI bindings.
+    /// Visible items in the current branch, excluding the hidden root and other hidden internal messages.
     /// </summary>
     [IgnoreMember]
     public IReadOnlyBindableList<ChatMessageNode> DisplayItems { get; }
+
+    [IgnoreMember]
+    public ContextUsageState ContextUsage { get; } = new();
+
+    [IgnoreMember]
+    public ContextCompactionState ContextCompaction { get; } = new();
 
     /// <summary>
     /// Gets the non-serialized presentation companion for this context. It is created lazily so
@@ -67,7 +73,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     }
 
     /// <summary>
-    /// Messages in the current branch.
+    /// Nodes in the current branch, including the hidden root node.
     /// </summary>
     [IgnoreMember]
     public int Count => _branchNodesSourceList.Count;
@@ -195,7 +201,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
 
         DisplayItems = _branchNodesSourceList
             .Connect()
-            .Filter(node => node != rootNode)
+            .Filter(node => !node.Message.IsHidden)
             .ObserveOnAvaloniaDispatcher()
             .BindEx(_disposables);
 
@@ -234,7 +240,7 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
 
         DisplayItems = _branchNodesSourceList
             .Connect()
-            .Filter(node => node != _rootNode)
+            .Filter(node => !node.Message.IsHidden)
             .ObserveOnAvaloniaDispatcher()
             .BindEx(_disposables);
 
@@ -487,7 +493,20 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     /// source notification thread; each consumer is responsible for choosing its own scheduler.
     /// </summary>
     public IObservable<IChangeSet<ChatMessageNode>> ConnectDisplayItems() =>
-        _branchNodesSourceList.Connect(node => node != _rootNode);
+        _branchNodesSourceList.Connect(node => !node.Message.IsHidden);
+
+    public Task ReportContextUsageAsync(ChatUsageDetails usage, string modelId, int contextLimit) =>
+        Dispatcher.UIThread.InvokeOnDemandAsync(() => ContextUsage.Report(usage, modelId, contextLimit));
+
+    public Task MarkContextCompactedAsync(string modelId, int contextLimit) =>
+        Dispatcher.UIThread.InvokeOnDemandAsync(() => ContextUsage.MarkCompacted(modelId, contextLimit));
+
+    public Task SetContextCompactionRunningAsync(bool value) =>
+        Dispatcher.UIThread.InvokeOnDemandAsync(() =>
+        {
+            if (value) ContextCompaction.Start();
+            else ContextCompaction.Finish();
+        });
 
     public IObservable<IChangeSet<ChatMessageNode>> Preview(Func<ChatMessageNode, bool>? predicate = null) =>
         _branchNodesSourceList.Preview(predicate);

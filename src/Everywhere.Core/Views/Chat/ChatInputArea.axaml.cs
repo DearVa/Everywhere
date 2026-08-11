@@ -40,6 +40,18 @@ public sealed partial class ChatInputArea : TemplatedControl
     public static readonly StyledProperty<IRelayCommand?> CancelCommandProperty =
         AvaloniaProperty.Register<ChatInputArea, IRelayCommand?>(nameof(CancelCommand));
 
+    public static readonly StyledProperty<bool> IsContextUsageRingVisibleProperty =
+        AvaloniaProperty.Register<ChatInputArea, bool>(nameof(IsContextUsageRingVisible));
+
+    public static readonly StyledProperty<IRelayCommand?> CompactContextCommandProperty =
+        AvaloniaProperty.Register<ChatInputArea, IRelayCommand?>(nameof(CompactContextCommand));
+
+    public static readonly StyledProperty<ContextUsageState?> ContextUsageProperty =
+        AvaloniaProperty.Register<ChatInputArea, ContextUsageState?>(nameof(ContextUsage));
+
+    public static readonly StyledProperty<ContextCompactionState?> ContextCompactionProperty =
+        AvaloniaProperty.Register<ChatInputArea, ContextCompactionState?>(nameof(ContextCompaction));
+
     public static readonly StyledProperty<ICollection<ChatAttachment>?> ChatAttachmentItemsSourceProperty =
         AvaloniaProperty.Register<ChatInputArea, ICollection<ChatAttachment>?>(nameof(ChatAttachmentItemsSource));
 
@@ -134,6 +146,30 @@ public sealed partial class ChatInputArea : TemplatedControl
     {
         get => GetValue(CancelCommandProperty);
         set => SetValue(CancelCommandProperty, value);
+    }
+
+    public bool IsContextUsageRingVisible
+    {
+        get => GetValue(IsContextUsageRingVisibleProperty);
+        set => SetValue(IsContextUsageRingVisibleProperty, value);
+    }
+
+    public IRelayCommand? CompactContextCommand
+    {
+        get => GetValue(CompactContextCommandProperty);
+        set => SetValue(CompactContextCommandProperty, value);
+    }
+
+    public ContextUsageState? ContextUsage
+    {
+        get => GetValue(ContextUsageProperty);
+        set => SetValue(ContextUsageProperty, value);
+    }
+
+    public ContextCompactionState? ContextCompaction
+    {
+        get => GetValue(ContextCompactionProperty);
+        set => SetValue(ContextCompactionProperty, value);
     }
 
     public ICollection<ChatAttachment>? ChatAttachmentItemsSource
