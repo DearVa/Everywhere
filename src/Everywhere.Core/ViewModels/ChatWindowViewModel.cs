@@ -175,6 +175,20 @@ public sealed partial class ChatWindowViewModel :
                 .ObserveOnAvaloniaDispatcher()
                 .Subscribe(HandleCurrentChatContextIsBusyChanged)
         );
+        LifetimeDisposables.Add(
+            Settings.Model.WhenValueChanged(x => x.SelectedCustomAssistant)
+                .Select(assistant => assistant is null ?
+                    Observable.Return(0) :
+                    assistant.WhenValueChanged(x => x.ModelId).Select(_ => 0).Merge(assistant.WhenValueChanged(x => x.ContextLimit).Select(_ => 0)))
+                .Switch()
+                .ObserveOnAvaloniaDispatcher()
+                .Subscribe(_ => UpdateCurrentContextUsageModel())
+        );
+        LifetimeDisposables.Add(
+            ChatContextManager.WhenValueChanged(x => x.Current)
+                .ObserveOnAvaloniaDispatcher()
+                .Subscribe(_ => UpdateCurrentContextUsageModel())
+        );
 
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
@@ -643,6 +657,9 @@ public sealed partial class ChatWindowViewModel :
         _chatService.Continue(chatMessageNode);
     }
 
+    [RelayCommand(CanExecute = nameof(IsNotBusy))]
+    private void CompactContext() => _chatService.CompactContext();
+
     [RelayCommand(CanExecute = nameof(IsBusy))]
     private void Cancel()
     {
@@ -759,9 +776,16 @@ public sealed partial class ChatWindowViewModel :
         IsBusy = isBusy;
     }
 
+    private void UpdateCurrentContextUsageModel()
+    {
+        var assistant = Settings.Model.SelectedCustomAssistant;
+        ChatContextManager.Current.ContextUsage.UpdateModel(assistant?.ModelId, assistant?.ContextLimit ?? 0);
+    }
+
     partial void OnIsBusyChanged(bool value)
     {
         SendMessageCommand.NotifyCanExecuteChanged();
+        CompactContextCommand.NotifyCanExecuteChanged();
         EditMessageNodeCommand.NotifyCanExecuteChanged();
         RetryMessageNodeCommand.NotifyCanExecuteChanged();
         ContinueMessageNodeCommand.NotifyCanExecuteChanged();

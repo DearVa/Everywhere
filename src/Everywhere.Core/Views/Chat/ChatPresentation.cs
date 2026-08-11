@@ -1,15 +1,12 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Reactive.Disposables;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DynamicData;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Collections;
 using Lucide.Avalonia;
-using ZLinq;
 
 namespace Everywhere.Views;
 
@@ -132,7 +129,11 @@ public sealed class ChatPresentation : IDisposable
         // model PropertyChanged/CollectionChanged callbacks never call it directly.
         if (_isDisposed) return;
 
-        var descriptors = BuildTurnDescriptors(_context.Items.AsValueEnumerable().Where(node => node.Message is not RootChatMessage).ToArray());
+        var descriptors = BuildTurnDescriptors(
+            _context.Items
+                .AsValueEnumerable()
+                .Where(node => !node.Message.IsHidden)
+                .ToArray());
         var desired = new List<IChatPresentationSegment>(descriptors.Count);
 
         var retained = new HashSet<object>(ReferenceEqualityComparer.Instance);

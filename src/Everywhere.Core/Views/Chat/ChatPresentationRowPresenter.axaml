@@ -657,6 +657,17 @@
                     <Run Text="{I18N {x:Static LocaleKey.ChatMessageControl_ChatStatisticsTextBlock_TotalTokenCountRun}}"/>
                     <Run Text="{Binding UsageDetails.TotalTokenCount, Mode=OneWay}"/><Run Text=" · "/>
                     <Run Text="{Binding UsageDetails.TokensPerSecond, StringFormat='{}{0:F1} tokens/s', Mode=OneWay}"/><Run Text=" · "/>
+                    <Run Text="{I18N {x:Static LocaleKey.ChatMessageControl_ChatStatisticsTextBlock_CachedInputHitRateRun}}"/>
+                    <Run>
+                      <Run.Text>
+                        <MultiBinding Converter="{x:Static shadui:BasicConverters.FirstNotNullOrEmpty}">
+                          <Binding
+                            Mode="OneWay" Path="UsageDetails.CachedInputHitRate"
+                            StringFormat="{}{0:P0}"/>
+                          <I18N Key="{x:Static LocaleKey.Common_Unknown}"/>
+                        </MultiBinding>
+                      </Run.Text>
+                    </Run><Run Text=" · "/>
                     <Run Text="{I18N {x:Static LocaleKey.ChatMessageControl_ChatStatisticsTextBlock_ElapsedRun}}"/>
                     <Run>
                       <Run.Text>

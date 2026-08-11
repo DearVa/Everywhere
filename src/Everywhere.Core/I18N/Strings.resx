@@ -139,8 +139,53 @@
     <data name="ChatInputArea_CancelButton_ToolTip" xml:space="preserve">
         <value>Cancel</value>
     </data>
+    <data name="ChatInputArea_ContextUsage_Header" xml:space="preserve">
+        <value>Context usage</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_UsedPercentage" xml:space="preserve">
+        <value>Used {0}%</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Tokens" xml:space="preserve">
+        <value>Used {0} of {1}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_ReportedTokens" xml:space="preserve">
+        <value>Reported usage: {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CachedTokens" xml:space="preserve">
+        <value>Cached input: {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Unavailable" xml:space="preserve">
+        <value>Usage has not been reported yet</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Estimated" xml:space="preserve">
+        <value>Estimated after model change</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Compacted" xml:space="preserve">
+        <value>Context compacted; waiting for the next measurement</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CompactButton" xml:space="preserve">
+        <value>Compact context</value>
+    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>Analyze Context</value>
+    </data>
+    <data name="ContextCompression_Status_Compressing" xml:space="preserve">
+        <value>Compressing context</value>
+    </data>
+    <data name="ContextCompression_Status_Compressed" xml:space="preserve">
+        <value>Context compressed</value>
+    </data>
+    <data name="ContextCompression_Status_Failed" xml:space="preserve">
+        <value>Context compression failed</value>
+    </data>
+    <data name="ContextCompression_Error_EmptyResponse" xml:space="preserve">
+        <value>The model returned an empty context summary.</value>
+    </data>
+    <data name="ContextCompression_Error_NoHistory" xml:space="preserve">
+        <value>There is no conversation history to compact.</value>
+    </data>
+    <data name="ContextCompression_Error_ToolCallNotAllowed" xml:space="preserve">
+        <value>The model tried to call a tool while compacting context.</value>
     </data>
     <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>Web Search</value>
@@ -830,6 +875,9 @@ My intelligence is powered by large language models, and I need your help to con
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Total</value>
+    </data>
+    <data name="ChatMessageControl_ChatStatisticsTextBlock_CachedInputHitRateRun" xml:space="preserve">
+        <value>Cache hit</value>
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
         <value>Total Time</value>

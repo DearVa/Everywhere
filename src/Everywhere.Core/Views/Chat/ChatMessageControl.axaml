@@ -217,6 +217,64 @@
           </StackPanel>
         </DataTemplate>
 
+        <DataTemplate DataType="chat:ContextCompressionChatMessage">
+          <Grid
+            Margin="8,4" ColumnDefinitions="*,Auto,*"
+            ColumnSpacing="8"
+            ToolTip.Tip="{Binding ErrorMessageKey^, FallbackValue={x:Null}}">
+            <Border
+              Height="1" VerticalAlignment="Center"
+              Background="{DynamicResource BorderColor}"/>
+
+            <TextBlock
+              Classes="Caption Muted" Grid.Column="1"
+              Classes.Busy="{Binding IsBusy}"
+              Text="{Binding HeaderKey^, FallbackValue={x:Null}}">
+              <TextBlock.Styles>
+                <!--
+                  Keep the shimmer local to the compression row until its final visual language is
+                  settled. OpacityMask avoids layout work while making both separators and the label
+                  read as one running operation.
+                -->
+                <Style Selector="TextBlock.Busy">
+                  <Style.Animations>
+                    <Animation
+                      IterationCount="Infinite" Duration="0:0:1.8">
+                      <KeyFrame Cue="0%">
+                        <Setter Property="OpacityMask">
+                          <LinearGradientBrush StartPoint="-65%,0%" EndPoint="0%,0%">
+                            <GradientStop Offset="0" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="0.38" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="0.5" Color="#FFFFFFFF"/>
+                            <GradientStop Offset="0.62" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="1" Color="#B8FFFFFF"/>
+                          </LinearGradientBrush>
+                        </Setter>
+                      </KeyFrame>
+                      <KeyFrame Cue="100%">
+                        <Setter Property="OpacityMask">
+                          <LinearGradientBrush StartPoint="100%,0%" EndPoint="165%,0%">
+                            <GradientStop Offset="0" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="0.38" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="0.5" Color="#FFFFFFFF"/>
+                            <GradientStop Offset="0.62" Color="#B8FFFFFF"/>
+                            <GradientStop Offset="1" Color="#B8FFFFFF"/>
+                          </LinearGradientBrush>
+                        </Setter>
+                      </KeyFrame>
+                    </Animation>
+                  </Style.Animations>
+                </Style>
+              </TextBlock.Styles>
+            </TextBlock>
+
+            <Border
+              Grid.Column="2" Height="1"
+              VerticalAlignment="Center"
+              Background="{DynamicResource BorderColor}"/>
+          </Grid>
+        </DataTemplate>
+
         <DataTemplate DataType="chat:ActionChatMessage">
           <v:ChatActionBubble
             ElapsedSeconds="{Binding ElapsedSeconds}"
