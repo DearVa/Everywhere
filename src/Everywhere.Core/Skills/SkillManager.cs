@@ -106,7 +106,9 @@ public sealed class SkillManager : ObservableObject, ISkillManager, ISkillPrompt
             case ToolCallStatus.Enabled:
                 builder.AppendLine(
                     "When a user asks you to perform a task that falls within the domain of a skill, " +
-                    "use the 'read_file' tool to acquire the full instructions from the file URI. Ask the user to enable it if unavailable.");
+                    "read the listed file to acquire the full instructions. " +
+                    "Use the 'read_file' tool for skill:// resources; physical file paths may also be accessed through command-line or script tools. " +
+                    "Ask the user to enable tool calling if unavailable.");
                 break;
             case ToolCallStatus.Disabled:
                 builder.AppendLine(
@@ -126,7 +128,7 @@ public sealed class SkillManager : ObservableObject, ISkillManager, ISkillPrompt
             builder.AppendLine("<skill>");
             builder.Append("<name>").Append(SecurityElement.Escape(skill.Name)).AppendLine("</name>");
             builder.Append("<description>").Append(SecurityElement.Escape(skill.Description ?? string.Empty)).AppendLine("</description>");
-            builder.Append("<file>skill://").Append(SecurityElement.Escape(skill.Id)).AppendLine("/SKILL.md</file>");
+            builder.Append("<file>").Append(SecurityElement.Escape(skill.FilePath)).AppendLine("</file>");
             builder.AppendLine("</skill>");
         }
         builder.AppendLine("</skills>");

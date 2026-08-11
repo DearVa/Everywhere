@@ -221,9 +221,10 @@ public class FileHandlerTests
     {
         var root = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         var physicalDirectory = Path.Combine(root, "sample");
+        var physicalSkillPath = Path.Combine(physicalDirectory, "SKILL.md");
         Directory.CreateDirectory(physicalDirectory);
         await File.WriteAllTextAsync(
-            Path.Combine(physicalDirectory, "SKILL.md"),
+            physicalSkillPath,
             "---\nname: Sample\ndescription: Physical sample\n---\n# Sample");
         await File.WriteAllTextAsync(Path.Combine(physicalDirectory, "reference.txt"), "physical resource");
 
@@ -252,6 +253,7 @@ public class FileHandlerTests
             var physicalRead = await physical.Handler.ReadAsync(physical, 1, 10, CancellationToken.None);
             var virtualContext = await factory.CreateAsync("skill://builtin.demo/reference.txt", root);
             var virtualRead = await virtualContext.Handler.ReadAsync(virtualContext, 1, 10, CancellationToken.None);
+            var prompt = manager.GetPrompt(ToolCallStatus.Enabled);
             var virtualRoot = await factory.CreateAsync("skill://builtin.demo/", root);
             var topLevelResources = new List<string>();
             await foreach (var resource in virtualRoot.Handler.EnumerateAsync(
@@ -269,7 +271,9 @@ public class FileHandlerTests
                 Assert.That(physical.Path, Is.EqualTo("skill://agents.sample/reference.txt"));
                 Assert.That(physicalRead.Items.Single().Content, Is.EqualTo("physical resource"));
                 Assert.That(virtualRead.Items.Single().Content, Is.EqualTo("virtual resource"));
-                Assert.That(manager.GetPrompt(ToolCallStatus.Enabled), Does.Contain("skill://builtin.demo/SKILL.md"));
+                Assert.That(prompt, Does.Contain($"<file>{physicalSkillPath}</file>"));
+                Assert.That(prompt, Does.Not.Contain("skill://agents.sample/SKILL.md"));
+                Assert.That(prompt, Does.Contain("<file>skill://builtin.demo/SKILL.md</file>"));
                 Assert.That(topLevelResources, Does.Contain("skill://builtin.demo/references"));
             });
 
