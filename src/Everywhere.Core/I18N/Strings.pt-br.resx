@@ -1177,71 +1177,101 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="TextDifferenceEditor_AcceptButton_Content" xml:space="preserve">
         <value>Aceitar</value>
     </data>
-    <data name="TextDifferenceEditor_RevertButton_Content" xml:space="preserve">
-        <value>Reverter</value>
+    <data name="TextDifferenceEditor_RejectButton_Content" xml:space="preserve">
+        <value>Rejeitar</value>
+    </data>
+    <data name="TextDifferenceEditor_CommentButton_Content" xml:space="preserve">
+        <value>Adicionar Comentário</value>
+    </data>
+    <data name="TextDifferenceEditor_CommentTextBox_PlaceholderText" xml:space="preserve">
+        <value>Adicione um comentário nesta linha para guiar o assistente…</value>
+    </data>
+    <data name="TextDifferenceEditor_AcceptAllButton_Content" xml:space="preserve">
+        <value>Aceitar Tudo</value>
+    </data>
+    <data name="TextDifferenceEditor_RejectAllButton_Content" xml:space="preserve">
+        <value>Rejeitar Tudo</value>
+    </data>
+    <data name="TextDifferenceEditor_ConfirmButton_Content" xml:space="preserve">
+        <value>Confirmar</value>
+    </data>
+    <data name="TextDifferenceEditor_ConfirmButton_ToolTip" xml:space="preserve">
+        <value>Aplicar as alterações aceitas e continuar</value>
+    </data>
+    <data name="Common_TextDifference_ChangeSelectionSummary" xml:space="preserve">
+        <value>Total de {0} alterações, aceitas {1}</value>
+    </data>
+    <data name="TextDifferenceEditor_WindowTitle" xml:space="preserve">
+        <value>Revisar Alterações</value>
+    </data>
+    <data name="TextDifferenceEditor_OmittedLineButton_Content" xml:space="preserve">
+        <value>{0} linhas não modificadas</value>
+    </data>
+    <data name="TextDifferenceEditor_LoadErrorTextBlock_Text" xml:space="preserve">
+        <value>Não foi possível carregar a pré-visualização detalhada das diferenças.</value>
     </data>
     <data name="TextDifferenceSummaryView_AddedLineCountTextRun_Text" xml:space="preserve">
-        <value></value>
+        <value>Adicionadas {0} linhas</value>
     </data>
     <data name="TextDifferenceSummaryView_RemovedLineCountTextRun_Text" xml:space="preserve">
-        <value></value>
+        <value>Removidas {0} linhas</value>
     </data>
-    <data name="TextDifferenceSummaryView_AcceptAllButton_Content" xml:space="preserve">
-        <value>Aceitar tudo</value>
+    <data name="TextDifferenceSummaryView_UpdateHeader" xml:space="preserve">
+        <value>Alterar {0}</value>
     </data>
-    <data name="TextDifferenceSummaryView_EditButton_Content" xml:space="preserve">
-        <value>Editar</value>
+    <data name="TextDifferenceSummaryView_CreateHeader" xml:space="preserve">
+        <value>Criar {0}</value>
     </data>
-    <data name="TextDifferenceSummaryView_DiscardAllButton_Content" xml:space="preserve">
-        <value>Descartar tudo</value>
+    <data name="TextDifferenceSummaryView_DeleteHeader" xml:space="preserve">
+        <value>Remover {0}</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_DeletionConsent_Header" xml:space="preserve">
-        <value>Você está prestes a excluir {0} arquivos ou pastas</value>
+    <data name="TextDifferenceSummaryView_MoveAndUpdateHeader" xml:space="preserve">
+        <value>Mover e Alterar {0} → {1}</value>
+    </data>
+    <data name="TextDifferenceSummaryView_MoveHeader" xml:space="preserve">
+        <value>Mover {0} → {1}</value>
+    </data>
+    <data name="TextDifferenceSummaryView_ReviewChangesButton_Content" xml:space="preserve">
+        <value>Revisar Diferenças</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_DeletionConsent_Header" xml:space="preserve">
+        <value>Excluir os {0} arquivos ou pastas selecionados?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_MoveConsent_Header" xml:space="preserve">
         <value>Permitir mover o arquivo?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyConsent_Header" xml:space="preserve">
-        <value>Permitir copiar os seguintes arquivos ou pastas?</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_CopyConsent_Header" xml:space="preserve">
+        <value>Copiar {0} para {1}?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveConsent_Header" xml:space="preserve">
-        <value>Permitir mover os seguintes arquivos ou pastas?</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_MoveConsent_Header" xml:space="preserve">
+        <value>Mover {0} para {1}?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Consent_From" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Consent_From" xml:space="preserve">
         <value>De</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_CopyTo" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_CopyTo" xml:space="preserve">
         <value>Copiar para</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_MoveTo" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_MoveTo" xml:space="preserve">
         <value>Mover para</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_CreateConsent_Header" xml:space="preserve">
         <value>Permitir criar uma pasta?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_WriteConsent_Header" xml:space="preserve">
-        <value>Permitir escrever no arquivo?</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_FileOperationReview_Header" xml:space="preserve">
+        <value>Permitir esta operação de arquivo?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Header" xml:space="preserve">
-        <value>Permitir criar e escrever nos seguintes arquivos?</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_CreateFileReview_Header" xml:space="preserve">
+        <value>Criar {0}?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Header" xml:space="preserve">
-        <value>Permitir adicionar conteúdo aos seguintes arquivos?</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_UpdateFileReview_Header" xml:space="preserve">
+        <value>Atualizar {0}?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Header" xml:space="preserve">
-        <value>Permitir sobrescrever os seguintes arquivos?</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_DeleteFileReview_Header" xml:space="preserve">
+        <value>Excluir {0}?</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_CreateConsent_Description" xml:space="preserve">
-        <value>Criar este arquivo.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_AppendConsent_Description" xml:space="preserve">
-        <value>Acrescentar a este arquivo.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_OverwriteConsent_Description" xml:space="preserve">
-        <value>Sobrescrever este arquivo.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Consent_Header" xml:space="preserve">
-        <value>Permitir substituir o conteúdo do arquivo?</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_MoveFileReview_Header" xml:space="preserve">
+        <value>Mover {0} para {1}?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_Consent_AllowExactPaths" xml:space="preserve">
         <value>Sempre permitir os caminhos acima</value>
@@ -1252,11 +1282,8 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="BuiltInChatPlugin_FileSystem_Consent_AllowCustomDirectory" xml:space="preserve">
         <value>Sempre permitir a pasta selecionada…</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_SystemFile_DeletionConsent_Header" xml:space="preserve">
-        <value>Você está prestes a excluir arquivos ou pastas do sistema</value>
-    </data>
-    <data name="TextDifferenceEditor_DiscardButton_Content" xml:space="preserve">
-        <value>Descartar</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_SystemFile_DeletionConsent_Header" xml:space="preserve">
+        <value>Você está prestes a excluir um arquivo ou pasta do sistema</value>
     </data>
     <data name="ChatPluginConsentRequest_Common_Header" xml:space="preserve">
         <value>Permitir que &quot;{0}&quot; seja executado? Ele requer a permissão &quot;{1}&quot;</value>
@@ -1300,20 +1327,17 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Header" xml:space="preserve">
         <value>Mover ou Renomear Arquivo</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Header" xml:space="preserve">
-        <value>Copiar ou mover arquivos</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Header" xml:space="preserve">
+        <value>Copiar ou Mover Caminho</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Header" xml:space="preserve">
-        <value>Excluir Arquivos</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_Header" xml:space="preserve">
+        <value>Excluir Caminhos</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_Header" xml:space="preserve">
         <value>Criar Pasta</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_Header" xml:space="preserve">
-        <value>Escrever no Arquivo</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Header" xml:space="preserve">
-        <value>Modificar Conteúdo do Arquivo</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_Header" xml:space="preserve">
+        <value>Aplicar Patch</value>
     </data>
     <data name="BuiltInChatPlugin_Web_WebSearch_Searching" xml:space="preserve">
         <value>🔎 {0}</value>
@@ -1399,20 +1423,17 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_Description" xml:space="preserve">
         <value>Mova ou renomeie arquivos ou pastas.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_TransferFile_Description" xml:space="preserve">
-        <value>Copiar ou mover arquivos ou pastas.</value>
+    <data name="BuiltInChatPlugin_FileSystem_TransferPath_Description" xml:space="preserve">
+        <value>Copiar ou mover arquivos ou pastas, mas não modificar seu conteúdo.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_Description" xml:space="preserve">
-        <value>Exclua arquivos ou pastas no caminho especificado.</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_Description" xml:space="preserve">
+        <value>Excluir arquivos ou pastas listados explicitamente. Pastas não vazias requerem recursive=true.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_CreateDirectory_Description" xml:space="preserve">
         <value>Crie uma pasta no caminho especificado.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_Description" xml:space="preserve">
-        <value>Escreva conteúdo em um arquivo de texto no caminho especificado.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Description" xml:space="preserve">
-        <value>Substitua o conteúdo em um arquivo de texto específico.</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_Description" xml:space="preserve">
+        <value>Usar patch no estilo Codex para adicionar, atualizar, excluir ou mover arquivos de texto locais.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_ReadFile_FileTooLarge_ErrorMessage" xml:space="preserve">
         <value>O tamanho do arquivo excede {0} MB e não pode ser lido.</value>
@@ -1420,23 +1441,23 @@ Minha inteligência é alimentada por um grande modelo de linguagem, e preciso d
     <data name="BuiltInChatPlugin_FileSystem_MoveFile_CreateDirectory_ErrorMessage" xml:space="preserve">
         <value>Não foi possível criar a pasta.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_RootDirectory_Deletion_ErrorMessage" xml:space="preserve">
         <value>Não é possível excluir o diretório raiz.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_DeleteFiles_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_WorkingDirectory_Deletion_ErrorMessage" xml:space="preserve">
+        <value>Não é possível excluir o diretório de trabalho do chat.</value>
+    </data>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_SystemFile_Deletion_ErrorMessage" xml:space="preserve">
         <value>Não é possível excluir arquivos ou pastas do sistema.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_WriteToFile_BinaryFile_Write_ErrorMessage" xml:space="preserve">
-        <value>Não é possível escrever em arquivos binários.</value>
+    <data name="BuiltInChatPlugin_FileSystem_DeletePaths_NonEmptyDirectory_ErrorMessage" xml:space="preserve">
+        <value>A pasta não está vazia. Defina recursive=true para remover seu conteúdo.</value>
     </data>
     <data name="HandledFunctionInvokingException_ArgumentError" xml:space="preserve">
         <value>O modelo forneceu um valor inválido para o parâmetro “{0}”, possivelmente devido a uma alucinação do modelo.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_FileTooLarge_ErrorMessage" xml:space="preserve">
-        <value>O tamanho do arquivo excede 10 MB e não é possível substituir o conteúdo.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_BinaryFile_ErrorMessage" xml:space="preserve">
-        <value>Não é possível substituir o conteúdo de arquivos binários.</value>
+    <data name="BuiltInChatPlugin_FileSystem_ApplyPatch_ErrorMessage" xml:space="preserve">
+        <value>Não foi possível aplicar o patch. Verifique o patch e tente novamente.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_EnsureDirectoryInfo_PathIsFile_ErrorMessage" xml:space="preserve">
         <value>O caminho especificado é um arquivo, não uma pasta.</value>
@@ -3588,7 +3609,7 @@ Deseja realmente excluir “{1}” permanentemente?</value>
         <value>Requisitos Adicionais</value>
     </data>
     <data name="PromptCreate_AdditionalRequirementsPlaceholder" xml:space="preserve">
-        <value></value>
+        <value>(Opcional) Adicione restrições, referências ou preferências que este prompt deve seguir.</value>
     </data>
     <data name="PromptCreate_LivePreviewTitle" xml:space="preserve">
         <value>Pré-visualização Ao Vivo</value>
@@ -3773,9 +3794,6 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     <data name="BuiltInChatPlugin_FileSystem_ReadFile_BinaryFile_ErrorMessage" xml:space="preserve">
         <value>Não é possível ler este arquivo como texto.</value>
     </data>
-    <data name="BuiltInChatPlugin_FileSystem_ReplaceFileContent_Conflict_ErrorMessage" xml:space="preserve">
-        <value>O arquivo foi alterado durante sua revisão, portanto, nenhuma modificação foi salva.</value>
-    </data>
     <data name="BuiltInChatPlugin_FileSystem_PdfNoText_ErrorMessage" xml:space="preserve">
         <value>Este PDF não contém texto legível, pode conter páginas digitalizadas.</value>
     </data>
@@ -3790,9 +3808,6 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_LocalPathOnly_ErrorMessage" xml:space="preserve">
         <value>Esta operação é válida apenas para arquivos no dispositivo.</value>
-    </data>
-    <data name="BuiltInChatPlugin_FileSystem_InvalidReplacement_ErrorMessage" xml:space="preserve">
-        <value>Solicitação de substituição incompleta ou inválida.</value>
     </data>
     <data name="BuiltInChatPlugin_FileSystem_ConsentDenied_ErrorMessage" xml:space="preserve">
         <value>Operação de arquivo não autorizada.</value>
@@ -3838,5 +3853,8 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     </data>
     <data name="AskQuestionCard_OptionalFreeformTextBox_PlaceholderText" xml:space="preserve">
         <value>Opcional: digite uma resposta adicional…</value>
+    </data>
+    <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
+        <value>Clique para expandir</value>
     </data>
 </root>

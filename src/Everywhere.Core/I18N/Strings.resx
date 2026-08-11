@@ -1183,7 +1183,7 @@ My intelligence is powered by large language models, and I need your help to con
         <value>Comment</value>
     </data>
     <data name="TextDifferenceEditor_CommentTextBox_PlaceholderText" xml:space="preserve">
-        <value></value>
+        <value>Add a comment on the current line to guide the assistant...</value>
     </data>
     <data name="TextDifferenceEditor_AcceptAllButton_Content" xml:space="preserve">
         <value>Accept all</value>
