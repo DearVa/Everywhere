@@ -150,6 +150,12 @@ public sealed partial class ContextCompressionChatMessage : ChatMessage
     /// <summary>
     /// Creates a running context compression attempt.
     /// </summary>
+    /// <param name="coveredThroughNodeId">The last conversation node included in the summary input.</param>
+    /// <param name="sourceModelId">The model identifier used for this compression attempt.</param>
+    /// <param name="createdAt">The time at which the attempt started.</param>
+    /// <param name="trigger">The reason the attempt was started.</param>
+    /// <param name="reportedTotalTokensBefore">The latest reported total token count before compression, if known.</param>
+    /// <param name="declaredContextLimitBefore">The declared model context limit before compression, if known.</param>
     public ContextCompressionChatMessage(
         Guid coveredThroughNodeId,
         string sourceModelId,
@@ -171,7 +177,7 @@ public sealed partial class ContextCompressionChatMessage : ChatMessage
     private ContextCompressionChatMessage(
         string? summary,
         Guid coveredThroughNodeId,
-        string sourceModelId,
+        string? sourceModelId,
         DateTimeOffset createdAt,
         DateTimeOffset? finishedAt,
         ContextCompressionTrigger trigger,
@@ -217,6 +223,10 @@ public sealed partial class ContextCompressionChatMessage : ChatMessage
         IsBusy = false;
     }
 
+    /// <summary>
+    /// IsBusy is declared on ChatMessage, so NotifyPropertyChangedFor cannot propagate its changes
+    /// to HeaderKey and NeedsAutomaticCompaction on this derived message.
+    /// </summary>
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);

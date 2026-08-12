@@ -87,7 +87,7 @@ public abstract partial class Assistant : ObservableValidator, IModelDefinition
     [DynamicLocaleKey(
         LocaleKey.Assistant_RequestTimeoutSeconds_Header,
         LocaleKey.Assistant_RequestTimeoutSeconds_Description)]
-    [SettingsItem(Group = LocaleKey.Assistant_AdvancedSettings, Index = int.MaxValue)]
+    [SettingsItem(Group = LocaleKey.Assistant_AdvancedSettings, Index = 0)]
     [SettingsIntegerItem(IsSliderVisible = false)]
     [DefaultValue(20)]
     public partial int RequestTimeoutSeconds { get; set; } = 20;

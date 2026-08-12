@@ -9,6 +9,10 @@ namespace Everywhere.Chat;
 [MessagePackObject]
 public partial class ChatUsageDetails : ObservableObject
 {
+    /// <remarks>
+    /// This flag describes only the current model invocation. It is ignored during serialization,
+    /// so it remains false after deserialization even when persisted token counts are present.
+    /// </remarks>
     [IgnoreMember]
     public bool HasUsage { get; private set; }
 

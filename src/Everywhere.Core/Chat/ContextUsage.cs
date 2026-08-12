@@ -30,19 +30,28 @@ public sealed record ContextUsageSnapshot(
     DateTimeOffset? UpdatedAt
 )
 {
-    private const double AutomaticCompactionThreshold = 0.8d;
+    /// <summary>
+    /// Default automatic compression threshold used when no custom assistant policy is available.
+    /// </summary>
+    public const int DefaultCompressionThresholdPercentage = 80;
+
+    /// <summary>Lowest accepted automatic compression threshold percentage.</summary>
+    public const int MinimumCompressionThresholdPercentage = 5;
+
+    /// <summary>Highest accepted automatic compression threshold percentage.</summary>
+    public const int MaximumCompressionThresholdPercentage = 95;
 
     public static ContextUsageSnapshot NotMeasured { get; } = new(
-        ContextUsageKind.Unavailable,
-        ContextUsageUnavailableReason.NotMeasured,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null);
+        Kind: ContextUsageKind.Unavailable,
+        UnavailableReason: ContextUsageUnavailableReason.NotMeasured,
+        InputTokenCount: null,
+        CachedInputTokenCount: null,
+        OutputTokenCount: null,
+        ReasoningTokenCount: null,
+        TotalTokenCount: null,
+        ContextLimit: null,
+        ModelId: null,
+        UpdatedAt: null);
 
     public bool HasUsage => TotalTokenCount.HasValue;
 
@@ -53,31 +62,35 @@ public sealed record ContextUsageSnapshot(
     public bool HasUsageWithoutContextLimit => HasUsage && !HasContextLimit;
 
     /// <summary>
-    /// Gets a value indicating whether the latest measurement has reached the automatic context
-    /// compression threshold. This is derived rather than persisted because both the measurement
-    /// and the configured model limit can change between requests.
+    /// Gets a value indicating whether the latest measurement has reached the supplied automatic
+    /// compression threshold.
     /// </summary>
-    public bool NeedsAutomaticCompaction =>
-        HasUsageRatio && (double)TotalTokenCount.GetValueOrDefault() / ContextLimit.GetValueOrDefault() >=
-        AutomaticCompactionThreshold;
+    public bool HasReachedCompressionThreshold(int thresholdPercentage) =>
+        HasUsageRatio && UsageRatioValue >= NormalizeCompressionThresholdPercentage(thresholdPercentage) / 100d;
 
     public bool IsCompactedAwaitingMeasurement =>
         UnavailableReason == ContextUsageUnavailableReason.CompactedAwaitingMeasurement;
 
     public bool ShouldShowUnavailableMessage => !HasUsage && !IsCompactedAwaitingMeasurement;
 
-    public double UsageRatio => HasUsageRatio ?
-        Math.Clamp((double)TotalTokenCount.GetValueOrDefault() / ContextLimit.GetValueOrDefault(), 0d, 1d) :
-        0d;
+    public double UsageRatio => HasUsageRatio ? Math.Clamp(UsageRatioValue, 0d, 1d) : 0d;
 
-    public int UsagePercentage => HasUsageRatio ?
-        (int)Math.Round((double)TotalTokenCount.GetValueOrDefault() / ContextLimit.GetValueOrDefault() * 100d) :
-        0;
+    public int UsagePercentage => HasUsageRatio ? (int)Math.Round(UsageRatioValue * 100d) : 0;
+
+    private double UsageRatioValue => (double)TotalTokenCount.GetValueOrDefault() / ContextLimit.GetValueOrDefault();
+
+    public static int NormalizeCompressionThresholdPercentage(int thresholdPercentage) =>
+        Math.Clamp(thresholdPercentage, MinimumCompressionThresholdPercentage, MaximumCompressionThresholdPercentage);
 }
 
 /// <summary>
 /// Stable, non-persisted binding surface for the most recent provider context measurement.
 /// </summary>
+/// <remarks>
+/// All mutations and the resulting <see cref="ObservableObject.PropertyChanged"/> notifications
+/// must occur on the Avalonia UI thread. Callers running on worker threads must dispatch before
+/// updating this state.
+/// </remarks>
 public sealed partial class ContextUsageState : ObservableObject
 {
     [ObservableProperty]
@@ -151,6 +164,14 @@ public enum ContextCompactionPhase
     Running
 }
 
+/// <summary>
+/// Observable state for the current context compression operation.
+/// </summary>
+/// <remarks>
+/// All mutations and the resulting <see cref="ObservableObject.PropertyChanged"/> notifications
+/// must occur on the Avalonia UI thread. Callers running on worker threads must dispatch before
+/// updating this state.
+/// </remarks>
 public sealed partial class ContextCompactionState : ObservableObject
 {
     [ObservableProperty]
