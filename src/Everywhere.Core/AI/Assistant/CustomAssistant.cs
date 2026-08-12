@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Avalonia.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -94,10 +95,22 @@ public sealed partial class CustomAssistant : Assistant
     [DynamicLocaleKey(LocaleKey.ChatPluginPage_Title)]
     [SettingsItem(Index = 2)]
     public SettingsControl<CustomAssistantToolSettingsView> ToolSettings => new(x =>
-        new CustomAssistantToolSettingsView(
-            x.GetRequiredService<IChatPluginManager>(),
-            x.GetRequiredService<Settings>())
+        new CustomAssistantToolSettingsView(x.GetRequiredService<IChatPluginManager>(), x.GetRequiredService<Settings>())
         {
             Assistant = this
         });
+
+    /// <summary>
+    /// Gets or sets the percentage of the declared context limit at which automatic context
+    /// compression starts.
+    /// </summary>
+    [ObservableProperty]
+    [DynamicLocaleKey(
+        LocaleKey.Assistant_ContextCompressionThreshold_Header,
+        LocaleKey.Assistant_ContextCompressionThreshold_Description)]
+    [SettingsItem(Group = LocaleKey.Assistant_AdvancedSettings, Index = 1)]
+    [SettingsIntegerItem(Min = 5, Max = 95)]
+    [Range(5, 95)]
+    [DefaultValue(80)]
+    public partial int ContextCompressionThreshold { get; set; } = 80;
 }

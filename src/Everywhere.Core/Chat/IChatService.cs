@@ -33,6 +33,7 @@ public interface IChatService
 
     /// <summary>
     /// Replaces the current conversation prefix with a persisted compression summary.
+    /// This method is NOT thread safe.
     /// </summary>
     void CompactContext();
 

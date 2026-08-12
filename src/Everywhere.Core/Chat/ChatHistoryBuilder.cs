@@ -14,6 +14,9 @@ namespace Everywhere.Chat;
 /// </summary>
 public static class ChatHistoryBuilder
 {
+    // Retain useful recent user instructions after compression while bounding their contribution
+    // to the next prompt. The absolute cap and context-relative cap trade off continuity against
+    // keeping enough room for the system prompt, tools, summary, and the next response.
     private const int MaximumRetainedUserMessageTokens = 20_000;
     private const double RetainedUserMessageContextRatio = 0.1d;
     private const string RetainedUserMessageOmissionMarker = "[... older content omitted from retained user message ...]";

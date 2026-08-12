@@ -201,6 +201,8 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
 
         DisplayItems = _branchNodesSourceList
             .Connect()
+            // IsHidden is evaluated when the node enters this projection. Runtime visibility
+            // changes require a corresponding change notification to re-evaluate the filter.
             .Filter(node => !node.Message.IsHidden)
             .ObserveOnAvaloniaDispatcher()
             .BindEx(_disposables);
@@ -240,6 +242,8 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
 
         DisplayItems = _branchNodesSourceList
             .Connect()
+            // IsHidden is evaluated when the node enters this projection. Runtime visibility
+            // changes require a corresponding change notification to re-evaluate the filter.
             .Filter(node => !node.Message.IsHidden)
             .ObserveOnAvaloniaDispatcher()
             .BindEx(_disposables);
@@ -493,6 +497,8 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     /// source notification thread; each consumer is responsible for choosing its own scheduler.
     /// </summary>
     public IObservable<IChangeSet<ChatMessageNode>> ConnectDisplayItems() =>
+        // IsHidden is evaluated when the node enters this projection. Runtime visibility changes
+        // require a corresponding change notification to re-evaluate the filter.
         _branchNodesSourceList.Connect(node => !node.Message.IsHidden);
 
     public Task ReportContextUsageAsync(ChatUsageDetails usage, string modelId, int contextLimit) =>
@@ -501,12 +507,15 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
     public Task MarkContextCompactedAsync(string modelId, int contextLimit) =>
         Dispatcher.UIThread.InvokeOnDemandAsync(() => ContextUsage.MarkCompacted(modelId, contextLimit));
 
-    public Task SetContextCompactionRunningAsync(bool value) =>
-        Dispatcher.UIThread.InvokeOnDemandAsync(() =>
-        {
-            if (value) ContextCompaction.Start();
-            else ContextCompaction.Finish();
-        });
+    /// <summary>
+    /// Starts a context compression operation and returns an asynchronous scope that restores the
+    /// idle state when disposed.
+    /// </summary>
+    public async Task<IAsyncDisposable> BeginContextCompactionAsync()
+    {
+        await Dispatcher.UIThread.InvokeOnDemandAsync(ContextCompaction.Start);
+        return new ContextCompactionScope(this);
+    }
 
     public IObservable<IChangeSet<ChatMessageNode>> Preview(Func<ChatMessageNode, bool>? predicate = null) =>
         _branchNodesSourceList.Preview(predicate);
@@ -811,6 +820,18 @@ public sealed partial class ChatContext : ObservableObject, IObservableList<Chat
                 _observableList.CollectionChanged -= HandleObservableListCollectionChanged;
                 _observableList.PropertyChanged -= HandleObservableListPropertyChanged;
             }
+        }
+    }
+
+    private sealed class ContextCompactionScope(ChatContext context) : IAsyncDisposable
+    {
+        private int _disposed;
+
+        public async ValueTask DisposeAsync()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
+
+            await Dispatcher.UIThread.InvokeOnDemandAsync(context.ContextCompaction.Finish);
         }
     }
 }

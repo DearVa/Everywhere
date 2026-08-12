@@ -1591,6 +1591,12 @@ Scroll wheel or number keys to switch pick modes</value>
     <data name="Assistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>Request Timeout</value>
     </data>
+    <data name="Assistant_ContextCompressionThreshold_Description" xml:space="preserve">
+        <value>Automatically compress the conversation when reported usage reaches this percentage of the model's declared context limit.</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Header" xml:space="preserve">
+        <value>Context Compression Threshold</value>
+    </data>
     <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
         <value>Proxy server address is required.</value>
     </data>

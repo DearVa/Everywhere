@@ -1592,6 +1592,12 @@
     <data name="Assistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>请求超时时长</value>
     </data>
+    <data name="Assistant_ContextCompressionThreshold_Description" xml:space="preserve">
+        <value>当已报告的上下文用量达到模型声明上下文长度的此百分比时，自动压缩对话上下文。</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Header" xml:space="preserve">
+        <value>上下文压缩阈值</value>
+    </data>
     <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
         <value>代理服务器地址缺失。</value>
     </data>

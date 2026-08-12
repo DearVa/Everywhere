@@ -26,6 +26,10 @@ public abstract partial class ChatMessage : ObservableObject
     /// <summary>
     /// Gets a value indicating whether this message is excluded from the normal chat presentation.
     /// </summary>
+    /// <remarks>
+    /// Overrides that change this value after the node enters a chat context must raise a property
+    /// change notification; otherwise the DynamicData visibility projections are not re-evaluated.
+    /// </remarks>
     [IgnoreMember]
     [JsonIgnore]
     public virtual bool IsHidden => false;

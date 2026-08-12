@@ -1,4 +1,4 @@
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using Everywhere.AI;
@@ -185,6 +185,19 @@ public sealed class ContextCompressionTests
         });
     }
 
+    [AvaloniaTest]
+    public async Task BeginContextCompactionAsync_WhenScopeIsDisposed_RestoresIdleState()
+    {
+        using var context = new ChatContext();
+
+        await using (await context.BeginContextCompactionAsync())
+        {
+            Assert.That(context.ContextCompaction.IsRunning, Is.True);
+        }
+
+        Assert.That(context.ContextCompaction.IsRunning, Is.False);
+    }
+
     [Test]
     public void ResolvePendingAutomaticCompressionTrigger_WhenAutomaticAttemptFailed_RetriesOnNextOperation()
     {
@@ -208,10 +221,18 @@ public sealed class ContextCompressionTests
 
         Assert.That(ResolvePendingAutomaticCompressionTrigger(context), Is.Null);
 
-        context.ContextUsage.Report(CreateUsage(160_000), "test-model", 200_000);
+        context.ContextUsage.Report(
+            CreateUsage(160_000),
+            "test-model",
+            200_000);
 
         Assert.That(
             ResolvePendingAutomaticCompressionTrigger(context),
+            Is.EqualTo(ContextCompressionTrigger.Automatic));
+
+        Assert.That(ResolvePendingAutomaticCompressionTrigger(context, 90), Is.Null);
+        Assert.That(
+            ResolvePendingAutomaticCompressionTrigger(context, 75),
             Is.EqualTo(ContextCompressionTrigger.Automatic));
     }
 
@@ -276,8 +297,37 @@ public sealed class ContextCompressionTests
             Assert.That(snapshot.HasUsageRatio, Is.True);
             Assert.That(snapshot.UsageRatio, Is.EqualTo(0.8d));
             Assert.That(snapshot.UsagePercentage, Is.EqualTo(80));
-            Assert.That(snapshot.NeedsAutomaticCompaction, Is.True);
+            Assert.That(snapshot.HasReachedCompressionThreshold(80), Is.True);
         });
+    }
+
+    [Test]
+    public void Snapshot_WhenCompressionThresholdChanges_UsesNewPolicyWithoutInvalidatingMeasurement()
+    {
+        var snapshot = new ContextUsageSnapshot(
+            ContextUsageKind.ProviderReported,
+            ContextUsageUnavailableReason.None,
+            160_000,
+            50_000,
+            4_000,
+            1_000,
+            160_000,
+            200_000,
+            "test-model",
+            DateTimeOffset.UtcNow);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot.HasReachedCompressionThreshold(90), Is.False);
+            Assert.That(snapshot.Kind, Is.EqualTo(ContextUsageKind.ProviderReported));
+        });
+
+        Assert.That(snapshot.HasReachedCompressionThreshold(75), Is.True);
+
+        var state = new ContextUsageState();
+        state.Report(CreateUsage(160_000), "test-model", 200_000);
+        state.UpdateModel("test-model", 200_000);
+        Assert.That(state.Snapshot.Kind, Is.EqualTo(ContextUsageKind.ProviderReported));
     }
 
     [Test]
@@ -373,18 +423,34 @@ public sealed class ContextCompressionTests
         return usage;
     }
 
-    private static ContextCompressionTrigger? ResolvePendingAutomaticCompressionTrigger(ChatContext context) =>
-        (ContextCompressionTrigger?)typeof(ChatService)
-            .GetMethod(nameof(ResolvePendingAutomaticCompressionTrigger), BindingFlags.NonPublic | BindingFlags.Static)
-            ?.Invoke(null, [context]);
+    private static ContextCompressionTrigger? ResolvePendingAutomaticCompressionTrigger(
+        ChatContext context,
+        int contextCompressionThreshold = ContextUsageSnapshot.DefaultCompressionThresholdPercentage) =>
+        InvokeResolvePendingAutomaticCompressionTrigger(
+            null,
+            context,
+            contextCompressionThreshold);
 
     private static Guid ResolveCompressionBoundary(ChatContext context, AssistantChatMessage assistantMessage) =>
-        (Guid)(typeof(ChatService)
-            .GetMethod(nameof(ResolveCompressionBoundary), BindingFlags.NonPublic | BindingFlags.Static)
-            ?.Invoke(null, [context, assistantMessage]) ?? Guid.Empty);
+        InvokeResolveCompressionBoundary(null, context, assistantMessage);
 
     private static bool TryTrimOldestConversationUnit(List<ChatMessage> messages) =>
-        (bool)(typeof(ChatService)
-            .GetMethod(nameof(TryTrimOldestConversationUnit), BindingFlags.NonPublic | BindingFlags.Static)
-            ?.Invoke(null, [messages]) ?? false);
+        InvokeTryTrimOldestConversationUnit(null, messages);
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ResolvePendingAutomaticCompressionTrigger")]
+    private static extern ContextCompressionTrigger? InvokeResolvePendingAutomaticCompressionTrigger(
+        ChatService? klass,
+        ChatContext context,
+        int contextCompressionThreshold);
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "ResolveCompressionBoundary")]
+    private static extern Guid InvokeResolveCompressionBoundary(
+        ChatService? klass,
+        ChatContext context,
+        AssistantChatMessage? assistantMessage);
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "TryTrimOldestConversationUnit")]
+    private static extern bool InvokeTryTrimOldestConversationUnit(
+        ChatService? klass,
+        List<ChatMessage> messages);
 }
