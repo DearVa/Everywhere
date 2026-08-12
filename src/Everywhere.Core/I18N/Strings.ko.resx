@@ -139,8 +139,53 @@
     <data name="ChatInputArea_CancelButton_ToolTip" xml:space="preserve">
         <value>취소</value>
     </data>
+    <data name="ChatInputArea_ContextUsage_Header" xml:space="preserve">
+        <value>상황 인식 사용 현황</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_UsedPercentage" xml:space="preserve">
+        <value>사용됨 {0}%</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Tokens" xml:space="preserve">
+        <value>사용됨 {0} / 총 {1}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_ReportedTokens" xml:space="preserve">
+        <value>보고된 사용량: {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CachedTokens" xml:space="preserve">
+        <value>캐시된 입력: {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Unavailable" xml:space="preserve">
+        <value>상황 인식 사용량을 아직 확보하지 못했습니다.</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Estimated" xml:space="preserve">
+        <value>모델 전환 후 추정치</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Compacted" xml:space="preserve">
+        <value>상황 인식이 압축되었습니다. 다음 측정을 기다리는 중입니다.</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CompactButton" xml:space="preserve">
+        <value>상황 인식 압축</value>
+    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>문맥 분석</value>
+    </data>
+    <data name="ContextCompression_Status_Compressing" xml:space="preserve">
+        <value>상황 인식을 압축하는 중</value>
+    </data>
+    <data name="ContextCompression_Status_Compressed" xml:space="preserve">
+        <value>상황 인식이 압축되었습니다.</value>
+    </data>
+    <data name="ContextCompression_Status_Failed" xml:space="preserve">
+        <value>상황 인식 압축에 실패했습니다.</value>
+    </data>
+    <data name="ContextCompression_Error_EmptyResponse" xml:space="preserve">
+        <value>모델이 빈 상황 요약을 반환했습니다.</value>
+    </data>
+    <data name="ContextCompression_Error_NoHistory" xml:space="preserve">
+        <value>압축할 대화 기록이 없습니다.</value>
+    </data>
+    <data name="ContextCompression_Error_ToolCallNotAllowed" xml:space="preserve">
+        <value>모델이 상황 인식을 압축하는 동안 도구 호출을 시도했습니다.</value>
     </data>
     <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>웹 검색</value>
@@ -830,6 +875,9 @@
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>총계</value>
+    </data>
+    <data name="ChatMessageControl_ChatStatisticsTextBlock_CachedInputHitRateRun" xml:space="preserve">
+        <value>캐시 적중</value>
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
         <value>총 소요 시간</value>
@@ -1542,6 +1590,12 @@
     </data>
     <data name="Assistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>요청 시간 초과</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Description" xml:space="preserve">
+        <value>보고된 상황 인식 사용량이 모델이 선언한 상황 길이의 이 백분율에 도달하면 대화 상황을 자동으로 압축합니다.</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Header" xml:space="preserve">
+        <value>상황 인식 압축 임계값</value>
     </data>
     <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
         <value>프록시 서버 주소가 필요합니다.</value>

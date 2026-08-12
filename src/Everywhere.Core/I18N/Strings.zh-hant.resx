@@ -139,8 +139,53 @@
     <data name="ChatInputArea_CancelButton_ToolTip" xml:space="preserve">
         <value>取消</value>
     </data>
+    <data name="ChatInputArea_ContextUsage_Header" xml:space="preserve">
+        <value>上下文使用情況</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_UsedPercentage" xml:space="preserve">
+        <value>已用 {0}%</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Tokens" xml:space="preserve">
+        <value>已用 {0}，共 {1}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_ReportedTokens" xml:space="preserve">
+        <value>已報告用量：{0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CachedTokens" xml:space="preserve">
+        <value>快取輸入：{0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Unavailable" xml:space="preserve">
+        <value>尚未獲得上下文用量</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Estimated" xml:space="preserve">
+        <value>切換模型後的估算值</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Compacted" xml:space="preserve">
+        <value>上下文已壓縮，等待下次測量</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CompactButton" xml:space="preserve">
+        <value>壓縮上下文</value>
+    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>分析上下文</value>
+    </data>
+    <data name="ContextCompression_Status_Compressing" xml:space="preserve">
+        <value>正在壓縮上下文</value>
+    </data>
+    <data name="ContextCompression_Status_Compressed" xml:space="preserve">
+        <value>上下文已壓縮</value>
+    </data>
+    <data name="ContextCompression_Status_Failed" xml:space="preserve">
+        <value>上下文壓縮失敗</value>
+    </data>
+    <data name="ContextCompression_Error_EmptyResponse" xml:space="preserve">
+        <value>模型返回了空的上下文摘要。</value>
+    </data>
+    <data name="ContextCompression_Error_NoHistory" xml:space="preserve">
+        <value>沒有可壓縮的對話歷史。</value>
+    </data>
+    <data name="ContextCompression_Error_ToolCallNotAllowed" xml:space="preserve">
+        <value>模型在壓縮上下文時嘗試調用工具。</value>
     </data>
     <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>網路搜尋</value>
@@ -830,6 +875,9 @@
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>總計</value>
+    </data>
+    <data name="ChatMessageControl_ChatStatisticsTextBlock_CachedInputHitRateRun" xml:space="preserve">
+        <value>快取命中</value>
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
         <value>總用時</value>
@@ -1542,6 +1590,12 @@
     </data>
     <data name="Assistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>請求超時持續時間</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Description" xml:space="preserve">
+        <value>當已報告的上下文用量達到模型聲明上下文長度的此百分比時，自動壓縮對話上下文。</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Header" xml:space="preserve">
+        <value>上下文壓縮閾值</value>
     </data>
     <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
         <value>需要代理伺服器地址。</value>

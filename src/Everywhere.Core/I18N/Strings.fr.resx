@@ -139,8 +139,53 @@
     <data name="ChatInputArea_CancelButton_ToolTip" xml:space="preserve">
         <value>Annuler</value>
     </data>
+    <data name="ChatInputArea_ContextUsage_Header" xml:space="preserve">
+        <value>Utilisation Du Contexte</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_UsedPercentage" xml:space="preserve">
+        <value>Utilisé {0}%</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Tokens" xml:space="preserve">
+        <value>Utilisé {0}, Total {1}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_ReportedTokens" xml:space="preserve">
+        <value>Quantité Rapportée : {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CachedTokens" xml:space="preserve">
+        <value>Entrée Cachée : {0}</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Unavailable" xml:space="preserve">
+        <value>Quantité de Contexte Non Disponible</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Estimated" xml:space="preserve">
+        <value>Estimation Après Changement De Modèle</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_Compacted" xml:space="preserve">
+        <value>Contexte Compacté, En Attente De La Prochaine Mesure</value>
+    </data>
+    <data name="ChatInputArea_ContextUsage_CompactButton" xml:space="preserve">
+        <value>Compacter Le Contexte</value>
+    </data>
     <data name="ActionChatMessage_Header_AnalyzingContext" xml:space="preserve">
         <value>Analyser le contexte</value>
+    </data>
+    <data name="ContextCompression_Status_Compressing" xml:space="preserve">
+        <value>Compression Du Contexte En Cours</value>
+    </data>
+    <data name="ContextCompression_Status_Compressed" xml:space="preserve">
+        <value>Contexte Compressé</value>
+    </data>
+    <data name="ContextCompression_Status_Failed" xml:space="preserve">
+        <value>Échec De La Compression Du Contexte</value>
+    </data>
+    <data name="ContextCompression_Error_EmptyResponse" xml:space="preserve">
+        <value>Le Modèle A Renvoi Un Résumé De Contexte Vide.</value>
+    </data>
+    <data name="ContextCompression_Error_NoHistory" xml:space="preserve">
+        <value>Aucune Historique De Conversation À Compacter.</value>
+    </data>
+    <data name="ContextCompression_Error_ToolCallNotAllowed" xml:space="preserve">
+        <value>Le Modèle A Tenter D'Appeler Un Outil Lors De La Compression Du Contexte.</value>
     </data>
     <data name="ActionChatMessage_Header_WebSearching" xml:space="preserve">
         <value>Recherche sur le Web</value>
@@ -830,6 +875,9 @@ Mon intelligence est alimentée par un grand modèle de langage, et j'ai besoin 
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_TotalTokenCountRun" xml:space="preserve">
         <value>Total</value>
+    </data>
+    <data name="ChatMessageControl_ChatStatisticsTextBlock_CachedInputHitRateRun" xml:space="preserve">
+        <value>Taux De Hit Caché</value>
     </data>
     <data name="ChatMessageControl_ChatStatisticsTextBlock_ElapsedRun" xml:space="preserve">
         <value>Temps total</value>
@@ -1542,6 +1590,12 @@ Molette de défilement ou touches numériques pour changer de mode de sélection
     </data>
     <data name="Assistant_RequestTimeoutSeconds_Header" xml:space="preserve">
         <value>Délai d'attente de la demande</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Description" xml:space="preserve">
+        <value>Lorsque La Quantité De Contexte Rapportée Atteint Ce Pourcentage De La Longueur De Contexte Déclarée Par Le Modèle, La Compression Automatique Du Contexte De Conversation S'Active.</value>
+    </data>
+    <data name="Assistant_ContextCompressionThreshold_Header" xml:space="preserve">
+        <value>Seuil De Compression Du Contexte</value>
     </data>
     <data name="DynamicWebProxy_ApplyProxySettings_EndpointRequired_ErrorMessage" xml:space="preserve">
         <value>L'adresse du serveur proxy est requise.</value>
