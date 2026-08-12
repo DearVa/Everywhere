@@ -2,6 +2,7 @@ using System.Collections.Specialized;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
+using Avalonia.Logging;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 
@@ -74,11 +75,10 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     private bool _hasViewport;
     private bool _isInLayout;
     private bool _isWaitingForViewportUpdate;
-    private bool _isApplyingScrollOffsetCorrection;
     private double _runningEstimatedItemHeight;
-    private double _pendingScrollOffsetCorrection;
-    private double _pendingScrollOffsetCorrectionBaseY = double.NaN;
+    private long _shrinkConfirmationVersion;
     private double _panelTopWithinScrollContent = double.NaN;
+    private IScrollAnchorProvider? _scrollAnchorProvider;
     private IDisposable? _scrollViewerOffsetSubscription;
     private ScrollViewer? _observedScrollViewer;
     private bool _isWaitingForShrinkConfirmation;
@@ -134,11 +134,10 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         try
         {
             var viewport = GetMeasureViewport(availableSize);
-            var anchor = CaptureAnchor(viewport.Top, itemCount);
-            var (startIndex, endIndex) = GetRealizationRange(_extendedViewport, itemCount, anchor.Index);
+            var (anchorIndex, _) = FindIndexAtOffset(viewport.Top, itemCount);
+            var (startIndex, endIndex) = GetRealizationRange(_extendedViewport, itemCount, anchorIndex);
 
             RealizeRange(items, startIndex, endIndex, availableSize);
-            QueueAnchorCorrection(anchor, viewport.Top);
 
             var desired = new Size(GetDesiredWidth(availableSize), GetTotalHeight(itemCount));
             return desired;
@@ -149,11 +148,18 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         }
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _scrollAnchorProvider = this.FindAncestorOfType<IScrollAnchorProvider>();
+    }
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         _scrollViewerOffsetSubscription?.Dispose();
         _scrollViewerOffsetSubscription = null;
         _observedScrollViewer = null;
+        _scrollAnchorProvider = null;
         _panelTopWithinScrollContent = double.NaN;
         base.OnDetachedFromVisualTree(e);
     }
@@ -169,11 +175,31 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
                 for (var index = Math.Max(0, _realizedStartIndex); index <= endIndex; index++)
                 {
                     var element = _slots[index].Container;
-                    element?.Arrange(new Rect(0, GetOffsetForIndex(index), finalSize.Width, GetItemHeight(index)));
+                    if (element is null)
+                        continue;
+
+                    var rect = new Rect(0, GetOffsetForIndex(index), finalSize.Width, GetItemHeight(index));
+                    element.Arrange(rect);
+
+                    if (element.IsVisible && _viewport.Intersects(rect))
+                    {
+                        try
+                        {
+                            _scrollAnchorProvider?.RegisterAnchorCandidate(element);
+                        }
+                        catch (InvalidOperationException exception)
+                        {
+                            // The container may have been reparented during virtualization.
+                            Logger.TryGet(LogEventLevel.Verbose, LogArea.Layout)?.Log(
+                                this,
+                                "RegisterAnchorCandidate ignored for {Element}: {Message}",
+                                element,
+                                exception.Message);
+                        }
+                    }
                 }
             }
 
-            ApplyPendingScrollOffsetCorrection();
             return finalSize;
         }
         finally
@@ -382,35 +408,6 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         return _panelTopWithinScrollContent;
     }
 
-    private Anchor CaptureAnchor(double viewportTop, int itemCount)
-    {
-        var (index, offset) = FindIndexAtOffset(viewportTop, itemCount);
-        var anchor = new Anchor(index, Math.Max(0, viewportTop - offset));
-        return anchor;
-    }
-
-    private void QueueAnchorCorrection(Anchor anchor, double oldViewportTop)
-    {
-        if (_isApplyingScrollOffsetCorrection || anchor.Index < 0 || anchor.Index >= _slots.Count)
-        {
-            return;
-        }
-
-        var desiredViewportTop = GetOffsetForIndex(anchor.Index) + anchor.Delta;
-        var correction = desiredViewportTop - oldViewportTop;
-        // Layout coordinates are DIP values calculated through several floating-point operations.
-        // The shared IsCloseTo tolerance prevents sub-pixel noise from scheduling a scroll pass.
-        if (!correction.IsCloseTo(0))
-        {
-            _pendingScrollOffsetCorrection += correction;
-            if (double.IsNaN(_pendingScrollOffsetCorrectionBaseY) &&
-                this.FindAncestorOfType<ScrollViewer>() is { } scrollViewer)
-            {
-                _pendingScrollOffsetCorrectionBaseY = scrollViewer.Offset.Y;
-            }
-        }
-    }
-
     private (int StartIndex, int EndIndex) GetRealizationRange(Rect viewport, int itemCount, int anchorIndex)
     {
         var start = Math.Max(0, viewport.Top);
@@ -555,6 +552,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         if (element is null)
             return;
 
+        _scrollAnchorProvider?.UnregisterAnchorCandidate(element);
         _containerToIndex.Remove(element);
         slot.Container = null;
 
@@ -744,17 +742,13 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         return _runningEstimatedItemHeight;
     }
 
-    private double GetSlotHeight(int index)
-    {
-        var spacing = index < Items.Count - 1 ? Spacing : 0;
-        return GetItemHeight(index) + spacing;
-    }
+    private double GetSlotHeight(int index) => GetItemHeight(index) + Spacing;
 
     private void SetHeight(int index, double height)
     {
         EnsureSlotCountAtLeast(index + 1);
         var slot = _slots[index];
-        if (slot.HasMeasuredHeight && Math.Abs(height - slot.MeasuredHeight) <= double.Epsilon)
+        if (slot.HasMeasuredHeight && height.IsCloseTo(slot.MeasuredHeight))
         {
             slot.PendingShrinkHeight = double.NaN;
             return;
@@ -764,8 +758,15 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
             height + HeightShrinkGuardThreshold < slot.MeasuredHeight)
         {
             if (slot.HasPendingShrinkHeight &&
-                Math.Abs(slot.PendingShrinkHeight - height) <= double.Epsilon)
+                slot.PendingShrinkHeight.IsCloseTo(height))
             {
+                // Repeated measures in one render pass must not confirm a transient shrink.
+                if (slot.PendingShrinkConfirmationVersion == _shrinkConfirmationVersion)
+                {
+                    RequestShrinkConfirmation();
+                    return;
+                }
+
                 slot.PendingShrinkHeight = double.NaN;
                 slot.MeasuredHeight = height;
                 MarkPrefixDirty(index);
@@ -773,6 +774,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
             }
 
             slot.PendingShrinkHeight = height;
+            slot.PendingShrinkConfirmationVersion = _shrinkConfirmationVersion;
             RequestShrinkConfirmation();
             return;
         }
@@ -788,16 +790,24 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
             return;
 
         _isWaitingForShrinkConfirmation = true;
-        Dispatcher.UIThread.Post(
-            () =>
-            {
-                _isWaitingForShrinkConfirmation = false;
-                if (VisualRoot is not null)
-                {
-                    InvalidateMeasure();
-                }
-            },
-            DispatcherPriority.Background);
+        if (TopLevel.GetTopLevel(this) is { } root)
+        {
+            // A second measure in the same dispatcher turn is not evidence that a streaming
+            // control has settled. Confirm the shrink on the next animation frame instead.
+            root.RequestAnimationFrame(_ => ConfirmPendingShrinks());
+            return;
+        }
+
+        Dispatcher.UIThread.Post(ConfirmPendingShrinks, DispatcherPriority.Background);
+    }
+
+    private void ConfirmPendingShrinks()
+    {
+        _isWaitingForShrinkConfirmation = false;
+        _shrinkConfirmationVersion++;
+
+        if (VisualRoot is not null)
+            InvalidateMeasure();
     }
 
     private void EnsureSlotCountAtLeast(int count)
@@ -819,7 +829,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     private double GetTotalHeight(int itemCount)
     {
         EnsurePrefixOffsets(itemCount);
-        return _prefixOffsets[itemCount];
+        return itemCount > 0 ? Math.Max(0, _prefixOffsets[itemCount] - Spacing) : 0;
     }
 
     private (int Index, double Offset) FindIndexAtOffset(double offset, int itemCount)
@@ -829,7 +839,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         if (itemCount == 0 || offset <= 0)
             return (0, 0);
 
-        if (offset >= _prefixOffsets[itemCount])
+        if (offset >= GetTotalHeight(itemCount))
         {
             var lastIndex = Math.Max(0, itemCount - 1);
             return (lastIndex, _prefixOffsets[lastIndex]);
@@ -922,11 +932,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
 
         _scrollViewerOffsetSubscription = scrollViewer
             .GetObservable(ScrollViewer.OffsetProperty)
-            .Subscribe(_ =>
-            {
-                if (!_isApplyingScrollOffsetCorrection)
-                    InvalidateMeasure();
-            });
+            .Subscribe(_ => InvalidateMeasure());
     }
 
     private void RecalculateExtendedViewport()
@@ -942,67 +948,14 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         _extendedViewport = new Rect(_viewport.X, top, _viewport.Width, Math.Max(0, bottom - top));
     }
 
-    private void ApplyPendingScrollOffsetCorrection()
-    {
-        // A sequence of opposing layout changes can cancel to a value below the shared DIP
-        // tolerance. Discard that noise and its anchor together; retaining the old base would make
-        // a later, real correction compare against a stale scroll position.
-        if (_pendingScrollOffsetCorrection.IsCloseTo(0))
-        {
-            _pendingScrollOffsetCorrection = 0;
-            _pendingScrollOffsetCorrectionBaseY = double.NaN;
-            return;
-        }
-
-        var correction = _pendingScrollOffsetCorrection;
-        _pendingScrollOffsetCorrection = 0;
-
-        if (this.FindAncestorOfType<ScrollViewer>() is not { } scrollViewer)
-        {
-            _pendingScrollOffsetCorrectionBaseY = double.NaN;
-            return;
-        }
-
-        var baseY = _pendingScrollOffsetCorrectionBaseY;
-        Dispatcher.UIThread.Post(
-            () =>
-            {
-                if (!scrollViewer.IsAttachedToVisualTree())
-                {
-                    return;
-                }
-
-                if (double.IsFinite(baseY) && !scrollViewer.Offset.Y.IsCloseTo(baseY))
-                {
-                    _pendingScrollOffsetCorrectionBaseY = double.NaN;
-                    return;
-                }
-
-                _pendingScrollOffsetCorrectionBaseY = double.NaN;
-                _isApplyingScrollOffsetCorrection = true;
-                try
-                {
-                    var maximum = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
-                    var y = Math.Clamp(scrollViewer.Offset.Y + correction, 0, maximum);
-                    scrollViewer.Offset = new Vector(scrollViewer.Offset.X, y);
-                }
-                finally
-                {
-                    _isApplyingScrollOffsetCorrection = false;
-                }
-            },
-            DispatcherPriority.Background);
-    }
-
     private sealed class Slot
     {
         public double MeasuredHeight { get; set; } = double.NaN;
         public double PendingShrinkHeight { get; set; } = double.NaN;
+        public long PendingShrinkConfirmationVersion { get; set; }
         public Control? Container { get; set; }
         public object? RecycleKey { get; set; }
         public bool HasMeasuredHeight => !double.IsNaN(MeasuredHeight);
         public bool HasPendingShrinkHeight => !double.IsNaN(PendingShrinkHeight);
     }
-
-    private readonly record struct Anchor(int Index, double Delta);
 }
