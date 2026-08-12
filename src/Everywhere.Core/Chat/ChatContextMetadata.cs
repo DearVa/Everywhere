@@ -43,7 +43,7 @@ public partial class ChatContextMetadata(Guid id, DateTimeOffset dateCreated, Da
         get;
         set
         {
-            if (SetProperty(ref field, value.SafeSubstring(0, 100))) OnPropertyChanged(nameof(ActualTopic));
+            if (SetProperty(ref field, value?.Trim().SafeSubstring(0, 100).Trim())) OnPropertyChanged(nameof(ActualTopic));
         }
     } = topic;
 
@@ -54,9 +54,8 @@ public partial class ChatContextMetadata(Guid id, DateTimeOffset dateCreated, Da
         {
             if (IsTemporary) return LocaleResolver.ChatContext_Temporary;
             if (string.IsNullOrWhiteSpace(Topic)) return LocaleResolver.ChatContext_Metadata_Topic_Default;
-            return Topic;
+            return Topic?.Trim();
         }
-        private set => Topic = value?.Trim();
     }
 
     /// <summary>
