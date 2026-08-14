@@ -30,8 +30,8 @@ public sealed class StatisticsBackfillerTests
             FinishedAt = now.AddMilliseconds(25)
         };
         var call = new FunctionCallContent("get_file_content_1", null, "call-1", null);
-        toolMessage.Calls.Add(call);
-        toolMessage.Results.Add(new FunctionResultContent(call, "ok"));
+        toolMessage.AddCall(call);
+        toolMessage.AddResult(new FunctionResultContent(call, "ok"));
         var assistantMessage = new AssistantChatMessage
         {
             CreatedAt = now,

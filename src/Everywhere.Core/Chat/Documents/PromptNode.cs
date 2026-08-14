@@ -163,6 +163,7 @@ public sealed partial class PromptTextChunk : PromptNode
     /// </summary>
     public PromptTextChunk BreakOn(string separator)
     {
+        ArgumentException.ThrowIfNullOrEmpty(separator);
         BreakMode = PromptTextBreakMode.Separator;
         Separator = separator;
         return this;
@@ -173,6 +174,7 @@ public sealed partial class PromptTextChunk : PromptNode
     /// </summary>
     public PromptTextChunk WithMaxTokens(int maxTokens)
     {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxTokens);
         MaxTokens = maxTokens;
         return this;
     }

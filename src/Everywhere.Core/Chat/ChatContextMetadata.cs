@@ -91,8 +91,14 @@ public partial class ChatContextMetadata(Guid id, DateTimeOffset dateCreated, Da
     {
         base.OnPropertyChanged(e);
 
-        // Notify listeners that metadata has changed.
-        WeakReferenceMessenger.Default.Send(new ChatContextMetadataChangedMessage(null, this, e.PropertyName));
+        // DateModified is advanced by ChatContext when a node changes. ChatContext sends the
+        // context-bearing notification after updating it, so do not emit a second metadata-only
+        // message for that path. Other metadata changes (for example Topic) have no owning
+        // context available here and continue to use the metadata-only notification.
+        if (e.PropertyName != nameof(DateModified))
+        {
+            WeakReferenceMessenger.Default.Send(new ChatContextMetadataChangedMessage(null, this, e.PropertyName));
+        }
     }
 
     public override bool Equals(object? obj) => obj is ChatContextMetadata other && Id == other.Id;

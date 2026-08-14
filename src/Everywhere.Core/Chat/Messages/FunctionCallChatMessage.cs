@@ -48,10 +48,18 @@ public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAtta
     public partial DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     [Key(6)]
-    public List<FunctionCallContent> Calls { get; set; } = [];
+    public IReadOnlyList<FunctionCallContent> Calls
+    {
+        get => _calls;
+        private init => _calls = value as List<FunctionCallContent> ?? [.. value];
+    }
 
     [Key(7)]
-    public List<FunctionResultContent> Results { get; set; } = [];
+    public IReadOnlyList<FunctionResultContent> Results
+    {
+        get => _results;
+        private init => _results = value as List<FunctionResultContent> ?? [.. value];
+    }
 
     [Key(8)]
     [ObservableProperty]
@@ -130,7 +138,6 @@ public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAtta
     [IgnoreMember]
     [JsonIgnore]
     public bool IsWaitingForUserInput =>
-        _displaySink.AsValueEnumerable().Any(db => db.IsWaitingForUserInput) ||
         _activityPresentationSlots.AsValueEnumerable().Any(pair => pair.Value.IsWaitingForUserInput);
 
     /// <summary>
@@ -139,9 +146,12 @@ public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAtta
     [IgnoreMember]
     public IEnumerable<ChatAttachment> Attachments => Results.Select(r => r.Result).OfType<ChatAttachment>();
 
+    [IgnoreMember] private readonly List<FunctionCallContent> _calls = [];
+    [IgnoreMember] private readonly List<FunctionResultContent> _results = [];
     [IgnoreMember] private readonly ChatPluginDisplaySink _displaySink = new();
     [IgnoreMember] private readonly ConcurrentDictionary<string, ActivityPresentationSlot> _activityPresentationSlots = new();
-    [IgnoreMember] private readonly CompositeDisposable _disposables = new(3);
+    [IgnoreMember] private readonly CompositeDisposable _disposables = new(2);
+    [IgnoreMember] private readonly IDisposable _displayPersistenceConnection;
     [IgnoreMember] private long _activityPreviewRevision;
 
     [SerializationConstructor]
@@ -162,14 +172,35 @@ public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAtta
             .ObserveOnAvaloniaDispatcher()
             .BindEx(_disposables);
 
-        // Monitor IsWaitingForUserInput changes
-        _disposables.Add(
-            _displaySink
-                .Connect()
-                .WhenAnyPropertyChanged(nameof(ChatPluginDisplayBlock.IsWaitingForUserInput))
-                .Subscribe(_ => OnPropertyChanged(nameof(IsWaitingForUserInput))));
+        // Keep persistence observation independent from the UI binding. DynamicData owns
+        // the per-block subscriptions and removes them when blocks leave the sink, which
+        // prevents a completed or discarded block from retaining this message.
+        _displayPersistenceConnection = _displaySink
+            .Connect()
+            .AutoRefresh()
+            .Subscribe(_ => OnPropertyChanged(nameof(DisplayBlocks)));
 
         _disposables.Add(_displaySink);
+    }
+
+    /// <summary>
+    /// Adds a function call and notifies owners that the serialized call list changed.
+    /// Keeping the mutation here makes in-progress tool calls visible to persistence before
+    /// the enclosing function-call message finishes.
+    /// </summary>
+    public void AddCall(FunctionCallContent call)
+    {
+        _calls.Add(call);
+        OnPropertyChanged(nameof(Calls));
+    }
+
+    /// <summary>
+    /// Adds a function result and notifies owners that the serialized result list changed.
+    /// </summary>
+    public void AddResult(FunctionResultContent result)
+    {
+        _results.Add(result);
+        OnPropertyChanged(nameof(Results));
     }
 
     /// <summary>
@@ -212,6 +243,7 @@ public sealed partial class FunctionCallChatMessage : ChatMessage, IHaveChatAtta
     public void Dispose()
     {
         _activityPresentationSlots.Clear();
+        _displayPersistenceConnection.Dispose();
         _disposables.Dispose();
     }
 

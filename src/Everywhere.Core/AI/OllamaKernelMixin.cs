@@ -15,10 +15,7 @@ public sealed class OllamaKernelMixin : KernelMixin
     /// <summary>
     /// Initializes a new instance of the <see cref="OllamaKernelMixin"/> class.
     /// </summary>
-    public OllamaKernelMixin(
-        Assistant assistant,
-        ModelConnection connection
-    ) : base(assistant, connection)
+    public OllamaKernelMixin(Assistant assistant, ModelConnection connection) : base(assistant, connection)
     {
         connection.HttpClient.BaseAddress = new Uri(Endpoint, UriKind.Absolute);
         _client = new OllamaApiClient(connection.HttpClient, ModelId);

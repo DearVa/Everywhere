@@ -1,12 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DynamicData;
 using Everywhere.Collections;
 using Everywhere.Common;
 using MessagePack;
 using Microsoft.SemanticKernel.ChatCompletion;
-using ZLinq;
 
 namespace Everywhere.Chat;
 
@@ -139,6 +137,7 @@ public sealed partial class AssistantChatMessage : ChatMessage, IHaveChatAttachm
     /// </summary>
     [IgnoreMember] private readonly SourceList<AssistantChatMessageSpan> _spansSource = new();
     [IgnoreMember] private readonly IDisposable _spansConnection;
+    [IgnoreMember] private readonly IDisposable _spansPersistenceConnection;
 
     public AssistantChatMessage()
     {
@@ -147,6 +146,15 @@ public sealed partial class AssistantChatMessage : ChatMessage, IHaveChatAttachm
             .ObserveOnAvaloniaDispatcher()
             .DisposeMany()
             .BindEx(out _spansConnection);
+
+        // Keep persistence changes separate from the UI binding pipeline. AutoRefresh
+        // subscribes to each span while it belongs to the source and releases that
+        // subscription when the span is removed, so a removed span cannot retain this
+        // message through an event handler.
+        _spansPersistenceConnection = _spansSource
+            .Connect()
+            .AutoRefresh()
+            .Subscribe(_ => OnPropertyChanged(nameof(Spans)));
     }
 
     public void AddSpan(AssistantChatMessageSpan span)
@@ -170,6 +178,8 @@ public sealed partial class AssistantChatMessage : ChatMessage, IHaveChatAttachm
 
     public void Dispose()
     {
+        _spansPersistenceConnection.Dispose();
+
         _spansSource.Edit(list =>
         {
             foreach (var disposable in list.AsValueEnumerable().OfType<IDisposable>())

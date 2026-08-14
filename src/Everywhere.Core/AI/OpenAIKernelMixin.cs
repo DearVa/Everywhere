@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OpenAI;
 using OpenAI.Chat;
-using ZLinq;
 using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 
 #pragma warning disable SCME0001 // Type is for evaluation purposes only and is subject to change or removal in future updates.
@@ -24,11 +23,7 @@ public class OpenAIKernelMixin : KernelMixin
 
     private readonly OpenAIOptions _options;
 
-    public OpenAIKernelMixin(
-        Assistant assistant,
-        ModelConnection connection,
-        ILoggerFactory loggerFactory
-    ) : base(assistant, connection)
+    public OpenAIKernelMixin(Assistant assistant, ModelConnection connection, ILoggerFactory loggerFactory) : base(assistant, connection)
     {
         _options = assistant.OpenAIOptions;
 

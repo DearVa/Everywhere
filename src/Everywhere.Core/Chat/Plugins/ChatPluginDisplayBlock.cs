@@ -5,6 +5,7 @@ using Everywhere.Collections;
 using Everywhere.Common;
 using Everywhere.Interop;
 using Everywhere.Terminal;
+using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
 using MessagePack;
 
@@ -26,14 +27,7 @@ namespace Everywhere.Chat.Plugins;
 [Union(9, typeof(ChatPluginCodeBlockDisplayBlock))]
 [Union(10, typeof(ChatPluginSubagentDisplayBlock))]
 [Union(11, typeof(ChatPluginTerminalDisplayBlock))]
-public abstract partial class ChatPluginDisplayBlock : ObservableObject
-{
-    /// <summary>
-    /// Indicates whether this display block is waiting for user input.
-    /// </summary>
-    [IgnoreMember]
-    public virtual bool IsWaitingForUserInput => false;
-}
+public abstract partial class ChatPluginDisplayBlock : ObservableObject;
 
 /// <summary>
 /// Represents a container block that can hold other display blocks.
@@ -53,6 +47,7 @@ public sealed partial class ChatPluginContainerDisplayBlock : ChatPluginDisplayB
 
     [Key(0)] private readonly ChatPluginDisplaySink _displaySink;
     [IgnoreMember] private readonly IDisposable _displaySinkConnection;
+    [IgnoreMember] private readonly IDisposable _displaySinkPersistenceConnection;
 
     [SerializationConstructor]
     private ChatPluginContainerDisplayBlock(ChatPluginDisplaySink displaySink)
@@ -62,6 +57,13 @@ public sealed partial class ChatPluginContainerDisplayBlock : ChatPluginDisplayB
             .Connect()
             .ObserveOnAvaloniaDispatcher()
             .BindEx(out _displaySinkConnection);
+
+        // Bubble changes from nested blocks to the owning container. DynamicData keeps
+        // subscriptions aligned with the child collection, including removals and resets.
+        _displaySinkPersistenceConnection = _displaySink
+            .Connect()
+            .AutoRefresh()
+            .Subscribe(_ => OnPropertyChanged(nameof(Children)));
     }
 
     public ChatPluginContainerDisplayBlock() : this(new ChatPluginDisplaySink()) { }
@@ -80,6 +82,7 @@ public sealed partial class ChatPluginContainerDisplayBlock : ChatPluginDisplayB
 
     public void Dispose()
     {
+        _displaySinkPersistenceConnection.Dispose();
         _displaySink.Dispose();
         _displaySinkConnection.Dispose();
     }
@@ -106,7 +109,7 @@ public sealed partial class ChatPluginDynamicLocaleKeyDisplayBlock(IDynamicLocal
 }
 
 [MessagePackObject(AllowPrivate = true, OnlyIncludeKeyedMembers = true)]
-public sealed partial class ChatPluginMarkdownDisplayBlock : ChatPluginDisplayBlock
+public sealed partial class ChatPluginMarkdownDisplayBlock : ChatPluginDisplayBlock, IDisposable
 {
     public ThreadSafeObservableStringBuilder MarkdownBuilder { get; } = new();
 
@@ -115,6 +118,21 @@ public sealed partial class ChatPluginMarkdownDisplayBlock : ChatPluginDisplayBl
     {
         get => MarkdownBuilder.ToString();
         set => MarkdownBuilder.Clear().Append(value);
+    }
+
+    public ChatPluginMarkdownDisplayBlock()
+    {
+        MarkdownBuilder.Changed += HandleMarkdownBuilderChanged;
+    }
+
+    private void HandleMarkdownBuilderChanged(in ObservableStringBuilderChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(Markdown));
+    }
+
+    public void Dispose()
+    {
+        MarkdownBuilder.Changed -= HandleMarkdownBuilderChanged;
     }
 }
 
@@ -290,12 +308,12 @@ public sealed partial class ChatPluginFileDifferenceDisplayBlock : ChatPluginDis
         OriginalText = null;
     }
 
-    private static int CountAddedLines(TextDifference difference) => difference.GetFilteredChanges(default)
+    private static int CountAddedLines(TextDifference difference) => difference.GetFilteredChanges(false)
         .AsValueEnumerable()
         .Where(static change => change.Kind is TextChangeKind.Insert or TextChangeKind.Replace)
         .Sum(static change => TextDifference.CountLines(change.NewText ?? string.Empty));
 
-    private static int CountRemovedLines(TextDifference difference, string originalText) => difference.GetFilteredChanges(default)
+    private static int CountRemovedLines(TextDifference difference, string originalText) => difference.GetFilteredChanges(false)
         .AsValueEnumerable()
         .Where(static change => change.Kind is TextChangeKind.Delete or TextChangeKind.Replace)
         .Sum(change => TextDifference.CountLines(change.GetOriginalSlice(originalText)));

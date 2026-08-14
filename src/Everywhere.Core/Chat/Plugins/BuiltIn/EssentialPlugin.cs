@@ -125,6 +125,7 @@ public sealed class EssentialPlugin : BuiltInChatPlugin
             return "The subagent did not return any response.";
         }
 
+        // TODO: If subagent encounters an error, it should return a structured error message (with last available message) instead of a normal response.
         var result = (assistantChatMessage.Items[^1] as AssistantChatMessageTextSpan)?.Content;
         return result ?? string.Empty;
     }

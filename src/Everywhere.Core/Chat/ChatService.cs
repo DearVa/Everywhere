@@ -1329,7 +1329,7 @@ public sealed partial class ChatService : IChatService
                     foreach (var functionCallContent in functionCallContentGroup)
                     {
                         // Add the function call content to the missing function chat message for DB storage.
-                        errorFunctionMessage.Calls.Add(functionCallContent);
+                        errorFunctionMessage.AddCall(functionCallContent);
 
                         // Create the corresponding function result content with the error message.
                         var missingFunctionResultContent = new FunctionResultContent(
@@ -1337,7 +1337,7 @@ public sealed partial class ChatService : IChatService
                             "Tool calling is disabled by the user");
 
                         // Add the function result content to the missing function chat message for DB storage.
-                        errorFunctionMessage.Results.Add(missingFunctionResultContent);
+                        errorFunctionMessage.AddResult(missingFunctionResultContent);
                         await RecordToolInvocationAsync(
                             chatContext,
                             functionCallContent,
@@ -1384,13 +1384,13 @@ public sealed partial class ChatService : IChatService
                     foreach (var functionCallContent in functionCallContentGroup)
                     {
                         // Add the function call content to the missing function chat message for DB storage.
-                        errorFunctionMessage.Calls.Add(functionCallContent);
+                        errorFunctionMessage.AddCall(functionCallContent);
 
                         // Create the corresponding function result content with the error message.
                         var missingFunctionResultContent = new FunctionResultContent(functionCallContent, errorMessageBuilder.ToString());
 
                         // Add the function result content to the missing function chat message for DB storage.
-                        errorFunctionMessage.Results.Add(missingFunctionResultContent);
+                        errorFunctionMessage.AddResult(missingFunctionResultContent);
                         await RecordToolInvocationAsync(
                             chatContext,
                             functionCallContent,
@@ -1445,7 +1445,7 @@ public sealed partial class ChatService : IChatService
 
                         // Add the function call content to the function call chat message.
                         // This will record the function call in the database.
-                        functionCallChatMessage.Calls.Add(functionCallContent);
+                        functionCallChatMessage.AddCall(functionCallContent);
 
                         // Also add a display block for the function call content.
                         // This will allow the UI to display the function call content.
@@ -1464,7 +1464,7 @@ public sealed partial class ChatService : IChatService
 
                         // dd the function result content to the function call chat message.
                         // This will record the function result in the database.
-                        functionCallChatMessage.Results.Add(resultContent);
+                        functionCallChatMessage.AddResult(resultContent);
 
                         if (resultContent.InnerContent is Exception ex)
                         {

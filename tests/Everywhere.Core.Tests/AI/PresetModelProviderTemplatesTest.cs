@@ -50,6 +50,8 @@ public class PresetModelProviderTemplatesTest
     [Test]
     public void ModelProviderTemplates_ShouldMatchModelsDevApi()
     {
+        Assert.Ignore("This test is disabled by default because it depends on an external API. Enable it to check for config drift.");
+
         var drifts = new List<string>();
         var missing = new List<string>();
 

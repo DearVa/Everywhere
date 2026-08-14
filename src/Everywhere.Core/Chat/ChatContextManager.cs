@@ -239,8 +239,12 @@ public sealed partial class ChatContextManager :
                     }
                 }
             },
-            TimeSpan.FromSeconds(0.5)
-        );
+            TimeSpan.FromSeconds(0.5))
+        {
+            // A continuously streaming response must still be persisted periodically even
+            // though every new token resets the trailing debounce interval.
+            MaximumDelay = TimeSpan.FromSeconds(2)
+        };
 
         WeakReferenceMessenger.Default.Register(this);
 

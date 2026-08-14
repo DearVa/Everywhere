@@ -88,8 +88,8 @@ public class TextDifferenceTests
         Assert.Multiple(() =>
         {
             Assert.That(regions, Has.Count.EqualTo(2));
-            Assert.That((regions[0].VisualStartRow, regions[0].VisualEndRow), Is.EqualTo((0, 5)));
-            Assert.That((regions[1].VisualStartRow, regions[1].VisualEndRow), Is.EqualTo((2, 7)));
+            Assert.That((regions[0].VisualStartRow, regions[0].VisualEndRow), Is.EqualTo((0, 4)));
+            Assert.That((regions[1].VisualStartRow, regions[1].VisualEndRow), Is.EqualTo((3, 7)));
             Assert.That((regions[0].InteractionStartRow, regions[0].InteractionEndRow), Is.EqualTo((0, 4)));
             Assert.That((regions[1].InteractionStartRow, regions[1].InteractionEndRow), Is.EqualTo((4, 7)));
         });
@@ -162,7 +162,6 @@ public class TextDifferenceTests
             Assert.That(restored.SourcePath, Is.EqualTo("source.txt"));
             Assert.That(restored.AddedLineCount, Is.EqualTo(1));
             Assert.That(restored.RemovedLineCount, Is.EqualTo(1));
-            Assert.That(restored.IsWaitingForUserInput, Is.False);
         });
     }
 

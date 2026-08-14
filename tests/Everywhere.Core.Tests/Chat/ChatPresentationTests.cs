@@ -579,7 +579,7 @@ public class ChatPresentationTests
 
         for (var i = 0; i < callCount; i++)
         {
-            message.Calls.Add(new FunctionCallContent(
+            message.AddCall(new FunctionCallContent(
                 functionName: title,
                 pluginName: null,
                 id: i.ToString(),

@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DynamicData;
 using Everywhere.Collections;
 using Everywhere.Common;
 using LiveMarkdown.Avalonia;
 using MessagePack;
-using ZLinq;
 
 namespace Everywhere.Chat;
 
@@ -109,6 +107,7 @@ public sealed partial class AssistantChatMessageFunctionCallSpan : AssistantChat
 
     [IgnoreMember] private readonly SourceList<FunctionCallChatMessage> _functionCallsSource = new();
     [IgnoreMember] private readonly IDisposable _functionCallsConnection;
+    [IgnoreMember] private readonly IDisposable _functionCallsPersistenceConnection;
 
     [SerializationConstructor]
     public AssistantChatMessageFunctionCallSpan()
@@ -118,6 +117,14 @@ public sealed partial class AssistantChatMessageFunctionCallSpan : AssistantChat
             .ObserveOnAvaloniaDispatcher()
             .DisposeMany()
             .BindEx(out _functionCallsConnection);
+
+        // FunctionCallChatMessage owns mutable calls, results, and display blocks. Observe
+        // those messages through DynamicData so additions, removals, and replacements are
+        // detached automatically when the function-call span is disposed.
+        _functionCallsPersistenceConnection = _functionCallsSource
+            .Connect()
+            .AutoRefresh()
+            .Subscribe(_ => OnPropertyChanged(nameof(FunctionCalls)));
     }
 
     public AssistantChatMessageFunctionCallSpan(FunctionCallChatMessage initialFunctionCall) : this()
@@ -142,6 +149,8 @@ public sealed partial class AssistantChatMessageFunctionCallSpan : AssistantChat
 
     public void Dispose()
     {
+        _functionCallsPersistenceConnection.Dispose();
+
         _functionCallsSource.Edit(list =>
         {
             foreach (var disposable in list.AsValueEnumerable())

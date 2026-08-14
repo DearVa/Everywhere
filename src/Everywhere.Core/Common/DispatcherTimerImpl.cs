@@ -25,8 +25,11 @@ public sealed class DispatcherTimerImpl : ITimer
 
     private void HandleTimerTick(object? sender, EventArgs e)
     {
-        Callback?.Invoke();
+        // Stop before invoking the callback so a callback may safely schedule the next
+        // one-shot tick. DebounceExecutor relies on this when it re-arms after a stale
+        // callback that was already queued before the timer was reset.
         _timer.Stop();
+        Callback?.Invoke();
     }
 
     public void Start()

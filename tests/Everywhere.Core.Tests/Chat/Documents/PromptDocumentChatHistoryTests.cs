@@ -28,8 +28,8 @@ public sealed class PromptDocumentChatHistoryTests
         var bytes = MessagePackSerializer.Serialize(persistedResult);
         var result = MessagePackSerializer.Deserialize<FunctionResultContent>(bytes);
         var functionMessage = new FunctionCallChatMessage(LucideIconKind.File, null);
-        functionMessage.Calls.Add(call);
-        functionMessage.Results.Add(result);
+        functionMessage.AddCall(call);
+        functionMessage.AddResult(result);
         var assistant = new AssistantChatMessage();
         assistant.AddSpan(new AssistantChatMessageFunctionCallSpan(functionMessage));
 
@@ -70,8 +70,8 @@ public sealed class PromptDocumentChatHistoryTests
         var bytes = MessagePackSerializer.Serialize(persistedResult);
         var result = MessagePackSerializer.Deserialize<FunctionResultContent>(bytes);
         var functionMessage = new FunctionCallChatMessage(LucideIconKind.File, null);
-        functionMessage.Calls.Add(call);
-        functionMessage.Results.Add(result);
+        functionMessage.AddCall(call);
+        functionMessage.AddResult(result);
         var assistant = new AssistantChatMessage();
         assistant.AddSpan(new AssistantChatMessageFunctionCallSpan(functionMessage));
 

@@ -15,11 +15,7 @@ public sealed class GoogleKernelMixin : KernelMixin
 
     private readonly GoogleOptions _options;
 
-    public GoogleKernelMixin(
-        Assistant assistant,
-        ModelConnection connection,
-        ILoggerFactory loggerFactory
-    ) : base(assistant, connection)
+    public GoogleKernelMixin(Assistant assistant, ModelConnection connection, ILoggerFactory loggerFactory) : base(assistant, connection)
     {
         _options = assistant.GoogleOptions;
 

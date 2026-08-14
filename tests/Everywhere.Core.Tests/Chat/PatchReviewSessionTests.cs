@@ -63,7 +63,6 @@ public class PatchReviewSessionTests
                     Assert.That(block.CanReview, Is.False);
                     Assert.That(block.Difference, Is.Null);
                     Assert.That(block.OriginalText, Is.Null);
-                    Assert.That(block.IsWaitingForUserInput, Is.False);
                 });
             }
         }
