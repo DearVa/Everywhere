@@ -79,6 +79,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     private long _shrinkConfirmationVersion;
     private double _panelTopWithinScrollContent = double.NaN;
     private IScrollAnchorProvider? _scrollAnchorProvider;
+    private Control? _registeredAnchorCandidate;
     private IDisposable? _scrollViewerOffsetSubscription;
     private ScrollViewer? _observedScrollViewer;
     private bool _isWaitingForShrinkConfirmation;
@@ -159,6 +160,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         _scrollViewerOffsetSubscription?.Dispose();
         _scrollViewerOffsetSubscription = null;
         _observedScrollViewer = null;
+        UpdateScrollAnchorCandidate(null);
         _scrollAnchorProvider = null;
         _panelTopWithinScrollContent = double.NaN;
         base.OnDetachedFromVisualTree(e);
@@ -180,25 +182,11 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
 
                     var rect = new Rect(0, GetOffsetForIndex(index), finalSize.Width, GetItemHeight(index));
                     element.Arrange(rect);
-
-                    if (element.IsVisible && _viewport.Intersects(rect))
-                    {
-                        try
-                        {
-                            _scrollAnchorProvider?.RegisterAnchorCandidate(element);
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // The container may have been reparented during virtualization.
-                            Logger.TryGet(LogEventLevel.Verbose, LogArea.Layout)?.Log(
-                                this,
-                                "RegisterAnchorCandidate ignored for {Element}: {Message}",
-                                element,
-                                exception.Message);
-                        }
-                    }
                 }
             }
+
+            if (_registeredAnchorCandidate is null)
+                UpdateScrollAnchorCandidate(GetScrollAnchorCandidate());
 
             return finalSize;
         }
@@ -206,6 +194,52 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         {
             _isInLayout = false;
         }
+    }
+
+    private void UpdateScrollAnchorCandidate(Control? candidate)
+    {
+        if (ReferenceEquals(candidate, _registeredAnchorCandidate))
+            return;
+
+        if (_registeredAnchorCandidate is { } previousCandidate)
+            _scrollAnchorProvider?.UnregisterAnchorCandidate(previousCandidate);
+
+        _registeredAnchorCandidate = null;
+        if (candidate is null || _scrollAnchorProvider is null)
+            return;
+
+        try
+        {
+            // Avalonia normally chooses the candidate closest to the viewport top. For a tall item
+            // covering that position, this can incorrectly select the following item and turn the
+            // tall item's own growth into a scroll correction. This panel therefore supplies only
+            // the item that actually covers the viewport top.
+            _scrollAnchorProvider.RegisterAnchorCandidate(candidate);
+            _registeredAnchorCandidate = candidate;
+        }
+        catch (InvalidOperationException exception)
+        {
+            // The container may have been reparented during virtualization.
+            Logger.TryGet(LogEventLevel.Verbose, LogArea.Layout)?.Log(
+                this,
+                "RegisterAnchorCandidate ignored for {Element}: {Message}",
+                candidate,
+                exception.Message);
+        }
+    }
+
+    private Control? GetScrollAnchorCandidate()
+    {
+        if (!_hasViewport || !HasRealizedRange || _slots.Count == 0)
+            return null;
+
+        var index = FindIndexAtOffset(_viewport.Top, _slots.Count).Index;
+        var offset = GetOffsetForIndex(index);
+        if (_viewport.Top >= offset + GetItemHeight(index) && index < _slots.Count - 1)
+            index++;
+
+        var candidate = _slots[index].Container;
+        return candidate is { IsVisible: true } ? candidate : null;
     }
 
     protected override void OnItemsChanged(IReadOnlyList<object?> items, NotifyCollectionChangedEventArgs e)
@@ -552,7 +586,9 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         if (element is null)
             return;
 
-        _scrollAnchorProvider?.UnregisterAnchorCandidate(element);
+        if (ReferenceEquals(element, _registeredAnchorCandidate))
+            UpdateScrollAnchorCandidate(null);
+
         _containerToIndex.Remove(element);
         slot.Container = null;
 
@@ -932,7 +968,18 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
 
         _scrollViewerOffsetSubscription = scrollViewer
             .GetObservable(ScrollViewer.OffsetProperty)
-            .Subscribe(_ => InvalidateMeasure());
+            .Subscribe(_ =>
+            {
+                if (TryGetScrollViewerViewport(out var viewport))
+                {
+                    _viewport = viewport;
+                    _hasViewport = true;
+                    RecalculateExtendedViewport();
+                    UpdateScrollAnchorCandidate(GetScrollAnchorCandidate());
+                }
+
+                InvalidateMeasure();
+            });
     }
 
     private void RecalculateExtendedViewport()

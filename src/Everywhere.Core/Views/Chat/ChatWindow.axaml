@@ -560,7 +560,7 @@
           DockPanel.Dock="Top" HorizontalContentAlignment="Stretch"
           HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
           <Interaction.Behaviors>
-            <in:AutoScrollBehavior/>
+            <in:AutoScrollBehavior ScrollToEndToken="{Binding ChatContextManager.Current.Metadata.Id}"/>
           </Interaction.Behaviors>
 
           <StackPanel>
