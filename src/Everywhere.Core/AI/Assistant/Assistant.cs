@@ -72,7 +72,12 @@ public abstract partial class Assistant : ObservableValidator, IModelDefinition
 
     [JsonIgnore]
     [SettingsItemIgnore]
-    public AssistantConfigurator Configurator => GetConfigurator(ConfiguratorType);
+    public AssistantConfigurator Configurator => ConfiguratorType switch
+    {
+        AssistantConfiguratorType.Official => _officialConfigurator,
+        AssistantConfiguratorType.PresetBased => _presetBasedConfigurator,
+        _ => _advancedConfigurator
+    };
 
     [JsonIgnore]
     [DynamicLocaleKey(LocaleKey.Assistant_ConfiguratorSelector_Header)]
@@ -142,13 +147,6 @@ public abstract partial class Assistant : ObservableValidator, IModelDefinition
         _presetBasedConfigurator = new PresetBasedAssistantConfigurator(this);
         _advancedConfigurator = new AdvancedAssistantConfigurator(this);
     }
-
-    public AssistantConfigurator GetConfigurator(AssistantConfiguratorType type) => type switch
-    {
-        AssistantConfiguratorType.Official => _officialConfigurator,
-        AssistantConfiguratorType.PresetBased => _presetBasedConfigurator,
-        _ => _advancedConfigurator
-    };
 
     public void ApplyTemplate(ModelProviderTemplate? modelProviderTemplate)
     {

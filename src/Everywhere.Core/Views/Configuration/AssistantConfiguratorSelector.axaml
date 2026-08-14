@@ -9,13 +9,12 @@
         <DockPanel VerticalSpacing="8">
           <!--  ReSharper disable once Xaml.StaticResourceNotResolved  -->
           <ListBox
-            x:Name="PART_ListBox" DockPanel.Dock="Top"
+            DockPanel.Dock="Top"
             Background="{DynamicResource LightCardBackgroundColor}"
             CornerRadius="{DynamicResource XlCornerRadius}"
             ItemsSource="{Binding ConfiguratorModels, RelativeSource={RelativeSource TemplatedParent}}"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
-            SelectedValue="{Binding Assistant.ConfiguratorType, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"
-            SelectedValueBinding="{Binding Type, x:DataType=v:AssistantConfiguratorSelector+ConfiguratorModel}">
+            SelectedItem="{Binding SelectedConfiguratorModel, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
             <ListBox.ItemsPanel>
               <ItemsPanelTemplate>
                 <UniformGrid
@@ -105,7 +104,7 @@
             <v:SettingsItemsControl
               Margin="0,0,12,0"
               IsVisible="{TemplateBinding IsSettingsVisible}"
-              ItemsSource="{Binding Assistant.Configurator.SettingsItems, RelativeSource={RelativeSource TemplatedParent}, FallbackValue={x:Null}}"/>
+              ItemsSource="{Binding Assistant?.Configurator.SettingsItems, RelativeSource={RelativeSource TemplatedParent}}"/>
           </ScrollViewer>
         </DockPanel>
       </ControlTemplate>
