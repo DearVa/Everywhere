@@ -234,11 +234,11 @@ Thanks [pasical](https://github.com/pasical) for the banner kawaii logo design.
 
 <br/>
 
-<a href="https://www.star-history.com/?type=date&repos=Sylinko%2FEverywhere">
+<a href="https://star-history.dera.page/#Sylinko/Everywhere&type=date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Sylinko/Everywhere&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Sylinko/Everywhere&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Sylinko/Everywhere&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=Sylinko/Everywhere&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=Sylinko/Everywhere&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=Sylinko/Everywhere&type=date&legend=top-left" />
  </picture>
 </a>
 
