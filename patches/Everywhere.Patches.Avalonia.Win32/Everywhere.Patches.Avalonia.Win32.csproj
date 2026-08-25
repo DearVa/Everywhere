@@ -1,13 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <NoWarn>CA1822,CS0436,CS0626,CS0649</NoWarn>
+    <NoWarn>$(NoWarn),CA1822,CS0436,CS0626,CS0649</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MonoMod.Patcher" />
-    <PackageReference Include="Avalonia.AvaloniaEdit" />
-    <PackageReference Include="AvaloniaEdit.TextMate" />
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <!-- The application already carries this package for its DirectComposition integration. -->
+    <PackageReference Include="Vortice.DirectComposition" />
     <PackageReference Include="IgnoresAccessChecksToGenerator">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -15,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <IgnoresAccessChecksTo Include="AvaloniaEdit" />
+    <IgnoresAccessChecksTo Include="Avalonia.Win32" />
   </ItemGroup>
 
   <ItemGroup>

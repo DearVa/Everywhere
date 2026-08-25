@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using AvaloniaEdit;
 using AvaloniaEdit.Rendering;
+using Everywhere.Patches.Contracts.Views;
 using Everywhere.Utilities;
 using LiveMarkdown.Avalonia;
 using Serilog;

@@ -1,4 +1,6 @@
 using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Runtime.Loader;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using MonoMod;
@@ -125,7 +127,44 @@ public partial class WeaveAssembliesTask : Task
                         modder.ReadMod(patchDllPath);
                         modder.MapDependencies();
 
-                        modder.AutoPatch();
+                        var ruleAssemblyDirectories = depDirs
+                            .Append(Path.GetDirectoryName(typeof(MonoModder).Assembly.Location))
+                            .Where(path => !string.IsNullOrWhiteSpace(path))
+                            .OfType<string>()
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToArray();
+                        Assembly? ResolveRuleAssembly(AssemblyLoadContext _, AssemblyName assemblyName)
+                        {
+                            var alreadyLoaded = AppDomain.CurrentDomain
+                                .GetAssemblies()
+                                .FirstOrDefault(assembly =>
+                                    string.Equals(assembly.GetName().Name, assemblyName.Name, StringComparison.OrdinalIgnoreCase));
+                            if (alreadyLoaded != null)
+                            {
+                                return alreadyLoaded;
+                            }
+
+                            foreach (var directory in ruleAssemblyDirectories)
+                            {
+                                var candidate = Path.Combine(directory, $"{assemblyName.Name}.dll");
+                                if (File.Exists(candidate))
+                                {
+                                    return AssemblyLoadContext.Default.LoadFromAssemblyPath(candidate);
+                                }
+                            }
+
+                            return null;
+                        }
+
+                        AssemblyLoadContext.Default.Resolving += ResolveRuleAssembly;
+                        try
+                        {
+                            modder.AutoPatch();
+                        }
+                        finally
+                        {
+                            AssemblyLoadContext.Default.Resolving -= ResolveRuleAssembly;
+                        }
                         modder.Write();
 
                         Log.LogMessage(MessageImportance.High, $"[Patcher] Wrote patched DLL: {outputDllPath}");

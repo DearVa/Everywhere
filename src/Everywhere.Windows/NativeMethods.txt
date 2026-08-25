@@ -7,11 +7,14 @@ ShowWindow
 GetWindowLong
 SetWindowLong
 GetWindowRect
+GetClientRect
+ClientToScreen
 WindowFromPoint
 GetAncestor
 IsWindowVisible
 GetWindowPlacement
 SetLayeredWindowAttributes
+UpdateLayeredWindow
 GetForegroundWindow
 SetForegroundWindow
 SetWindowPos
@@ -19,6 +22,8 @@ SetActiveWindow
 IsWindowEnabled
 GetWindow
 IsIconic
+IsZoomed
+IsWindowArranged
 SetFocus
 HWND_BOTTOM
 HWND_TOPMOST
@@ -63,6 +68,11 @@ MonitorFromPoint
 MonitorFromWindow
 GetDC
 ReleaseDC
+CreateCompatibleDC
+DeleteDC
+CreateDIBSection
+SelectObject
+DeleteObject
 GetSystemMetrics
 DwmGetWindowAttribute
 DwmSetWindowAttribute

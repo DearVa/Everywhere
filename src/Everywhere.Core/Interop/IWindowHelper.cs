@@ -49,6 +49,13 @@ public interface IWindowHelper
     void RequestUserAttention(Window window);
 
     /// <summary>
+    /// Sets the requested native window corner radius in Avalonia logical pixels.
+    /// </summary>
+    /// <param name="window">The target window.</param>
+    /// <param name="radius">The requested radius.</param>
+    void SetCornerRadius(Window window, double radius);
+
+    /// <summary>
     /// Initialize the window properties by its type
     /// </summary>
     /// <param name="window"></param>

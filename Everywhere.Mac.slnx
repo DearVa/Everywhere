@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/3rd/">
+    <Project Path="3rd/ClassicDiagnostics.Avalonia/src/ClassicDiagnostics.Avalonia.csproj" />
     <Project Path="3rd/shad-ui/src/ShadUI/ShadUI.csproj" />
   </Folder>
   <Folder Name="/3rd/MessagePack/">
@@ -25,6 +26,7 @@
     <Project Path="patches/Everywhere.Patches.Avalonia.Controls/Everywhere.Patches.Avalonia.Controls.csproj" />
     <Project Path="patches/Everywhere.Patches.Avalonia.Native/Everywhere.Patches.Avalonia.Native.csproj" />
     <Project Path="patches/Everywhere.Patches.AvaloniaEdit/Everywhere.Patches.AvaloniaEdit.csproj" />
+    <Project Path="patches/Everywhere.Patches.Contracts/Everywhere.Patches.Contracts.csproj" />
     <Project Path="patches/Everywhere.Patches.SemanticKernel/Everywhere.Patches.SemanticKernel.csproj" />
   </Folder>
   <Project Path="src/Everywhere.Abstractions/Everywhere.Abstractions.csproj" />

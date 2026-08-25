@@ -178,6 +178,11 @@ public sealed class X11WindowBackend : IWindowBackend, IEventHelper
             WindowManager.RequestUserAttention((X11Window)x11Handle);
     }
 
+    public void SetCornerRadius(AvaloniaWindow window, double radius)
+    {
+        // X11 window shaping is intentionally not used here because it does not provide antialiasing.
+    }
+
     public void InitializeWindow(AvaloniaWindow window)
     {
 

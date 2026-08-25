@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>Everywhere.Patches.Contracts</AssemblyName>
+    <RootNamespace>Everywhere.Patches.Contracts</RootNamespace>
+    <NoWarn>$(NoWarn),CA1050</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+  </ItemGroup>
+
+</Project>
