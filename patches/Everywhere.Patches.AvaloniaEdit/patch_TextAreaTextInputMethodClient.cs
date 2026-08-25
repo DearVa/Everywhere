@@ -6,7 +6,7 @@
 using Avalonia;
 using Avalonia.Input.TextInput;
 using AvaloniaEdit.Editing;
-using Everywhere.Views;
+using Everywhere.Patches.Contracts.Views;
 using MonoMod;
 
 namespace Everywhere.Patches.AvaloniaEdit;

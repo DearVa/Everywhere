@@ -32,6 +32,13 @@
                       Condition="'$(IsMacOS)' == 'true'"
                       GlobalPropertiesToRemove="RuntimeIdentifier" />
 
+    <ProjectReference Include="$(PatchesBasePath)Everywhere.Patches.Avalonia.Win32\Everywhere.Patches.Avalonia.Win32.csproj"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType="PatchAssembly"
+                      PatchTargets="Avalonia.Win32"
+                      Condition="'$(IsWindows)' == 'true'"
+                      GlobalPropertiesToRemove="RuntimeIdentifier" />
+
     <ProjectReference Include="$(PatchesBasePath)Everywhere.Patches.AvaloniaEdit\Everywhere.Patches.AvaloniaEdit.csproj"
                       ReferenceOutputAssembly="false"
                       OutputItemType="PatchAssembly"

@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\3rd\OfficeCLI\src\officecli\officecli.csproj"/>
     <ProjectReference Include="..\Everywhere.Cloud\Everywhere.Cloud.csproj"/>
     <ProjectReference Include="..\Everywhere.Core\Everywhere.Core.csproj"/>
+    <ProjectReference Include="..\..\patches\Everywhere.Patches.Contracts\Everywhere.Patches.Contracts.csproj"/>
     <ProjectReference Include="..\Everywhere.I18N.Abstractions\Everywhere.I18N.Abstractions.csproj"/>
     <ProjectReference Include="..\Everywhere.I18N.SourceGenerator\Everywhere.I18N.SourceGenerator.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
   </ItemGroup>
@@ -71,6 +72,7 @@
     <TrimmerRootAssembly Include="Everywhere.Abstractions"/>
     <TrimmerRootAssembly Include="Everywhere.Core"/>
     <TrimmerRootAssembly Include="Everywhere.Cloud"/>
+    <TrimmerRootAssembly Include="Everywhere.Patches.Contracts"/>
     <TrimmerRootAssembly Include="Everywhere.I18N.Abstractions"/>
     <TrimmerRootAssembly Include="Anthropic"/>
     <TrimmerRootAssembly Include="CSharpMath.Avalonia"/>

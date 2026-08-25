@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace Everywhere.Views;
+namespace Everywhere.Patches.Contracts.Views;
 
 public sealed class PreeditChangedEventArgs(RoutedEvent routedEvent, string? preeditText, Rect cursorRectangle) : RoutedEventArgs(routedEvent)
 {

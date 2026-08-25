@@ -1,8 +1,13 @@
-﻿using Avalonia;
+﻿using System.Reactive.Disposables;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 using Avalonia.Interactivity;
+using CoreAnimation;
 using Everywhere.Interop;
+using Everywhere.Utilities;
 using Everywhere.Views;
 using ObjCRuntime;
 
@@ -59,6 +64,8 @@ public sealed class WindowHelper : IWindowHelper
     private void HandleWindowOpened(Window window, RoutedEventArgs args)
     {
         if (window is not ChatWindow) OpenedWindowCount++;
+
+        ApplyNativeBackdrop(window);
     }
 
     private void HandleWindowClosed(Window window, RoutedEventArgs args)
@@ -198,9 +205,19 @@ public sealed class WindowHelper : IWindowHelper
         NSApplication.SharedApplication.RequestUserAttention(NSRequestUserAttentionType.InformationalRequest);
     }
 
+    public void SetCornerRadius(Window window, double radius)
+    {
+        if (window is ChatWindow chatWindow)
+        {
+            ChatWindowFrame.Create(chatWindow, radius);
+        }
+    }
+
     public void InitializeWindow(Window window)
     {
         if (GetNativeWindow(window) is not { } nativeWindow) return;
+
+        ApplyNativeBackdrop(window, nativeWindow);
 
         if (window is ChatWindow)
         {
@@ -221,5 +238,159 @@ public sealed class WindowHelper : IWindowHelper
     private static NSWindow? GetNativeWindow(Window window)
     {
         return window.TryGetPlatformHandle()?.Handle is { } handle ? Runtime.GetNSObject<NSWindow>(handle) : null;
+    }
+
+    private static void ApplyNativeBackdrop(Window window)
+    {
+        if (GetNativeWindow(window) is { } nativeWindow)
+        {
+            ApplyNativeBackdrop(window, nativeWindow);
+        }
+    }
+
+    private static void ApplyNativeBackdrop(Window window, NSWindow nativeWindow)
+    {
+        if (window.ActualTransparencyLevel != WindowTransparencyLevel.AcrylicBlur) return;
+
+        nativeWindow.IsOpaque = false;
+        nativeWindow.BackgroundColor = NSColor.Clear;
+
+        if (nativeWindow.ContentView is not { } contentView || FindBackdropView(contentView) is not { } backdropView)
+            return;
+
+        // Avalonia.Native uses the deprecated Light material for AcrylicBlur, which ignores the
+        // window's DarkAqua appearance. A semantic material inherits the effective appearance while
+        // retaining AppKit's normal active/inactive states.
+        backdropView.Material = NSVisualEffectMaterial.UnderWindowBackground;
+        backdropView.State = NSVisualEffectState.FollowsWindowActiveState;
+    }
+
+    private static NSVisualEffectView? FindBackdropView(NSView view)
+    {
+        if (view is NSVisualEffectView { BlendingMode: NSVisualEffectBlendingMode.BehindWindow } backdropView)
+        {
+            return backdropView;
+        }
+
+        foreach (var subview in view.Subviews)
+        {
+            if (FindBackdropView(subview) is { } descendant)
+            {
+                return descendant;
+            }
+        }
+
+        return null;
+    }
+
+    private sealed class ChatWindowFrame : IDisposable
+    {
+        private readonly ChatWindow _window;
+        private readonly NSWindow _nativeWindow;
+        private readonly double _radius;
+        private readonly CompositeDisposable _subscriptions = new(5);
+
+        private bool _isFullScreen;
+        private bool? _frameSuppressed;
+        private IDisposable? _cornerRadiusOverride;
+        private IDisposable? _borderThicknessOverride;
+
+        private ChatWindowFrame(ChatWindow window, NSWindow nativeWindow, double radius)
+        {
+            _window = window;
+            _nativeWindow = nativeWindow;
+            _radius = Math.Max(0, radius);
+        }
+
+        public static void Create(ChatWindow window, double radius)
+        {
+            if (GetNativeWindow(window) is not { } nativeWindow) return;
+
+            // ChatWindow is an application-lifetime singleton. Its Avalonia and AppKit
+            // subscriptions keep this controller alive, so WindowHelper needs no cache.
+            var frame = new ChatWindowFrame(window, nativeWindow, radius);
+            frame.Attach();
+        }
+
+        private void Attach()
+        {
+            _subscriptions.Add(_window.GetObservable(Window.WindowStateProperty).Subscribe(_ => Update()));
+            _subscriptions.Add(_window.GetObservable(Visual.IsVisibleProperty).Subscribe(_ => Update()));
+            _subscriptions.Add(NSWindow.Notifications.ObserveDidResize(_nativeWindow, (_, _) => Update()));
+            _subscriptions.Add(NSWindow.Notifications.ObserveWillEnterFullScreen(_nativeWindow, (_, _) =>
+            {
+                _isFullScreen = true;
+                Update();
+            }));
+            _subscriptions.Add(NSWindow.Notifications.ObserveDidExitFullScreen(_nativeWindow, (_, _) =>
+            {
+                _isFullScreen = false;
+                Update();
+            }));
+
+            Update();
+        }
+
+        private void Update()
+        {
+            ApplyNativeBackdrop(_window, _nativeWindow);
+
+            var suppressFrame =
+                !_window.IsVisible ||
+                _nativeWindow.IsMiniaturized ||
+                _nativeWindow.IsZoomed ||
+                _isFullScreen ||
+                (_nativeWindow.StyleMask & NSWindowStyle.FullScreenWindow) != 0 ||
+                _window.WindowState is WindowState.Minimized or WindowState.Maximized or WindowState.FullScreen;
+
+            if (_frameSuppressed != suppressFrame)
+            {
+                _frameSuppressed = suppressFrame;
+                if (suppressFrame)
+                {
+                    // Animation priority creates temporary value frames above the AXAML local
+                    // values. Disposing them restores whichever frame values are underneath.
+                    _cornerRadiusOverride = _window.SetValue(TemplatedControl.CornerRadiusProperty, default, BindingPriority.Animation);
+                    _borderThicknessOverride = _window.SetValue(TemplatedControl.BorderThicknessProperty, default, BindingPriority.Animation);
+                }
+                else
+                {
+                    DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
+                    DisposeHelper.DisposeToDefault(ref _borderThicknessOverride);
+                }
+
+                _window.InvalidateVisual();
+            }
+
+            var effectiveRadius = suppressFrame ? 0 : _radius;
+            if (_nativeWindow.ContentView is { } contentView)
+            {
+                // Full-screen transitions can rebuild AppKit's frame view hierarchy, so resolve
+                // the content layer on every native state update instead of caching it.
+                if (contentView.Layer is { } layer)
+                {
+                    CATransaction.Begin();
+                    try
+                    {
+                        CATransaction.DisableActions = true;
+                        layer.CornerRadius = (nfloat)effectiveRadius;
+                        layer.CornerCurve = CACornerCurve.Continuous;
+                        layer.MasksToBounds = effectiveRadius > 0;
+                    }
+                    finally
+                    {
+                        CATransaction.Commit();
+                    }
+                }
+            }
+
+            _nativeWindow.HasShadow = !suppressFrame;
+            _nativeWindow.InvalidateShadow();
+        }
+
+        public void Dispose()
+        {
+            _subscriptions.Dispose();
+        }
     }
 }

@@ -12,8 +12,9 @@
   x:DataType="vm:ChatWindowViewModel" x:TypeArguments="vm:ChatWindowViewModel"
   Background="{DynamicResource AcrylicWindowBackgroundColor}"
   BorderBrush="{DynamicResource BorderColor}"
-  SizeToContent="WidthAndHeight" TransparencyLevelHint="AcrylicBlur,Blur,None"
-  WindowDecorations="BorderOnly" WindowStartupLocation="CenterScreen">
+  CornerRadius="20" SizeToContent="WidthAndHeight"
+  TransparencyLevelHint="AcrylicBlur,Blur,None" WindowDecorations="BorderOnly"
+  WindowStartupLocation="CenterScreen">
 
   <v:ReactiveShadWindow.BorderThickness>
     <OnPlatform
@@ -64,11 +65,11 @@
               <Setter Property="MinWidth" Value="28"/>
               <Setter Property="Width" Value="28"/>
               <Setter Property="Padding" Value="0"/>
-              <Setter Property="CornerRadius" Value="4"/>
+              <Setter Property="CornerRadius" Value="14"/>
               <Setter Property="Background" Value="{DynamicResource TransparentColor}"/>
 
-              <Style Selector="^.Close /template/ Border#HoverBackground">
-                <Setter Property="Background" Value="#C42B1C"/>
+              <Style Selector="^.Close">
+                <Setter Property="shadui:ButtonAssist.HoverBackground" Value="#99C42B1C"/>
               </Style>
 
               <Style Selector="^ LucideIcon">
@@ -749,7 +750,7 @@
         </Button>
 
         <StackPanel
-          Grid.Row="1" Margin="12"
+          Grid.Row="1" Margin="10"
           Orientation="Vertical" Spacing="8">
           <DockPanel>
             <DockPanel.IsVisible>
