@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <ItemGroup>
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
@@ -27,4 +28,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Everywhere.Core\Everywhere.Core.csproj"/>
   </ItemGroup>
+
 </Project>
