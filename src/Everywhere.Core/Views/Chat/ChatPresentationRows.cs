@@ -3,8 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Collections;
+using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
-using ZLinq;
 
 namespace Everywhere.Views;
 
@@ -412,11 +412,69 @@ public sealed class ActivityGroupPresentationRow : ChatPresentationRow
 }
 
 /// <summary>Displays a formal text or image span in its original chronological position.</summary>
-public sealed partial class AssistantOutputPresentationRow(ChatMessageNode assistantNode, AssistantChatMessageSpan span) : ChatPresentationRow
+public abstract partial class AssistantOutputPresentationRow(ChatMessageNode assistantNode) : ChatPresentationRow
 {
     public ChatMessageNode AssistantNode { get; } = assistantNode;
-    public AssistantChatMessageSpan Span { get; } = span;
+
     [ObservableProperty] public partial bool IsFinal { get; set; }
+}
+
+public sealed class AssistantTextOutputPresentationRow(ChatMessageNode assistantNode, AssistantChatMessageTextSpan span)
+    : AssistantOutputPresentationRow(assistantNode)
+{
+    public AssistantChatMessageTextSpan TextSpan { get; } = span;
+
+    /// <summary>
+    /// Gets or sets the latest Markdown state committed by a renderer or prepared before the row is
+    /// presented. Keeping the most recent state avoids clearing the visual tree while a newer
+    /// source version is still being parsed.
+    /// </summary>
+    public MarkdownDocumentUpdate? CachedDocumentUpdate
+    {
+        get;
+        set
+        {
+            if (!SetProperty(ref field, value)) return;
+
+            // Streaming updates do not change which source the renderer should bind. Completion
+            // raises this notification once, while a final update that arrives after completion
+            // raises it here and detaches the builder.
+            if (!CanReceiveUpdates) OnPropertyChanged(nameof(RenderingMarkdownBuilder));
+        }
+    }
+
+    /// <summary>
+    /// Gets the streaming source while this span can still change or its final document has not
+    /// caught up. Once the source is sealed, the matching cached update becomes authoritative.
+    /// </summary>
+    public ObservableStringBuilder? RenderingMarkdownBuilder
+    {
+        get
+        {
+            var builder = TextSpan.ContentMarkdownBuilder;
+            return CanReceiveUpdates || CachedDocumentUpdate?.Version != builder.Version ? builder : null;
+        }
+    }
+
+    internal bool CanReceiveUpdates { get; private set; }
+
+    /// <summary>
+    /// Updates the source lifetime declared by the chat pipeline. Version equality synchronizes
+    /// parsing completion; it never infers whether the source may receive more content.
+    /// </summary>
+    internal void UpdateCanReceiveUpdates(bool value)
+    {
+        if (CanReceiveUpdates == value) return;
+
+        CanReceiveUpdates = value;
+        OnPropertyChanged(nameof(RenderingMarkdownBuilder));
+    }
+}
+
+public sealed class AssistantImageOutputPresentationRow(ChatMessageNode assistantNode, AssistantChatMessageImageSpan span)
+    : AssistantOutputPresentationRow(assistantNode)
+{
+    public AssistantChatMessageImageSpan ImageSpan { get; } = span;
 }
 
 /// <summary>Displays an assistant error, distinguishing process history from terminal failure.</summary>

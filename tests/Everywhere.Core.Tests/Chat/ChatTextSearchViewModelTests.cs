@@ -28,7 +28,7 @@ public sealed class ChatTextSearchViewModelTests
         {
             Assert.That(viewModel.MatchCount, Is.EqualTo(1));
             Assert.That(viewModel.CurrentIndex, Is.EqualTo(0));
-            Assert.That(viewModel.GetCurrentMatch()?.Row, Is.TypeOf<AssistantOutputPresentationRow>());
+            Assert.That(viewModel.GetCurrentMatch()?.Span, Is.TypeOf<AssistantChatMessageTextSpan>());
         });
     }
 
@@ -65,7 +65,7 @@ public sealed class ChatTextSearchViewModelTests
         var span = new AssistantChatMessageTextSpan("offscreen text");
         assistant.AddSpan(span);
         context.Add(assistant);
-        var row = context.Presentation.Rows.OfType<AssistantOutputPresentationRow>().Single();
+        var row = context.Presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
         var manager = CreateManager(context);
         using var viewModel = new ChatTextSearchViewModel(manager) { Query = "rendered-only" };
 
@@ -86,6 +86,85 @@ public sealed class ChatTextSearchViewModelTests
         await WaitForSearchAsync(viewModel);
 
         Assert.That(navigationRequests, Is.Zero);
+    }
+
+    [AvaloniaTest]
+    public async Task Search_WhenMatchPrecedesPresentationWindow_ReturnsLogicalModelTarget()
+    {
+        using var context = new ChatContext();
+        ChatMessageNode? earliestNode = null;
+        for (var index = 0; index < ChatPresentation.TurnBatchSize + 3; index++)
+        {
+            context.Add(new UserChatMessage(index == 0 ? "needle in old history" : $"Question {index}", []));
+            earliestNode ??= context.Items[^1];
+            var assistant = new AssistantChatMessage { IsBusy = false, FinishedAt = DateTimeOffset.UtcNow };
+            assistant.AddSpan(new AssistantChatMessageTextSpan($"Answer {index}") { FinishedAt = DateTimeOffset.UtcNow });
+            context.Add(assistant);
+        }
+
+        Assert.That(
+            context.Presentation.Rows.OfType<ChatMessagePresentationRow>().Any(row => ReferenceEquals(row.Node, earliestNode)),
+            Is.False);
+
+        var manager = CreateManager(context);
+        using var viewModel = new ChatTextSearchViewModel(manager) { Query = "needle" };
+        viewModel.OpenSearchCommand.Execute(null);
+        await WaitForSearchAsync(viewModel);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.MatchCount, Is.EqualTo(1));
+            Assert.That(viewModel.GetCurrentMatch()?.Node, Is.SameAs(earliestNode));
+            Assert.That(viewModel.GetCurrentMatch()?.Span, Is.Null);
+        });
+    }
+
+    [AvaloniaTest]
+    public async Task Search_WhenAssistantAddsTextSpan_TracksNewLogicalSource()
+    {
+        using var context = new ChatContext();
+        var assistant = new AssistantChatMessage { IsBusy = true };
+        context.Add(assistant);
+        var manager = CreateManager(context);
+        using var viewModel = new ChatTextSearchViewModel(manager) { Query = "new output" };
+        viewModel.OpenSearchCommand.Execute(null);
+        await WaitForSearchAsync(viewModel);
+        Assert.That(viewModel.MatchCount, Is.Zero);
+
+        var span = new AssistantChatMessageTextSpan("new output");
+        assistant.AddSpan(span);
+        await WaitForSearchAsync(viewModel);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.MatchCount, Is.EqualTo(1));
+            Assert.That(viewModel.GetCurrentMatch()?.Span, Is.SameAs(span));
+        });
+    }
+
+    [AvaloniaTest]
+    public async Task NextResult_WhenOnlyOneMatch_RequestsNavigationWithoutRepublishingCurrentMatch()
+    {
+        using var context = new ChatContext();
+        context.Add(new UserChatMessage("only needle", []));
+        var manager = CreateManager(context);
+        using var viewModel = new ChatTextSearchViewModel(manager) { Query = "needle" };
+        viewModel.OpenSearchCommand.Execute(null);
+        await WaitForSearchAsync(viewModel);
+
+        var currentMatchChanges = 0;
+        var navigationRequests = 0;
+        viewModel.CurrentMatchChanged += (_, _) => currentMatchChanges++;
+        viewModel.NavigationRequested += (_, _) => navigationRequests++;
+
+        viewModel.NextResultCommand.Execute(null);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(viewModel.CurrentIndex, Is.Zero);
+            Assert.That(currentMatchChanges, Is.Zero);
+            Assert.That(navigationRequests, Is.EqualTo(1));
+        });
     }
 
     private static IChatContextManager CreateManager(ChatContext context)

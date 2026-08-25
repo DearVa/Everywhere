@@ -45,6 +45,7 @@ public sealed partial class ChatContextManager :
         get => Current.Metadata;
         set
         {
+            Dispatcher.UIThread.VerifyAccess();
             if (value is null) return;
 
             if (value.Id == Guid.Empty)
@@ -55,52 +56,11 @@ public sealed partial class ChatContextManager :
 
             var previous = _current;
             if (previous?.Metadata.Id == value.Id) return;
+            var switchVersion = Interlocked.Increment(ref _currentSwitchVersion);
             OnPropertyChanged();
 
-            // Update active state
             previous?.VisualElements.IsActive = false;
-
-            Task.Run(async () =>
-            {
-                _current = await LoadChatContextAsync(value.Id, false, CancellationToken.None);
-                if (_current is null)
-                {
-                    CreateNew();
-                }
-                else
-                {
-                    NotifyCurrentChanged();
-                }
-
-                _current.VisualElements.IsActive = true;
-
-                // WARNING:
-                // IDK why if I remove the previous context immediately,
-                // Avalonia will fuck up and crash immediately with IndexOutOfRangeException.
-                // The whole call stack is inside Avalonia, so I can't do anything about it.
-                // The only workaround is to invoke the removal on the UI thread with a delay.
-                await Dispatcher.UIThread.InvokeAsync(
-                    () =>
-                    {
-                        CreateNewCommand.NotifyCanExecuteChanged();
-
-                        if (IsEmptyContext(previous) || previous?.Metadata.IsTemporary is true)
-                        {
-                            // Remove empty or temporary chat
-                            if (_metadataMap.Remove(previous.Metadata.Id, out _))
-                            {
-                                RemoveHistoryMetadata(previous.Metadata);
-                            }
-                        }
-
-                        RemoveCommand.NotifyCanExecuteChanged();
-
-                        var currentId = _current?.Metadata.Id;
-                        BackgroundBusyCount = _busyContexts.AsValueEnumerable().Count(id => id != currentId);
-                        BackgroundNotificationCount = _notificationContexts.AsValueEnumerable().Count(id => id != currentId);
-                    },
-                    DispatcherPriority.Background);
-            });
+            SwitchCurrentAsync(value.Id, previous, switchVersion).Detach(_logger.ToExceptionHandler());
         }
     }
 
@@ -157,6 +117,7 @@ public sealed partial class ChatContextManager :
     private ICollection<ChatContextMetadata> LoadedMetadata => _metadataMap.Values;
 
     private ChatContext? _current;
+    private int _currentSwitchVersion;
 
     private readonly ConcurrentDictionary<Guid, ChatContextMetadata> _metadataMap = [];
     private readonly SourceList<ChatContextMetadata> _materializedHistorySource = new();
@@ -339,6 +300,7 @@ public sealed partial class ChatContextManager :
     private void CreateNew()
     {
         if (IsEmptyContext(_current)) return;
+        Interlocked.Increment(ref _currentSwitchVersion);
 
         var isCurrentTemporary = _current?.Metadata.IsTemporary is true;
         if (isCurrentTemporary)
@@ -462,7 +424,8 @@ public sealed partial class ChatContextManager :
     /// </summary>
     private async Task LoadRecentAsCurrentAsync()
     {
-        _current = null;
+        var switchVersion = Interlocked.Increment(ref _currentSwitchVersion);
+        ChatContext? next = null;
 
         // Load the most recently modified chat context that is not marked as temporary deleted
         if (LoadedMetadata
@@ -472,23 +435,108 @@ public sealed partial class ChatContextManager :
                 .FirstOrDefault() is { } historyItem)
         {
             // Switch to the most recently modified chat context
-            _current = await LoadChatContextAsync(historyItem.Id, false).ConfigureAwait(false);
+            next = await LoadChatContextAsync(historyItem.Id, false).ConfigureAwait(false);
         }
 
-        if (_current is null)
+        if (switchVersion != Volatile.Read(ref _currentSwitchVersion))
         {
-            // If no other chat context exists, create a new one
-            CreateNew();
-            // CreateNew will notify the change
+            if (next is not null) await Dispatcher.UIThread.InvokeAsync(next.Dispose);
+            return;
         }
-        else
+
+        if (next is not null)
         {
-            NotifyCurrentChanged();
+            await Dispatcher.UIThread.InvokeAsync(() => next.Presentation.PrepareInitialWindowAsync(CancellationToken.None));
         }
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (switchVersion != Volatile.Read(ref _currentSwitchVersion))
+            {
+                next?.Dispose();
+                return;
+            }
+
+            _current?.VisualElements.IsActive = false;
+            if (next is null)
+            {
+                _current = null;
+                CreateNew();
+            }
+            else
+            {
+                _current = next;
+                NotifyCurrentChanged();
+            }
+
+            _current.VisualElements.IsActive = true;
+        });
     }
 
     public Task<ChatContext?> LoadChatContextAsync(ChatContextMetadata metadata, CancellationToken cancellationToken = default) =>
         metadata.Id == _current?.Metadata.Id ? Task.FromResult<ChatContext?>(_current) : LoadChatContextAsync(metadata.Id, false, cancellationToken);
+
+    private async Task SwitchCurrentAsync(Guid id, ChatContext? previous, int switchVersion)
+    {
+        var next = await LoadChatContextAsync(id, false, CancellationToken.None).ConfigureAwait(false);
+        if (switchVersion != Volatile.Read(ref _currentSwitchVersion))
+        {
+            if (next is not null) await Dispatcher.UIThread.InvokeAsync(next.Dispose);
+            return;
+        }
+
+        if (next is not null)
+        {
+            // Entering the dispatcher after storage deserialization also acts as a FIFO barrier for
+            // ThreadSafeObservableStringBuilder appends already posted at Normal priority. The
+            // bounded tail window therefore captures committed text and version pairs before it is
+            // published as Current, while older turns remain UI-unmaterialized.
+            await Dispatcher.UIThread.InvokeAsync(() => next.Presentation.PrepareInitialWindowAsync(CancellationToken.None));
+        }
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (switchVersion != Volatile.Read(ref _currentSwitchVersion))
+            {
+                next?.Dispose();
+                return;
+            }
+
+            if (next is null)
+            {
+                CreateNew();
+            }
+            else
+            {
+                _current = next;
+                NotifyCurrentChanged();
+            }
+
+            _current.VisualElements.IsActive = true;
+
+            // Removing the previous context in the same collection-change pass can make Avalonia
+            // observe an intermediate index map. Keep the established background-priority cleanup.
+            Dispatcher.UIThread.Post(
+                () =>
+                {
+                    CreateNewCommand.NotifyCanExecuteChanged();
+
+                    if (previous is not null &&
+                        (IsEmptyContext(previous) || previous.Metadata.IsTemporary) &&
+                        _metadataMap.Remove(previous.Metadata.Id, out _))
+                    {
+                        RemoveHistoryMetadata(previous.Metadata);
+                    }
+
+                    RemoveCommand.NotifyCanExecuteChanged();
+
+                    var currentId = _current?.Metadata.Id;
+                    BackgroundBusyCount = _busyContexts.AsValueEnumerable().Count(contextId => contextId != currentId);
+                    BackgroundNotificationCount = _notificationContexts.AsValueEnumerable().Count(contextId => contextId != currentId);
+                },
+                DispatcherPriority.Background);
+        });
+    }
 
     private async Task<ChatContext?> LoadChatContextAsync(Guid id, bool deleteIfFailed, CancellationToken cancellationToken = default)
     {
@@ -534,13 +582,11 @@ public sealed partial class ChatContextManager :
     /// </summary>
     private void NotifyCurrentChanged()
     {
+        Dispatcher.UIThread.VerifyAccess();
         OnPropertyChanged(nameof(Current));
         OnPropertyChanged(nameof(CurrentMetadata));
-        Dispatcher.UIThread.Invoke(() =>
-        {
-            RemoveCommand.NotifyCanExecuteChanged();
-            CreateNewCommand.NotifyCanExecuteChanged();
-        });
+        RemoveCommand.NotifyCanExecuteChanged();
+        CreateNewCommand.NotifyCanExecuteChanged();
     }
 
     /// <inheritdoc />

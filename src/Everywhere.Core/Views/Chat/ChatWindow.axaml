@@ -559,10 +559,6 @@
           x:Name="ChatMessageScrollViewer" Grid.Row="0"
           DockPanel.Dock="Top" HorizontalContentAlignment="Stretch"
           HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-          <Interaction.Behaviors>
-            <in:AutoScrollBehavior ScrollToEndToken="{Binding ChatContextManager.Current.Metadata.Id}"/>
-          </Interaction.Behaviors>
-
           <StackPanel>
             <ItemsControl
               Margin="8,16" HorizontalAlignment="Center"
@@ -624,7 +620,7 @@
             </ItemsControl>
 
             <v:ChatMessageItemsControl
-              Margin="12,8,12,0"
+              x:Name="ChatMessages" Margin="12,8,12,0"
               md:MarkdownTextBlock.HighlightStyles="{x:Static in:ChatTextSearchHighlightStyles.Instance}"
               ChatContext="{Binding ChatContextManager.Current}"
               ContinueMessageNodeCommand="{Binding ContinueMessageNodeCommand}"
@@ -678,19 +674,23 @@
               </TextBox.KeyBindings>
             </TextBox>
 
-            <Panel
+            <v:ToggleBlock
               Grid.Column="1" MinWidth="48"
-              VerticalAlignment="Center">
-              <TextBlock
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                IsVisible="{Binding !TextSearch.IsBusy}"
-                Text="{Binding TextSearch.SearchResultCountText}"
-                TextAlignment="Center"/>
-              <shadui:Loading
-                HorizontalAlignment="Center" VerticalAlignment="Center"
-                IsVisible="{Binding TextSearch.IsBusy}"
-                Size="{DynamicResource FontSizeM}"/>
-            </Panel>
+              VerticalAlignment="Center"
+              IsChecked="{Binding TextSearch.IsBusy, Delay=300}">
+              <v:ToggleBlock.FalseContent>
+                <TextBlock
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Text="{Binding TextSearch.SearchResultCountText}"
+                  TextAlignment="Center"/>
+              </v:ToggleBlock.FalseContent>
+
+              <v:ToggleBlock.TrueContent>
+                <shadui:Loading
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Size="{DynamicResource FontSizeM}"/>
+              </v:ToggleBlock.TrueContent>
+            </v:ToggleBlock>
 
             <Button
               Classes="Ghost Compact Uniform" Grid.Column="2"
@@ -725,15 +725,21 @@
           Classes="Primary Rounded" Grid.Row="0"
           Margin="8" HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
-          Command="{Binding #ChatMessageScrollViewer.ScrollToEnd}"
+          Command="{Binding #ChatMessages.ShowLatestCommand}"
           Focusable="False"
           ToolTip.Tip="{I18N {x:Static LocaleKey.ChatWindow_ScrollToBottom_ToolTip}}">
           <Button.IsVisible>
-            <MultiBinding Converter="{x:Static vc:DoubleConverters.MultiSmallerThanAny}">
+            <MultiBinding Converter="{x:Static BoolConverters.Or}">
               <Binding
-                Converter="{x:Static vc:DoubleConverters.Plus}"
-                ConverterParameter="30" Path="#ChatMessageScrollViewer.Offset.Y"/>
-              <Binding Path="#ChatMessageScrollViewer.ScrollBarMaximum.Y"/>
+                FallbackValue="{x:False}"
+                Path="#ChatMessages.ChatContext.Presentation.HasLaterTurns"
+                TargetNullValue="{x:False}"/>
+              <MultiBinding Converter="{x:Static vc:DoubleConverters.MultiSmallerThanAny}">
+                <Binding
+                  Converter="{x:Static vc:DoubleConverters.Plus}"
+                  ConverterParameter="30" Path="#ChatMessageScrollViewer.Offset.Y"/>
+                <Binding Path="#ChatMessageScrollViewer.ScrollBarMaximum.Y"/>
+              </MultiBinding>
             </MultiBinding>
           </Button.IsVisible>
 

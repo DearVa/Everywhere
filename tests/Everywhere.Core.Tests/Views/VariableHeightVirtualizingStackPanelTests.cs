@@ -62,6 +62,101 @@ public sealed class VariableHeightVirtualizingStackPanelTests
     }
 
     [AvaloniaTest]
+    public void ItemsBeforeViewport_WhenPrepended_KeepVisibleItemAnchored()
+    {
+        using var context = CreateTarget(Enumerable.Repeat(40d, 30).ToArray());
+        context.ScrollViewer.Offset = new Vector(0, 240);
+        context.Window.UpdateLayout();
+
+        var anchoredItem = GetFirstVisibleItem(context);
+        var positionBefore = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.That(positionBefore, Is.Not.Null);
+
+        context.Items.Insert(0, CreateItem(180));
+        context.Items.Insert(0, CreateItem(24));
+        context.Items.Insert(0, CreateItem(320));
+        context.Window.UpdateLayout();
+
+        var positionAfter = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.Multiple(() =>
+        {
+            Assert.That(positionAfter, Is.Not.Null);
+            Assert.That(positionAfter!.Value.Y, Is.EqualTo(positionBefore!.Value.Y).Within(0.001));
+        });
+    }
+
+    [AvaloniaTest]
+    public void LargeBatchBeforeViewport_WhenPrepended_KeepsVisibleItemAnchored()
+    {
+        var heightPattern = new[] { 48d, 720d, 96d, 280d, 64d, 1080d, 160d, 420d };
+        var initialHeights = Enumerable.Range(0, 40).Select(index => heightPattern[index % heightPattern.Length]).ToArray();
+        using var context = CreateTarget(initialHeights, estimatedItemHeight: 140, windowHeight: 781.6);
+        context.Panel.PreserveViewportOnPrepend = true;
+        context.ScrollViewer.Offset = new Vector(0, 700);
+        context.Window.UpdateLayout();
+
+        var anchoredItem = GetFirstVisibleItem(context);
+        var positionBefore = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.That(positionBefore, Is.Not.Null);
+
+        for (var index = 0; index < 24; index++)
+            context.Items.Insert(0, CreateItem(heightPattern[index % heightPattern.Length]));
+        context.Window.UpdateLayout();
+
+        var positionAfter = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.Multiple(() =>
+        {
+            Assert.That(positionAfter, Is.Not.Null, "The viewport anchor was recycled before Avalonia could apply its correction.");
+            Assert.That(positionAfter?.Y, Is.EqualTo(positionBefore!.Value.Y).Within(0.001));
+        });
+    }
+
+    [AvaloniaTest]
+    public void ItemsAtViewportTop_WhenPrepended_KeepOriginalFirstItemAnchored()
+    {
+        using var context = CreateTarget(Enumerable.Repeat(40d, 30).ToArray());
+        context.Panel.PreserveViewportOnPrepend = true;
+        context.ScrollViewer.Offset = default;
+        context.Window.UpdateLayout();
+
+        var anchoredItem = context.Items[0];
+        var positionBefore = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.That(positionBefore, Is.Not.Null);
+
+        context.Items.Insert(0, CreateItem(180));
+        context.Window.UpdateLayout();
+
+        var positionAfter = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.Multiple(() =>
+        {
+            Assert.That(positionAfter, Is.Not.Null);
+            Assert.That(positionAfter!.Value.Y, Is.EqualTo(positionBefore!.Value.Y).Within(0.101));
+        });
+    }
+
+    [AvaloniaTest]
+    public void ItemsAfterViewport_WhenAppended_DoNotMoveVisibleItem()
+    {
+        using var context = CreateTarget(Enumerable.Repeat(40d, 30).ToArray());
+        context.ScrollViewer.Offset = new Vector(0, 240);
+        context.Window.UpdateLayout();
+
+        var anchoredItem = GetFirstVisibleItem(context);
+        var positionBefore = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.That(positionBefore, Is.Not.Null);
+
+        context.Items.Add(CreateItem(180));
+        context.Window.UpdateLayout();
+
+        var positionAfter = anchoredItem.TranslatePoint(default, context.ScrollViewer);
+        Assert.Multiple(() =>
+        {
+            Assert.That(positionAfter, Is.Not.Null);
+            Assert.That(positionAfter!.Value.Y, Is.EqualTo(positionBefore!.Value.Y).Within(0.001));
+        });
+    }
+
+    [AvaloniaTest]
     public void TallItemCoveringViewportTop_WhenItsHeightGrows_DoesNotAnchorFollowingItem()
     {
         using var context = CreateTarget(1000, 100, 100);
@@ -153,38 +248,11 @@ public sealed class VariableHeightVirtualizingStackPanelTests
     }
 
     [AvaloniaTest]
-    public void Measure_WhenLargeShrinkRecoversBeforeNextFrame_KeepsPreviousHeight()
+    public void Measure_WhenItemShrinks_AcceptsCurrentHeight()
     {
         using var context = CreateTarget(100);
 
         context.Items[0].Height = 20;
-        context.Window.UpdateLayout();
-        context.Panel.InvalidateMeasure();
-        context.Window.UpdateLayout();
-
-        Assert.That(context.Panel.DesiredSize.Height, Is.EqualTo(100).Within(0.001));
-
-        context.Items[0].Height = 100;
-        context.Window.UpdateLayout();
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
-        context.Window.UpdateLayout();
-
-        Assert.That(context.Panel.DesiredSize.Height, Is.EqualTo(100).Within(0.001));
-    }
-
-    [AvaloniaTest]
-    public void Measure_WhenLargeShrinkPersistsAcrossNextFrame_AcceptsNewHeight()
-    {
-        using var context = CreateTarget(100);
-
-        context.Items[0].Height = 20;
-        context.Window.UpdateLayout();
-
-        Assert.That(context.Panel.DesiredSize.Height, Is.EqualTo(100).Within(0.001));
-
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
         context.Window.UpdateLayout();
 
         Assert.That(context.Panel.DesiredSize.Height, Is.EqualTo(20).Within(0.001));

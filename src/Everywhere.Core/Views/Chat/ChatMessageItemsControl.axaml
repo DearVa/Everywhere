@@ -13,7 +13,7 @@
             <ItemsPanelTemplate>
               <v:VariableHeightVirtualizingStackPanel
                 CacheLength="1" EstimatedItemHeight="140"
-                Spacing="6"/>
+                PreserveViewportOnPrepend="True" Spacing="6"/>
             </ItemsPanelTemplate>
           </ItemsPresenter.ItemsPanel>
         </ItemsPresenter>

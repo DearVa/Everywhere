@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Xaml.Interactivity;
+using Everywhere.Chat;
+using Everywhere.Utilities;
 using Everywhere.Views;
 using LiveMarkdown.Avalonia;
 
@@ -74,9 +76,10 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
     }
 
     private IDisposable? _registration;
+    private CompositeDisposable? _rendererSubscriptions;
     private ChatTextSearchViewModel? _subscribedCoordinator;
     private TextHighlightMatch? _currentRendererMatch;
-    private IReadOnlyList<TextHighlightRange> _plainMatches = [];
+    private TextHighlightRange[] _plainMatches = [];
 
     protected override void OnAttached()
     {
@@ -85,8 +88,11 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
         switch (AssociatedObject)
         {
             case MarkdownRenderer renderer:
-                renderer.RenderedTextProjectionChanged += HandleRenderedTextProjectionChanged;
-                renderer.TextSearchMatchesChanged += HandleRendererTextSearchMatchesChanged;
+                _rendererSubscriptions =
+                [
+                    renderer.GetObservable(MarkdownRenderer.RenderedTextProjectionProperty).Subscribe(_ => HandleRenderedTextProjectionChanged()),
+                    renderer.GetObservable(MarkdownRenderer.TextSearchMatchesProperty).Subscribe(_ => HandleRendererTextSearchMatchesChanged()),
+                ];
                 break;
             case MarkdownTextBlock textBlock:
                 textBlock.PropertyChanged += HandleTextBlockPropertyChanged;
@@ -103,8 +109,7 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
         switch (AssociatedObject)
         {
             case MarkdownRenderer renderer:
-                renderer.RenderedTextProjectionChanged -= HandleRenderedTextProjectionChanged;
-                renderer.TextSearchMatchesChanged -= HandleRendererTextSearchMatchesChanged;
+                DisposeHelper.DisposeToDefault(ref _rendererSubscriptions);
                 renderer.ClearTextSearch();
                 break;
             case MarkdownTextBlock textBlock:
@@ -132,7 +137,7 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
         {
             case MarkdownRenderer renderer when localIndex >= 0 && localIndex < renderer.TextSearchMatches.Count:
                 return TryTranslateMatchCenter(renderer.TextSearchMatches[localIndex], relativeTo, out center);
-            case MarkdownTextBlock textBlock when localIndex >= 0 && localIndex < _plainMatches.Count:
+            case MarkdownTextBlock textBlock when localIndex >= 0 && localIndex < _plainMatches.Length:
                 return TryTranslateMatchCenter(new TextHighlightMatch(textBlock, _plainMatches[localIndex]), relativeTo, out center);
             default:
                 center = default;
@@ -177,13 +182,13 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
         Host?.TextSearchSurfaceRegistry.NotifyChanged(Row);
     }
 
-    private void HandleRenderedTextProjectionChanged(object? sender, EventArgs e)
+    private void HandleRenderedTextProjectionChanged()
     {
         PublishRenderedProjection();
         Host?.TextSearchSurfaceRegistry.NotifyChanged(Row);
     }
 
-    private void HandleRendererTextSearchMatchesChanged(object? sender, EventArgs e)
+    private void HandleRendererTextSearchMatchesChanged()
     {
         UpdateCurrentHighlight();
         Host?.TextSearchSurfaceRegistry.NotifyChanged(Row);
@@ -199,16 +204,14 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
 
     private void PublishRenderedProjection()
     {
-        if (Coordinator is not { } coordinator || Row is not { } row || AssociatedObject is not MarkdownRenderer
-            {
-                MarkdownBuilder: { } source,
-                RenderedTextProjection: { } projection,
-            })
+        if (Coordinator is not { } coordinator ||
+            Row is not AssistantTextOutputPresentationRow row ||
+            AssociatedObject is not MarkdownRenderer { RenderedTextProjection: { } projection })
         {
             return;
         }
 
-        coordinator.AcceptRenderedProjection(row, source, projection);
+        coordinator.AcceptRenderedProjection(row, row.TextSpan.ContentMarkdownBuilder, projection);
     }
 
     private void UpdateVisualState()
@@ -230,8 +233,8 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
                 }
                 else
                 {
-                    _plainMatches = pattern.FindRanges(textBlock.LayoutText).ToArray();
-                    if (_plainMatches.Count == 0)
+                    _plainMatches = [.. pattern.FindRanges(textBlock.LayoutText)];
+                    if (_plainMatches.Length == 0)
                     {
                         textBlock.Highlights.Remove(MarkdownRenderer.DefaultTextSearchHighlightName);
                     }
@@ -262,7 +265,7 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
                 _currentRendererMatch = match;
                 break;
             }
-            case MarkdownTextBlock textBlock when localIndex >= 0 && localIndex < _plainMatches.Count:
+            case MarkdownTextBlock textBlock when localIndex >= 0 && localIndex < _plainMatches.Length:
                 textBlock.Highlights.Set(CurrentHighlightName, [_plainMatches[localIndex]], priority: 1);
                 break;
         }

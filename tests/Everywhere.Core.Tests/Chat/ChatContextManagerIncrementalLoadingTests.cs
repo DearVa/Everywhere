@@ -7,6 +7,7 @@ using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.I18N;
 using Everywhere.Storage;
+using Everywhere.Views;
 using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
 using Microsoft.Extensions.DependencyInjection;
@@ -149,6 +150,126 @@ public sealed class ChatContextManagerIncrementalLoadingTests
         Assert.That(manager.IsBusy, Is.False);
     }
 
+    [AvaloniaTest]
+    public async Task CurrentMetadata_WhenHistoryLoads_PublishesPrewarmedMarkdownOnUiThread()
+    {
+        var metadata = Metadata("history", 1);
+        var storage = new TestChatContextStorage([metadata]);
+        var assistant = Assistant("# Loaded\n\nHistory");
+        storage.Contexts[metadata.Id] = Context(new UserChatMessage("Question", []), assistant);
+        using var manager = CreateManager(storage);
+        using var session = manager.BeginLoadSession();
+        await session.LoadMoreAsync(1);
+        await PumpDispatcherAsync();
+
+        var currentChanged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var publishedOnUiThread = false;
+        manager.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName != nameof(ChatContextManager.Current)) return;
+
+            publishedOnUiThread = Dispatcher.UIThread.CheckAccess();
+            currentChanged.TrySetResult();
+        };
+
+        manager.CurrentMetadata = metadata;
+        await currentChanged.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var row = manager.Current.Presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
+        var builder = row.TextSpan.ContentMarkdownBuilder;
+        Assert.Multiple(() =>
+        {
+            Assert.That(publishedOnUiThread, Is.True);
+            Assert.That(row.CachedDocumentUpdate?.Version, Is.EqualTo(builder.Version));
+            Assert.That(row.RenderingMarkdownBuilder, Is.Null);
+        });
+    }
+
+    [AvaloniaTest]
+    public async Task CurrentMetadata_WhenHistoryIsLong_PublishesOnlyPrewarmedTailWindow()
+    {
+        var metadata = Metadata("long history", 1);
+        var messages = new List<ChatMessage>();
+        for (var index = 0; index < ChatPresentation.TurnBatchSize + 3; index++)
+        {
+            messages.Add(new UserChatMessage($"Question {index}", []));
+            messages.Add(Assistant($"Answer {index}"));
+        }
+
+        var storage = new TestChatContextStorage([metadata]);
+        storage.Contexts[metadata.Id] = Context([.. messages]);
+        using var manager = CreateManager(storage);
+        using var session = manager.BeginLoadSession();
+        await session.LoadMoreAsync(1);
+        await PumpDispatcherAsync();
+
+        var currentChanged = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        manager.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ChatContextManager.Current)) currentChanged.TrySetResult();
+        };
+
+        manager.CurrentMetadata = metadata;
+        await currentChanged.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var presentation = manager.Current.Presentation;
+        var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+        var outputs = presentation.Rows.OfType<AssistantTextOutputPresentationRow>().ToArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+            Assert.That(((UserChatMessage)users[0].Node.Message).Content, Is.EqualTo("Question 3"));
+            Assert.That(presentation.HasEarlierTurns, Is.True);
+            Assert.That(outputs, Has.All.Matches<AssistantTextOutputPresentationRow>(row =>
+                row.CachedDocumentUpdate?.Version == row.TextSpan.ContentMarkdownBuilder.Version));
+        });
+    }
+
+    [AvaloniaTest]
+    public async Task CurrentMetadata_WhenEarlierLoadFinishesLast_KeepsLatestSelection()
+    {
+        var first = Metadata("first", 1);
+        var second = Metadata("second", 2);
+        var storage = new TestChatContextStorage([first, second]);
+        storage.Contexts[first.Id] = Context(new UserChatMessage("First", []), Assistant("First"));
+        storage.Contexts[second.Id] = Context(new UserChatMessage("Second", []), Assistant("Second"));
+        var firstLoadStarted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseFirstLoad = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        storage.ContextLoader = async (id, cancellationToken) =>
+        {
+            if (id == first.Id)
+            {
+                firstLoadStarted.TrySetResult();
+                await releaseFirstLoad.Task.WaitAsync(cancellationToken);
+            }
+
+            return storage.Contexts[id];
+        };
+        using var manager = CreateManager(storage);
+        using var session = manager.BeginLoadSession();
+        await session.LoadMoreAsync(2);
+        await PumpDispatcherAsync();
+
+        var latestPublished = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        manager.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ChatContextManager.Current) &&
+                ReferenceEquals(manager.Current, storage.Contexts[second.Id]))
+            {
+                latestPublished.TrySetResult();
+            }
+        };
+
+        manager.CurrentMetadata = first;
+        await firstLoadStarted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        manager.CurrentMetadata = second;
+        await latestPublished.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        releaseFirstLoad.TrySetResult();
+        await PumpDispatcherAsync();
+
+        Assert.That(manager.Current, Is.SameAs(storage.Contexts[second.Id]));
+    }
+
     [Test]
     public void Contains_WhenOnlyToolContentMatches_ReturnsFalse()
     {
@@ -210,10 +331,10 @@ public sealed class ChatContextManagerIncrementalLoadingTests
         return new ChatContextMetadata(Guid.CreateVersion7(), modified, modified, topic);
     }
 
-    private static ChatContext Context(ChatMessage message)
+    private static ChatContext Context(params ChatMessage[] messages)
     {
         var context = new ChatContext();
-        context.Add(message);
+        foreach (var message in messages) context.Add(message);
         return context;
     }
 

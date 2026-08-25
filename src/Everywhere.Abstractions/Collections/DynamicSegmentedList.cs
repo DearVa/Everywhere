@@ -28,11 +28,11 @@ public sealed class DynamicSegmentedList<TSegment, TItem> : IDisposable where TS
     private bool _isRewiring;
     private bool _isDisposed;
 
-    public DynamicSegmentedList(IObservableList<TSegment> segments, Func<TSegment, IObservableList<TItem>> itemsSelector)
+    public DynamicSegmentedList(IObservableList<TSegment> segments, Func<TSegment, IObservableList<TItem>> itemsSelector, int resetThreshold = 25)
     {
         _segments = segments;
         _itemsSelector = itemsSelector;
-        Items = _flattenedItems.Connect().BindEx(out _itemsConnection);
+        Items = _flattenedItems.Connect().BindEx(out _itemsConnection, resetThreshold: resetThreshold);
         _segmentsConnection = _segments.Connect().Subscribe(_ => RewireChildren());
     }
 

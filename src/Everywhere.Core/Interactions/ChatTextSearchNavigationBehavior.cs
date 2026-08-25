@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using Avalonia.Xaml.Interactivity;
 using Everywhere.Views;
+using Serilog;
 
 namespace Everywhere.Interactions;
 
@@ -75,32 +76,57 @@ public sealed class ChatTextSearchNavigationBehavior : Behavior<ChatMessageItems
 
     private void HandleSurfaceChanged(ChatPresentationRow row)
     {
-        if (Coordinator?.GetCurrentMatch() is { } match && ReferenceEquals(match.Row, row))
-        {
-            QueueNavigation();
-        }
+        if (Coordinator?.GetCurrentLocalIndex(row) >= 0) QueueNavigation();
     }
 
     private void QueueNavigation()
     {
         if (_navigationQueued) return;
         _navigationQueued = true;
-        Dispatcher.UIThread.Post(Navigate, DispatcherPriority.Loaded);
+        Dispatcher.UIThread.Post(() => NavigateAsync().Detach(), DispatcherPriority.Loaded);
     }
 
-    private void Navigate()
+    private async Task NavigateAsync()
     {
         _navigationQueued = false;
-        if (AssociatedObject is not { } itemsControl || ScrollViewer is not { } scrollViewer || Coordinator?.GetCurrentMatch() is not { } match)
+        if (AssociatedObject is not { ChatContext: { } context } itemsControl ||
+            ScrollViewer is not { } scrollViewer ||
+            Coordinator is not { } coordinator ||
+            coordinator.GetCurrentMatch() is not { } match)
         {
             return;
         }
 
-        itemsControl.ScrollIntoView(match.Row);
-        if (!itemsControl.TextSearchSurfaceRegistry.TryGet(match.Row, out var surface) ||
-            !surface.TryGetMatchCenter(match.LocalIndex, scrollViewer, out var center))
+        ChatPresentationRow? row;
+        try
+        {
+            row = await context.Presentation.RevealAsync(match.Node, match.Span);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to reveal a chat search result.");
+            return;
+        }
+
+        if (row is null ||
+            !ReferenceEquals(itemsControl.ChatContext, context) ||
+            coordinator.GetCurrentMatch() is not { } current ||
+            !current.Equals(match))
         {
             return;
+        }
+
+        var registry = itemsControl.TextSearchSurfaceRegistry;
+        if (!registry.TryGet(row, out var surface) ||
+            !surface.TryGetMatchCenter(match.LocalIndex, scrollViewer, out var center))
+        {
+            itemsControl.ScrollIntoView(row);
+            TopLevel.GetTopLevel(itemsControl)?.UpdateLayout();
+            if (!registry.TryGet(row, out surface) ||
+                !surface.TryGetMatchCenter(match.LocalIndex, scrollViewer, out center))
+            {
+                return;
+            }
         }
 
         var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);

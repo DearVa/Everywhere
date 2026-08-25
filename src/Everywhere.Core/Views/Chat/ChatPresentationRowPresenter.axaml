@@ -577,30 +577,26 @@
           </v:ActivityMarker>
         </DataTemplate>
 
-        <DataTemplate x:DataType="v:AssistantOutputPresentationRow">
-          <ContentControl
+        <DataTemplate x:DataType="v:AssistantTextOutputPresentationRow">
+          <md:MarkdownRenderer
             Margin="4,8"
-            Content="{Binding Span}">
-            <ContentControl.DataTemplates>
-              <DataTemplate x:DataType="chat:AssistantChatMessageTextSpan">
-                <md:MarkdownRenderer
-                  LinkCommand="{Binding $parent[v:ChatMessageItemsControl].OpenUrlCommand}"
-                  MarkdownBuilder="{Binding ContentMarkdownBuilder}">
-                  <Interaction.Behaviors>
-                    <in:ChatTextSearchSurfaceBehavior
-                      Coordinator="{Binding $parent[v:ChatMessageItemsControl].TextSearch}"
-                      Host="{Binding $parent[v:ChatMessageItemsControl]}"
-                      Row="{Binding $parent[v:ChatPresentationRowPresenter].Content}"/>
-                  </Interaction.Behaviors>
-                </md:MarkdownRenderer>
-              </DataTemplate>
-              <DataTemplate x:DataType="chat:AssistantChatMessageImageSpan">
-                <Image
-                  MaxHeight="{Binding $parent[ContentControl].Bounds.Width}"
-                  Source="{Binding ImageOutput.Image, FallbackValue={x:Null}}"/>
-              </DataTemplate>
-            </ContentControl.DataTemplates>
-          </ContentControl>
+            DocumentUpdate="{Binding CachedDocumentUpdate, Mode=TwoWay}"
+            LinkCommand="{Binding $parent[v:ChatMessageItemsControl].OpenUrlCommand}"
+            MarkdownBuilder="{Binding RenderingMarkdownBuilder}">
+            <Interaction.Behaviors>
+              <in:ChatTextSearchSurfaceBehavior
+                Coordinator="{Binding $parent[v:ChatMessageItemsControl].TextSearch}"
+                Host="{Binding $parent[v:ChatMessageItemsControl]}"
+                Row="{Binding $parent[v:ChatPresentationRowPresenter].Content}"/>
+            </Interaction.Behaviors>
+          </md:MarkdownRenderer>
+        </DataTemplate>
+
+        <DataTemplate x:DataType="v:AssistantImageOutputPresentationRow">
+          <Image
+            MaxHeight="{Binding $parent[ContentControl].Bounds.Width}"
+            Margin="4,8"
+            Source="{Binding ImageSpan.ImageOutput.Image, FallbackValue={x:Null}}"/>
         </DataTemplate>
 
         <DataTemplate x:DataType="v:AssistantErrorPresentationRow">

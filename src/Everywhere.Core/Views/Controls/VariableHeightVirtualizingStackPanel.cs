@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Logging;
-using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 namespace Everywhere.Views;
@@ -30,11 +29,8 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
             nameof(Spacing),
             validate: value => value >= 0 && !double.IsNaN(value) && !double.IsInfinity(value));
 
-    public static readonly StyledProperty<double> HeightShrinkGuardThresholdProperty =
-        AvaloniaProperty.Register<VariableHeightVirtualizingStackPanel, double>(
-            nameof(HeightShrinkGuardThreshold),
-            64,
-            validate: value => value >= 0 && !double.IsNaN(value) && !double.IsInfinity(value));
+    public static readonly StyledProperty<bool> PreserveViewportOnPrependProperty =
+        AvaloniaProperty.Register<VariableHeightVirtualizingStackPanel, bool>(nameof(PreserveViewportOnPrepend));
 
     public double EstimatedItemHeight
     {
@@ -54,10 +50,15 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         set => SetValue(SpacingProperty, value);
     }
 
-    public double HeightShrinkGuardThreshold
+    /// <summary>
+    /// Gets or sets whether prepending items at the absolute scroll origin keeps the original first
+    /// item at its viewport position. Away from the origin, Avalonia scroll anchoring already does
+    /// this automatically.
+    /// </summary>
+    public bool PreserveViewportOnPrepend
     {
-        get => GetValue(HeightShrinkGuardThresholdProperty);
-        set => SetValue(HeightShrinkGuardThresholdProperty, value);
+        get => GetValue(PreserveViewportOnPrependProperty);
+        set => SetValue(PreserveViewportOnPrependProperty, value);
     }
 
     private static readonly AttachedProperty<object?> RecycleKeyProperty =
@@ -76,13 +77,11 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     private bool _isInLayout;
     private bool _isWaitingForViewportUpdate;
     private double _runningEstimatedItemHeight;
-    private long _shrinkConfirmationVersion;
     private double _panelTopWithinScrollContent = double.NaN;
     private IScrollAnchorProvider? _scrollAnchorProvider;
     private Control? _registeredAnchorCandidate;
     private IDisposable? _scrollViewerOffsetSubscription;
     private ScrollViewer? _observedScrollViewer;
-    private bool _isWaitingForShrinkConfirmation;
     private int _prefixDirtyIndex;
     private int _realizedStartIndex = -1;
     private int _realizedEndIndex = -1;
@@ -137,6 +136,19 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
             var viewport = GetMeasureViewport(availableSize);
             var (anchorIndex, _) = FindIndexAtOffset(viewport.Top, itemCount);
             var (startIndex, endIndex) = GetRealizationRange(_extendedViewport, itemCount, anchorIndex);
+
+            if (_registeredAnchorCandidate is { } registeredAnchor &&
+                _containerToIndex.TryGetValue(registeredAnchor, out var registeredAnchorIndex) &&
+                registeredAnchorIndex >= 0 &&
+                registeredAnchorIndex < itemCount)
+            {
+                // ScrollContentPresenter records the registered candidate before arranging the
+                // panel, then compares its new position afterwards. A large prepend can move that
+                // candidate outside the estimated cache range, but recycling it during measure
+                // would leave Avalonia with nothing to compare and therefore no offset correction.
+                startIndex = Math.Min(startIndex, registeredAnchorIndex);
+                endIndex = Math.Max(endIndex, registeredAnchorIndex);
+            }
 
             RealizeRange(items, startIndex, endIndex, availableSize);
 
@@ -249,6 +261,7 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
+                PrimeScrollAnchoringForPrepend(e);
                 InsertSlots(e.NewStartingIndex, e.NewItems?.Count ?? 0);
                 break;
             case NotifyCollectionChangedAction.Remove:
@@ -270,6 +283,28 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
 
         RebuildContainerIndex();
         InvalidateMeasure();
+    }
+
+    private void PrimeScrollAnchoringForPrepend(NotifyCollectionChangedEventArgs e)
+    {
+        const double edgeDetectionTolerance = 0.1;
+
+        if (!PreserveViewportOnPrepend ||
+            e.NewStartingIndex != 0 ||
+            e.NewItems is not { Count: > 0 } ||
+            _registeredAnchorCandidate is null ||
+            _observedScrollViewer is not { } scrollViewer ||
+            scrollViewer.Offset.Y >= edgeDetectionTolerance ||
+            scrollViewer.Extent.Height <= scrollViewer.Viewport.Height)
+        {
+            return;
+        }
+
+        // ScrollContentPresenter disables anchoring exactly at the origin because a generic list
+        // normally wants newly inserted leading items to become visible. A history prepend has the
+        // opposite contract. Moving inside Avalonia's anchoring range by one tenth of a pixel lets
+        // its existing anchor candidate preserve the old first item through the next arrange.
+        scrollViewer.Offset = scrollViewer.Offset.WithY(edgeDetectionTolerance);
     }
 
     protected override IInputElement? GetControl(NavigationDirection direction, IInputElement? from, bool wrap)
@@ -708,7 +743,6 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         {
             RecycleSlot(i);
             _slots[i].MeasuredHeight = double.NaN;
-            _slots[i].PendingShrinkHeight = double.NaN;
         }
 
         RefreshRealizedRange();
@@ -784,66 +818,10 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     {
         EnsureSlotCountAtLeast(index + 1);
         var slot = _slots[index];
-        if (slot.HasMeasuredHeight && height.IsCloseTo(slot.MeasuredHeight))
-        {
-            slot.PendingShrinkHeight = double.NaN;
-            return;
-        }
+        if (slot.HasMeasuredHeight && height.IsCloseTo(slot.MeasuredHeight)) return;
 
-        if (slot.HasMeasuredHeight &&
-            height + HeightShrinkGuardThreshold < slot.MeasuredHeight)
-        {
-            if (slot.HasPendingShrinkHeight &&
-                slot.PendingShrinkHeight.IsCloseTo(height))
-            {
-                // Repeated measures in one render pass must not confirm a transient shrink.
-                if (slot.PendingShrinkConfirmationVersion == _shrinkConfirmationVersion)
-                {
-                    RequestShrinkConfirmation();
-                    return;
-                }
-
-                slot.PendingShrinkHeight = double.NaN;
-                slot.MeasuredHeight = height;
-                MarkPrefixDirty(index);
-                return;
-            }
-
-            slot.PendingShrinkHeight = height;
-            slot.PendingShrinkConfirmationVersion = _shrinkConfirmationVersion;
-            RequestShrinkConfirmation();
-            return;
-        }
-
-        slot.PendingShrinkHeight = double.NaN;
         slot.MeasuredHeight = height;
         MarkPrefixDirty(index);
-    }
-
-    private void RequestShrinkConfirmation()
-    {
-        if (_isWaitingForShrinkConfirmation)
-            return;
-
-        _isWaitingForShrinkConfirmation = true;
-        if (TopLevel.GetTopLevel(this) is { } root)
-        {
-            // A second measure in the same dispatcher turn is not evidence that a streaming
-            // control has settled. Confirm the shrink on the next animation frame instead.
-            root.RequestAnimationFrame(_ => ConfirmPendingShrinks());
-            return;
-        }
-
-        Dispatcher.UIThread.Post(ConfirmPendingShrinks, DispatcherPriority.Background);
-    }
-
-    private void ConfirmPendingShrinks()
-    {
-        _isWaitingForShrinkConfirmation = false;
-        _shrinkConfirmationVersion++;
-
-        if (VisualRoot is not null)
-            InvalidateMeasure();
     }
 
     private void EnsureSlotCountAtLeast(int count)
@@ -998,11 +976,8 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
     private sealed class Slot
     {
         public double MeasuredHeight { get; set; } = double.NaN;
-        public double PendingShrinkHeight { get; set; } = double.NaN;
-        public long PendingShrinkConfirmationVersion { get; set; }
         public Control? Container { get; set; }
         public object? RecycleKey { get; set; }
         public bool HasMeasuredHeight => !double.IsNaN(MeasuredHeight);
-        public bool HasPendingShrinkHeight => !double.IsNaN(PendingShrinkHeight);
     }
 }

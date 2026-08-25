@@ -4,7 +4,6 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Everywhere.Chat;
-using Everywhere.Collections;
 using Everywhere.Views;
 using LiveMarkdown.Avalonia;
 using Serilog;
@@ -12,10 +11,9 @@ using Serilog;
 namespace Everywhere.ViewModels;
 
 /// <summary>
-/// Coordinates text search across the stable presentation rows of the current conversation.
-/// Markdown parsing is cached by source identity and committed content version,
-/// independently from the active query, so changing a query never reparses unchanged messages.
-/// Parsing and range matching run on immutable snapshots away from the UI thread.
+/// Searches the complete current chat model while resolving visual rows only when navigation needs
+/// them. Markdown projections are cached by span identity and committed source version, so query
+/// changes do not reparse unchanged messages and UI windowing does not change global match counts.
 /// </summary>
 public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposable
 {
@@ -55,7 +53,7 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     internal event EventHandler? CurrentMatchChanged;
 
     /// <summary>
-    /// Raised when the selected match should be brought into the viewport.
+    /// Raised when the selected logical match should be revealed and brought into the viewport.
     /// </summary>
     public event EventHandler? NavigationRequested;
 
@@ -64,12 +62,14 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     /// </summary>
     public event EventHandler? FocusRequested;
 
-    private readonly IChatContextManager chatContextManager;
-    private readonly List<RowState?> rowStates = [];
-    private readonly Dictionary<ChatPresentationRow, RowState> statesByRow = new(ReferenceEqualityComparer.Instance);
-    private readonly List<ChatTextSearchMatch> matches = [];
+    private readonly IChatContextManager _chatContextManager;
+    private readonly List<SearchSourceState> _sourceStates = [];
+    private readonly Dictionary<object, SearchSourceState> _statesBySource = new(ReferenceEqualityComparer.Instance);
+    private readonly HashSet<AssistantChatMessage> _subscribedAssistants = new(ReferenceEqualityComparer.Instance);
+    private readonly List<ChatTextSearchMatch> _matches = [];
 
-    private IReadOnlyBindableList<ChatPresentationRow>? _rows;
+    private ChatContext? _context;
+    private IDisposable? _contextSubscription;
     private CancellationTokenSource? _projectionCancellation;
     private CancellationTokenSource? _matchCancellation;
     private long _searchGeneration;
@@ -77,11 +77,12 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     private long _matchingGeneration = -1;
     private long _publishedGeneration = -1;
     private bool _projectionRefreshRunning;
+    private bool _sourceReconciliationQueued;
     private bool _isDisposed;
 
     public ChatTextSearchViewModel(IChatContextManager chatContextManager)
     {
-        this.chatContextManager = chatContextManager;
+        _chatContextManager = chatContextManager;
         chatContextManager.PropertyChanged += HandleChatContextManagerPropertyChanged;
         AttachContext(chatContextManager.Current);
     }
@@ -91,32 +92,38 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
         if (_isDisposed) return;
         _isDisposed = true;
 
-        chatContextManager.PropertyChanged -= HandleChatContextManagerPropertyChanged;
-        DetachRows();
+        _chatContextManager.PropertyChanged -= HandleChatContextManagerPropertyChanged;
+        DetachContext();
         CancelProjectionRefresh();
         CancelMatch();
     }
 
     /// <summary>
-    /// Accepts a projection produced by an attached renderer when it represents the current source
-    /// object and committed version for the row.
+    /// Accepts the exact projection produced by a realized renderer when it represents the current
+    /// source object and committed version for the logical span.
     /// </summary>
     internal void AcceptRenderedProjection(ChatPresentationRow row, ObservableStringBuilder source, MarkdownTextProjection projection)
     {
         Dispatcher.UIThread.VerifyAccess();
 
-        if (!statesByRow.TryGetValue(row, out var state) || !state.AcceptRenderedProjection(source, projection)) return;
+        if (row is not AssistantTextOutputPresentationRow textRow ||
+            !_statesBySource.TryGetValue(textRow.TextSpan, out var state) ||
+            !state.AcceptRenderedProjection(source, projection))
+        {
+            return;
+        }
+
         RestartMatchingForProjectionChange();
     }
 
     internal int GetCurrentLocalIndex(ChatPresentationRow row)
     {
         var current = GetCurrentMatch();
-        return current is { } match && ReferenceEquals(match.Row, row) ? match.LocalIndex : -1;
+        return current is { } match && MatchBelongsToRow(match, row) ? match.LocalIndex : -1;
     }
 
     internal ChatTextSearchMatch? GetCurrentMatch() =>
-        !IsBusy && CurrentIndex >= 0 && CurrentIndex < matches.Count ? matches[CurrentIndex] : null;
+        !IsBusy && CurrentIndex >= 0 && CurrentIndex < _matches.Count ? _matches[CurrentIndex] : null;
 
     [RelayCommand]
     private void OpenSearch()
@@ -154,23 +161,18 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     // ReSharper disable once UnusedParameterInPartialMethod
     partial void OnQueryChanged(string? value)
     {
-        if (!IsOpen) return;
-        StartRefresh(clearMatches: true);
+        if (IsOpen) StartRefresh(clearMatches: true);
     }
 
     private void HandleChatContextManagerPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(IChatContextManager.Current))
+        if (e.PropertyName != nameof(IChatContextManager.Current)) return;
+
+        var context = _chatContextManager.Current;
+        Dispatcher.UIThread.PostOnDemand(() =>
         {
-            var context = chatContextManager.Current;
-            Dispatcher.UIThread.PostOnDemand(() =>
-            {
-                if (ReferenceEquals(context, chatContextManager.Current))
-                {
-                    AttachContext(context);
-                }
-            });
-        }
+            if (ReferenceEquals(context, _chatContextManager.Current)) AttachContext(context);
+        });
     }
 
     private void AttachContext(ChatContext? context)
@@ -178,78 +180,117 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
         Dispatcher.UIThread.VerifyAccess();
         CancelProjectionRefresh();
         CancelMatch();
-        DetachRows();
+        DetachContext();
 
+        _context = context;
         if (context is not null)
         {
-            _rows = context.Presentation.Rows;
-            _rows.CollectionChanged += HandleRowsCollectionChanged;
-            ReconcileRows();
+            _contextSubscription = context.ConnectDisplayItems().Subscribe(_ => RequestSourceReconciliation());
+            ReconcileSources();
         }
 
         StartRefresh(clearMatches: true);
     }
 
-    private void DetachRows()
+    private void DetachContext()
     {
-        if (_rows is not null)
-        {
-            _rows.CollectionChanged -= HandleRowsCollectionChanged;
-            _rows = null;
-        }
+        _contextSubscription?.Dispose();
+        _contextSubscription = null;
+        _context = null;
+        _sourceReconciliationQueued = false;
 
-        foreach (var state in statesByRow.Values)
-        {
-            state.Dispose();
-        }
+        foreach (var assistant in _subscribedAssistants) assistant.Spans.CollectionChanged -= HandleAssistantSpansChanged;
+        _subscribedAssistants.Clear();
 
-        statesByRow.Clear();
-        rowStates.Clear();
+        foreach (var state in _statesBySource.Values) state.Dispose();
+        _statesBySource.Clear();
+        _sourceStates.Clear();
     }
 
-    private void HandleRowsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void RequestSourceReconciliation()
     {
-        ReconcileRows();
-        StartRefresh(clearMatches: false);
+        if (_sourceReconciliationQueued) return;
+        _sourceReconciliationQueued = true;
+        Dispatcher.UIThread.PostOnDemand(() =>
+        {
+            _sourceReconciliationQueued = false;
+            ReconcileSources();
+            if (IsOpen) StartRefresh(clearMatches: false);
+        });
     }
 
-    private void ReconcileRows()
-    {
-        if (_rows is null) return;
-
-        var retained = new HashSet<ChatPresentationRow>(ReferenceEqualityComparer.Instance);
-        var nextStates = new List<RowState?>(_rows.Count);
-        foreach (var row in _rows)
-        {
-            retained.Add(row);
-            if (!statesByRow.TryGetValue(row, out var state))
-            {
-                state = RowState.Create(row, HandleRowContentChanged);
-                if (state is not null)
-                {
-                    statesByRow.Add(row, state);
-                }
-            }
-
-            nextStates.Add(state);
-        }
-
-        foreach (var (row, state) in statesByRow.ToArray())
-        {
-            if (retained.Contains(row)) continue;
-            statesByRow.Remove(row);
-            state.Dispose();
-        }
-
-        rowStates.Clear();
-        rowStates.AddRange(nextStates);
-    }
-
-    private void HandleRowContentChanged(RowState state)
+    private void ReconcileSources()
     {
         Dispatcher.UIThread.VerifyAccess();
-        if (!statesByRow.TryGetValue(state.Row, out var current) || !ReferenceEquals(current, state)) return;
-        StartRefresh(clearMatches: false);
+        if (_context is not { } context) return;
+
+        var retained = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        var retainedAssistants = new HashSet<AssistantChatMessage>(ReferenceEqualityComparer.Instance);
+        var nextStates = new List<SearchSourceState>();
+        foreach (var node in context.Items)
+        {
+            if (node.Message.IsHidden) continue;
+
+            switch (node.Message)
+            {
+                case UserChatMessage userMessage:
+                    retained.Add(node);
+                    if (!_statesBySource.TryGetValue(node, out var userState))
+                    {
+                        userState = SearchSourceState.CreateUser(node, userMessage, HandleSourceContentChanged);
+                        _statesBySource.Add(node, userState);
+                    }
+
+                    nextStates.Add(userState);
+                    break;
+                case AssistantChatMessage assistant:
+                    retainedAssistants.Add(assistant);
+                    if (_subscribedAssistants.Add(assistant)) assistant.Spans.CollectionChanged += HandleAssistantSpansChanged;
+
+                    foreach (var span in assistant.Spans.AsValueEnumerable().OfType<AssistantChatMessageTextSpan>())
+                    {
+                        retained.Add(span);
+                        if (!_statesBySource.TryGetValue(span, out var markdownState))
+                        {
+                            markdownState = SearchSourceState.CreateMarkdown(node, span, HandleSourceContentChanged);
+                            _statesBySource.Add(span, markdownState);
+                        }
+
+                        nextStates.Add(markdownState);
+                    }
+
+                    break;
+            }
+        }
+
+        foreach (var pair in _statesBySource.ToArray())
+        {
+            if (retained.Contains(pair.Key)) continue;
+            _statesBySource.Remove(pair.Key);
+            pair.Value.Dispose();
+        }
+
+        foreach (var assistant in _subscribedAssistants.ToArray())
+        {
+            if (retainedAssistants.Contains(assistant)) continue;
+            assistant.Spans.CollectionChanged -= HandleAssistantSpansChanged;
+            _subscribedAssistants.Remove(assistant);
+        }
+
+        _sourceStates.Clear();
+        _sourceStates.AddRange(nextStates);
+    }
+
+    private void HandleAssistantSpansChanged(object? sender, NotifyCollectionChangedEventArgs e) =>
+        RequestSourceReconciliation();
+
+    private void HandleSourceContentChanged(SearchSourceState state)
+    {
+        Dispatcher.UIThread.PostOnDemand(() =>
+        {
+            if (!_statesBySource.TryGetValue(state.Key, out var current) || !ReferenceEquals(current, state)) return;
+            if (IsOpen) StartRefresh(clearMatches: false);
+        });
     }
 
     private void StartRefresh(bool clearMatches)
@@ -270,29 +311,18 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
         ActivePattern = new TextSearchPattern(Query);
         IsBusy = true;
         VisualStateChanged?.Invoke(this, EventArgs.Empty);
-        if (clearMatches)
-        {
-            ReplaceMatches([]);
-        }
-
+        if (clearMatches) ReplaceMatches([]);
         StartMatchingCurrentSearch();
     }
 
-    /// <summary>
-    /// Starts one query-independent projection pass for every source version that is not cached.
-    /// Query changes reuse the running pass; only source lifetime changes cancel it.
-    /// </summary>
     private void EnsureProjections()
     {
         if (_projectionRefreshRunning || !IsOpen || ActivePattern is null) return;
 
         var work = new List<ProjectionWork>();
-        foreach (var state in rowStates)
+        foreach (var state in _sourceStates)
         {
-            if (state?.TryCreateProjectionWork() is { } item)
-            {
-                work.Add(item);
-            }
+            if (state.TryCreateProjectionWork() is { } item) work.Add(item);
         }
 
         if (work.Count == 0)
@@ -317,8 +347,6 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
             var projections = await Task.Run(
                 () =>
                 {
-                    // A canceled operation may briefly overlap its replacement while Markdig
-                    // finishes parsing. Keeping the projector local avoids sharing parser state.
                     var results = new MarkdownTextProjection[work.Count];
                     for (var i = 0; i < work.Count; i++)
                     {
@@ -335,9 +363,7 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
                 if (operation != _projectionOperation || cancellationToken.IsCancellationRequested) return;
 
                 for (var i = 0; i < work.Count; i++)
-                {
                     work[i].State.AcceptOffscreenProjection(work[i].Source, projections[i]);
-                }
 
                 CompleteProjectionRefresh(operation);
                 EnsureProjections();
@@ -361,13 +387,10 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     {
         if (!IsOpen || ActivePattern is not { } pattern) return;
 
-        foreach (var state in rowStates)
+        if (_sourceStates.Any(static state => !state.IsProjectionCurrent))
         {
-            if (state is { IsProjectionCurrent: false })
-            {
-                EnsureProjections();
-                return;
-            }
+            EnsureProjections();
+            return;
         }
 
         var generation = _searchGeneration;
@@ -376,13 +399,10 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
         CancelMatch();
         _matchingGeneration = generation;
 
-        var snapshots = new List<RowSearchSnapshot>();
-        foreach (var state in rowStates)
+        var snapshots = new List<SearchSnapshot>(_sourceStates.Count);
+        foreach (var state in _sourceStates)
         {
-            if (state?.CreateSearchSnapshot() is { } snapshot)
-            {
-                snapshots.Add(snapshot);
-            }
+            if (state.CreateSearchSnapshot() is { } snapshot) snapshots.Add(snapshot);
         }
 
         if (snapshots.Count == 0)
@@ -400,7 +420,7 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
 
     private async Task MatchAsync(
         TextSearchPattern pattern,
-        IReadOnlyList<RowSearchSnapshot> snapshots,
+        IReadOnlyList<SearchSnapshot> snapshots,
         long generation,
         CancellationToken cancellationToken)
     {
@@ -437,7 +457,7 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
 
     private static List<ChatTextSearchMatch> BuildMatches(
         TextSearchPattern pattern,
-        IReadOnlyList<RowSearchSnapshot> snapshots,
+        IReadOnlyList<SearchSnapshot> snapshots,
         CancellationToken cancellationToken)
     {
         var nextMatches = new List<ChatTextSearchMatch>();
@@ -451,25 +471,25 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     nextMatches.Add(new ChatTextSearchMatch(
-                        snapshot.Row,
+                        snapshot.Node,
+                        null,
                         0,
                         localIndex++,
-                        new TextHighlightRange(
-                            range.Start + snapshot.PlainTextOffset,
-                            range.Length)));
+                        new TextHighlightRange(range.Start + snapshot.PlainTextOffset, range.Length)));
                 }
 
                 continue;
             }
 
-            if (snapshot.Projection is not { } projection) continue;
+            if (snapshot.Projection is not { } projection || snapshot.Span is not { } span) continue;
             for (var bufferIndex = 0; bufferIndex < projection.Buffers.Count; bufferIndex++)
             {
                 foreach (var range in pattern.FindRanges(projection.Buffers[bufferIndex].Text))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     nextMatches.Add(new ChatTextSearchMatch(
-                        snapshot.Row,
+                        snapshot.Node,
+                        span,
                         bufferIndex,
                         localIndex++,
                         range));
@@ -479,6 +499,13 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
 
         return nextMatches;
     }
+
+    private static bool MatchBelongsToRow(ChatTextSearchMatch match, ChatPresentationRow row) => row switch
+    {
+        ChatMessagePresentationRow messageRow => match.Span is null && ReferenceEquals(match.Node, messageRow.Node),
+        AssistantTextOutputPresentationRow outputRow => match.Span is not null && ReferenceEquals(match.Span, outputRow.TextSpan),
+        _ => false,
+    };
 
     private void RestartMatchingForProjectionChange()
     {
@@ -493,32 +520,35 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     private void ReplaceMatches(IReadOnlyList<ChatTextSearchMatch> nextMatches)
     {
         var previous = GetCurrentMatch();
-        matches.Clear();
-        matches.AddRange(nextMatches);
-        MatchCount = matches.Count;
+        _matches.Clear();
+        _matches.AddRange(nextMatches);
+        MatchCount = _matches.Count;
 
         var nextIndex = -1;
-        if (matches.Count > 0)
+        if (_matches.Count > 0)
         {
-            nextIndex = previous is { } previousMatch ? matches.IndexOf(previousMatch) : 0;
-            if (nextIndex < 0) nextIndex = Math.Min(CurrentIndex, matches.Count - 1);
+            nextIndex = previous is { } previousMatch ? _matches.IndexOf(previousMatch) : 0;
+            if (nextIndex < 0) nextIndex = Math.Min(CurrentIndex, _matches.Count - 1);
             if (nextIndex < 0) nextIndex = 0;
         }
 
         CurrentIndex = nextIndex;
         CurrentMatchChanged?.Invoke(this, EventArgs.Empty);
-        if (nextIndex >= 0 && (previous is null || !matches[nextIndex].Equals(previous.Value)))
-        {
+        if (nextIndex >= 0 && (previous is null || !_matches[nextIndex].Equals(previous.Value)))
             NavigationRequested?.Invoke(this, EventArgs.Empty);
-        }
     }
 
     private void MoveCurrent(int delta)
     {
-        if (IsBusy || matches.Count == 0) return;
+        if (IsBusy || _matches.Count == 0) return;
 
-        CurrentIndex = (CurrentIndex + delta + matches.Count) % matches.Count;
-        CurrentMatchChanged?.Invoke(this, EventArgs.Empty);
+        var nextIndex = (CurrentIndex + delta + _matches.Count) % _matches.Count;
+        if (nextIndex != CurrentIndex)
+        {
+            CurrentIndex = nextIndex;
+            CurrentMatchChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         NavigationRequested?.Invoke(this, EventArgs.Empty);
     }
 
@@ -556,69 +586,65 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
     }
 
     internal readonly record struct ChatTextSearchMatch(
-        ChatPresentationRow Row,
+        ChatMessageNode Node,
+        AssistantChatMessageSpan? Span,
         int BufferIndex,
         int LocalIndex,
-        TextHighlightRange Range
-    );
+        TextHighlightRange Range);
 
     private readonly record struct ProjectionWork(
-        RowState State,
+        SearchSourceState State,
         ObservableStringBuilder Source,
-        ObservableStringBuilderSnapshot Snapshot
-    );
+        ObservableStringBuilderSnapshot Snapshot);
 
-    /// <summary>
-    /// Captures immutable row search input on the UI thread for background matching.
-    /// </summary>
-    private readonly record struct RowSearchSnapshot(
-        ChatPresentationRow Row,
+    private readonly record struct SearchSnapshot(
+        ChatMessageNode Node,
+        AssistantChatMessageTextSpan? Span,
         string? PlainText,
         int PlainTextOffset,
-        MarkdownTextProjection? Projection
-    );
+        MarkdownTextProjection? Projection);
 
-    private sealed class RowState : IDisposable
+    private sealed class SearchSourceState : IDisposable
     {
-        public ChatPresentationRow Row { get; }
-
+        public object Key { get; }
         public bool IsProjectionCurrent => _markdownSource is null || _projection?.SourceVersion == _markdownSource.Version;
 
-        private readonly Action<RowState> _contentChanged;
+        private readonly ChatMessageNode _node;
+        private readonly AssistantChatMessageTextSpan? _span;
+        private readonly Action<SearchSourceState> _contentChanged;
         private readonly UserChatMessage? _userMessage;
         private readonly ObservableStringBuilder? _markdownSource;
         private MarkdownTextProjection? _projection;
 
-        private RowState(
-            ChatPresentationRow row,
-            Action<RowState> contentChanged,
+        private SearchSourceState(
+            object key,
+            ChatMessageNode node,
+            Action<SearchSourceState> contentChanged,
             UserChatMessage? userMessage,
-            ObservableStringBuilder? markdownSource)
+            AssistantChatMessageTextSpan? span)
         {
-            Row = row;
+            Key = key;
+            _node = node;
+            _span = span;
             _contentChanged = contentChanged;
             _userMessage = userMessage;
-            _markdownSource = markdownSource;
+            _markdownSource = span?.ContentMarkdownBuilder;
 
-            if (userMessage is not null)
-            {
-                userMessage.PropertyChanged += HandleUserMessagePropertyChanged;
-            }
-
-            if (markdownSource is not null)
-            {
-                markdownSource.Changed += HandleMarkdownSourceChanged;
-            }
+            if (userMessage is not null) userMessage.PropertyChanged += HandleUserMessagePropertyChanged;
+            if (_markdownSource is not null) _markdownSource.Changed += HandleMarkdownSourceChanged;
         }
 
-        public static RowState? Create(ChatPresentationRow row, Action<RowState> contentChanged) => row switch
-        {
-            ChatMessagePresentationRow { Node.Message: UserChatMessage userMessage } =>
-                new RowState(row, contentChanged, userMessage, null),
-            AssistantOutputPresentationRow { Span: AssistantChatMessageTextSpan textSpan } =>
-                new RowState(row, contentChanged, null, textSpan.ContentMarkdownBuilder),
-            _ => null,
-        };
+        public static SearchSourceState CreateUser(
+            ChatMessageNode node,
+            UserChatMessage message,
+            Action<SearchSourceState> contentChanged) =>
+            new(node, node, contentChanged, message, null);
+
+        public static SearchSourceState CreateMarkdown(
+            ChatMessageNode node,
+            AssistantChatMessageTextSpan span,
+            Action<SearchSourceState> contentChanged) =>
+            new(span, node, contentChanged, null, span);
 
         public ProjectionWork? TryCreateProjectionWork()
         {
@@ -636,50 +662,36 @@ public sealed partial class ChatTextSearchViewModel : ObservableObject, IDisposa
 
         public void AcceptOffscreenProjection(ObservableStringBuilder source, MarkdownTextProjection value)
         {
-            if (!ReferenceEquals(_markdownSource, source) || source.Version != value.SourceVersion) return;
-
-            // A projection published by a realized renderer is authoritative for custom nodes.
-            // Never replace any already-current projection with the conservative off-screen one.
-            if (IsProjectionCurrent) return;
-
+            if (!ReferenceEquals(_markdownSource, source) || source.Version != value.SourceVersion || IsProjectionCurrent) return;
             _projection = value;
         }
 
-        public RowSearchSnapshot? CreateSearchSnapshot()
+        public SearchSnapshot? CreateSearchSnapshot()
         {
             if (_userMessage is not null)
             {
-                return new RowSearchSnapshot(
-                    Row,
+                return new SearchSnapshot(
+                    _node,
+                    null,
                     _userMessage.Content,
                     _userMessage is UserStrategyChatMessage ? 1 : 0,
                     null);
             }
 
             return IsProjectionCurrent && _projection is not null
-                ? new RowSearchSnapshot(Row, null, 0, _projection)
+                ? new SearchSnapshot(_node, _span, null, 0, _projection)
                 : null;
         }
 
         public void Dispose()
         {
-            if (_userMessage is not null)
-            {
-                _userMessage.PropertyChanged -= HandleUserMessagePropertyChanged;
-            }
-
-            if (_markdownSource is not null)
-            {
-                _markdownSource.Changed -= HandleMarkdownSourceChanged;
-            }
+            if (_userMessage is not null) _userMessage.PropertyChanged -= HandleUserMessagePropertyChanged;
+            if (_markdownSource is not null) _markdownSource.Changed -= HandleMarkdownSourceChanged;
         }
 
         private void HandleUserMessagePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(UserChatMessage.Content))
-            {
-                _contentChanged(this);
-            }
+            if (e.PropertyName == nameof(UserChatMessage.Content)) _contentChanged(this);
         }
 
         private void HandleMarkdownSourceChanged(in ObservableStringBuilderChangedEventArgs e) => _contentChanged(this);

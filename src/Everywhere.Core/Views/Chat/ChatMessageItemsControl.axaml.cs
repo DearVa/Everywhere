@@ -1,11 +1,13 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.Input;
 using Everywhere.AI;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Interactions;
-using Everywhere.ViewModels;
 using LiveMarkdown.Avalonia;
+using Serilog;
 using ShadUI;
 
 namespace Everywhere.Views;
@@ -153,6 +155,15 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
         set => SetValue(ShowStatisticsProperty, value);
     }
 
+    private ScrollViewer? _observedScrollViewer;
+    private bool _edgeLoadingEnabled;
+    private bool _edgeCheckQueued;
+    private bool _isTailPinned;
+    private bool _scrollToEndQueued;
+    private int _verticalScrollDirection;
+
+    private const double ScrollStateTolerance = 0.5;
+
     static ChatMessageItemsControl()
     {
         ChatContextProperty.Changed.AddClassHandler<ChatMessageItemsControl>((control, _) => control.ResetItemsSource());
@@ -160,10 +171,198 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
 
     private void ResetItemsSource()
     {
-        // ChatContext owns the projection companion. Detaching a view therefore releases only its
-        // binding, not the rows' presentation state; attaching another view to the same context
-        // receives the same IReadOnlyBindableList and stable row instances.
+        // ChatContext owns the windowed projection companion. Detaching a view releases only its
+        // binding; another view receives the same current window and its stable row instances.
         SetCurrentValue(ItemsSourceProperty, ChatContext?.Presentation.Rows);
+        _edgeLoadingEnabled = false;
+        _isTailPinned = ChatContext?.Presentation.IsAtLatest == true;
+        _verticalScrollDirection = 0;
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                if (VisualRoot is null) return;
+                _edgeLoadingEnabled = true;
+                ReconnectScrollViewer();
+                RequestScrollToEnd();
+                RequestEdgeCheck();
+            },
+            DispatcherPriority.Background);
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        ReconnectScrollViewer();
+        _edgeLoadingEnabled = true;
+        RequestScrollToEnd();
+        RequestEdgeCheck();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (_observedScrollViewer is not null)
+        {
+            _observedScrollViewer.ScrollChanged -= HandleScrollViewerScrollChanged;
+            _observedScrollViewer = null;
+        }
+
+        _edgeLoadingEnabled = false;
+        _edgeCheckQueued = false;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void ReconnectScrollViewer()
+    {
+        var scrollViewer = this.FindAncestorOfType<ScrollViewer>();
+        if (ReferenceEquals(scrollViewer, _observedScrollViewer)) return;
+
+        if (_observedScrollViewer is not null)
+            _observedScrollViewer.ScrollChanged -= HandleScrollViewerScrollChanged;
+
+        _observedScrollViewer = scrollViewer;
+        if (scrollViewer is not null)
+            scrollViewer.ScrollChanged += HandleScrollViewerScrollChanged;
+    }
+
+    private void HandleScrollViewerScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (!ReferenceEquals(sender, _observedScrollViewer) ||
+            sender is not ScrollViewer scrollViewer ||
+            !ReferenceEquals(e.Source, scrollViewer))
+        {
+            return;
+        }
+
+        var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
+        var isAtEnd = scrollViewer.Offset.Y >= maximumOffset - ScrollStateTolerance;
+        var extentChanged = Math.Abs(e.ExtentDelta.Y) > ScrollStateTolerance;
+        var viewportChanged = Math.Abs(e.ViewportDelta.Y) > ScrollStateTolerance;
+        var offsetChanged = Math.Abs(e.OffsetDelta.Y) > ScrollStateTolerance;
+
+        if (e.OffsetDelta.Y < -ScrollStateTolerance && !isAtEnd)
+        {
+            // An upward offset change is user navigation even when realization changes the extent
+            // in the same layout pass. It must immediately release tail following.
+            _verticalScrollDirection = -1;
+            _isTailPinned = false;
+        }
+        else if (!extentChanged && !viewportChanged && offsetChanged)
+        {
+            // Only a pure offset change can establish tail intent. Prepending a batch changes both
+            // extent and offset while the panel preserves the visible anchor.
+            _verticalScrollDirection = Math.Sign(e.OffsetDelta.Y);
+            _isTailPinned = isAtEnd;
+        }
+
+        if (ChatContext?.Presentation.IsAtLatest != true)
+            _isTailPinned = false;
+        else if (_isTailPinned && (extentChanged || viewportChanged) && !isAtEnd)
+            RequestScrollToEnd();
+
+        RequestEdgeCheck();
+    }
+
+    private void RequestScrollToEnd()
+    {
+        if (_scrollToEndQueued) return;
+
+        _scrollToEndQueued = true;
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                _scrollToEndQueued = false;
+                if (!_isTailPinned ||
+                    ChatContext?.Presentation.IsAtLatest != true ||
+                    _observedScrollViewer is not { } scrollViewer ||
+                    VisualRoot is null)
+                {
+                    return;
+                }
+
+                scrollViewer.Offset = new Vector(scrollViewer.Offset.X, double.PositiveInfinity);
+            },
+            DispatcherPriority.Loaded);
+    }
+
+    private void RequestEdgeCheck()
+    {
+        if (!_edgeLoadingEnabled || _edgeCheckQueued || _observedScrollViewer is null) return;
+
+        _edgeCheckQueued = true;
+        Dispatcher.UIThread.Post(CheckWindowEdges, DispatcherPriority.Background);
+    }
+
+    private void CheckWindowEdges()
+    {
+        _edgeCheckQueued = false;
+        if (!_edgeLoadingEnabled ||
+            _observedScrollViewer is not { Viewport.Height: > 0 } scrollViewer ||
+            ChatContext?.Presentation is not { IsWindowOperationActive: false } presentation)
+        {
+            return;
+        }
+
+        var threshold = Math.Max(240, scrollViewer.Viewport.Height);
+        var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
+        var cannotScroll = maximumOffset <= 0.5;
+        var nearStart = scrollViewer.Offset.Y <= threshold;
+        var nearEnd = maximumOffset - scrollViewer.Offset.Y <= threshold;
+
+        Task<bool>? load = null;
+        var loadDirection = 0;
+        if (nearStart && presentation.HasEarlierTurns && (cannotScroll || !nearEnd || _verticalScrollDirection <= 0))
+        {
+            load = presentation.LoadEarlierAsync();
+            loadDirection = -1;
+        }
+        else if (nearEnd && presentation.HasLaterTurns)
+        {
+            load = presentation.LoadLaterAsync();
+            loadDirection = 1;
+        }
+
+        if (load is not null)
+            ObserveEdgeLoadAsync(presentation, load, loadDirection).Detach();
+    }
+
+    private async Task ObserveEdgeLoadAsync(ChatPresentation presentation, Task<bool> loadTask, int loadDirection)
+    {
+        try
+        {
+            await loadTask;
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to materialize a chat presentation batch.");
+        }
+        finally
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!ReferenceEquals(ChatContext?.Presentation, presentation)) return;
+
+                // Avalonia's prepend anchor correction changes Offset in the opposite direction
+                // from the user's navigation intent. Restore the logical direction before deciding
+                // whether the same edge still needs another batch.
+                _verticalScrollDirection = loadDirection;
+                RequestEdgeCheck();
+            });
+        }
+    }
+
+    /// <summary>
+    /// Replaces a history-centered window with the bounded latest window before moving to its end.
+    /// </summary>
+    [RelayCommand]
+    private async Task ShowLatestAsync()
+    {
+        if (ChatContext?.Presentation is not { } presentation) return;
+        if (!presentation.IsAtLatest && !await presentation.ShowLatestAsync()) return;
+
+        if (!ReferenceEquals(ChatContext?.Presentation, presentation)) return;
+
+        _isTailPinned = true;
+        RequestScrollToEnd();
     }
 
     /// <summary>

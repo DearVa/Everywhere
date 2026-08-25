@@ -6,14 +6,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.Collections;
+using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
+using Markdig;
+using Serilog;
 
 namespace Everywhere.Views;
 
 /// <summary>
-/// Incrementally projects the current chat branch into stable, flat presentation rows. Top-level
-/// turns and their child row lists retain identity; a positional segmented list applies their
-/// DynamicData changes without recreating unaffected rows or controls.
+/// Incrementally projects a contiguous window of the current chat branch into stable, flat
+/// presentation rows. Materialized turns and their child row lists retain identity; a positional
+/// segmented list applies their DynamicData changes without recreating unaffected rows or controls.
 /// </summary>
 /// <remarks>
 /// The projection is UI-thread-affine. The chat model is intentionally allowed to stream from
@@ -21,13 +24,32 @@ namespace Everywhere.Views;
 /// row, source list, or subscription state. The branch change-set subscription keeps its own
 /// interlocked coalescing flag because that observable preserves the producer's worker thread.
 /// </remarks>
-public sealed class ChatPresentation : IDisposable
+public sealed class ChatPresentation : ObservableObject, IDisposable
 {
+    internal const int TurnBatchSize = 8;
+
     /// <summary>
-    /// Gets the stable, flat list consumed by the outer virtualizing chat ItemsControl. Expansion
-    /// state and first-presentation state live on these rows for the lifetime of the ChatContext.
+    /// Gets the stable, flat list consumed by the outer virtualizing chat ItemsControl. Row identity
+    /// is retained while its complete turn remains in the materialized window.
     /// </summary>
     public IReadOnlyBindableList<ChatPresentationRow> Rows { get; }
+
+    /// <summary>
+    /// Gets whether complete turns exist before the materialized presentation window.
+    /// </summary>
+    public bool HasEarlierTurns => _windowStart > 0;
+
+    /// <summary>
+    /// Gets whether complete turns exist after the materialized presentation window.
+    /// </summary>
+    public bool HasLaterTurns => _windowEnd < _descriptors.Count;
+
+    /// <summary>
+    /// Gets whether the materialized window currently contains the latest turn.
+    /// </summary>
+    public bool IsAtLatest => !HasLaterTurns;
+
+    internal bool IsWindowOperationActive => _windowOperationCancellation is not null;
 
     private readonly ChatContext _context;
     private readonly SourceList<IChatPresentationSegment> _segments = new();
@@ -35,6 +57,12 @@ public sealed class ChatPresentation : IDisposable
     private readonly List<BusyActivityItemPresentationRow> _busyActivities = [];
     private readonly DynamicSegmentedList<IChatPresentationSegment, ChatPresentationRow> _visibleRows;
     private readonly CompositeDisposable _disposables = new();
+    private List<TurnDescriptor> _descriptors = [];
+    private CancellationTokenSource? _windowOperationCancellation;
+    private int _windowStart;
+    private int _windowEnd;
+    private int _descriptorRevision;
+    private int _windowOperationRevision;
     private bool _isDisposed;
     private int _isRepartitionScheduled;
 
@@ -50,12 +78,234 @@ public sealed class ChatPresentation : IDisposable
         // Keep the chat list physically flat for VariableHeightVirtualizingStackPanel. The
         // segmented list observes each turn independently and translates local insertions to the
         // correct global index without replacing rows owned by other turns.
-        _visibleRows = new DynamicSegmentedList<IChatPresentationSegment, ChatPresentationRow>(_segments, segment => segment.Rows);
+        _visibleRows = new DynamicSegmentedList<IChatPresentationSegment, ChatPresentationRow>(_segments, segment => segment.Rows, int.MaxValue);
         Rows = _visibleRows.Items;
 
         _disposables.Add(context.ConnectDisplayItems().Subscribe(_ => RequestRepartition()));
 
-        Repartition();
+        Repartition(publishSynchronously: true);
+    }
+
+    /// <summary>
+    /// Prepares the bounded tail window before a loaded context becomes visible.
+    /// </summary>
+    internal Task<bool> PrepareInitialWindowAsync(CancellationToken cancellationToken = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        return ChangeWindowAsync(_windowStart, _windowEnd, supersedeCurrentOperation: true, cancellationToken);
+    }
+
+    /// <summary>
+    /// Preheats and prepends the preceding complete turn batch.
+    /// </summary>
+    internal Task<bool> LoadEarlierAsync(CancellationToken cancellationToken = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        if (!HasEarlierTurns || _windowOperationCancellation is not null) return Task.FromResult(false);
+
+        var start = Math.Max(0, _windowStart - TurnBatchSize);
+        return ChangeWindowAsync(start, _windowEnd, supersedeCurrentOperation: false, cancellationToken);
+    }
+
+    /// <summary>
+    /// Preheats and appends the following complete turn batch.
+    /// </summary>
+    internal Task<bool> LoadLaterAsync(CancellationToken cancellationToken = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        if (!HasLaterTurns || _windowOperationCancellation is not null) return Task.FromResult(false);
+
+        var end = Math.Min(_descriptors.Count, _windowEnd + TurnBatchSize);
+        return ChangeWindowAsync(_windowStart, end, supersedeCurrentOperation: false, cancellationToken);
+    }
+
+    /// <summary>
+    /// Replaces the current navigation window with a bounded, preheated tail window.
+    /// </summary>
+    internal Task<bool> ShowLatestAsync(CancellationToken cancellationToken = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        var start = Math.Max(0, _descriptors.Count - TurnBatchSize);
+        return ChangeWindowAsync(start, _descriptors.Count, supersedeCurrentOperation: true, cancellationToken);
+    }
+
+    /// <summary>
+    /// Materializes a bounded window around a model-backed search target and resolves its row.
+    /// </summary>
+    internal async Task<ChatPresentationRow?> RevealAsync(
+        ChatMessageNode node,
+        AssistantChatMessageSpan? span,
+        CancellationToken cancellationToken = default)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+
+        var targetIndex = FindTurnIndex(node);
+        if (targetIndex < 0) return null;
+
+        if (_windowOperationCancellation is null &&
+            targetIndex >= _windowStart &&
+            targetIndex < _windowEnd &&
+            ResolveTargetRow(node, span) is { } existing)
+        {
+            return existing;
+        }
+
+        var start = Math.Max(0, targetIndex - TurnBatchSize / 2);
+        var end = Math.Min(_descriptors.Count, start + TurnBatchSize);
+        start = Math.Max(0, end - TurnBatchSize);
+
+        if (!await ChangeWindowAsync(start, end, supersedeCurrentOperation: true, cancellationToken))
+            return null;
+
+        return await Dispatcher.UIThread.InvokeAsync(() => ResolveTargetRow(node, span));
+    }
+
+    private async Task<bool> ChangeWindowAsync(
+        int start,
+        int end,
+        bool supersedeCurrentOperation,
+        CancellationToken cancellationToken)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        if (_isDisposed) return false;
+
+        if (_windowOperationCancellation is not null)
+        {
+            if (!supersedeCurrentOperation) return false;
+            await _windowOperationCancellation.CancelAsync();
+        }
+
+        start = Math.Clamp(start, 0, _descriptors.Count);
+        end = Math.Clamp(end, start, _descriptors.Count);
+
+        var operationCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        _windowOperationCancellation = operationCancellation;
+        var operation = ++_windowOperationRevision;
+        var descriptorRevision = _descriptorRevision;
+        var preparedTurns = new Dictionary<object, ChatTurnPresentation>(ReferenceEqualityComparer.Instance);
+        var targetTurns = new List<ChatTurnPresentation>(end - start);
+
+        for (var index = start; index < end; index++)
+        {
+            var descriptor = _descriptors[index];
+            if (!_turns.TryGetValue(descriptor.Key, out var turn) || !turn.MatchesSources(descriptor.Nodes))
+            {
+                turn = new ChatTurnPresentation();
+                turn.UpdateSources(descriptor.Nodes, GetBusyActivities(descriptor));
+                preparedTurns.Add(descriptor.Key, turn);
+            }
+
+            targetTurns.Add(turn);
+        }
+
+        var requests = CaptureMarkdownPreparationRequests(targetTurns);
+        try
+        {
+            var updates = await ParseMarkdownAsync(requests, operationCancellation.Token).ConfigureAwait(false);
+            return await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_isDisposed ||
+                    operationCancellation.IsCancellationRequested ||
+                    operation != _windowOperationRevision ||
+                    descriptorRevision != _descriptorRevision)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < requests.Count; i++)
+                {
+                    var request = requests[i];
+                    var update = updates[i];
+                    if (request.Builder.Version != update.Version)
+                        return false;
+                }
+
+                for (var i = 0; i < requests.Count; i++)
+                {
+                    var request = requests[i];
+                    var update = updates[i];
+                    if (request.Row.CachedDocumentUpdate?.Version != update.Version)
+                        request.Row.CachedDocumentUpdate = update;
+                }
+
+                var replacedTurns = new List<ChatTurnPresentation>();
+                foreach (var pair in preparedTurns)
+                {
+                    if (_turns.TryGetValue(pair.Key, out var replacedTurn))
+                        replacedTurns.Add(replacedTurn);
+                    _turns[pair.Key] = pair.Value;
+                }
+                preparedTurns.Clear();
+
+                _windowStart = start;
+                _windowEnd = end;
+                SynchronizeMaterializedWindow();
+                foreach (var replacedTurn in replacedTurns) replacedTurn.Dispose();
+                NotifyWindowStateChanged();
+                return true;
+            });
+        }
+        catch (OperationCanceledException)
+        {
+            return false;
+        }
+        finally
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                foreach (var turn in preparedTurns.Values) turn.Dispose();
+                preparedTurns.Clear();
+
+                if (ReferenceEquals(_windowOperationCancellation, operationCancellation))
+                    _windowOperationCancellation = null;
+
+                operationCancellation.Dispose();
+            });
+        }
+    }
+
+    private static List<MarkdownPreparationRequest> CaptureMarkdownPreparationRequests(IReadOnlyList<ChatTurnPresentation> turns)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+
+        var requests = new List<MarkdownPreparationRequest>();
+        foreach (var row in turns.AsValueEnumerable().SelectMany(static turn => turn.OutputRows).OfType<AssistantTextOutputPresentationRow>())
+        {
+            if (row.CanReceiveUpdates) continue;
+
+            var builder = row.TextSpan.ContentMarkdownBuilder;
+            var snapshot = builder.CaptureSnapshot();
+            if (row.CachedDocumentUpdate?.Version == snapshot.Version) continue;
+
+            requests.Add(new MarkdownPreparationRequest(row, builder, snapshot));
+        }
+
+        return requests;
+    }
+
+    private static Task<IReadOnlyList<MarkdownDocumentUpdate>> ParseMarkdownAsync(
+        IReadOnlyList<MarkdownPreparationRequest> requests,
+        CancellationToken cancellationToken)
+    {
+        if (requests.Count == 0)
+            return Task.FromResult<IReadOnlyList<MarkdownDocumentUpdate>>([]);
+
+        var pipeline = MarkdownUpdateProducer.DefaultPipeline;
+        var snapshots = requests.Select(static request => request.Snapshot).ToArray();
+        return Task.Run<IReadOnlyList<MarkdownDocumentUpdate>>(
+            () =>
+            {
+                var result = new List<MarkdownDocumentUpdate>(snapshots.Length);
+                foreach (var snapshot in snapshots)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var document = Markdown.Parse(snapshot.Text, pipeline);
+                    result.Add(new MarkdownDocumentUpdate.Full(document, snapshot.Version));
+                }
+
+                return result;
+            },
+            cancellationToken);
     }
 
     private void RequestRepartition()
@@ -122,23 +372,101 @@ public sealed class ChatPresentation : IDisposable
         Repartition();
     }
 
-    private void Repartition()
+    private void Repartition(bool publishSynchronously = false)
     {
-        // This is the only method that changes the outer segment projection. Construction, branch
-        // change-set delivery, and busy-activity synchronization all enter it on the dispatcher;
-        // model PropertyChanged/CollectionChanged callbacks never call it directly.
         if (_isDisposed) return;
 
-        var descriptors = BuildTurnDescriptors(
+        // Preserve the current logical window by stable turn identity. A normal tail append extends
+        // a latest window; a branch replacement that invalidates the materialized sequence falls
+        // back to a bounded tail rather than attempting to splice unrelated rows together.
+        var previousKeys = _descriptors
+            .Skip(_windowStart)
+            .Take(_windowEnd - _windowStart)
+            .Select(static descriptor => descriptor.Key)
+            .ToArray();
+        var wasAtLatest = _windowEnd == _descriptors.Count;
+
+        _descriptors = BuildTurnDescriptors(
             _context.Items
                 .AsValueEnumerable()
                 .Where(node => !node.Message.IsHidden)
                 .ToArray());
-        var desired = new List<IChatPresentationSegment>(descriptors.Count);
+        _descriptorRevision++;
+        _windowOperationCancellation?.Cancel();
 
-        var retained = new HashSet<object>(ReferenceEqualityComparer.Instance);
-        foreach (var descriptor in descriptors.AsValueEnumerable())
+        int start;
+        int end;
+        if (_descriptors.Count == 0)
         {
+            start = 0;
+            end = 0;
+        }
+        else if (previousKeys.Length == 0 || !TryResolveContiguousRange(previousKeys, out start, out end))
+        {
+            start = Math.Max(0, _descriptors.Count - TurnBatchSize);
+            end = _descriptors.Count;
+        }
+        else
+        {
+            end = wasAtLatest ? _descriptors.Count : end;
+        }
+
+        if (publishSynchronously || CanSynchronizeWithoutPreheating(start, end))
+        {
+            _windowStart = start;
+            _windowEnd = end;
+            SynchronizeMaterializedWindow();
+            NotifyWindowStateChanged();
+            return;
+        }
+
+        ApplyRepartitionAsync(start, end).Detach();
+    }
+
+    private bool CanSynchronizeWithoutPreheating(int start, int end)
+    {
+        for (var index = start; index < end; index++)
+        {
+            var descriptor = _descriptors[index];
+            if (_turns.TryGetValue(descriptor.Key, out var turn))
+            {
+                if (!turn.MatchesSources(descriptor.Nodes)) return false;
+                continue;
+            }
+
+            foreach (var node in descriptor.Nodes)
+            {
+                if (node.Message is not AssistantChatMessage assistant) continue;
+                if (assistant.Spans.AsValueEnumerable().OfType<AssistantChatMessageTextSpan>()
+                    .Any(span => !assistant.IsBusy || span.FinishedAt is not null))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private async Task ApplyRepartitionAsync(int start, int end)
+    {
+        try
+        {
+            await ChangeWindowAsync(start, end, supersedeCurrentOperation: true, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to apply a chat presentation branch change.");
+        }
+    }
+
+    private void SynchronizeMaterializedWindow()
+    {
+        var desired = new List<IChatPresentationSegment>(_windowEnd - _windowStart);
+        var retained = new HashSet<object>(ReferenceEqualityComparer.Instance);
+        for (var index = _windowStart; index < _windowEnd; index++)
+        {
+            var descriptor = _descriptors[index];
             retained.Add(descriptor.Key);
             if (!_turns.TryGetValue(descriptor.Key, out var turn))
             {
@@ -146,12 +474,7 @@ public sealed class ChatPresentation : IDisposable
                 _turns.Add(descriptor.Key, turn);
             }
 
-            turn.UpdateSources(
-                descriptor.Nodes,
-                _busyActivities
-                    .AsValueEnumerable()
-                    .Where(activity => descriptor.Nodes.AsValueEnumerable().Any(node => ReferenceEquals(node, activity.AssistantNode)))
-                    .ToArray());
+            turn.UpdateSources(descriptor.Nodes, GetBusyActivities(descriptor));
             desired.Add(turn);
         }
 
@@ -162,6 +485,72 @@ public sealed class ChatPresentation : IDisposable
             _turns.Remove(removed.Key);
             removed.Value.Dispose();
         }
+    }
+
+    private IReadOnlyList<BusyActivityItemPresentationRow> GetBusyActivities(TurnDescriptor descriptor) =>
+        _busyActivities
+            .AsValueEnumerable()
+            .Where(activity => descriptor.Nodes.AsValueEnumerable().Any(node => ReferenceEquals(node, activity.AssistantNode)))
+            .ToArray();
+
+    private bool TryResolveContiguousRange(IReadOnlyList<object> keys, out int start, out int end)
+    {
+        start = FindDescriptorIndex(keys[0]);
+        if (start < 0)
+        {
+            end = -1;
+            return false;
+        }
+
+        for (var offset = 1; offset < keys.Count; offset++)
+        {
+            var index = start + offset;
+            if (index >= _descriptors.Count || !ReferenceEquals(_descriptors[index].Key, keys[offset]))
+            {
+                end = -1;
+                return false;
+            }
+        }
+
+        end = start + keys.Count;
+        return true;
+    }
+
+    private int FindDescriptorIndex(object key)
+    {
+        for (var index = 0; index < _descriptors.Count; index++)
+        {
+            if (ReferenceEquals(_descriptors[index].Key, key)) return index;
+        }
+
+        return -1;
+    }
+
+    private int FindTurnIndex(ChatMessageNode node)
+    {
+        for (var index = 0; index < _descriptors.Count; index++)
+        {
+            if (_descriptors[index].Nodes.AsValueEnumerable().Any(candidate => ReferenceEquals(candidate, node)))
+                return index;
+        }
+
+        return -1;
+    }
+
+    private ChatPresentationRow? ResolveTargetRow(ChatMessageNode node, AssistantChatMessageSpan? span)
+    {
+        var index = FindTurnIndex(node);
+        if (index < _windowStart || index >= _windowEnd) return null;
+
+        var descriptor = _descriptors[index];
+        return _turns.TryGetValue(descriptor.Key, out var turn) ? turn.ResolveTargetRow(node, span) : null;
+    }
+
+    private void NotifyWindowStateChanged()
+    {
+        OnPropertyChanged(nameof(HasEarlierTurns));
+        OnPropertyChanged(nameof(HasLaterTurns));
+        OnPropertyChanged(nameof(IsAtLatest));
     }
 
     private static List<TurnDescriptor> BuildTurnDescriptors(ChatMessageNode[] nodes)
@@ -244,10 +633,14 @@ public sealed class ChatPresentation : IDisposable
     {
         if (_isDisposed) return;
         _isDisposed = true;
+        _windowOperationCancellation?.Cancel();
+        _windowOperationCancellation?.Dispose();
+        _windowOperationCancellation = null;
         _disposables.Dispose();
         _segments.Clear();
         foreach (var turn in _turns.Values) turn.Dispose();
         _turns.Clear();
+        _descriptors.Clear();
         _busyActivities.Clear();
         _visibleRows.Dispose();
         _segments.Dispose();
@@ -259,6 +652,12 @@ public sealed class ChatPresentation : IDisposable
     {
         IObservableList<ChatPresentationRow> Rows { get; }
     }
+
+    private readonly record struct MarkdownPreparationRequest(
+        AssistantTextOutputPresentationRow Row,
+        ObservableStringBuilder Builder,
+        ObservableStringBuilderSnapshot Snapshot
+    );
 
     /// <summary>
     /// Thread-safe lifetime token returned to background chat operations. Only the completion
@@ -332,7 +731,10 @@ public sealed class ChatPresentation : IDisposable
         private bool _isApplyingRefresh;
 
         public IObservableList<ChatPresentationRow> Rows => _visibleRows;
+        internal IEnumerable<AssistantOutputPresentationRow> OutputRows => _outputRows.Values;
         private ProcessSummaryPresentationRow SummaryRow => field ??= new ProcessSummaryPresentationRow(RowsChanged);
+
+        internal bool MatchesSources(IReadOnlyList<ChatMessageNode> nodes) => ReferencesEqual(_nodes, nodes);
 
         /// <summary>
         /// Replaces the turn's persisted node view and runtime-only activity view by reference.
@@ -786,8 +1188,38 @@ public sealed class ChatPresentation : IDisposable
         private AssistantErrorPresentationRow GetErrorRow(ChatMessageNode node, bool terminal) =>
             _errorRows.GetValueOrDefault((node, terminal)) ?? (_errorRows[(node, terminal)] = new AssistantErrorPresentationRow(node, terminal));
 
-        private AssistantOutputPresentationRow GetOutputRow(ChatMessageNode node, AssistantChatMessageSpan span) =>
-            _outputRows.GetValueOrDefault(span) ?? (_outputRows[span] = new AssistantOutputPresentationRow(node, span));
+        public ChatPresentationRow? ResolveTargetRow(ChatMessageNode node, AssistantChatMessageSpan? span)
+        {
+            if (span is null)
+                return _messageRows.GetValueOrDefault(node);
+
+            if (!_outputRows.TryGetValue(span, out var row)) return null;
+            if (_visibleRows.Items.AsValueEnumerable().Any(candidate => ReferenceEquals(candidate, row))) return row;
+
+            // A failed partial output can live inside a collapsed process summary. Search navigation
+            // explicitly targets that output, so reveal the existing rows rather than manufacturing
+            // a parallel presentation path for the same span.
+            SummaryRow.IsExpanded = true;
+            return _visibleRows.Items.AsValueEnumerable().Any(candidate => ReferenceEquals(candidate, row)) ? row : null;
+        }
+
+        private AssistantOutputPresentationRow GetOutputRow(ChatMessageNode node, AssistantChatMessageSpan span)
+        {
+            var row = _outputRows.GetValueOrDefault(span) ?? (_outputRows[span] = span switch
+            {
+                AssistantChatMessageTextSpan text => new AssistantTextOutputPresentationRow(node, text),
+                AssistantChatMessageImageSpan image => new AssistantImageOutputPresentationRow(node, image),
+                _ => throw new InvalidOperationException($"Unexpected span type {span.GetType().Name}")
+            });
+
+            if (row is AssistantTextOutputPresentationRow textRow)
+            {
+                var assistant = (AssistantChatMessage)node.Message;
+                textRow.UpdateCanReceiveUpdates(assistant.IsBusy && span.FinishedAt is null);
+            }
+
+            return row;
+        }
 
         private ActivityGroupPresentationRow GetGroupRow(object source) =>
             _groupRows.GetValueOrDefault(source) ?? (_groupRows[source] = new ActivityGroupPresentationRow());

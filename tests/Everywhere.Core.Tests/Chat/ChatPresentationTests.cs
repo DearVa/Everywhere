@@ -1,11 +1,14 @@
 using System.Collections.Specialized;
+using Avalonia.Data;
 using Avalonia.Headless.NUnit;
 using Avalonia.Threading;
 using Everywhere.Chat;
 using Everywhere.Chat.Plugins;
 using Everywhere.I18N;
 using Everywhere.Views;
+using LiveMarkdown.Avalonia;
 using Lucide.Avalonia;
+using Markdig;
 using Microsoft.SemanticKernel;
 
 namespace Everywhere.Core.Tests.Chat;
@@ -34,7 +37,7 @@ public class ChatPresentationTests
         var rows = presentation.Rows.ToList();
 
         AssertRowTypes<ChatMessagePresentationRow, ChatMessagePresentationRow,
-            ReasoningActivityItemPresentationRow, AssistantOutputPresentationRow,
+            ReasoningActivityItemPresentationRow, AssistantTextOutputPresentationRow,
             ActivityGroupPresentationRow, TurnFooterPresentationRow>(rows);
 
         var functionGroup = rows.OfType<ActivityGroupPresentationRow>().Single();
@@ -64,19 +67,19 @@ public class ChatPresentationTests
         using var context = Context(new UserChatMessage("Do work", []), assistant);
         var presentation = context.Presentation;
         AssertRowTypes<ChatMessagePresentationRow, ReasoningActivityItemPresentationRow,
-            AssistantOutputPresentationRow, FunctionCallActivityItemPresentationRow,
-            AssistantOutputPresentationRow, TurnFooterPresentationRow>(presentation.Rows);
+            AssistantTextOutputPresentationRow, FunctionCallActivityItemPresentationRow,
+            AssistantTextOutputPresentationRow, TurnFooterPresentationRow>(presentation.Rows);
 
-        var outputs = presentation.Rows.OfType<AssistantOutputPresentationRow>().ToList();
+        var outputs = presentation.Rows.OfType<AssistantTextOutputPresentationRow>().ToList();
         var finalRow = outputs[^1];
         Assert.Multiple(() =>
         {
             Assert.That(presentation.Rows.OfType<ProcessSummaryPresentationRow>(), Is.Empty);
             Assert.That(presentation.Rows.OfType<ReasoningActivityItemPresentationRow>(), Has.Exactly(1).Items);
             Assert.That(presentation.Rows.OfType<FunctionCallActivityItemPresentationRow>(), Has.Exactly(1).Items);
-            Assert.That(outputs[0].Span, Is.SameAs(intermediate));
+            Assert.That(outputs[0].TextSpan, Is.SameAs(intermediate));
             Assert.That(outputs[0].IsFinal, Is.False);
-            Assert.That(finalRow.Span, Is.SameAs(final));
+            Assert.That(finalRow.TextSpan, Is.SameAs(final));
             Assert.That(finalRow.IsFinal, Is.True);
         });
     }
@@ -96,6 +99,279 @@ public class ChatPresentationTests
             Assert.That(presentation.Rows.OfType<ReasoningActivityItemPresentationRow>(), Has.Exactly(1).Items);
             Assert.That(presentation.Rows.OfType<AssistantOutputPresentationRow>(), Has.Exactly(1).Items);
             Assert.That(presentation.Rows.OfType<TurnFooterPresentationRow>(), Has.Exactly(1).Items);
+        });
+    }
+
+    [Test]
+    public void ImageOutput_WhenProjected_UsesStronglyTypedRow()
+    {
+        var assistant = new AssistantChatMessage { IsBusy = false, FinishedAt = DateTimeOffset.UtcNow };
+        var span = new AssistantChatMessageImageSpan();
+        assistant.AddSpan(span);
+        using var context = Context(new UserChatMessage("Image", []), assistant);
+
+        var row = context.Presentation.Rows.OfType<AssistantImageOutputPresentationRow>().Single();
+
+        Assert.That(row.ImageSpan, Is.SameAs(span));
+    }
+
+    [AvaloniaTest]
+    public async Task MarkdownSource_WhenFinalUpdateArrivesBeforeCompletion_DetachesAfterCompletion()
+    {
+        var assistant = new AssistantChatMessage { IsBusy = true };
+        var span = new AssistantChatMessageTextSpan("Streaming");
+        assistant.AddSpan(span);
+        using var context = Context(new UserChatMessage("Render", []), assistant);
+        var row = context.Presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        var builder = span.ContentMarkdownBuilder;
+        var snapshot = builder.CaptureSnapshot();
+        row.CachedDocumentUpdate = new MarkdownDocumentUpdate.Full(Markdown.Parse(snapshot.Text), snapshot.Version);
+
+        Assert.That(row.RenderingMarkdownBuilder, Is.SameAs(builder));
+
+        span.FinishedAt = DateTimeOffset.UtcNow;
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        Assert.That(row.RenderingMarkdownBuilder, Is.Null);
+    }
+
+    [AvaloniaTest]
+    public async Task MarkdownSource_WhenCompletionArrivesBeforeFinalUpdate_DetachesAfterUpdate()
+    {
+        var assistant = new AssistantChatMessage { IsBusy = true };
+        var span = new AssistantChatMessageTextSpan("Streaming");
+        assistant.AddSpan(span);
+        using var context = Context(new UserChatMessage("Render", []), assistant);
+        var row = context.Presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        var builder = span.ContentMarkdownBuilder;
+        span.FinishedAt = DateTimeOffset.UtcNow;
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        Assert.That(row.RenderingMarkdownBuilder, Is.SameAs(builder));
+
+        var snapshot = builder.CaptureSnapshot();
+        row.CachedDocumentUpdate = new MarkdownDocumentUpdate.Full(Markdown.Parse(snapshot.Text), snapshot.Version);
+
+        Assert.That(row.RenderingMarkdownBuilder, Is.Null);
+    }
+
+    [AvaloniaTest]
+    public async Task MarkdownRenderer_WhenProducerCommitsFinalUpdate_CachesUpdateAndDetachesBuilder()
+    {
+        var assistant = new AssistantChatMessage { IsBusy = true };
+        var span = new AssistantChatMessageTextSpan("Streaming");
+        assistant.AddSpan(span);
+        using var context = Context(new UserChatMessage("Render", []), assistant);
+        var row = context.Presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        var updateCommitted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        row.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AssistantTextOutputPresentationRow.CachedDocumentUpdate))
+                updateCommitted.TrySetResult();
+        };
+
+        var renderer = new MarkdownRenderer();
+        using var documentBinding = renderer.Bind(
+            MarkdownRenderer.DocumentUpdateProperty,
+            new Binding(nameof(AssistantTextOutputPresentationRow.CachedDocumentUpdate))
+            {
+                Source = row,
+                Mode = BindingMode.TwoWay,
+            });
+        using var builderBinding = renderer.Bind(
+            MarkdownRenderer.MarkdownBuilderProperty,
+            new Binding(nameof(AssistantTextOutputPresentationRow.RenderingMarkdownBuilder)) { Source = row });
+
+        await updateCommitted.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.That(row.RenderingMarkdownBuilder, Is.SameAs(span.ContentMarkdownBuilder));
+
+        span.FinishedAt = DateTimeOffset.UtcNow;
+        await Dispatcher.UIThread.InvokeAsync(() => { });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(renderer.DocumentUpdate, Is.SameAs(row.CachedDocumentUpdate));
+            Assert.That(renderer.MarkdownBuilder, Is.Null);
+        });
+    }
+
+    [Test]
+    public void InitialWindow_WhenHistoryExceedsBatchSize_MaterializesOnlyTailTurns()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize + 4);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            var users = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(users[0], Is.EqualTo("Question 4"));
+                Assert.That(users[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize + 3}"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.False);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task LoadEarlier_WhenBatchIsPrepared_PrependsCompleteTurnsWithCachedMarkdown()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize + 4);
+        using (context)
+        {
+            var presentation = context.Presentation;
+
+            Assert.That(await presentation.PrepareInitialWindowAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+
+            var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+            var outputs = presentation.Rows.OfType<AssistantTextOutputPresentationRow>().ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize + 4));
+                Assert.That(((UserChatMessage)users[0].Node.Message).Content, Is.EqualTo("Question 0"));
+                Assert.That(presentation.HasEarlierTurns, Is.False);
+                Assert.That(outputs, Has.All.Matches<AssistantTextOutputPresentationRow>(row =>
+                    row.CachedDocumentUpdate?.Version == row.TextSpan.ContentMarkdownBuilder.Version));
+                Assert.That(outputs, Has.All.Matches<AssistantTextOutputPresentationRow>(row => row.RenderingMarkdownBuilder is null));
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task Reveal_WhenTargetIsOutsideWindow_ReplacesWindowAroundLogicalTurn()
+    {
+        var (context, targets) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 3);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            var target = targets[2];
+
+            var row = await presentation.RevealAsync(target.Node, target.Span);
+
+            var users = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(item => ((UserChatMessage)item.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(row, Is.TypeOf<AssistantTextOutputPresentationRow>());
+                Assert.That(((AssistantTextOutputPresentationRow)row!).TextSpan, Is.SameAs(target.Span));
+                Assert.That(((AssistantTextOutputPresentationRow)row).CachedDocumentUpdate, Is.Not.Null);
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(users[0], Is.EqualTo("Question 0"));
+                Assert.That(users[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize - 1}"));
+                Assert.That(presentation.HasEarlierTurns, Is.False);
+                Assert.That(presentation.HasLaterTurns, Is.True);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task LoadLater_AfterDistantReveal_AppendsNextCompleteBatch()
+    {
+        var (context, targets) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 3);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            await presentation.RevealAsync(targets[2].Node, targets[2].Span);
+
+            Assert.That(await presentation.LoadLaterAsync(), Is.True);
+
+            var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize * 2));
+                Assert.That(((UserChatMessage)users[^1].Node.Message).Content,
+                    Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 2 - 1}"));
+                Assert.That(presentation.HasLaterTurns, Is.True);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task ShowLatest_AfterDistantReveal_ReplacesWindowWithBoundedTail()
+    {
+        var (context, targets) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 3);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            var oldRow = await presentation.RevealAsync(targets[2].Node, targets[2].Span);
+
+            Assert.That(await presentation.ShowLatestAsync(), Is.True);
+
+            var users = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(users[0], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 2}"));
+                Assert.That(users[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 3 - 1}"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.False);
+                Assert.That(presentation.Rows.Any(row => ReferenceEquals(row, oldRow)), Is.False);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task BranchChange_WhenCompletedOutputBecomesVisible_PublishesCachedDocumentFirst()
+    {
+        var originalAssistant = new AssistantChatMessage
+        {
+            IsBusy = false,
+            FinishedAt = DateTimeOffset.UtcNow,
+        };
+        originalAssistant.AddSpan(FinishedText("Original"));
+        using var context = Context(new UserChatMessage("Choose", []), originalAssistant);
+        var originalNode = context.Items[^1];
+        var presentation = context.Presentation;
+        await presentation.PrepareInitialWindowAsync();
+
+        var alternateAssistant = new AssistantChatMessage
+        {
+            IsBusy = false,
+            FinishedAt = DateTimeOffset.UtcNow,
+        };
+        var alternateSpan = FinishedText("Alternate");
+        alternateAssistant.AddSpan(alternateSpan);
+        var alternatePublished = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var publishedWithoutCache = false;
+        presentation.Rows.CollectionChanged += (_, _) =>
+        {
+            var row = presentation.Rows
+                .OfType<AssistantTextOutputPresentationRow>()
+                .FirstOrDefault(candidate => ReferenceEquals(candidate.TextSpan, alternateSpan));
+            if (row is null) return;
+
+            publishedWithoutCache |= row.CachedDocumentUpdate is null;
+            alternatePublished.TrySetResult();
+        };
+
+        context.CreateBranchOn(originalNode, alternateAssistant);
+        await alternatePublished.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        var alternateRow = presentation.Rows
+            .OfType<AssistantTextOutputPresentationRow>()
+            .Single(row => ReferenceEquals(row.TextSpan, alternateSpan));
+        Assert.Multiple(() =>
+        {
+            Assert.That(publishedWithoutCache, Is.False);
+            Assert.That(alternateRow.CachedDocumentUpdate, Is.Not.Null);
+            Assert.That(alternateRow.RenderingMarkdownBuilder, Is.Null);
         });
     }
 
@@ -354,15 +630,15 @@ public class ChatPresentationTests
         continued.AddSpan(final);
         using var context = Context(new UserChatMessage("Continue case", []), failed, continued);
         var presentation = context.Presentation;
-        var visibleOutput = presentation.Rows.OfType<AssistantOutputPresentationRow>().Single();
-        Assert.That(visibleOutput.Span, Is.SameAs(final));
+        var visibleOutput = presentation.Rows.OfType<AssistantTextOutputPresentationRow>().Single();
+        Assert.That(visibleOutput.TextSpan, Is.SameAs(final));
 
         presentation.Rows.OfType<ProcessSummaryPresentationRow>().Single().IsExpanded = true;
-        var outputs = presentation.Rows.OfType<AssistantOutputPresentationRow>().ToList();
+        var outputs = presentation.Rows.OfType<AssistantTextOutputPresentationRow>().ToList();
         Assert.Multiple(() =>
         {
             Assert.That(outputs, Has.Count.EqualTo(2));
-            Assert.That(outputs[0].Span, Is.SameAs(partial));
+            Assert.That(outputs[0].TextSpan, Is.SameAs(partial));
             Assert.That(outputs[1], Is.SameAs(visibleOutput));
         });
     }
@@ -561,6 +837,24 @@ public class ChatPresentationTests
         var context = new ChatContext();
         foreach (var message in messages) context.Add(message);
         return context;
+    }
+
+    private static (ChatContext Context, List<(ChatMessageNode Node, AssistantChatMessageTextSpan Span)> Targets)
+        CreateTurnHistory(int turnCount)
+    {
+        var context = new ChatContext();
+        var targets = new List<(ChatMessageNode, AssistantChatMessageTextSpan)>(turnCount);
+        for (var index = 0; index < turnCount; index++)
+        {
+            context.Add(new UserChatMessage($"Question {index}", []));
+            var assistant = new AssistantChatMessage { IsBusy = false, FinishedAt = DateTimeOffset.UtcNow };
+            var span = FinishedText($"Answer {index}");
+            assistant.AddSpan(span);
+            context.Add(assistant);
+            targets.Add((context.Items[^1], span));
+        }
+
+        return (context, targets);
     }
 
     private static AssistantChatMessageReasoningSpan FinishedReasoning(string text) =>
