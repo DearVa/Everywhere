@@ -2,8 +2,7 @@
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
-using Everywhere.Extensions;
-using ZLinq;
+using System.Collections.Immutable;
 
 namespace Everywhere.Windows.Interop;
 
@@ -19,7 +18,9 @@ internal sealed class MessageWindow
 
     private readonly ManualResetEventSlim _windowCreatedEvent = new(false);
     private readonly Lock _lock = new();
-    private readonly Dictionary<uint, List<MessageHandler>> _handlers = new();
+    // Message delivery vastly outnumbers subscriptions. Mutations publish a new
+    // contiguous snapshot so dispatch only copies the ImmutableArray wrapper.
+    private readonly Dictionary<uint, ImmutableArray<MessageHandler>> _handlers = new();
 
     private MessageWindow()
     {
@@ -36,17 +37,12 @@ internal sealed class MessageWindow
 
     public IDisposable AddHandler(uint message, MessageHandler handler)
     {
-        ArgumentNullException.ThrowIfNull(handler);
-
         lock (_lock)
         {
-            if (!_handlers.TryGetValue(message, out var list))
-            {
-                list = [];
-                _handlers[message] = list;
-            }
-            list.Add(handler);
+            var handlers = _handlers.GetValueOrDefault(message, []);
+            _handlers[message] = handlers.Add(handler);
         }
+
         return Disposable.Create(() => RemoveHandler(message, handler));
     }
 
@@ -54,9 +50,20 @@ internal sealed class MessageWindow
     {
         lock (_lock)
         {
-            if (!_handlers.TryGetValue(message, out var list)) return;
-            list.Remove(handler);
-            if (list.Count == 0) _handlers.Remove(message);
+            if (!_handlers.TryGetValue(message, out var handlers))
+            {
+                return;
+            }
+
+            handlers = handlers.Remove(handler);
+            if (handlers.IsEmpty)
+            {
+                _handlers.Remove(message);
+            }
+            else
+            {
+                _handlers[message] = handlers;
+            }
         }
     }
 
@@ -70,7 +77,10 @@ internal sealed class MessageWindow
             "STATIC",
             "Everywhere.MessageWindow",
             0,
-            0, 0, 0, 0,
+            0,
+            0,
+            0,
+            0,
             new HWND(-3), // HWND_MESSAGE
             null,
             hModule,
@@ -82,18 +92,20 @@ internal sealed class MessageWindow
             throw new InvalidOperationException("Failed to create message window.");
 
         MSG msg;
-        List<MessageHandler> snapshot = [];
         while (PInvoke.GetMessage(&msg, HWND.Null, 0, 0) != 0)
         {
-            // Dispatch to registered handlers first
+            ImmutableArray<MessageHandler> handlers;
             lock (_lock)
             {
-                if (_handlers.TryGetValue(msg.message, out var list) && list.Count > 0)
-                    snapshot.Reset(list);
+                handlers = _handlers.GetValueOrDefault(msg.message, []);
             }
-            foreach (var h in snapshot.AsValueEnumerable())
+
+            foreach (var handler in handlers)
             {
-                try { h(in msg); } catch { /* swallow */ }
+                try { handler(in msg); }
+                catch
+                { /* swallow */
+                }
             }
 
             PInvoke.TranslateMessage(&msg);

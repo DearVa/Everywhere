@@ -18,6 +18,7 @@ using Everywhere.StrategyEngine;
 using Everywhere.Windows.Chat.Plugins;
 using Everywhere.Windows.Common;
 using Everywhere.Windows.Interop;
+using Everywhere.Windows.ProcessIsolation.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using Serilog;
@@ -38,7 +39,9 @@ public static class Program
         var role = ProcessRoleCommandLine.Parse(args);
         if (role is not ProcessRole.Main)
         {
-            Environment.ExitCode = ProcessRoleHostRunner.RunAsync(role, args).GetAwaiter().GetResult();
+            Environment.ExitCode = role is ProcessRole.Input ?
+                ProcessRoleHostRunner.RunAsync(role, args, static () => new WindowsInputHostSession()).GetAwaiter().GetResult() :
+                ProcessRoleHostRunner.RunAsync(role, args).GetAwaiter().GetResult();
             return;
         }
 
@@ -69,7 +72,7 @@ public static class Program
 
                 .AddApplicationLogging()
                 .AddSingleton<IVisualElementContext, VisualElementContext>()
-                .AddSingleton<IShortcutListener, ShortcutListener>()
+                .AddInputHostShortcutListener(hostProcessCoordinator)
                 .AddSingleton<INativeHelper, NativeHelper>()
                 .AddSingleton<IWindowHelper, WindowHelper>()
                 .AddSingleton<IPlatformUpdateHandler, WindowsUpdateHandler>()
