@@ -9,6 +9,7 @@ using Everywhere.Interop;
 using Everywhere.Mac.Chat.Plugin;
 using Everywhere.Mac.Common;
 using Everywhere.Mac.Interop;
+using Everywhere.Mac.ProcessIsolation.Input;
 using Everywhere.ProcessIsolation.Hosting;
 using Everywhere.ProcessIsolation.Roles;
 using Everywhere.ProcessIsolation.Watchdog;
@@ -20,178 +21,102 @@ namespace Everywhere.Mac;
 public static class Program
 {
     [STAThread]
-    public static Task Main(string[] args)
+    public static void Main(string[] args)
+    {
+        NativeMessageBox.Register(NSAlertMessageBox.Show);
+        Environment.ExitCode = RunAsync(args).GetAwaiter().GetResult();
+    }
+
+    private static async Task<int> RunAsync(string[] args)
     {
         if (ProcessRoleCommandLine.ParseHostsControl(args) is { } hostsControlOperation)
         {
-            return RunHostsControlAsync(hostsControlOperation);
+            return await HostsControlRunner.RunAsync(hostsControlOperation).ConfigureAwait(false);
         }
 
         var role = ProcessRoleCommandLine.Parse(args);
         if (role is not ProcessRole.Main)
         {
-            return RunProcessRoleAsync(role, args);
+            return await (role is ProcessRole.Input ?
+                ProcessRoleHostRunner.RunAsync(role, args, static () => new MacInputHostSession()) :
+                ProcessRoleHostRunner.RunAsync(role, args)).ConfigureAwait(false);
         }
 
-        return MainAsync(args);
-    }
+        await using var entrance = Entrance.Initialize(args);
+        if (!entrance.IsPrimary)
+        {
+            return await entrance.ForwardAsync().ConfigureAwait(false);
+        }
 
-    private static async Task RunHostsControlAsync(HostsControlOperation operation)
-    {
-        Environment.ExitCode = await HostsControlRunner.RunAsync(operation);
-    }
-
-    private static async Task RunProcessRoleAsync(ProcessRole role, string[] args)
-    {
-        Environment.ExitCode = await ProcessRoleHostRunner.RunAsync(role, args);
+        return await RunMainAsync(args).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Keeps the full Avalonia/Core startup state machine out of early Host and
     /// controller dispatch so those paths do not resolve the production graph.
     /// </summary>
-    private static async Task MainAsync(string[] args)
+    private static async Task<int> RunMainAsync(string[] args)
     {
-#if IsMacOS
-        NativeMessageBox.MacOSMessageBoxHandler = MessageBoxHandler;
-#endif
+        if (!NSThread.IsMain)
+        {
+            throw new InvalidOperationException("Avalonia must be initialized on the macOS main thread.");
+        }
 
-        await Entrance.InitializeAsync(args);
-        await using var hostProcessCoordinator = HostProcessCoordinator.Create();
-        await using var mainHostControlServer = MainHostControlServer.Start(hostProcessCoordinator);
-        await hostProcessCoordinator.StartHostsAsync();
+        NSApplication.CheckForIllegalCrossThreadCalls = false;
+        NSApplication.Init();
+        PermissionHelper.EnsureAccessibilityTrusted();
+        NSApplication.SharedApplication.Delegate = new AppDelegate();
 
-        ServiceLocator.Build(x => x
+        await using var serviceProvider = ServiceLocator.Build(x => x
 
-                #region Basic
+            #region Basic
 
-                .AddApplicationLogging()
-                .AddSingleton<IVisualElementContext, VisualElementContext>()
-                .AddSingleton<IShortcutListener, CGEventShortcutListener>()
-                .AddSingleton<INativeHelper, NativeHelper>()
-                .AddSingleton<IWindowHelper, WindowHelper>()
-                .AddSingleton<IPlatformUpdateHandler, MacUpdateHandler>()
-                .AddSingleton<ISoftwareUpdater, SoftwareUpdater>()
-                .AddSingleton(hostProcessCoordinator)
-                .AddSettings()
-                .AddWatchdogManager()
-                .ConfigureNetwork()
-                .AddViewsAndViewModels()
-                .AddDatabaseAndStorage()
-                .AddCloudClient()
-                .AddChatEssentials()
+            .AddApplicationLogging()
+            .AddProcessIsolation()
+            .AddSingleton<IVisualElementContext, VisualElementContext>()
+            .AddInputHostShortcutListener()
+            .AddSingleton<INativeHelper, NativeHelper>()
+            .AddSingleton<IWindowHelper, WindowHelper>()
+            .AddSingleton<IPlatformUpdateHandler, MacUpdateHandler>()
+            .AddSingleton<ISoftwareUpdater, SoftwareUpdater>()
+            .AddSettings()
+            .AddWatchdogManager()
+            .ConfigureNetwork()
+            .AddViewsAndViewModels()
+            .AddDatabaseAndStorage()
+            .AddCloudClient()
+            .AddChatEssentials()
 
-                #endregion
+            #endregion
 
-                #region Chat Plugins
+            #region Chat Plugins
 
-                .AddTransient<BuiltInChatPlugin, SystemPlugin>()
+            .AddTransient<BuiltInChatPlugin, SystemPlugin>()
 
-                #endregion
-                
-                #region Strategy Engine
+            #endregion
 
-                .AddStrategyEngine()
+            #region Strategy Engine
 
-                #endregion
+            .AddStrategyEngine()
 
-                #region Initialize
+            #endregion
 
-                .AddTransient<IAsyncInitializer, ChatWindowInitializer>()
-                .AddTransient<IAsyncInitializer, UpdaterInitializer>()
+            #region Initialize
+
+            .AddTransient<IAsyncInitializer, ChatWindowInitializer>()
+            .AddTransient<IAsyncInitializer, UpdaterInitializer>()
 
             #endregion
 
         );
 
-        NSApplication.CheckForIllegalCrossThreadCalls = false;
-        NSApplication.Init();
-        NSApplication.SharedApplication.Delegate = new AppDelegate();
-
-        BuildAvaloniaApp(ServiceLocator.Resolve<IServiceProvider>()).StartWithClassicDesktopLifetime(args, ShutdownMode.OnExplicitShutdown);
-    }
-
-    private static NativeMessageBoxResult MessageBoxHandler(string title, string message, NativeMessageBoxButtons buttons, NativeMessageBoxIcon icon)
-    {
-        using var alert = new NSAlert();
-        alert.AlertStyle = icon switch
+        var exitCode = BuildAvaloniaApp(serviceProvider).StartWithClassicDesktopLifetime(args, ShutdownMode.OnExplicitShutdown);
+        if (Application.Current is App app)
         {
-            NativeMessageBoxIcon.Error or NativeMessageBoxIcon.Hand or NativeMessageBoxIcon.Stop => NSAlertStyle.Critical,
-            NativeMessageBoxIcon.Warning => NSAlertStyle.Warning,
-            _ => NSAlertStyle.Informational
-        };
-        alert.MessageText = title;
-        alert.InformativeText = message;
-        switch (buttons)
-        {
-            case NativeMessageBoxButtons.OkCancel:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_OK);
-                alert.AddButton(CoreLocaleResolver.Common_Cancel);
-                break;
-            }
-            case NativeMessageBoxButtons.YesNo:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_Yes);
-                alert.AddButton(CoreLocaleResolver.Common_No);
-                break;
-            }
-            case NativeMessageBoxButtons.YesNoCancel:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_Yes);
-                alert.AddButton(CoreLocaleResolver.Common_No);
-                alert.AddButton(CoreLocaleResolver.Common_Cancel);
-                break;
-            }
-            case NativeMessageBoxButtons.RetryCancel:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_Retry);
-                alert.AddButton(CoreLocaleResolver.Common_Cancel);
-                break;
-            }
-            case NativeMessageBoxButtons.AbortRetryIgnore:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_Abort);
-                alert.AddButton(CoreLocaleResolver.Common_Retry);
-                alert.AddButton(CoreLocaleResolver.Common_Ignore);
-                break;
-            }
-            default:
-            {
-                alert.AddButton(CoreLocaleResolver.Common_OK);
-                break;
-            }
+            await app.InitializationTask.ConfigureAwait(false);
         }
-        var result = (NSAlertButtonReturn)alert.RunModal();
-        return result switch
-        {
-            NSAlertButtonReturn.First => buttons switch
-            {
-                NativeMessageBoxButtons.Ok => NativeMessageBoxResult.Ok,
-                NativeMessageBoxButtons.OkCancel => NativeMessageBoxResult.Ok,
-                NativeMessageBoxButtons.YesNo => NativeMessageBoxResult.Yes,
-                NativeMessageBoxButtons.YesNoCancel => NativeMessageBoxResult.Yes,
-                NativeMessageBoxButtons.RetryCancel => NativeMessageBoxResult.Retry,
-                NativeMessageBoxButtons.AbortRetryIgnore => NativeMessageBoxResult.Cancel,
-                _ => NativeMessageBoxResult.None
-            },
-            NSAlertButtonReturn.Second => buttons switch
-            {
-                NativeMessageBoxButtons.OkCancel => NativeMessageBoxResult.Cancel,
-                NativeMessageBoxButtons.YesNo => NativeMessageBoxResult.No,
-                NativeMessageBoxButtons.YesNoCancel => NativeMessageBoxResult.No,
-                NativeMessageBoxButtons.RetryCancel => NativeMessageBoxResult.Cancel,
-                NativeMessageBoxButtons.AbortRetryIgnore => NativeMessageBoxResult.Retry,
-                _ => NativeMessageBoxResult.None
-            },
-            NSAlertButtonReturn.Third => buttons switch
-            {
-                NativeMessageBoxButtons.YesNoCancel => NativeMessageBoxResult.Cancel,
-                NativeMessageBoxButtons.AbortRetryIgnore => NativeMessageBoxResult.Ignore,
-                _ => NativeMessageBoxResult.None
-            },
-            _ => NativeMessageBoxResult.None
-        };
+
+        return exitCode;
     }
 
     private static AppBuilder BuildAvaloniaApp(IServiceProvider serviceProvider) =>
