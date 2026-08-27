@@ -12,9 +12,8 @@
   x:DataType="vm:ChatWindowViewModel" x:TypeArguments="vm:ChatWindowViewModel"
   Background="{DynamicResource AcrylicWindowBackgroundColor}"
   BorderBrush="{DynamicResource BorderColor}"
-  CornerRadius="20" SizeToContent="WidthAndHeight"
-  TransparencyLevelHint="AcrylicBlur,Blur,None" WindowDecorations="BorderOnly"
-  WindowStartupLocation="CenterScreen">
+  SizeToContent="WidthAndHeight" TransparencyLevelHint="AcrylicBlur,Blur,None"
+  WindowDecorations="BorderOnly" WindowStartupLocation="CenterScreen">
 
   <v:ReactiveShadWindow.BorderThickness>
     <OnPlatform
@@ -66,7 +65,7 @@
               <Setter Property="Width" Value="28"/>
               <Setter Property="Padding" Value="0"/>
               <Setter Property="CornerRadius" Value="14"/>
-              <Setter Property="Background" Value="{DynamicResource TransparentColor}"/>
+              <Setter Property="BorderThickness" Value="0"/>
 
               <Style Selector="^.Close">
                 <Setter Property="shadui:ButtonAssist.HoverBackground" Value="#99C42B1C"/>
@@ -79,7 +78,6 @@
             </Style>
 
             <Style Selector="ToggleButton.TitleBar">
-              <Setter Property="BorderBrush" Value="{DynamicResource TransparentColor}"/>
               <Setter Property="shadui:ButtonAssist.CheckedForeground" Value="{DynamicResource PrimaryForegroundColor}"/>
               <Setter Property="shadui:ButtonAssist.CheckedBackground" Value="{DynamicResource PrimaryColor50}"/>
 
@@ -137,7 +135,7 @@
           </StackPanel.Styles>
 
           <ToggleButton
-            Classes="Ghost TitleBar" Margin="0,0,2,0"
+            Classes="TitleBar" Margin="0,0,2,0"
             IsChecked="{Binding ChatContextManager.Current.Metadata.IsTemporary, Mode=TwoWay}"
             IsVisible="{Binding ChatContextManager.Current.DisplayItems.Count, Converter={x:Static vc:Int32Converters.NotGreaterThan}, ConverterParameter=1}"
             ToolTip.Tip="{I18N {x:Static LocaleKey.ChatContext_TemporaryToggleButton_ToolTip}}"
@@ -148,7 +146,7 @@
 
           <Panel>
             <ToggleButton
-              x:Name="HistoryButton" Classes="Ghost TitleBar"
+              x:Name="HistoryButton" Classes="TitleBar"
               Command="{Binding ChatContextManager.UpdateRecentHistoryCommand}"
               Content="{LucideIconContent History, Size=16}"
               FlowDirection="LeftToRight"
@@ -196,7 +194,7 @@
           </Panel>
 
           <Button
-            Classes="Ghost TitleBar"
+            Classes="TitleBar"
             Command="{Binding ChatContextManager.CreateNewCommand}"
             Content="{LucideIconContent Plus, Size=20}"
             HotKey="Ctrl+N"
@@ -204,7 +202,7 @@
             WindowDecorationProperties.ElementRole="User"/>
 
           <ToggleButton
-            Classes="Ghost TitleBar" Background="#00252525"
+            Classes="TitleBar" Background="#00252525"
             BorderThickness="1.5" HotKey="Ctrl+D"
             IsChecked="{Binding #Self.IsWindowPinned, Mode=TwoWay}"
             IsThreeState="True"
@@ -214,7 +212,7 @@
           </ToggleButton>
 
           <Button
-            Classes="Ghost TitleBar Close"
+            Classes="TitleBar Close"
             Command="{Binding CloseCommand}"
             Content="{LucideIconContent X, Size=20}"
             HotKey="Ctrl+W"

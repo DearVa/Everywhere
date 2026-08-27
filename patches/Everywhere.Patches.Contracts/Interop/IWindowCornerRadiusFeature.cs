@@ -12,13 +12,6 @@ public interface IWindowCornerRadiusFeature
     void SetCornerRadius(double radius);
 
     /// <summary>
-    /// Keeps Avalonia from restoring DWM non-client rendering after the application has replaced
-    /// the native frame with its own compositor clip and shadow.
-    /// </summary>
-    /// <param name="suppressed">Whether Avalonia should keep native frame rendering disabled.</param>
-    void SetNativeFrameRenderingSuppressed(bool suppressed);
-
-    /// <summary>
     /// Temporarily replaces the requested radius with zero for native window states that require square corners.
     /// </summary>
     /// <param name="suppressed">Whether the effective radius should be zero.</param>

@@ -9,7 +9,6 @@ internal class patch_WindowImpl : IWindowCornerRadiusFeature
     private long _everywhereCornerRadiusBits;
     private int _everywhereCornerRadiusConfigured;
     private int _everywhereCornerRadiusSuppressed;
-    private int _everywhereNativeFrameRenderingSuppressed;
 
     public void SetCornerRadius(double radius)
     {
@@ -22,9 +21,6 @@ internal class patch_WindowImpl : IWindowCornerRadiusFeature
         Volatile.Write(ref _everywhereCornerRadiusBits, BitConverter.DoubleToInt64Bits(radius));
         Volatile.Write(ref _everywhereCornerRadiusConfigured, 1);
     }
-
-    public void SetNativeFrameRenderingSuppressed(bool suppressed) =>
-        Volatile.Write(ref _everywhereNativeFrameRenderingSuppressed, suppressed ? 1 : 0);
 
     public void SetCornerRadiusSuppressed(bool suppressed) =>
         Volatile.Write(ref _everywhereCornerRadiusSuppressed, suppressed ? 1 : 0);
@@ -46,22 +42,5 @@ internal class patch_WindowImpl : IWindowCornerRadiusFeature
         var bits = Volatile.Read(ref _everywhereCornerRadiusBits);
         radius = BitConverter.Int64BitsToDouble(bits);
         return true;
-    }
-
-    // Avalonia reapplies its preferred policy whenever it extends the client area or changes the
-    // window state. Preserve that behavior for ordinary windows, but keep native rendering disabled
-    // after Everywhere has successfully installed the complete custom frame for ChatWindow.
-    private extern void orig_SetNCRenderingPolicy(
-        global::Avalonia.Win32.Interop.UnmanagedMethods.DwmNCRenderingPolicy value);
-
-    private void SetNCRenderingPolicy(
-        global::Avalonia.Win32.Interop.UnmanagedMethods.DwmNCRenderingPolicy value)
-    {
-        if (Volatile.Read(ref _everywhereNativeFrameRenderingSuppressed) != 0)
-        {
-            value = global::Avalonia.Win32.Interop.UnmanagedMethods.DwmNCRenderingPolicy.DWMNCRP_DISABLED;
-        }
-
-        orig_SetNCRenderingPolicy(value);
     }
 }

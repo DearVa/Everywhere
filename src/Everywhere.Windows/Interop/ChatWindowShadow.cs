@@ -3,50 +3,46 @@ using System.Runtime.CompilerServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
-using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
+using Avalonia.Threading;
 using Everywhere.Patches.Contracts.Interop;
 using Everywhere.Utilities;
 using Everywhere.Views;
-using SkiaSharp;
 
 namespace Everywhere.Windows.Interop;
 
 internal sealed class ChatWindowShadow
 {
     private const uint DwmColorNone = 0xFFFFFFFE;
-    private const float ShadowPadding = 12;
-    private const float ShadowBlurRadius = 12;
-    private const byte ActiveShadowAlpha = 100;
-    private const byte InactiveShadowAlpha = 60;
 
     private static readonly ConditionalWeakTable<ChatWindow, ChatWindowShadow> Shadows = new();
 
     private readonly ChatWindow _window;
     private readonly HWND _owner;
     private readonly IWindowCornerRadiusFeature _cornerRadiusFeature;
+    private readonly ChatWindowShadowRenderer _renderer;
 
-    private HWND _shadow;
-    private bool? _windowFrameSuppressed;
+    private bool? _cornerRadiusSuppressed;
+    private bool? _borderSuppressed;
     private IDisposable? _cornerRadiusOverride;
     private IDisposable? _borderThicknessOverride;
-    private bool _shadowVisible;
-    private int _shadowFrameWidth;
-    private int _shadowFrameHeight;
-    private double _shadowScaling;
-    private float _shadowRadius = float.NaN;
-    private byte _shadowAlpha;
+    private bool _stateUpdateQueued;
     private bool _isActive;
     private bool _isDisposed;
 
-    private ChatWindowShadow(ChatWindow window, HWND owner, IWindowCornerRadiusFeature cornerRadiusFeature)
+    private ChatWindowShadow(
+        ChatWindow window,
+        HWND owner,
+        IWindowCornerRadiusFeature cornerRadiusFeature,
+        ChatWindowShadowRenderer renderer)
     {
         _window = window;
         _owner = owner;
         _cornerRadiusFeature = cornerRadiusFeature;
+        _renderer = renderer;
         _isActive = PInvoke.GetForegroundWindow() == owner;
     }
 
@@ -76,94 +72,42 @@ internal sealed class ChatWindowShadow
             existingShadow.Dispose();
         }
 
-        // Fail closed until the shadow HWND and DWM policy have both been established. A later
-        // SetCornerRadius call can still store the requested radius without exposing a clipped
-        // content-only window.
+        // Fail closed until the shadow renderer is available. A later SetCornerRadius call can
+        // still store the requested radius without exposing a clipped content-only window.
         cornerRadiusFeature.SetCornerRadiusSuppressed(true);
-        var shadow = new ChatWindowShadow(window, owner, cornerRadiusFeature);
-        if (shadow.Attach())
+        var renderer = ChatWindowShadowRenderer.TryCreate(owner);
+        if (renderer is null)
         {
-            Shadows.Add(window, shadow);
+            return;
         }
+
+        var shadow = new ChatWindowShadow(window, owner, cornerRadiusFeature, renderer);
+        shadow.Attach();
+        Shadows.Add(window, shadow);
     }
 
-    private unsafe bool Attach()
+    private void Attach()
     {
-        using var hInstance = PInvoke.GetModuleHandle();
-        _shadow = PInvoke.CreateWindowEx(
-            WINDOW_EX_STYLE.WS_EX_LAYERED |
-            WINDOW_EX_STYLE.WS_EX_TOOLWINDOW |
-            WINDOW_EX_STYLE.WS_EX_NOACTIVATE |
-            WINDOW_EX_STYLE.WS_EX_TRANSPARENT,
-            "STATIC",
-            "Everywhere.ChatWindowShadow",
-            WINDOW_STYLE.WS_POPUP | WINDOW_STYLE.WS_DISABLED,
-            0,
-            0,
-            1,
-            1,
-            hWndParent: _owner,
-            hInstance: hInstance);
-
-        if (_shadow.IsNull)
-        {
-            return false;
-        }
-
-        fixed (char* propertyName = "UIA_WindowVisibilityOverridden")
-        {
-            // Keep the auxiliary HWND visible to desktop composition while hiding it from UIA-
-            // based window discovery, so capture tools can resolve the owner as the real window.
-            PInvoke.SetProp(_shadow, new PCWSTR(propertyName), new HANDLE(2));
-        }
-
-        if (!TryDisableNativeFrameRendering())
-        {
-            PInvoke.DestroyWindow(_shadow);
-            _shadow = HWND.Null;
-            return false;
-        }
-
-        _cornerRadiusFeature.SetNativeFrameRenderingSuppressed(true);
+        ConfigureDwmFrame();
         Win32Properties.AddWindowStylesCallback(_window, WindowStylesCallback);
-        ApplyNativeBehaviorStyles();
         Win32Properties.AddWndProcHookCallback(_window, WndProcHookCallback);
+        ApplyNativeBehaviorStyles();
         Update();
-        return true;
     }
 
-    private unsafe bool TryDisableNativeFrameRendering()
+    private unsafe void ConfigureDwmFrame()
     {
-        const int dwmNcRenderingPolicyDisabled = 1;
-        var policy = dwmNcRenderingPolicyDisabled;
-        var result = PInvoke.DwmSetWindowAttribute(
-            _owner,
-            DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY,
-            &policy,
-            sizeof(int));
-        if (result.Failed)
+        if (!OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
         {
-            return false;
+            return;
         }
 
-        var transitionsForcedDisabled = 0;
+        var borderColor = DwmColorNone;
         PInvoke.DwmSetWindowAttribute(
             _owner,
-            DWMWINDOWATTRIBUTE.DWMWA_TRANSITIONS_FORCEDISABLED,
-            &transitionsForcedDisabled,
-            sizeof(int));
-
-        if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000))
-        {
-            var borderColor = DwmColorNone;
-            PInvoke.DwmSetWindowAttribute(
-                _owner,
-                DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR,
-                &borderColor,
-                sizeof(uint));
-        }
-
-        return true;
+            DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR,
+            &borderColor,
+            sizeof(uint));
     }
 
     private void ApplyNativeBehaviorStyles()
@@ -201,12 +145,25 @@ internal sealed class ChatWindowShadow
     {
         switch ((WINDOW_MESSAGE)msg)
         {
+            case WINDOW_MESSAGE.WM_NCCALCSIZE:
+                if (!IsWindowMaximized((HWND)hWnd))
+                {
+                    // Keep WS_CAPTION for native composition behavior without allowing its
+                    // non-client metrics to shrink the restored or arranged client area.
+                    handled = true;
+                }
+
+                break;
             case WINDOW_MESSAGE.WM_ACTIVATE:
                 _isActive = (wParam.ToInt64() & 0xffff) != 0;
                 Update();
                 break;
             case WINDOW_MESSAGE.WM_WINDOWPOSCHANGED:
                 Update();
+                QueueStateUpdate();
+                break;
+            case WINDOW_MESSAGE.WM_EXITSIZEMOVE:
+                QueueStateUpdate();
                 break;
             case WINDOW_MESSAGE.WM_NCDESTROY:
                 Dispose();
@@ -216,27 +173,73 @@ internal sealed class ChatWindowShadow
         return IntPtr.Zero;
     }
 
+    private static bool IsWindowMaximized(HWND window)
+    {
+        var placement = new WINDOWPLACEMENT();
+        return PInvoke.GetWindowPlacement(window, ref placement) &&
+            placement.showCmd == SHOW_WINDOW_CMD.SW_SHOWMAXIMIZED;
+    }
+
     private void Update()
     {
-        var suppressWindowFrame =
-            !PInvoke.IsWindowVisible(_owner) ||
-            PInvoke.IsIconic(_owner) ||
-            PInvoke.IsZoomed(_owner) ||
-            PInvoke.IsWindowArranged(_owner) ||
-            _window.WindowState == WindowState.FullScreen;
+        var presentation = GetFramePresentation();
+        ApplyFramePresentation(presentation);
 
-        if (_windowFrameSuppressed != suppressWindowFrame)
+        if (!presentation.ShowShadow ||
+            !_cornerRadiusFeature.TryGetEffectiveCornerRadius(out var logicalRadius) ||
+            !TryGetClientBounds(out var frame) ||
+            !_renderer.Update(
+                frame,
+                _window.RenderScaling,
+                logicalRadius,
+                _isActive))
         {
-            _windowFrameSuppressed = suppressWindowFrame;
-            _cornerRadiusFeature.SetCornerRadiusSuppressed(suppressWindowFrame);
-            if (suppressWindowFrame)
+            _renderer.Hide();
+        }
+    }
+
+    private WindowFramePresentation GetFramePresentation()
+    {
+        var isUnavailable = !PInvoke.IsWindowVisible(_owner) || PInvoke.IsIconic(_owner);
+        var isFullScreen = _window.WindowState == WindowState.FullScreen;
+        var isMaximized = PInvoke.IsZoomed(_owner) || _window.WindowState == WindowState.Maximized;
+        var isArranged = !isMaximized && PInvoke.IsWindowArranged(_owner);
+
+        return new WindowFramePresentation(
+            SuppressCornerRadius: isUnavailable || isFullScreen || isMaximized || isArranged,
+            SuppressBorder: isFullScreen || isMaximized,
+            ShowShadow: !isUnavailable && !isFullScreen && !isMaximized);
+    }
+
+    private void ApplyFramePresentation(WindowFramePresentation presentation)
+    {
+        var invalidateVisual = false;
+        if (_cornerRadiusSuppressed != presentation.SuppressCornerRadius)
+        {
+            _cornerRadiusSuppressed = presentation.SuppressCornerRadius;
+            _cornerRadiusFeature.SetCornerRadiusSuppressed(presentation.SuppressCornerRadius);
+            if (presentation.SuppressCornerRadius)
             {
-                // Animation priority creates temporary value frames above the AXAML local
-                // values. Disposing them restores whichever frame values are underneath.
+                // Animation priority creates a temporary value above the AXAML local value.
+                // Disposing it restores whichever corner radius is underneath.
                 _cornerRadiusOverride = _window.SetValue(
                     TemplatedControl.CornerRadiusProperty,
                     default,
                     BindingPriority.Animation);
+            }
+            else
+            {
+                DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
+            }
+
+            invalidateVisual = true;
+        }
+
+        if (_borderSuppressed != presentation.SuppressBorder)
+        {
+            _borderSuppressed = presentation.SuppressBorder;
+            if (presentation.SuppressBorder)
+            {
                 _borderThicknessOverride = _window.SetValue(
                     TemplatedControl.BorderThicknessProperty,
                     default,
@@ -244,74 +247,36 @@ internal sealed class ChatWindowShadow
             }
             else
             {
-                DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
                 DisposeHelper.DisposeToDefault(ref _borderThicknessOverride);
             }
 
-            _window.InvalidateVisual();
+            invalidateVisual = true;
         }
 
-        if (suppressWindowFrame ||
-            !_cornerRadiusFeature.TryGetEffectiveCornerRadius(out var logicalRadius) ||
-            !TryGetClientBounds(out var frame))
+        if (invalidateVisual)
         {
-            Hide();
+            _window.InvalidateVisual();
+        }
+    }
+
+    private void QueueStateUpdate()
+    {
+        if (_stateUpdateQueued || _isDisposed)
+        {
             return;
         }
 
-        var scaling = _window.RenderScaling;
-        var radius = (float)(logicalRadius * scaling);
-        radius = Math.Min(radius, Math.Min(frame.Width, frame.Height) / 2f);
-        var padding = (int)Math.Ceiling(ShadowPadding * scaling);
-        var width = frame.Width + padding * 2;
-        var height = frame.Height + padding * 2;
-        var shadowAlpha = _isActive ? ActiveShadowAlpha : InactiveShadowAlpha;
-        var redraw =
-            _shadowFrameWidth != frame.Width ||
-            _shadowFrameHeight != frame.Height ||
-            Math.Abs(_shadowScaling - scaling) > double.Epsilon ||
-            float.IsNaN(_shadowRadius) ||
-            Math.Abs(_shadowRadius - radius) > float.Epsilon ||
-            _shadowAlpha != shadowAlpha;
+        _stateUpdateQueued = true;
+        Dispatcher.UIThread.Post(ProcessQueuedStateUpdate, DispatcherPriority.Background);
+    }
 
-        if (redraw)
+    private void ProcessQueuedStateUpdate()
+    {
+        _stateUpdateQueued = false;
+        if (!_isDisposed)
         {
-            if (!Render(
-                    frame.X - padding,
-                    frame.Y - padding,
-                    width,
-                    height,
-                    padding,
-                    radius,
-                    scaling,
-                    shadowAlpha))
-            {
-                Hide();
-                return;
-            }
-
-            _shadowFrameWidth = frame.Width;
-            _shadowFrameHeight = frame.Height;
-            _shadowScaling = scaling;
-            _shadowRadius = radius;
-            _shadowAlpha = shadowAlpha;
-        }
-        else
-        {
-            PInvoke.SetWindowPos(
-                _shadow,
-                HWND.Null,
-                frame.X - padding,
-                frame.Y - padding,
-                width,
-                height,
-                SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER);
-        }
-
-        if (!_shadowVisible)
-        {
-            PInvoke.ShowWindow(_shadow, SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE);
-            _shadowVisible = true;
+            // Win32 can finalize the arranged state after WM_WINDOWPOSCHANGED enters our hook.
+            Update();
         }
     }
 
@@ -334,139 +299,12 @@ internal sealed class ChatWindowShadow
         return true;
     }
 
-    private unsafe bool Render(
-        int x,
-        int y,
-        int width,
-        int height,
-        int padding,
-        float radius,
-        double scaling,
-        byte shadowAlpha)
-    {
-        var screenDc = PInvoke.GetDC(HWND.Null);
-        if (screenDc.IsNull)
-        {
-            return false;
-        }
-
-        var memoryDc = PInvoke.CreateCompatibleDC(screenDc);
-        if (memoryDc.IsNull)
-        {
-            PInvoke.ReleaseDC(HWND.Null, screenDc);
-            return false;
-        }
-
-        HBITMAP bitmap = default;
-        HGDIOBJ previousBitmap = default;
-        try
-        {
-            var bitmapInfo = new BITMAPINFO
-            {
-                bmiHeader = new BITMAPINFOHEADER
-                {
-                    biSize = (uint)sizeof(BITMAPINFOHEADER),
-                    biWidth = width,
-                    biHeight = -height,
-                    biPlanes = 1,
-                    biBitCount = 32,
-                    biCompression = (uint)BI_COMPRESSION.BI_RGB
-                }
-            };
-            void* pixels = null;
-            bitmap = PInvoke.CreateDIBSection(
-                memoryDc,
-                &bitmapInfo,
-                DIB_USAGE.DIB_RGB_COLORS,
-                &pixels,
-                default,
-                0);
-
-            if (bitmap.IsNull || pixels is null)
-            {
-                return false;
-            }
-
-            previousBitmap = PInvoke.SelectObject(memoryDc, bitmap);
-            using var surface = SKSurface.Create(new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul), (IntPtr)pixels, width * 4);
-            if (surface is null)
-            {
-                return false;
-            }
-
-            var canvas = surface.Canvas;
-            canvas.Clear(SKColors.Transparent);
-            var frame = new SKRect(padding, padding, width - padding, height - padding);
-            using var roundRect = new SKRoundRect(frame, radius, radius);
-            canvas.Save();
-            canvas.ClipRoundRect(roundRect, SKClipOperation.Difference, antialias: true);
-
-            var sigma = BlurRadiusToSigma(ShadowBlurRadius) * (float)scaling;
-            using var shadowFilter = SKImageFilter.CreateBlur(sigma, sigma);
-            using var shadowPaint = new SKPaint();
-            shadowPaint.IsAntialias = true;
-            shadowPaint.Color = new SKColor(0, 0, 0, shadowAlpha);
-            shadowPaint.ImageFilter = shadowFilter;
-            canvas.DrawRoundRect(roundRect, shadowPaint);
-            canvas.Restore();
-            canvas.Flush();
-
-            var destination = new Point(x, y);
-            var size = new SIZE(width, height);
-            var source = new Point(0, 0);
-            var blend = new BLENDFUNCTION
-            {
-                BlendOp = 0,
-                SourceConstantAlpha = byte.MaxValue,
-                AlphaFormat = 1
-            };
-
-            return PInvoke.UpdateLayeredWindow(
-                _shadow,
-                screenDc,
-                &destination,
-                &size,
-                memoryDc,
-                &source,
-                default,
-                &blend,
-                UPDATE_LAYERED_WINDOW_FLAGS.ULW_ALPHA);
-        }
-        finally
-        {
-            if (!previousBitmap.IsNull)
-            {
-                PInvoke.SelectObject(memoryDc, previousBitmap);
-            }
-
-            if (!bitmap.IsNull)
-            {
-                PInvoke.DeleteObject(bitmap);
-            }
-
-            PInvoke.DeleteDC(memoryDc);
-            PInvoke.ReleaseDC(HWND.Null, screenDc);
-        }
-    }
-
-    private static float BlurRadiusToSigma(float radius) =>
-        radius <= 0 ? 0 : 0.288675f * radius + 0.5f;
-
-    private void Hide()
-    {
-        if (_shadowVisible)
-        {
-            PInvoke.ShowWindow(_shadow, SHOW_WINDOW_CMD.SW_HIDE);
-            _shadowVisible = false;
-        }
-    }
-
     private void Dispose()
     {
         if (_isDisposed) return;
         _isDisposed = true;
 
-        _cornerRadiusFeature.SetNativeFrameRenderingSuppressed(false);
+        _cornerRadiusFeature.SetCornerRadiusSuppressed(false);
 
         if (Shadows.TryGetValue(_window, out var currentShadow) && ReferenceEquals(currentShadow, this))
         {
@@ -477,10 +315,12 @@ internal sealed class ChatWindowShadow
         Win32Properties.RemoveWindowStylesCallback(_window, WindowStylesCallback);
         DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
         DisposeHelper.DisposeToDefault(ref _borderThicknessOverride);
-        if (!_shadow.IsNull)
-        {
-            PInvoke.DestroyWindow(_shadow);
-            _shadow = HWND.Null;
-        }
+        _renderer.Dispose();
     }
+
+    private readonly record struct WindowFramePresentation(
+        bool SuppressCornerRadius,
+        bool SuppressBorder,
+        bool ShowShadow
+    );
 }

@@ -53,7 +53,8 @@ public interface IWindowHelper
     /// </summary>
     /// <param name="window">The target window.</param>
     /// <param name="radius">The requested radius.</param>
-    void SetCornerRadius(Window window, double radius);
+    /// <returns>The actual applied corner radius</returns>
+    double SetCornerRadius(Window window, double radius);
 
     /// <summary>
     /// Initialize the window properties by its type

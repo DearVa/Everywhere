@@ -107,7 +107,7 @@ public partial class ChatWindow :
         ApplyTemplate();
 
         _windowHelper.InitializeWindow(this);
-        _windowHelper.SetCornerRadius(this, CornerRadius.TopLeft);
+        CornerRadius = new CornerRadius(_windowHelper.SetCornerRadius(this, 20));
         _windowHelper.SetCloaked(this, true);
 
         // Setup window placement saving after initialization

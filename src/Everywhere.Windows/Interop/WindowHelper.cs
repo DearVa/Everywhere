@@ -244,21 +244,29 @@ public sealed class WindowHelper : IWindowHelper
         PInvoke.FlashWindowEx(&info);
     }
 
-    public void SetCornerRadius(Window window, double radius)
+    public double SetCornerRadius(Window window, double radius)
     {
+        // The arbitrary radius is owned by the compositor patch. Disabling DWM's fixed Windows 11
+        // radius also makes the fallback deterministic: an unavailable custom frame remains square.
+        Win32Properties.SetWindowCornerPreference(
+            window,
+            Win32Properties.WindowCornerPreference.DoNotRound);
+
         // ReSharper disable once SuspiciousTypeConversion.Global
         // This is auto waved into Avalonia.Win32.WindowImpl by MonoMod in project `Everywhere.Patches.Avalonia.Win32`
         if (window.PlatformImpl is IWindowCornerRadiusFeature feature)
         {
             feature.SetCornerRadius(radius);
             window.InvalidateVisual();
+            if (window is ChatWindow chatWindow)
+            {
+                ChatWindowShadow.Attach(chatWindow);
+            }
+
+            return radius;
         }
 
-        // The arbitrary radius is owned by the compositor patch. Disabling DWM's fixed Windows 11
-        // radius also makes the fallback deterministic: an unavailable custom frame remains square.
-        Win32Properties.SetWindowCornerPreference(
-            window,
-            Win32Properties.WindowCornerPreference.DoNotRound);
+        return 0;
     }
 
     public void InitializeWindow(Window window)

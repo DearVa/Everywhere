@@ -206,12 +206,9 @@ public sealed class WindowHelper : IWindowHelper
         NSApplication.SharedApplication.RequestUserAttention(NSRequestUserAttentionType.InformationalRequest);
     }
 
-    public void SetCornerRadius(Window window, double radius)
+    public double SetCornerRadius(Window window, double radius)
     {
-        if (window is ChatWindow chatWindow)
-        {
-            ChatWindowFrame.Create(chatWindow, radius);
-        }
+        return WindowFrameModifier.Attach(window, radius);
     }
 
     public void InitializeWindow(Window window)
@@ -284,11 +281,11 @@ public sealed class WindowHelper : IWindowHelper
         return null;
     }
 
-    private sealed class ChatWindowFrame : IDisposable
+    private sealed class WindowFrameModifier : IDisposable
     {
-        private static readonly ConditionalWeakTable<ChatWindow, ChatWindowFrame> Frames = new();
+        private static readonly ConditionalWeakTable<Window, WindowFrameModifier> Modifiers = new();
 
-        private readonly ChatWindow _window;
+        private readonly Window _window;
         private readonly NSWindow _nativeWindow;
         private readonly CompositeDisposable _subscriptions = new(6);
 
@@ -299,31 +296,35 @@ public sealed class WindowHelper : IWindowHelper
         private IDisposable? _cornerRadiusOverride;
         private IDisposable? _borderThicknessOverride;
 
-        private ChatWindowFrame(ChatWindow window, NSWindow nativeWindow, double radius)
+        private WindowFrameModifier(Window window, NSWindow nativeWindow, double radius)
         {
             _window = window;
             _nativeWindow = nativeWindow;
             _radius = Math.Max(0, radius);
         }
 
-        public static void Create(ChatWindow window, double radius)
+        public static double Attach(Window window, double radius)
         {
-            if (GetNativeWindow(window) is not { } nativeWindow) return;
+            if (GetNativeWindow(window) is not { } nativeWindow)
+            {
+                return 0;
+            }
 
-            if (Frames.TryGetValue(window, out var existingFrame))
+            if (Modifiers.TryGetValue(window, out var existingFrame))
             {
                 if (existingFrame._nativeWindow.Handle == nativeWindow.Handle)
                 {
                     existingFrame.SetRadius(radius);
-                    return;
+                    return radius;
                 }
 
                 existingFrame.Dispose();
             }
 
-            var frame = new ChatWindowFrame(window, nativeWindow, radius);
+            var frame = new WindowFrameModifier(window, nativeWindow, radius);
             frame.Attach();
-            Frames.Add(window, frame);
+            Modifiers.Add(window, frame);
+            return radius;
         }
 
         private void Attach()
@@ -384,24 +385,21 @@ public sealed class WindowHelper : IWindowHelper
             }
 
             var effectiveRadius = suppressFrame ? 0 : _radius;
-            if (_nativeWindow.ContentView is { } contentView)
+            if (_nativeWindow.ContentView is { Layer: { } layer })
             {
                 // Full-screen transitions can rebuild AppKit's frame view hierarchy, so resolve
                 // the content layer on every native state update instead of caching it.
-                if (contentView.Layer is { } layer)
+                CATransaction.Begin();
+                try
                 {
-                    CATransaction.Begin();
-                    try
-                    {
-                        CATransaction.DisableActions = true;
-                        layer.CornerRadius = (nfloat)effectiveRadius;
-                        layer.CornerCurve = CACornerCurve.Continuous;
-                        layer.MasksToBounds = effectiveRadius > 0;
-                    }
-                    finally
-                    {
-                        CATransaction.Commit();
-                    }
+                    CATransaction.DisableActions = true;
+                    layer.CornerRadius = (nfloat)effectiveRadius;
+                    layer.CornerCurve = CACornerCurve.Continuous;
+                    layer.MasksToBounds = effectiveRadius > 0;
+                }
+                finally
+                {
+                    CATransaction.Commit();
                 }
             }
 
@@ -414,9 +412,9 @@ public sealed class WindowHelper : IWindowHelper
             if (_isDisposed) return;
             _isDisposed = true;
 
-            if (Frames.TryGetValue(_window, out var currentFrame) && ReferenceEquals(currentFrame, this))
+            if (Modifiers.TryGetValue(_window, out var currentFrame) && ReferenceEquals(currentFrame, this))
             {
-                Frames.Remove(_window);
+                Modifiers.Remove(_window);
             }
 
             DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
