@@ -1,4 +1,5 @@
 ﻿using System.Reactive.Disposables;
+using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -285,11 +286,14 @@ public sealed class WindowHelper : IWindowHelper
 
     private sealed class ChatWindowFrame : IDisposable
     {
+        private static readonly ConditionalWeakTable<ChatWindow, ChatWindowFrame> Frames = new();
+
         private readonly ChatWindow _window;
         private readonly NSWindow _nativeWindow;
-        private readonly double _radius;
-        private readonly CompositeDisposable _subscriptions = new(5);
+        private readonly CompositeDisposable _subscriptions = new(6);
 
+        private double _radius;
+        private bool _isDisposed;
         private bool _isFullScreen;
         private bool? _frameSuppressed;
         private IDisposable? _cornerRadiusOverride;
@@ -306,10 +310,20 @@ public sealed class WindowHelper : IWindowHelper
         {
             if (GetNativeWindow(window) is not { } nativeWindow) return;
 
-            // ChatWindow is an application-lifetime singleton. Its Avalonia and AppKit
-            // subscriptions keep this controller alive, so WindowHelper needs no cache.
+            if (Frames.TryGetValue(window, out var existingFrame))
+            {
+                if (existingFrame._nativeWindow.Handle == nativeWindow.Handle)
+                {
+                    existingFrame.SetRadius(radius);
+                    return;
+                }
+
+                existingFrame.Dispose();
+            }
+
             var frame = new ChatWindowFrame(window, nativeWindow, radius);
             frame.Attach();
+            Frames.Add(window, frame);
         }
 
         private void Attach()
@@ -317,6 +331,7 @@ public sealed class WindowHelper : IWindowHelper
             _subscriptions.Add(_window.GetObservable(Window.WindowStateProperty).Subscribe(_ => Update()));
             _subscriptions.Add(_window.GetObservable(Visual.IsVisibleProperty).Subscribe(_ => Update()));
             _subscriptions.Add(NSWindow.Notifications.ObserveDidResize(_nativeWindow, (_, _) => Update()));
+            _subscriptions.Add(NSWindow.Notifications.ObserveWillClose(_nativeWindow, (_, _) => Dispose()));
             _subscriptions.Add(NSWindow.Notifications.ObserveWillEnterFullScreen(_nativeWindow, (_, _) =>
             {
                 _isFullScreen = true;
@@ -328,6 +343,12 @@ public sealed class WindowHelper : IWindowHelper
                 Update();
             }));
 
+            Update();
+        }
+
+        private void SetRadius(double radius)
+        {
+            _radius = Math.Max(0, radius);
             Update();
         }
 
@@ -390,6 +411,16 @@ public sealed class WindowHelper : IWindowHelper
 
         public void Dispose()
         {
+            if (_isDisposed) return;
+            _isDisposed = true;
+
+            if (Frames.TryGetValue(_window, out var currentFrame) && ReferenceEquals(currentFrame, this))
+            {
+                Frames.Remove(_window);
+            }
+
+            DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
+            DisposeHelper.DisposeToDefault(ref _borderThicknessOverride);
             _subscriptions.Dispose();
         }
     }
