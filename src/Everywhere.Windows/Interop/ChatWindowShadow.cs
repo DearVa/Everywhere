@@ -466,6 +466,8 @@ internal sealed class ChatWindowShadow
         if (_isDisposed) return;
         _isDisposed = true;
 
+        _cornerRadiusFeature.SetNativeFrameRenderingSuppressed(false);
+
         if (Shadows.TryGetValue(_window, out var currentShadow) && ReferenceEquals(currentShadow, this))
         {
             Shadows.Remove(_window);
