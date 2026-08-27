@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Runtime.CompilerServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -22,6 +23,8 @@ internal sealed class ChatWindowShadow
     private const byte ActiveShadowAlpha = 100;
     private const byte InactiveShadowAlpha = 60;
 
+    private static readonly ConditionalWeakTable<ChatWindow, ChatWindowShadow> Shadows = new();
+
     private readonly ChatWindow _window;
     private readonly HWND _owner;
     private readonly IWindowCornerRadiusFeature _cornerRadiusFeature;
@@ -37,6 +40,7 @@ internal sealed class ChatWindowShadow
     private float _shadowRadius = float.NaN;
     private byte _shadowAlpha;
     private bool _isActive;
+    private bool _isDisposed;
 
     private ChatWindowShadow(ChatWindow window, HWND owner, IWindowCornerRadiusFeature cornerRadiusFeature)
     {
@@ -54,19 +58,36 @@ internal sealed class ChatWindowShadow
             return;
         }
 
+        if (window.TryGetPlatformHandle() is not { } handle)
+        {
+            cornerRadiusFeature.SetCornerRadiusSuppressed(true);
+            return;
+        }
+
+        var owner = (HWND)handle.Handle;
+        if (Shadows.TryGetValue(window, out var existingShadow))
+        {
+            if (existingShadow._owner == owner)
+            {
+                existingShadow.Update();
+                return;
+            }
+
+            existingShadow.Dispose();
+        }
+
         // Fail closed until the shadow HWND and DWM policy have both been established. A later
         // SetCornerRadius call can still store the requested radius without exposing a clipped
         // content-only window.
         cornerRadiusFeature.SetCornerRadiusSuppressed(true);
-        if (window.TryGetPlatformHandle() is not { } handle)
+        var shadow = new ChatWindowShadow(window, owner, cornerRadiusFeature);
+        if (shadow.Attach())
         {
-            return;
+            Shadows.Add(window, shadow);
         }
-
-        new ChatWindowShadow(window, (HWND)handle.Handle, cornerRadiusFeature).Attach();
     }
 
-    private unsafe void Attach()
+    private unsafe bool Attach()
     {
         using var hInstance = PInvoke.GetModuleHandle();
         _shadow = PInvoke.CreateWindowEx(
@@ -86,7 +107,7 @@ internal sealed class ChatWindowShadow
 
         if (_shadow.IsNull)
         {
-            return;
+            return false;
         }
 
         fixed (char* propertyName = "UIA_WindowVisibilityOverridden")
@@ -100,7 +121,7 @@ internal sealed class ChatWindowShadow
         {
             PInvoke.DestroyWindow(_shadow);
             _shadow = HWND.Null;
-            return;
+            return false;
         }
 
         _cornerRadiusFeature.SetNativeFrameRenderingSuppressed(true);
@@ -108,6 +129,7 @@ internal sealed class ChatWindowShadow
         ApplyNativeBehaviorStyles();
         Win32Properties.AddWndProcHookCallback(_window, WndProcHookCallback);
         Update();
+        return true;
     }
 
     private unsafe bool TryDisableNativeFrameRendering()
@@ -441,6 +463,14 @@ internal sealed class ChatWindowShadow
 
     private void Dispose()
     {
+        if (_isDisposed) return;
+        _isDisposed = true;
+
+        if (Shadows.TryGetValue(_window, out var currentShadow) && ReferenceEquals(currentShadow, this))
+        {
+            Shadows.Remove(_window);
+        }
+
         Win32Properties.RemoveWndProcHookCallback(_window, WndProcHookCallback);
         Win32Properties.RemoveWindowStylesCallback(_window, WindowStylesCallback);
         DisposeHelper.DisposeToDefault(ref _cornerRadiusOverride);
