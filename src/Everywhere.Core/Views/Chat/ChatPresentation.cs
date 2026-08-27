@@ -1,6 +1,5 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Chat;
@@ -26,7 +25,7 @@ namespace Everywhere.Views;
 /// </remarks>
 public sealed class ChatPresentation : ObservableObject, IDisposable
 {
-    internal const int TurnBatchSize = 8;
+    public const int TurnBatchSize = 8;
 
     /// <summary>
     /// Gets the stable, flat list consumed by the outer virtualizing chat ItemsControl. Row identity
@@ -49,7 +48,7 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
     /// </summary>
     public bool IsAtLatest => !HasLaterTurns;
 
-    internal bool IsWindowOperationActive => _windowOperationCancellation is not null;
+    public bool IsWindowOperationActive => _windowOperationCancellation is not null;
 
     private readonly ChatContext _context;
     private readonly SourceList<IChatPresentationSegment> _segments = new();
@@ -89,18 +88,16 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
     /// <summary>
     /// Prepares the bounded tail window before a loaded context becomes visible.
     /// </summary>
-    internal Task<bool> PrepareInitialWindowAsync(CancellationToken cancellationToken = default)
+    public Task<bool> PrepareInitialWindowAsync(CancellationToken cancellationToken = default)
     {
-        Dispatcher.UIThread.VerifyAccess();
         return ChangeWindowAsync(_windowStart, _windowEnd, supersedeCurrentOperation: true, cancellationToken);
     }
 
     /// <summary>
     /// Preheats and prepends the preceding complete turn batch.
     /// </summary>
-    internal Task<bool> LoadEarlierAsync(CancellationToken cancellationToken = default)
+    public Task<bool> LoadEarlierAsync(CancellationToken cancellationToken = default)
     {
-        Dispatcher.UIThread.VerifyAccess();
         if (!HasEarlierTurns || _windowOperationCancellation is not null) return Task.FromResult(false);
 
         var start = Math.Max(0, _windowStart - TurnBatchSize);
@@ -110,9 +107,8 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
     /// <summary>
     /// Preheats and appends the following complete turn batch.
     /// </summary>
-    internal Task<bool> LoadLaterAsync(CancellationToken cancellationToken = default)
+    public Task<bool> LoadLaterAsync(CancellationToken cancellationToken = default)
     {
-        Dispatcher.UIThread.VerifyAccess();
         if (!HasLaterTurns || _windowOperationCancellation is not null) return Task.FromResult(false);
 
         var end = Math.Min(_descriptors.Count, _windowEnd + TurnBatchSize);
@@ -122,23 +118,56 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
     /// <summary>
     /// Replaces the current navigation window with a bounded, preheated tail window.
     /// </summary>
-    internal Task<bool> ShowLatestAsync(CancellationToken cancellationToken = default)
+    public Task<bool> ShowLatestAsync(CancellationToken cancellationToken = default)
     {
-        Dispatcher.UIThread.VerifyAccess();
         var start = Math.Max(0, _descriptors.Count - TurnBatchSize);
+        if (_windowOperationCancellation is null && _windowStart == start && _windowEnd == _descriptors.Count)
+            return Task.FromResult(true);
+
         return ChangeWindowAsync(start, _descriptors.Count, supersedeCurrentOperation: true, cancellationToken);
+    }
+
+    /// <summary>
+    /// Shrinks the materialized window around the complete turns intersecting the viewport. Both
+    /// rows must already belong to the committed window, so compaction never parses Markdown or
+    /// materializes new turns.
+    /// </summary>
+    public bool CompactAround(ChatPresentationRow firstVisibleRow, ChatPresentationRow lastVisibleRow)
+    {
+        if (_isDisposed) return false;
+
+        var firstVisibleIndex = FindTurnIndex(firstVisibleRow);
+        var lastVisibleIndex = FindTurnIndex(lastVisibleRow);
+        if (firstVisibleIndex < 0 || lastVisibleIndex < 0)
+            return false;
+
+        var visibleStart = Math.Min(firstVisibleIndex, lastVisibleIndex);
+        var visibleEnd = Math.Max(firstVisibleIndex, lastVisibleIndex) + 1;
+        var (start, end) = FitWindowAroundRange(visibleStart, visibleEnd, _windowStart, _windowEnd);
+        if (!IsMaterializedRange(start, end))
+            return false;
+
+        // An earlier edge load may still be preparing a larger range. Once this synchronous
+        // compaction commits, that obsolete operation must not expand the window again.
+        _windowOperationCancellation?.Cancel();
+        if (_windowStart == start && _windowEnd == end)
+            return false;
+
+        _windowStart = start;
+        _windowEnd = end;
+        SynchronizeMaterializedWindow();
+        NotifyWindowStateChanged();
+        return true;
     }
 
     /// <summary>
     /// Materializes a bounded window around a model-backed search target and resolves its row.
     /// </summary>
-    internal async Task<ChatPresentationRow?> RevealAsync(
+    public async Task<ChatPresentationRow?> RevealAsync(
         ChatMessageNode node,
         AssistantChatMessageSpan? span,
         CancellationToken cancellationToken = default)
     {
-        Dispatcher.UIThread.VerifyAccess();
-
         var targetIndex = FindTurnIndex(node);
         if (targetIndex < 0) return null;
 
@@ -150,9 +179,7 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
             return existing;
         }
 
-        var start = Math.Max(0, targetIndex - TurnBatchSize / 2);
-        var end = Math.Min(_descriptors.Count, start + TurnBatchSize);
-        start = Math.Max(0, end - TurnBatchSize);
+        var (start, end) = FitWindowAroundRange(targetIndex, targetIndex + 1, 0, _descriptors.Count);
 
         if (!await ChangeWindowAsync(start, end, supersedeCurrentOperation: true, cancellationToken))
             return null;
@@ -166,7 +193,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
         bool supersedeCurrentOperation,
         CancellationToken cancellationToken)
     {
-        Dispatcher.UIThread.VerifyAccess();
         if (_isDisposed) return false;
 
         if (_windowOperationCancellation is not null)
@@ -266,8 +292,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
 
     private static List<MarkdownPreparationRequest> CaptureMarkdownPreparationRequests(IReadOnlyList<ChatTurnPresentation> turns)
     {
-        Dispatcher.UIThread.VerifyAccess();
-
         var requests = new List<MarkdownPreparationRequest>();
         foreach (var row in turns.AsValueEnumerable().SelectMany(static turn => turn.OutputRows).OfType<AssistantTextOutputPresentationRow>())
         {
@@ -328,8 +352,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
     /// </summary>
     public IDisposable SetBusyActivity(LucideIconKind icon, IDynamicLocaleKey headerKey, bool removeAfterCompletion)
     {
-        Debug.Assert(Dispatcher.UIThread.CheckAccess());
-        ArgumentNullException.ThrowIfNull(headerKey);
         var scope = new BusyActivityScope(
             this,
             new BusyActivityItemPresentationRow(icon, headerKey, DateTimeOffset.UtcNow),
@@ -345,7 +367,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
 
     private void SynchronizeBusyActivity(BusyActivityScope scope)
     {
-        Debug.Assert(Dispatcher.UIThread.CheckAccess());
         if (_isDisposed) return;
 
         if (!scope.IsAttached)
@@ -535,6 +556,44 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
         }
 
         return -1;
+    }
+
+    private int FindTurnIndex(ChatPresentationRow row)
+    {
+        for (var index = _windowStart; index < _windowEnd; index++)
+        {
+            var descriptor = _descriptors[index];
+            if (!_turns.TryGetValue(descriptor.Key, out var turn) || !turn.MatchesSources(descriptor.Nodes))
+                continue;
+
+            if (turn.Rows.Items.AsValueEnumerable().Any(candidate => ReferenceEquals(candidate, row)))
+                return index;
+        }
+
+        return -1;
+    }
+
+    private bool IsMaterializedRange(int start, int end)
+    {
+        for (var index = start; index < end; index++)
+        {
+            var descriptor = _descriptors[index];
+            if (!_turns.TryGetValue(descriptor.Key, out var turn) || !turn.MatchesSources(descriptor.Nodes))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static (int Start, int End) FitWindowAroundRange(int targetStart, int targetEnd, int boundsStart, int boundsEnd)
+    {
+        var targetLength = targetEnd - targetStart;
+        var length = Math.Min(boundsEnd - boundsStart, Math.Max(TurnBatchSize, targetLength));
+        var leadingPadding = (length - targetLength + 1) / 2;
+        var minimumStart = Math.Max(boundsStart, targetEnd - length);
+        var maximumStart = Math.Min(targetStart, boundsEnd - length);
+        var start = Math.Clamp(targetStart - leadingPadding, minimumStart, maximumStart);
+        return (start, start + length);
     }
 
     private ChatPresentationRow? ResolveTargetRow(ChatMessageNode node, AssistantChatMessageSpan? span)
@@ -876,7 +935,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
 
         private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            Debug.Assert(Dispatcher.UIThread.CheckAccess());
             RequestRefresh(rewire: true);
         }
 
@@ -890,8 +948,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
 
         private void RequestRefresh(bool rewire = false)
         {
-            Debug.Assert(Dispatcher.UIThread.CheckAccess());
-
             _refreshRequested = true;
             _rewireRequested |= rewire;
             if (_refreshPosted) return;
@@ -909,7 +965,6 @@ public sealed class ChatPresentation : ObservableObject, IDisposable
 
         private void DrainRefresh()
         {
-            Debug.Assert(Dispatcher.UIThread.CheckAccess());
             var shouldRepost = false;
             try
             {

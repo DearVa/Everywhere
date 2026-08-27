@@ -49,6 +49,7 @@ public partial class ChatWindow :
     private readonly INativeHelper _nativeHelper;
     private readonly Settings _settings;
     private readonly PersistentState _persistentState;
+    private IDisposable? _pendingHiddenCompaction;
 
     /// <summary>
     /// Indicates whether the window has been resized by the user.
@@ -175,11 +176,24 @@ public partial class ChatWindow :
     {
         base.OnPropertyChanged(change);
 
-        if (ReferenceEquals(change.Property, IsVisibleProperty))
+        if (change.Property == IsVisibleProperty)
         {
-            ViewModel.IsOpened = change.NewValue is true;
+            var isVisible = change.NewValue is true;
+            ViewModel.IsOpened = isVisible;
+
+            DisposeHelper.DisposeToDefault(ref _pendingHiddenCompaction);
+            if (!isVisible)
+            {
+                _pendingHiddenCompaction = DispatcherTimer.RunOnce(
+                    () =>
+                    {
+                        _pendingHiddenCompaction = null;
+                        if (!IsVisible) ChatMessages.CompactCurrentViewport();
+                    },
+                    TimeSpan.FromSeconds(1));
+            }
         }
-        else if (ReferenceEquals(change.Property, IsWindowPinnedProperty))
+        else if (change.Property == IsWindowPinnedProperty)
         {
             var value = change.NewValue as bool?;
             _persistentState.IsChatWindowPinned = value;
@@ -383,10 +397,12 @@ public partial class ChatWindow :
 
     protected override void OnClosed(EventArgs e)
     {
-        base.OnClosed(e);
-
         if (!_canCloseWindow)
             Log.ForContext<ChatWindow>().Error("Chat window was closed unexpectedly. This should not happen.");
+
+        DisposeHelper.DisposeToDefault(ref _pendingHiddenCompaction);
+
+        base.OnClosed(e);
     }
 
     private void HandleDragEnter(object? sender, DragEventArgs e)

@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Xaml.Interactivity;
-using Everywhere.Chat;
 using Everywhere.Utilities;
 using Everywhere.Views;
 using LiveMarkdown.Avalonia;
@@ -322,12 +321,12 @@ public sealed class ChatTextSearchSurfaceBehavior : Behavior<Control>, IChatText
     }
 }
 
-internal interface IChatTextSearchSurface
+public interface IChatTextSearchSurface
 {
     bool TryGetMatchCenter(int localIndex, Visual relativeTo, out Point center);
 }
 
-internal sealed class ChatTextSearchSurfaceRegistry
+public sealed class ChatTextSearchSurfaceRegistry
 {
     public event Action<ChatPresentationRow>? SurfaceChanged;
 

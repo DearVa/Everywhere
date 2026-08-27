@@ -29,7 +29,7 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
         set => SetValue(TextSearchProperty, value);
     }
 
-    internal ChatTextSearchSurfaceRegistry TextSearchSurfaceRegistry { get; } = new();
+    public ChatTextSearchSurfaceRegistry TextSearchSurfaceRegistry { get; } = new();
 
     /// <summary>
     /// Defines the <see cref="ChatContext"/> property.
@@ -156,6 +156,7 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
     }
 
     private ScrollViewer? _observedScrollViewer;
+    private PendingViewportAnchor? _pendingViewportAnchor;
     private bool _edgeLoadingEnabled;
     private bool _edgeCheckQueued;
     private bool _isTailPinned;
@@ -169,15 +170,21 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
         ChatContextProperty.Changed.AddClassHandler<ChatMessageItemsControl>((control, _) => control.ResetItemsSource());
     }
 
+    public ChatMessageItemsControl()
+    {
+        LayoutUpdated += HandleLayoutUpdated;
+    }
+
     private void ResetItemsSource()
     {
         // ChatContext owns the windowed projection companion. Detaching a view releases only its
         // binding; another view receives the same current window and its stable row instances.
+        _pendingViewportAnchor = null;
         SetCurrentValue(ItemsSourceProperty, ChatContext?.Presentation.Rows);
         _edgeLoadingEnabled = false;
         _isTailPinned = ChatContext?.Presentation.IsAtLatest == true;
         _verticalScrollDirection = 0;
-        Dispatcher.UIThread.Post(
+        Dispatcher.Post(
             () =>
             {
                 if (VisualRoot is null) return;
@@ -187,6 +194,68 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
                 RequestEdgeCheck();
             },
             DispatcherPriority.Background);
+    }
+
+    /// <summary>
+    /// Shrinks the materialized history around the turns currently intersecting the viewport. The
+    /// visual anchor is retained locally because pixel positioning belongs to this view, not to the
+    /// presentation projection.
+    /// </summary>
+    public void CompactCurrentViewport()
+    {
+        if (_pendingViewportAnchor is not null ||
+            ChatContext is not { } context ||
+            ItemsPanelRoot is not VariableHeightVirtualizingStackPanel panel ||
+            !panel.TryGetViewportSnapshot(out var snapshot))
+        {
+            return;
+        }
+
+        var rows = context.Presentation.Rows;
+        if ((uint)snapshot.FirstIndex >= (uint)rows.Count ||
+            (uint)snapshot.LastIndex >= (uint)rows.Count ||
+            (uint)snapshot.AnchorIndex >= (uint)rows.Count)
+        {
+            return;
+        }
+
+        var wasEdgeLoadingEnabled = _edgeLoadingEnabled;
+        _edgeLoadingEnabled = false;
+
+        if (context.Presentation.CompactAround(rows[snapshot.FirstIndex], rows[snapshot.LastIndex]))
+        {
+            _pendingViewportAnchor = new PendingViewportAnchor(rows[snapshot.AnchorIndex], snapshot.OffsetWithinAnchor);
+            return;
+        }
+
+        _pendingViewportAnchor = null;
+        _edgeLoadingEnabled = wasEdgeLoadingEnabled;
+    }
+
+    private void HandleLayoutUpdated(object? sender, EventArgs e)
+    {
+        if (_pendingViewportAnchor is not { } anchor ||
+            !IsEffectivelyVisible ||
+            ItemsPanelRoot is not VariableHeightVirtualizingStackPanel panel)
+        {
+            return;
+        }
+
+        var index = ItemsView.IndexOf(anchor.Row);
+        if (index < 0 || !panel.CenterViewportAnchor(index, anchor.OffsetWithinItem))
+            return;
+
+        _pendingViewportAnchor = null;
+        _edgeLoadingEnabled = VisualRoot is not null;
+
+        if (_observedScrollViewer is { } scrollViewer && ChatContext?.Presentation is { } presentation)
+        {
+            var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
+            _isTailPinned = presentation.IsAtLatest && scrollViewer.Offset.Y >= maximumOffset - ScrollStateTolerance;
+            _verticalScrollDirection = _isTailPinned ? 1 : 0;
+        }
+
+        RequestEdgeCheck();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -233,6 +302,9 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
             return;
         }
 
+        if (_pendingViewportAnchor is not null)
+            return;
+
         var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
         var isAtEnd = scrollViewer.Offset.Y >= maximumOffset - ScrollStateTolerance;
         var extentChanged = Math.Abs(e.ExtentDelta.Y) > ScrollStateTolerance;
@@ -267,11 +339,12 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
         if (_scrollToEndQueued) return;
 
         _scrollToEndQueued = true;
-        Dispatcher.UIThread.Post(
+        Dispatcher.Post(
             () =>
             {
                 _scrollToEndQueued = false;
                 if (!_isTailPinned ||
+                    _pendingViewportAnchor is not null ||
                     ChatContext?.Presentation.IsAtLatest != true ||
                     _observedScrollViewer is not { } scrollViewer ||
                     VisualRoot is null)
@@ -289,7 +362,7 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
         if (!_edgeLoadingEnabled || _edgeCheckQueued || _observedScrollViewer is null) return;
 
         _edgeCheckQueued = true;
-        Dispatcher.UIThread.Post(CheckWindowEdges, DispatcherPriority.Background);
+        Dispatcher.Post(CheckWindowEdges, DispatcherPriority.Background);
     }
 
     private void CheckWindowEdges()
@@ -357,11 +430,12 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
     private async Task ShowLatestAsync()
     {
         if (ChatContext?.Presentation is not { } presentation) return;
-        if (!presentation.IsAtLatest && !await presentation.ShowLatestAsync()) return;
+        if (!await presentation.ShowLatestAsync()) return;
 
         if (!ReferenceEquals(ChatContext?.Presentation, presentation)) return;
 
         _isTailPinned = true;
+        _verticalScrollDirection = 1;
         RequestScrollToEnd();
     }
 
@@ -443,4 +517,9 @@ public sealed partial class ChatMessageItemsControl : ItemsControl
 
         base.ClearContainerForItemOverride(container);
     }
+
+    private readonly record struct PendingViewportAnchor(
+        ChatPresentationRow Row,
+        double OffsetWithinItem
+    );
 }

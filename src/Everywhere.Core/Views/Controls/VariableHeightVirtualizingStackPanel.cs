@@ -116,6 +116,60 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         EffectiveViewportChanged += OnEffectiveViewportChanged;
     }
 
+    /// <summary>
+    /// Captures the items intersecting the current viewport and the point at its center. The
+    /// snapshot uses the panel's measured prefix table rather than walking realized visuals, so it
+    /// remains available while the containing window is hidden.
+    /// </summary>
+    public bool TryGetViewportSnapshot(out ViewportSnapshot snapshot)
+    {
+        snapshot = default;
+        var itemCount = Items.Count;
+        if (!_hasViewport || itemCount == 0 || _viewport.Height <= 0)
+            return false;
+
+        var totalHeight = GetTotalHeight(itemCount);
+        if (totalHeight <= 0)
+            return false;
+
+        var top = Math.Clamp(_viewport.Top, 0, totalHeight);
+        var bottom = Math.Clamp(_viewport.Bottom, top, totalHeight);
+        if (bottom <= top)
+            return false;
+
+        var (firstIndex, firstOffset) = FindIndexAtOffset(top, itemCount);
+        if (top >= firstOffset + GetItemHeight(firstIndex) && firstIndex < itemCount - 1)
+            firstIndex++;
+
+        var lastIndex = FindIndexAtOffset(Math.BitDecrement(bottom), itemCount).Index;
+        var center = Math.Clamp(_viewport.Center.Y, top, bottom);
+        var (anchorIndex, anchorStart) = FindIndexAtOffset(center, itemCount);
+        var anchorOffset = Math.Clamp(center - anchorStart, 0, GetItemHeight(anchorIndex));
+
+        snapshot = new ViewportSnapshot(firstIndex, Math.Max(firstIndex, lastIndex), anchorIndex, anchorOffset);
+        return true;
+    }
+
+    /// <summary>
+    /// Aligns a previously captured point within an item with the center of the current viewport.
+    /// </summary>
+    public bool CenterViewportAnchor(int index, double offsetWithinItem)
+    {
+        if (index < 0 || index >= Items.Count ||
+            !IsEffectivelyVisible ||
+            (_observedScrollViewer ?? this.FindAncestorOfType<ScrollViewer>()) is not { Viewport.Height: > 0 } scrollViewer)
+        {
+            return false;
+        }
+
+        var panelTop = GetPanelTopWithinScrollContent(scrollViewer);
+        var itemOffset = GetOffsetForIndex(index) + Math.Clamp(offsetWithinItem, 0, GetItemHeight(index));
+        var maximumOffset = Math.Max(0, scrollViewer.Extent.Height - scrollViewer.Viewport.Height);
+        var targetOffset = panelTop + itemOffset - scrollViewer.Viewport.Height / 2;
+        scrollViewer.Offset = scrollViewer.Offset.WithY(Math.Clamp(targetOffset, 0, maximumOffset));
+        return true;
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
         UpdateScrollViewerSubscription();
@@ -980,4 +1034,10 @@ public class VariableHeightVirtualizingStackPanel : VirtualizingPanel
         public object? RecycleKey { get; set; }
         public bool HasMeasuredHeight => !double.IsNaN(MeasuredHeight);
     }
+
+    public readonly record struct ViewportSnapshot(
+        int FirstIndex,
+        int LastIndex,
+        int AnchorIndex,
+        double OffsetWithinAnchor);
 }

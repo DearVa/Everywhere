@@ -328,6 +328,121 @@ public class ChatPresentationTests
     }
 
     [AvaloniaTest]
+    public async Task ShowLatest_WhenExpandedWindowContainsTail_ReplacesItWithExactTailWindow()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize + 4);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            Assert.That(await presentation.PrepareInitialWindowAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+            Assert.That(presentation.IsAtLatest, Is.True);
+
+            Assert.That(await presentation.ShowLatestAsync(), Is.True);
+
+            var users = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(users, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(users[0], Is.EqualTo("Question 4"));
+                Assert.That(users[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize + 3}"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.False);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task CompactAround_WhenMiddleTurnsAreVisible_KeepsBoundedWindowAroundThem()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 3);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            Assert.That(await presentation.PrepareInitialWindowAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+            var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+
+            Assert.That(presentation.CompactAround(users[9], users[11]), Is.True);
+
+            var retained = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(retained, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(retained[0], Is.EqualTo("Question 6"));
+                Assert.That(retained[^1], Is.EqualTo("Question 13"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.True);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task CompactAround_WhenViewportIntersectsTail_EndsAtLatestTurn()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 3);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            Assert.That(await presentation.PrepareInitialWindowAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+            Assert.That(await presentation.LoadEarlierAsync(), Is.True);
+            var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+
+            Assert.That(presentation.CompactAround(users[^4], users[^1]), Is.True);
+
+            var retained = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(retained, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(retained[0], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 2}"));
+                Assert.That(retained[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 3 - 1}"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.False);
+            });
+        }
+    }
+
+    [AvaloniaTest]
+    public async Task CompactAround_WhenEarlierLoadIsInProgress_PreventsObsoleteExpansion()
+    {
+        var (context, _) = CreateTurnHistory(ChatPresentation.TurnBatchSize * 2);
+        using (context)
+        {
+            var presentation = context.Presentation;
+            Assert.That(await presentation.PrepareInitialWindowAsync(), Is.True);
+            var users = presentation.Rows.OfType<ChatMessagePresentationRow>().ToArray();
+
+            var earlierLoad = presentation.LoadEarlierAsync();
+            Assert.That(presentation.CompactAround(users[0], users[^1]), Is.False);
+            Assert.That(await earlierLoad, Is.False);
+
+            var retained = presentation.Rows
+                .OfType<ChatMessagePresentationRow>()
+                .Select(row => ((UserChatMessage)row.Node.Message).Content)
+                .ToArray();
+            Assert.Multiple(() =>
+            {
+                Assert.That(retained, Has.Length.EqualTo(ChatPresentation.TurnBatchSize));
+                Assert.That(retained[0], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize}"));
+                Assert.That(retained[^1], Is.EqualTo($"Question {ChatPresentation.TurnBatchSize * 2 - 1}"));
+                Assert.That(presentation.HasEarlierTurns, Is.True);
+                Assert.That(presentation.HasLaterTurns, Is.False);
+            });
+        }
+    }
+
+    [AvaloniaTest]
     public async Task BranchChange_WhenCompletedOutputBecomesVisible_PublishesCachedDocumentFirst()
     {
         var originalAssistant = new AssistantChatMessage

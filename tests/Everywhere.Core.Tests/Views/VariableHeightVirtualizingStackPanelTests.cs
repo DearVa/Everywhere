@@ -39,6 +39,41 @@ public sealed class VariableHeightVirtualizingStackPanelTests
     }
 
     [AvaloniaTest]
+    public void ViewportSnapshot_WhenItemsOutsideItAreRemoved_RestoresCapturedCenterPoint()
+    {
+        using var context = CreateTarget(
+            Enumerable.Repeat(100d, 20).ToArray(),
+            estimatedItemHeight: 100,
+            windowHeight: 300);
+        context.ScrollViewer.Offset = new Vector(0, 550);
+        context.Window.UpdateLayout();
+
+        Assert.That(context.Panel.TryGetViewportSnapshot(out var snapshot), Is.True);
+        var anchor = context.Items[snapshot.AnchorIndex];
+        Assert.Multiple(() =>
+        {
+            Assert.That(snapshot.FirstIndex, Is.EqualTo(5));
+            Assert.That(snapshot.LastIndex, Is.EqualTo(8));
+            Assert.That(snapshot.AnchorIndex, Is.EqualTo(6));
+            Assert.That(snapshot.OffsetWithinAnchor, Is.EqualTo(64).Within(0.001));
+        });
+
+        for (var index = 0; index < 4; index++)
+            context.Items.RemoveAt(0);
+        context.Window.UpdateLayout();
+
+        var newAnchorIndex = context.Items.IndexOf(anchor);
+        Assert.That(context.Panel.CenterViewportAnchor(newAnchorIndex, snapshot.OffsetWithinAnchor), Is.True);
+        context.Window.UpdateLayout();
+
+        var anchorPosition = anchor.TranslatePoint(default, context.ScrollViewer);
+        Assert.That(anchorPosition, Is.Not.Null);
+        Assert.That(
+            anchorPosition!.Value.Y + snapshot.OffsetWithinAnchor,
+            Is.EqualTo(context.ScrollViewer.Viewport.Height / 2).Within(0.001));
+    }
+
+    [AvaloniaTest]
     public void HeightAboveViewport_WhenItGrows_KeepsVisibleItemAnchored()
     {
         using var context = CreateTarget(Enumerable.Repeat(20d, 30).ToArray());
