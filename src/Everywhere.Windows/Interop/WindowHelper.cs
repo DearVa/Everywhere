@@ -58,6 +58,18 @@ public sealed class WindowHelper : IWindowHelper
                 case (uint)WINDOW_MESSAGE.WM_MOUSEACTIVATE:
                     handled = true;
                     return 3; // MA_NOACTIVATE;
+
+                case (uint)WINDOW_MESSAGE.WM_NCACTIVATE:
+                    // Must return TRUE, not FALSE. When wParam is FALSE the window is being deactivated,
+                    // and returning FALSE tells the system to *prevent* that change: the window then can
+                    // never be deactivated and holds the foreground indefinitely. A non-activating window
+                    // that is also hit-testable can become the foreground window when clicked, so refusing
+                    // deactivation strands the foreground on a window that cannot take keyboard focus, and
+                    // no window receives input afterwards. The intent of a non-focusable window is to avoid
+                    // *taking* focus, not to refuse giving it up.
+                    handled = true;
+                    return 1;
+
                 case (uint)WINDOW_MESSAGE.WM_ACTIVATE:
                 case (uint)WINDOW_MESSAGE.WM_SETFOCUS:
                 case (uint)WINDOW_MESSAGE.WM_KILLFOCUS:
