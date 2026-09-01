@@ -121,7 +121,7 @@ public sealed class OverlayDismissWatcher : IOverlayDismissWatcher
 
     private void DismissWhere(Func<Registration, bool> predicate)
     {
-        Registration[] matching;
+        var matching = Array.Empty<Registration>();
         using (_syncLock.EnterScope())
         {
             if (_registrations.Count == 0) return;
@@ -129,8 +129,6 @@ public sealed class OverlayDismissWatcher : IOverlayDismissWatcher
             matching = [.._registrations.Where(predicate)];
         }
 
-        // Invoked outside the lock: the callback re-enters this type when the caller updates or disposes
-        // its handle.
         foreach (var registration in matching)
         {
             registration.Dismiss();
@@ -143,29 +141,48 @@ public sealed class OverlayDismissWatcher : IOverlayDismissWatcher
         public PixelRect Bounds => _bounds;
 
         private PixelRect _bounds = bounds;
-        private int _completed;
+        private bool _completed;
+        private bool _disposed;
 
         public void Update(PixelRect bounds)
         {
             using var _ = owner._syncLock.EnterScope();
 
+            if (_disposed) return;
+
             _bounds = bounds;
 
             // Re-arm: the overlay moved to a new anchor, so a previous dismissal no longer applies.
-            Interlocked.Exchange(ref _completed, 0);
+            _completed = false;
         }
 
-        /// <summary>Invokes the dismissal callback at most once per arming, and never after disposal.</summary>
+        /// <summary>
+        /// Invokes the dismissal callback at most once per arming, and never after disposal.
+        /// </summary>
+        /// <remarks>
+        /// The callback runs while the owner's lock is held. Deciding under the lock and invoking outside
+        /// it would reintroduce the race this guards against: disposal could land in between, and the
+        /// callback would fire for a watch the caller has already abandoned — which, because the caller
+        /// hides whatever toolbar is current rather than one identified by this watch, could hide a newer
+        /// toolbar. The callback is contractually cheap and non-blocking, so holding the lock is safe.
+        /// </remarks>
         public void Dismiss()
         {
-            if (Interlocked.Exchange(ref _completed, 1) == 1) return;
+            using var _ = owner._syncLock.EnterScope();
 
+            if (_completed || _disposed) return;
+
+            _completed = true;
             onDismiss();
         }
 
         public void Dispose()
         {
-            Interlocked.Exchange(ref _completed, 1);
+            using (owner._syncLock.EnterScope())
+            {
+                _disposed = true;
+            }
+
             owner.Remove(this);
         }
     }

@@ -19,7 +19,7 @@ public sealed class UnsupportedOverlayDismissWatcher : IOverlayDismissWatcher
 
     private sealed class NoWatch : IOverlayDismissWatch
     {
-        public static readonly NoWatch Instance = new();
+        internal static readonly NoWatch Instance = new();
 
         public void Update(PixelRect bounds) { }
 

@@ -102,7 +102,29 @@ public partial class TextSelectionToolbarWindow : Window
         // pre-move measurement unreliable, and the result is used as a hit-test rectangle by
         // IOverlayDismissWatcher: too small a rectangle would classify a click on our own button as
         // "outside" and dismiss the toolbar before the button ever sees it.
-        return Reposition(anchor, MeasuredPixelSize());
+        var bounds = Reposition(anchor, MeasuredPixelSize());
+
+        ReassertTopmost();
+
+        return bounds;
+    }
+
+    /// <summary>
+    /// Forces the always-on-top state back onto the native window.
+    /// </summary>
+    /// <remarks>
+    /// The native topmost bit is lost the first time something else takes the foreground: the styles
+    /// callback installed by <see cref="IWindowHelper.SetFocusable"/> rewrites the extended style whenever
+    /// Avalonia recomputes it, and topmost is maintained separately rather than through that style, so the
+    /// rewrite drops it. <see cref="Window.Topmost"/> still reports true afterwards, which makes the
+    /// divergence invisible from managed code: the window is shown, reports itself visible, and renders
+    /// behind whatever the user is looking at. Assigning the same value is a no-op, so the property has to
+    /// be toggled to make Avalonia reissue the platform call.
+    /// </remarks>
+    private void ReassertTopmost()
+    {
+        Topmost = false;
+        Topmost = true;
     }
 
     /// <summary>

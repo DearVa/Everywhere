@@ -40,8 +40,13 @@ public interface IOverlayDismissWatcher
     /// cross the UI thread boundary on every mouse event. Re-arm with a new watch when the overlay moves.
     /// </param>
     /// <param name="onDismiss">
-    /// Invoked at most once, on an unspecified thread, when the overlay should be dismissed.
+    /// Invoked at most once per arming, on an unspecified thread, when the overlay should be dismissed.
     /// Never invoked after the returned handle is disposed.
+    /// <para>
+    /// Must be cheap and non-blocking — normally just posting to the UI thread. Implementations are
+    /// allowed to invoke it while holding an internal lock in order to honour the "never after disposal"
+    /// guarantee, so blocking here can stall the thread that observes input.
+    /// </para>
     /// </param>
     /// <returns>A handle that stops watching when disposed. Disposal is idempotent.</returns>
     IOverlayDismissWatch Watch(PixelRect bounds, Action onDismiss);

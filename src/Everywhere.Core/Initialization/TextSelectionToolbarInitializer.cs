@@ -125,8 +125,11 @@ public sealed class TextSelectionToolbarInitializer(
             var strategies = ResolveStrategies(data);
             if (strategies.Count == 0)
             {
-                // Reachable if the strategy registry yields nothing for this selection. Logged because it
-                // is otherwise indistinguishable from the toolbar never being armed at all.
+                // Hide rather than leave the previous toolbar up: its buttons still reference the earlier
+                // selection, so clicking one would act on text the user has already replaced.
+                HideToolbar();
+
+                // Logged because it is otherwise indistinguishable from the toolbar never being armed.
                 logger.LogDebug("No strategies matched the current text selection; not showing the toolbar.");
                 return;
             }
@@ -163,15 +166,17 @@ public sealed class TextSelectionToolbarInitializer(
         {
             var context = StrategyContext.FromAttachments([new TextSelectionAttachment(data.Text!, data.Element)]);
 
+            // Clamped here rather than trusted: the settings binder assigns persisted values without
+            // applying the range declared by SettingsIntegerItemAttribute, so an edited settings file can
+            // carry a count outside it.
+            var maxActionCount = Math.Clamp(
+                settings.TextSelectionToolbar.MaxActionCount,
+                TextSelectionToolbarSettings.MinActionCount,
+                TextSelectionToolbarSettings.MaxAllowedActionCount);
+
             // Ordered by descending priority, so taking the first N keeps the most relevant actions and
             // naturally excludes the negative-priority global strategies.
-            return
-            [
-                ..strategyEngine
-                    .GetStrategies(context)
-                    .AsValueEnumerable()
-                    .Take(Math.Max(1, settings.TextSelectionToolbar.MaxActionCount))
-            ];
+            return [..strategyEngine.GetStrategies(context).AsValueEnumerable().Take(maxActionCount)];
         }
         catch (Exception ex)
         {
