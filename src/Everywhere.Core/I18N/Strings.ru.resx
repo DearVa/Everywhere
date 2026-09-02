@@ -3387,6 +3387,24 @@
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Первичные статистические данные получены из анализа исторических чатов и могут содержать погрешности.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Настройки Mistral</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Настройки конфигурации модели AI Mistral</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Включить рассуждения</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Включить рассуждения/мысли в ответах</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Интенсивность рассуждений</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Опциональная интенсивность рассуждений для конкретной модели. Для Mistral явно указаны high и none; другие ненулевые значения будут переданы без изменений. При отсутствии значения используется поведение по умолчанию модели. Отключение «Включить рассуждения» отправит none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Не удалось записать путь настроек «{0}».</value>
     </data>

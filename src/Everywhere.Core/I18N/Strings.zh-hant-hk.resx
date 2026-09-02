@@ -3387,6 +3387,24 @@
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>首次統計數據來自歷史聊天數據分析，可能存在誤差。</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral 選項</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Mistral AI 模型的配置選項</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>包含推理</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>在回應中包含推理/思考內容</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>思考強度</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>可選的模型特定推理強度。Mistral 目前為支持的模型明確說明了 high 和 none；其他非空值會原樣透傳。留空時使用模型默認行為。關閉「包含推理」會發送 none。</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>寫入設置路徑「{0}」失敗。</value>
     </data>

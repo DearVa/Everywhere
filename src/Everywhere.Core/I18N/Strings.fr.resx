@@ -3387,6 +3387,24 @@ Date de publication : {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Les premières statistiques proviennent de l'analyse des données de chat historiques et peuvent comporter des erreurs.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Options Mistral</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Options de configuration du modèle AI Mistral</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Inclure le Raisonnement</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Inclure le contenu de raisonnement/pensée dans la réponse</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Intensité de Raisonnement</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Intensité de raisonnement spécifique au modèle optionnelle. Mistral précise actuellement high et none pour les modèles pris en charge ; d'autres valeurs non vides seront transmises telles quelles. Si laissé vide, le comportement par défaut du modèle sera utilisé. Désactiver 'Inclure le Raisonnement' enverra none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Échec de l'écriture du chemin de configuration « {0} ».</value>
     </data>

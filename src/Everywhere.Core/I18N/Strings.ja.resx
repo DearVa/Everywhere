@@ -3387,6 +3387,24 @@
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>最初の統計データは過去のチャットデータ分析に基づいており、誤差がある可能性があります。</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistralオプション</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Mistral AIモデルの設定オプション</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>推論を含める</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>応答に推論/思考内容を含める</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>思考の強度</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>モデル特有の推論強度のオプション。Mistralは現在サポートされているモデルに対してhighとnoneを明示しています。他の非空値はそのまま透過されます。空白の場合はモデルのデフォルト動作を使用します。「推論を含める」をオフにするとnoneが送信されます。</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>設定パス「{0}」の書き込みに失敗しました。</value>
     </data>
