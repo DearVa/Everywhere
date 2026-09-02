@@ -3387,6 +3387,24 @@ Yayın tarihi: {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>İlk istatistik verileri geçmiş sohbet verileri analizinden gelmektedir, hatalar olabilir.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral Seçenekleri</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Mistral AI modelinin yapılandırma seçenekleri</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Akıl Yürütmeyi Dahil Et</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Yanıt içinde akıl yürütme/düşünce içeriğini dahil et</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Düşünme Yoğunluğu</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Seçime bağlı model spesifik akıl yürütme yoğunluğu. Mistral, desteklenen modeller için yüksek ve yok olarak açıkça belirtilmiştir; diğer boş olmayan değerler olduğu gibi iletilecektir. Boş bırakıldığında modelin varsayılan davranışı kullanılır. 'Akıl Yürütmeyi Dahil Et' kapatıldığında yok gönderilecektir.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Ayar yolu &quot;{0}&quot; yazılamadı.</value>
     </data>

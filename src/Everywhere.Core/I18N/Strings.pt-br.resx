@@ -3388,6 +3388,24 @@ Data de lançamento: {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Os dados estatísticos iniciais foram gerados a partir da análise de históricos do chats e podem conter erros.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Opções do Mistral</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Opções de configuração do modelo de IA Mistral</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Incluir Raciocínio</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Incluir conteúdo de raciocínio/pensamento na resposta</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Intensidade do Raciocínio</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Intensidade de raciocínio específica do modelo opcional. O Mistral atualmente especifica claramente high e none para os modelos suportados; outros valores não vazios serão transmitidos como estão. Se deixado em branco, o comportamento padrão do modelo será utilizado. Desativar 'Incluir Raciocínio' enviará none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Falha ao escrever o caminho de configuração &quot;{0}&quot;.</value>
     </data>
