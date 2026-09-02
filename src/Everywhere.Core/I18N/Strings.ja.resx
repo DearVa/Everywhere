@@ -3910,4 +3910,7 @@
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>クリックして展開</value>
     </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
+    </data>
 </root>

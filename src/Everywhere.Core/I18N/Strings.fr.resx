@@ -3910,4 +3910,7 @@ Voulez-vous toujours supprimer “{1}” de façon permanente ?</value>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Cliquez pour développer</value>
     </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
+    </data>
 </root>

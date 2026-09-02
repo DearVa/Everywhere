@@ -3910,4 +3910,7 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Açmak için tıklayın</value>
     </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
+    </data>
 </root>
