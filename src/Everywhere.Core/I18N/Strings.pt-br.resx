@@ -3911,4 +3911,7 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Clique para expandir</value>
     </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
+    </data>
 </root>

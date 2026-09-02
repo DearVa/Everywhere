@@ -3910,4 +3910,7 @@ Después de eliminarla, esos asistentes usarán la palabra clave predeterminada 
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Haz clic para expandir</value>
     </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
+    </data>
 </root>

@@ -3388,6 +3388,24 @@
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>首次统计数据来自历史聊天数据分析，可能存在误差。</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral 选项</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Mistral AI 模型的配置选项</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>包含推理</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>在响应中包含推理/思考内容</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>思考强度</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>可选的模型特定推理强度。Mistral 目前为支持的模型明确说明了 high 和 none；其他非空值会原样透传。留空时使用模型默认行为。关闭“包含推理”会发送 none。</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>写入设置路径“{0}”失败。</value>
     </data>
@@ -3910,5 +3928,8 @@
     </data>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>点击展开</value>
+    </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
     </data>
 </root>
