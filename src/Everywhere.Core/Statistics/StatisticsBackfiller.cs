@@ -3,14 +3,12 @@ using System.Text;
 using Everywhere.Chat;
 using Everywhere.Common;
 using Everywhere.Common.Notification;
-using Everywhere.Configuration;
 using Everywhere.Database;
 using Everywhere.Statistics.Database;
 using MessagePack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using ZLinq;
 
 namespace Everywhere.Statistics;
 
@@ -29,8 +27,11 @@ public sealed class StatisticsDbInitializer(
     /// </summary>
     public async Task InitializeAsync()
     {
+        logger.LogInformation("Initializing statistics database...");
+
         await using var db = await dbFactory.CreateDbContextAsync();
         await db.Database.MigrateAsync();
+
         logger.LogInformation("Statistics database initialized.");
     }
 }
@@ -53,7 +54,7 @@ public sealed class StatisticsBackfiller(
     private const string BackfillCompletedAtKey = "BackfillCompletedAt";
     private const string CurrentBackfillVersion = "1";
 
-    public AsyncInitializerIndex Index => (AsyncInitializerIndex)((int)AsyncInitializerIndex.Database + 1);
+    public AsyncInitializerIndex Index => AsyncInitializerIndex.Database + 1;
 
     /// <summary>
     /// Starts backfill in the background after database initialization.
