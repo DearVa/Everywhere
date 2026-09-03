@@ -159,9 +159,7 @@ public static class ChatHistoryBuilder
                 continue;
             }
 
-            anchorIndex = compression.CoveredThroughNodeId == Guid.Empty
-                ? -1
-                : FindNodeIndex(chatNodes, compression.CoveredThroughNodeId);
+            anchorIndex = compression.CoveredThroughNodeId == Guid.Empty ? -1 : FindNodeIndex(chatNodes, compression.CoveredThroughNodeId);
             if (compression.CoveredThroughNodeId != Guid.Empty && anchorIndex < 0) continue;
             if (anchorIndex < compressionIndex) return compressionIndex;
         }
@@ -182,9 +180,9 @@ public static class ChatHistoryBuilder
 
     private static List<ChatMessage> SelectRetainedUserMessages(IReadOnlyList<ChatMessageNode> chatNodes, int anchorIndex, int declaredContextLimit)
     {
-        var tokenBudget = declaredContextLimit > 0
-            ? Math.Min(MaximumRetainedUserMessageTokens, (int)(declaredContextLimit * RetainedUserMessageContextRatio))
-            : 0;
+        var tokenBudget = declaredContextLimit > 0 ?
+            Math.Min(MaximumRetainedUserMessageTokens, (int)(declaredContextLimit * RetainedUserMessageContextRatio)) :
+            0;
         if (tokenBudget <= 0 || anchorIndex < 0) return [];
 
         var remainingTokens = tokenBudget;
@@ -438,7 +436,7 @@ public static class ChatHistoryBuilder
                          {textSelection.Text}
                          </Text>
                          <AssociatedElement>
-                         {textSelection.Content ?? "omitted due to duplicate"}
+                         {textSelection.Content?.ToString() ?? "omitted due to duplicate"}
                          </AssociatedElement>
                          </Attachment>
                          """));
@@ -450,7 +448,7 @@ public static class ChatHistoryBuilder
                     new TextContent(
                         $"""
                          <Attachment type="visual-element">
-                         {visualElement.Content ?? "omitted due to duplicate"}
+                         {visualElement.Content?.ToString() ?? "omitted due to duplicate"}
                          </Attachment>
                          """));
                 break;
