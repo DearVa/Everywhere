@@ -112,11 +112,15 @@ public sealed class ChatDbInitializer(IDbContextFactory<ChatDbContext> dbFactory
 
     public async Task InitializeAsync()
     {
+        logger.LogInformation("Initializing chat database...");
+
         await using var dbContext = await dbFactory.CreateDbContextAsync();
         await dbContext.Database.MigrateAsync();
 
         await EnsureSyncMetadataAsync(dbContext);
         await EnsureRootNodeIdsMigratedAsync(dbContext);
+
+        logger.LogInformation("Chat database initialized.");
     }
 
     private async Task EnsureSyncMetadataAsync(ChatDbContext dbContext)

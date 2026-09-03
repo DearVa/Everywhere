@@ -3387,6 +3387,24 @@
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>첫 통계 데이터는 과거 채팅 데이터 분석에서 가져온 것으로, 오차가 있을 수 있습니다.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral 옵션</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Mistral AI 모델의 구성 옵션</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>추론 포함</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>응답에 추론/사고 내용을 포함합니다.</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>사고 강도</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>선택 가능한 모델 특정 추론 강도입니다. Mistral은 현재 지원되는 모델에 대해 high와 none을 명확히 설명하며, 다른 비어 있지 않은 값은 그대로 전달됩니다. 비워두면 모델 기본 동작을 사용합니다. '추론 포함'을 끄면 none이 전송됩니다.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>설정 경로 &quot;{0}&quot; 쓰기 실패.</value>
     </data>
@@ -3909,5 +3927,8 @@
     </data>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>클릭하여 펼치기</value>
+    </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
     </data>
 </root>

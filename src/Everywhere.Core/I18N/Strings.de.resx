@@ -3387,6 +3387,24 @@ Veröffentlichungsdatum: {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Die ersten Statistiken stammen aus der Analyse historischer Chats und können Ungenauigkeiten aufweisen.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral-Optionen</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Konfigurationsoptionen für das Mistral AI-Modell</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Inklusive Argumentation</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Argumentations-/Denkinhalte in der Antwort einfügen</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Denkschärfe</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Optionale, modellabhängige Denkschärfe. Mistral gibt derzeit für unterstützte Modelle high und none an; andere nicht leere Werte werden unverändert übergeben. Bei leerer Eingabe wird das Standardverhalten des Modells verwendet. Das Deaktivieren von „Inklusive Argumentation“ sendet none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Fehler beim Schreiben des Einstellungs-Pfades „{0}“.</value>
     </data>
@@ -3909,5 +3927,8 @@ Möchten Sie „{1}“ trotzdem dauerhaft löschen?</value>
     </data>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Klicken zum Erweitern</value>
+    </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
     </data>
 </root>

@@ -3387,6 +3387,24 @@ Release date: {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Initial statistics are derived from historical chat data analysis and may contain inaccuracies.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Mistral Options</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Configuration options for Mistral AI models</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Include Reasoning</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Include reasoning/thinking content in the response</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Reasoning effort</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Optional model-specific reasoning intensity. Mistral currently documents high and none for supported models; other non-empty values are passed through. Leave blank to use the model default. Turning off “Include Reasoning” sends none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Failed to write settings path '{0}'.</value>
     </data>
@@ -3933,5 +3951,7 @@ Delete &quot;{1}&quot; permanently?</value>
     </data>
     <data name="TextSelectionToolbarSettings_ShowActionLabels_Description" xml:space="preserve">
         <value>Show the name next to each icon. When disabled, the toolbar shows icons only</value>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
     </data>
 </root>
