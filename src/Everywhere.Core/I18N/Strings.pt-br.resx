@@ -3932,4 +3932,16 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Aguardando resposta…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Chamada de ferramenta</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Mostrar Navegação de Conversa</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Exibe uma barra de navegação à esquerda da conversa atual. Passe o mouse para visualizar as perguntas e respostas correspondentes, clique para ir para essa posição.</value>
+    </data>
 </root>

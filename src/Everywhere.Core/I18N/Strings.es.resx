@@ -3931,4 +3931,16 @@ Después de eliminarla, esos asistentes usarán la palabra clave predeterminada 
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Esperando respuesta...</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Llamada a la herramienta</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Mostrar Navegación de Conversación</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Muestra una barra de navegación a la izquierda de la conversación actual. Pasa el cursor para previsualizar las preguntas y respuestas correspondientes, haz clic para saltar a esa posición.</value>
+    </data>
 </root>

@@ -3931,4 +3931,16 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Cevap bekleniyor…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Araç Kullanımı</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Sohbet Navigasyonunu Göster</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Mevcut sohbetin sol tarafında bir navigasyon çubuğu gösterir. Üzerine gelindiğinde ilgili soru ve cevapları önizleyebilir, tıklayarak o konuma atlayabilirsiniz.</value>
+    </data>
 </root>
