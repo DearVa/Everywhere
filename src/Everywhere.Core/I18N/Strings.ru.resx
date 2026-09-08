@@ -3931,4 +3931,16 @@
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Ожидание ответа…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Вызов инструмента</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Показать навигацию по диалогу</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Показать навигационную панель слева от текущего диалога. Наведите курсор, чтобы просмотреть соответствующие вопросы и ответы, щелкните, чтобы перейти к этому месту.</value>
+    </data>
 </root>

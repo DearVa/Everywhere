@@ -3931,4 +3931,16 @@
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>返信を待っています…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>ツール呼び出し</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>対話ナビゲーションを表示</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>現在の対話の左側にナビゲーションバーを表示します。ホバーすると対応する質問と返信のプレビューが表示され、クリックするとその位置にジャンプします。</value>
+    </data>
 </root>

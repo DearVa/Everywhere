@@ -3931,4 +3931,16 @@ Vuoi comunque eliminare permanentemente “{1}”?</value>
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>In attesa di una risposta…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Chiamata Strumento</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Mostra Navigazione Conversazione</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Mostra una barra di navigazione a sinistra nella conversazione attuale. Passa il mouse per visualizzare in anteprima le domande e le risposte corrispondenti, fai clic per andare a quella posizione.</value>
+    </data>
 </root>
