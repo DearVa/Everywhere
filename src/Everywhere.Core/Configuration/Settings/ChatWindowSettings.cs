@@ -84,6 +84,16 @@ public sealed partial class ChatWindowSettings : SettingsBase, ISettingsCategory
     [SettingsItem(Group = LocaleKey.ChatWindowSettings_Group_Display)]
     public partial bool ShowChatStatistics { get; set; } = true;
 
+    /// <summary>
+    /// When enabled, show turn navigation with previews in the chat window.
+    /// </summary>
+    [ObservableProperty]
+    [DynamicLocaleKey(
+        LocaleKey.ChatWindowSettings_ShowTurnNavigation_Header,
+        LocaleKey.ChatWindowSettings_ShowTurnNavigation_Description)]
+    [SettingsItem(Group = LocaleKey.ChatWindowSettings_Group_Display)]
+    public partial bool ShowTurnNavigation { get; set; } = true;
+
     [DynamicLocaleKey(
         LocaleKey.ChatWindowSettings_EnableVisualElementPickAnimation_Header,
         LocaleKey.ChatWindowSettings_EnableVisualElementPickAnimation_Description)]

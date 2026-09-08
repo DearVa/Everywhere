@@ -3932,4 +3932,16 @@
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>正在等待回复…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>工具调用</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>显示对话导航</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>在当前对话左侧显示导航条。悬停可预览对应的提问和回复，点击可跳转到该位置。</value>
+    </data>
 </root>

@@ -5,8 +5,9 @@
   xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:notification="clr-namespace:Everywhere.Common.Notification;assembly=Everywhere.Abstractions"
   xmlns:notifications="clr-namespace:Avalonia.Controls.Notifications;assembly=Avalonia.Controls" xmlns:p="clr-namespace:Everywhere.Chat.Plugins"
   xmlns:se="clr-namespace:Everywhere.StrategyEngine" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
-  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters"
-  xmlns:vm="clr-namespace:Everywhere.ViewModels" x:Name="Self"
+  xmlns:system="clr-namespace:System;assembly=System.Runtime" xmlns:v="clr-namespace:Everywhere.Views"
+  xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
+  x:Name="Self"
   Title="{I18N {x:Static LocaleKey.ChatWindow_Title}}"
   MinWidth="400" MinHeight="300"
   x:DataType="vm:ChatWindowViewModel" x:TypeArguments="vm:ChatWindowViewModel"
@@ -619,7 +620,8 @@
             </ItemsControl>
 
             <v:ChatMessageItemsControl
-              x:Name="ChatMessages" Margin="12,8,12,0"
+              x:Name="ChatMessages" MaxWidth="800"
+              Margin="12,8,12,0"
               md:MarkdownTextBlock.HighlightStyles="{x:Static in:ChatTextSearchHighlightStyles.Instance}"
               ChatContext="{Binding ChatContextManager.Current}"
               ContinueMessageNodeCommand="{Binding ContinueMessageNodeCommand}"
@@ -748,7 +750,8 @@
         </Button>
 
         <StackPanel
-          Grid.Row="1" Margin="10"
+          x:Name="InputPanel" Grid.Row="1"
+          MaxWidth="800" Margin="10"
           Orientation="Vertical" Spacing="8">
           <DockPanel>
             <DockPanel.IsVisible>
@@ -1240,9 +1243,39 @@
       </Grid>
     </shadui:ResponsiveDrawer>
 
+    <v:ChatTurnNavigator
+      Margin="0,-48,0,0" HorizontalAlignment="Stretch"
+      Background="#99000000"
+      ChatContext="{Binding ChatContextManager.Current}"
+      IsVisible="{Binding Settings.ChatWindow.ShowTurnNavigation}"
+      PreviewLineHeight="{DynamicResource LineHeightM}"
+      ReadingNode="{Binding #ChatMessages.ReadingTurnNode}"
+      Target="{Binding #ChatMessages}">
+      <v:ChatTurnNavigator.LinePadding>
+        <MultiBinding Converter="{x:Static vc:ThicknessConverters.FromValues}">
+          <Binding>
+            <Binding.Source>
+              <system:Double>4</system:Double>
+            </Binding.Source>
+          </Binding>
+          <Binding>
+            <Binding.Source>
+              <system:Double>52</system:Double>
+            </Binding.Source>
+          </Binding>
+          <Binding>
+            <Binding.Source>
+              <system:Double>0</system:Double>
+            </Binding.Source>
+          </Binding>
+          <Binding Path="#InputPanel.Bounds.Height"/>
+        </MultiBinding>
+      </v:ChatTurnNavigator.LinePadding>
+    </v:ChatTurnNavigator>
+
     <Border
-      x:Name="DragDropOverlay" Background="#CC000000"
-      IsVisible="False">
+      x:Name="DragDropOverlay" Margin="0,-48,0,0"
+      Background="#CC000000" IsVisible="False">
       <StackPanel
         HorizontalAlignment="Center" VerticalAlignment="Center"
         Spacing="16">
