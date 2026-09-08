@@ -24,6 +24,7 @@ Topic-specific guidance lives under `docs/References` and must be read only when
 - Use `var` for all local variable declarations.
 - Prefer expression-bodied members (`=>`) for simple members.
 - Prefer guard clauses and early returns over unnecessary nesting.
+- Avoid unnecessary continuation wrapping within declarations, invocations, and expressions; wrap them when they exceed a readable line length. This does not apply to structural formatting: keep XML documentation tags and their text on separate lines, and use normal multiline formatting for property accessor blocks, method bodies, and other blocks. Do not mechanically reflow unrelated existing code solely to enforce this preference.
 - Within a type, normally order member categories as follows:
   1. properties;
   2. events;
