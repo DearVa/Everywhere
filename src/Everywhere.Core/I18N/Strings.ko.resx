@@ -3952,4 +3952,13 @@
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>유연함</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value></value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value></value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value></value>
+    </data>
 </root>

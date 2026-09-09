@@ -681,11 +681,30 @@
 
           <Grid ColumnDefinitions="220,Auto,Auto,Auto,Auto">
             <TextBox
-              x:Name="ChatTextSearchTextBox" Classes="Clearable"
-              Grid.Column="0" Padding="6,4"
-              shadui:ControlAssist.MinHeight="0"
+              x:Name="ChatTextSearchTextBox" Grid.Column="0"
+              Padding="6,4,4,4" shadui:ControlAssist.MinHeight="0"
               PlaceholderText="{I18N {x:Static LocaleKey.ChatWindow_TextSearch_PlaceholderText}}"
               Text="{Binding TextSearch.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+              <TextBox.InnerRightContent>
+                <DockPanel HorizontalSpacing="4">
+                  <!--  ReSharper disable once Xaml.StaticResourceNotResolved  -->
+                  <Button
+                    DockPanel.Dock="Left"
+                    Command="{Binding $parent[TextBox].Clear}"
+                    Focusable="False"
+                    IsVisible="{Binding $parent[TextBox].Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                    Theme="{StaticResource ClearButtonTheme}"/>
+                  <Button
+                    Classes="Ghost Compact Uniform"
+                    Command="{Binding TextSearch.CycleSearchScopeCommand}"
+                    Focusable="False"
+                    ToolTip.Tip="{Binding TextSearch.SearchScopeToolTipKey^}">
+                    <LucideIcon
+                      Kind="{Binding TextSearch.SearchScopeIcon}"
+                      Size="{DynamicResource FontSizeM}"/>
+                  </Button>
+                </DockPanel>
+              </TextBox.InnerRightContent>
               <TextBox.KeyBindings>
                 <KeyBinding
                   Command="{Binding TextSearch.PreviousResultCommand}"
