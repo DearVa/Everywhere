@@ -111,9 +111,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
 
     private const double Pitch = 12;
     private const double RailWidth = 40;
-    private readonly Canvas _previews = new() { IsHitTestVisible = false };
-    private readonly RectangleGeometry _previewClip = new();
-    private readonly Dictionary<ChatTurnNavigationIndex.Entry, ChatTurnPreview> _cards = [];
+    private readonly ChatTurnPreviewPanel _previews;
     private readonly List<Wake> _wakes = [];
     private ChatTurnNavigationIndex? _index;
     private TopLevel? _topLevel;
@@ -161,8 +159,8 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
     /// </summary>
     public ChatTurnNavigator()
     {
+        _previews = new ChatTurnPreviewPanel(this);
         Child = _previews;
-        _previews.Clip = _previewClip;
     }
 
     /// <inheritdoc />
@@ -348,91 +346,30 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         isMoving |= _focus.Step(elapsed, 28);
         isMoving |= _presence.Step(elapsed, 22);
         isMoving |= _previewY.Step(elapsed, 28);
+        isMoving |= _previews.Step(elapsed);
         for (var i = _wakes.Count - 1; i >= 0; i--)
         {
             _wakes[i].Age += elapsed;
             if (_wakes[i].Age > 0.45) _wakes.RemoveAt(i);
         }
 
-        UpdateCards();
+        isMoving |= UpdateCards();
         InvalidateVisual();
         if (isMoving || _wakes.Count > 0) RequestFrame();
         else _lastFrame = null;
     }
 
-    private void UpdateCards()
+    private bool UpdateCards()
     {
         if (_index is null || TurnCount == 0 || _presence.Value < 0.002 && !_isHovering)
         {
-            DisposeCards();
-            _previews.Children.Clear();
-            return;
+            _previews.Clear();
+            return false;
         }
 
         var center = Math.Clamp(_focus.Value, 0, TurnCount - 1);
-        // Keep previews inside the message viewport without expanding their input ownership.
-        _previewClip.Rect = new Rect(Bounds.Size);
         var neighborCount = Math.Clamp((int)((Bounds.Height - 16) / (PreviewSlotHeight + 8) - 1) / 2, 0, 2);
-        var first = Math.Max(0, (int)Math.Floor(center) - neighborCount);
-        var last = Math.Min(TurnCount - 1, (int)Math.Ceiling(center) + neighborCount);
-
-        // A seventh slot is unnecessary: floor/ceiling plus two neighbors bounds the tree at six.
-        foreach (var pair in _cards.ToArray())
-        {
-            var shouldKeep = false;
-            for (var i = first; i <= last; i++) shouldKeep |= ReferenceEquals(_index.Turns[i], pair.Key);
-            if (shouldKeep) continue;
-            pair.Value.PropertyChanged -= HandleCardPropertyChanged;
-            pair.Value.Dispose();
-            _previews.Children.Remove(pair.Value);
-            _cards.Remove(pair.Key);
-        }
-
-        var width = Math.Max(0, Math.Min(320, Bounds.Width - RailWidth - 24));
-        for (var i = first; i <= last; i++)
-        {
-            var entry = _index.Turns[i];
-            if (!_cards.TryGetValue(entry, out var card))
-            {
-                card = new ChatTurnPreview
-                {
-                    RenderTransform = new MatrixTransform(),
-                    RenderTransformOrigin = RelativePoint.TopLeft
-                };
-                _cards.Add(entry, card);
-                _previews.Children.Add(card);
-                card.PropertyChanged += HandleCardPropertyChanged;
-                card.Observe(_index, entry);
-            }
-            card.Width = width;
-        }
-
-        var slotHeight = _cards.Values.Max(card => Math.Max(card.MinHeight, card.Bounds.Height));
-        var spacing = slotHeight * 0.9 + 12;
-        var halfHeight = Math.Min(slotHeight / 2, Bounds.Height / 2);
-        var minimumY = halfHeight + Math.Min(center, neighborCount) * spacing + 8;
-        var maximumY = Bounds.Height - halfHeight - Math.Min(TurnCount - 1 - center, neighborCount) * spacing - 8;
-        // Preview motion is in viewport coordinates, independent of rail padding and scrolling.
-        var anchorY = Math.Clamp(_previewY.Value, Math.Min(minimumY, maximumY), Math.Max(minimumY, maximumY));
-        for (var i = first; i <= last; i++)
-        {
-            var card = _cards[_index.Turns[i]];
-            var distance = i - center;
-            var magnitude = Math.Abs(distance);
-            var edgeScale = Math.Clamp(neighborCount + 1 - magnitude, 0, 1);
-            var baseScale = Math.Max(0.72, 1 - 0.1 * magnitude);
-            var scale = Math.Max(0.001, baseScale * edgeScale * _presence.Value);
-            var height = Math.Max(card.MinHeight, card.Bounds.Height);
-            // Collapse the upper edge card toward its bottom-left corner, and the lower one
-            // toward its top-left corner. Account for the base depth scale separately, so the
-            // inner edge does not retreat and open a gap while edgeScale approaches zero.
-            var pivot = Math.Clamp(0.5 - distance * 0.5, 0, 1);
-            var y = anchorY + distance * spacing - height * baseScale / 2 + height * (baseScale - scale) * pivot;
-            card.ZIndex = 10 - (int)(magnitude * 2);
-            if (card.RenderTransform is MatrixTransform transform)
-                transform.Matrix = Matrix.CreateScale(scale, scale) *
-                    Matrix.CreateTranslation(RailWidth + 8 - (1 - _presence.Value) * 24, y);
-        }
+        return _previews.Update(_index, center, neighborCount, _presence.Value, _previewY.Value);
     }
 
     private void RefreshPreviewText()
@@ -445,7 +382,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
 
         if (_index is null) return;
 
-        foreach (var pair in _cards) pair.Value.Observe(_index, pair.Key);
+        _previews.Refresh(_index);
     }
 
     private void ClearMotion()
@@ -456,13 +393,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         _focus = default;
         _previewY = default;
         _wakes.Clear();
-        DisposeCards();
-        _previews.Children.Clear();
-    }
-
-    private void HandleCardPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Property == MinHeightProperty || e.Property == BoundsProperty) RequestFrame();
+        _previews.Clear();
     }
 
     private void HandleTopLevelPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
@@ -470,16 +401,6 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         if (e.Property != IsVisibleProperty) return;
         if (e.NewValue is false) ClearMotion();
         else RequestFrame();
-    }
-
-    private void DisposeCards()
-    {
-        foreach (var card in _cards.Values)
-        {
-            card.PropertyChanged -= HandleCardPropertyChanged;
-            card.Dispose();
-        }
-        _cards.Clear();
     }
 
     /// <inheritdoc />
@@ -576,6 +497,12 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
 
         private double _velocity;
 
+        public void Reset(double value)
+        {
+            Value = value;
+            _velocity = 0;
+        }
+
         public bool Step(double elapsed, double frequency)
         {
             // Analytic critically damped spring: retarget without discarding velocity and remain
@@ -590,6 +517,272 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
             Value = Target;
             _velocity = 0;
             return false;
+        }
+    }
+
+
+    /// <summary>
+    /// Owns the small realized preview window. Child collection changes happen before layout;
+    /// measure captures natural heights and arrange commits them as one coherent snapshot.
+    /// </summary>
+    internal sealed class ChatTurnPreviewPanel : Panel
+    {
+        private const double PreviewGap = 12;
+        private const double PreviewLeft = 48;
+        private const int RealizationBuffer = 1;
+        private readonly ChatTurnNavigator _owner;
+        private readonly Dictionary<ChatTurnNavigationIndex.Entry, PreviewState> _cards = [];
+        private readonly List<PreviewState> _orderedCards = [];
+        private readonly Stack<ChatTurnPreview> _recyclePool = [];
+        private bool _preserveCardPositions;
+
+        public ChatTurnPreviewPanel(ChatTurnNavigator owner)
+        {
+            _owner = owner;
+            ClipToBounds = true;
+            IsHitTestVisible = false;
+        }
+
+        public bool Update(ChatTurnNavigationIndex index, double center, int neighborCount, double presence, double requestedY)
+        {
+            EnsureRealizedCards(index, center, neighborCount);
+            return UpdateTransforms(center, neighborCount, presence, requestedY);
+        }
+
+        public bool Step(double elapsed)
+        {
+            return _orderedCards.AsValueEnumerable().Aggregate(false, (current, state) => current | state.LayoutCorrection.Step(elapsed, 32));
+        }
+
+        public void Refresh(ChatTurnNavigationIndex index)
+        {
+            foreach (var pair in _cards) pair.Value.Preview.Observe(index, pair.Key);
+        }
+
+        public void Clear()
+        {
+            foreach (var state in _cards.Values) state.Preview.Dispose();
+            _cards.Clear();
+            _orderedCards.Clear();
+            foreach (var preview in _recyclePool) preview.Dispose();
+            _recyclePool.Clear();
+            while (Children.Count > 0) Children.RemoveAt(Children.Count - 1);
+            _preserveCardPositions = false;
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var previewWidth = GetPreviewWidth(availableSize.Width);
+            var constraint = new Size(previewWidth, double.PositiveInfinity);
+            foreach (var state in _orderedCards) state.Preview.Measure(constraint);
+
+            var geometryChanged = false;
+            var hasNewMeasurements = false;
+            foreach (var state in _orderedCards)
+            {
+                var height = state.Preview.DesiredSize.Height;
+                geometryChanged |= state.IsMeasured && Math.Abs(state.Height - height) > 0.01;
+                hasNewMeasurements |= !state.IsMeasured;
+            }
+            foreach (var state in _orderedCards)
+            {
+                state.Height = state.Preview.DesiredSize.Height;
+                state.IsMeasured = true;
+            }
+
+            if (geometryChanged) _preserveCardPositions = true;
+            if (geometryChanged || hasNewMeasurements) _owner.RequestFrame();
+
+            // This panel is an overlay and must not reserve space in its parent.
+            return default;
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            var previewWidth = GetPreviewWidth(finalSize.Width);
+            foreach (var state in _orderedCards)
+                state.Preview.Arrange(new Rect(0, 0, previewWidth, state.Height));
+            return finalSize;
+        }
+
+        private void EnsureRealizedCards(ChatTurnNavigationIndex index, double center, int neighborCount)
+        {
+            var first = Math.Max(0, (int)Math.Floor(center) - neighborCount - RealizationBuffer);
+            var last = Math.Min(index.Turns.Count - 1, (int)Math.Ceiling(center) + neighborCount + RealizationBuffer);
+            var rangeChanged = _orderedCards.Count == 0 || _orderedCards[0].Index != first || _orderedCards[^1].Index != last;
+            if (!rangeChanged)
+            {
+                var matches = true;
+                for (var i = first; i <= last; i++) matches &= ReferenceEquals(_orderedCards[i - first].Entry, index.Turns[i]);
+                if (matches) return;
+            }
+
+            foreach (var pair in _cards.ToArray())
+            {
+                var keep = false;
+                for (var i = first; i <= last; i++) keep |= ReferenceEquals(index.Turns[i], pair.Key);
+                if (keep) continue;
+
+                pair.Value.Preview.Release();
+                Children.Remove(pair.Value.Preview);
+                _recyclePool.Push(pair.Value.Preview);
+                _cards.Remove(pair.Key);
+            }
+
+            _orderedCards.Clear();
+            for (var i = first; i <= last; i++)
+            {
+                var entry = index.Turns[i];
+                if (!_cards.TryGetValue(entry, out var state))
+                {
+                    var preview = GetPreview();
+                    state = new PreviewState(preview, entry, i);
+                    _cards.Add(entry, state);
+                    Children.Add(preview);
+                    preview.Observe(index, entry);
+                }
+                state.Index = i;
+                _orderedCards.Add(state);
+            }
+        }
+
+        private ChatTurnPreview GetPreview()
+        {
+            if (_recyclePool.TryPop(out var recycled)) return recycled;
+
+            var preview = new ChatTurnPreview
+            {
+                RenderTransform = new MatrixTransform(),
+                RenderTransformOrigin = RelativePoint.TopLeft
+            };
+            if (preview.RenderTransform is MatrixTransform transform)
+            {
+                transform.Matrix = Matrix.CreateScale(0.001, 0.001);
+            }
+
+            return preview;
+        }
+
+        private bool UpdateTransforms(double center, int neighborCount, double presence, double requestedY)
+        {
+            if (_orderedCards.Count == 0) return false;
+
+            var lowerIndex = Math.Clamp((int)Math.Floor(center), _orderedCards[0].Index, _orderedCards[^1].Index);
+            var anchorItem = lowerIndex - _orderedCards[0].Index;
+            foreach (var state in _orderedCards)
+            {
+                state.Distance = state.Index - center;
+                var magnitude = Math.Abs(state.Distance);
+                var edgeScale = Math.Clamp(neighborCount + 1 - magnitude, 0, 1);
+                var baseScale = Math.Max(0.72, 1 - 0.1 * magnitude);
+                state.Scale = state.IsMeasured ? baseScale * edgeScale * presence : 0;
+                state.VisibleHeight = state.Height * state.Scale;
+            }
+
+            var fraction = center - lowerIndex;
+            if (anchorItem + 1 < _orderedCards.Count)
+            {
+                var interval = GetInterval(_orderedCards[anchorItem], _orderedCards[anchorItem + 1]);
+                _orderedCards[anchorItem].CenterY = -fraction * interval;
+                _orderedCards[anchorItem + 1].CenterY = _orderedCards[anchorItem].CenterY + interval;
+            }
+            else
+            {
+                _orderedCards[anchorItem].CenterY = 0;
+            }
+
+            for (var i = anchorItem - 1; i >= 0; i--)
+            {
+                _orderedCards[i].CenterY = _orderedCards[i + 1].CenterY - GetInterval(_orderedCards[i], _orderedCards[i + 1]);
+            }
+            for (var i = Math.Max(anchorItem + 2, 1); i < _orderedCards.Count; i++)
+            {
+                _orderedCards[i].CenterY = _orderedCards[i - 1].CenterY + GetInterval(_orderedCards[i - 1], _orderedCards[i]);
+            }
+
+            var anchorY = GetPreviewAnchor(center, requestedY);
+            var preservePositions = _preserveCardPositions;
+            var isMoving = false;
+            foreach (var state in _orderedCards)
+            {
+                if (!state.IsMeasured) continue;
+
+                var targetY = anchorY + state.CenterY - state.VisibleHeight / 2;
+                if (preservePositions && state.HasRendered)
+                {
+                    state.LayoutCorrection.Reset(state.LastRenderedY - targetY);
+                    isMoving = true;
+                }
+
+                var y = targetY + state.LayoutCorrection.Value;
+                state.LastRenderedY = y;
+                state.HasRendered = true;
+                state.Preview.ZIndex = 10 - (int)(Math.Abs(state.Distance) * 2);
+                if (state.Preview.RenderTransform is MatrixTransform transform)
+                {
+                    var renderScale = Math.Max(0.001, state.Scale);
+                    transform.Matrix = Matrix.CreateScale(renderScale, renderScale) * Matrix.CreateTranslation(PreviewLeft - (1 - presence) * 24, y);
+                }
+            }
+
+            _preserveCardPositions = false;
+            return isMoving;
+        }
+
+        private double GetPreviewAnchor(double center, double requestedY)
+        {
+            const double padding = 8;
+            var top = double.PositiveInfinity;
+            var bottom = double.NegativeInfinity;
+            foreach (var state in _orderedCards)
+            {
+                if (state.Scale <= 0.001) continue;
+                top = Math.Min(top, state.CenterY - state.VisibleHeight / 2);
+                bottom = Math.Max(bottom, state.CenterY + state.VisibleHeight / 2);
+            }
+            if (!double.IsFinite(top)) return Math.Clamp(requestedY, 0, Bounds.Height);
+
+            var minimum = padding - top;
+            var maximum = Bounds.Height - padding - bottom;
+            if (minimum <= maximum) return Math.Clamp(requestedY, minimum, maximum);
+
+            top = double.PositiveInfinity;
+            bottom = double.NegativeInfinity;
+            foreach (var state in _orderedCards)
+            {
+                if (state.Scale <= 0.001 || Math.Abs(state.Index - center) >= 1) continue;
+                top = Math.Min(top, state.CenterY - state.VisibleHeight / 2);
+                bottom = Math.Max(bottom, state.CenterY + state.VisibleHeight / 2);
+            }
+            if (!double.IsFinite(top)) return Math.Clamp(requestedY, padding, Math.Max(padding, Bounds.Height - padding));
+
+            minimum = padding - top;
+            maximum = Bounds.Height - padding - bottom;
+            return minimum <= maximum ?
+                Math.Clamp(requestedY, minimum, maximum) :
+                Math.Clamp(requestedY, padding, Math.Max(padding, Bounds.Height - padding));
+        }
+
+        private static double GetInterval(PreviewState first, PreviewState second) =>
+            first.VisibleHeight / 2 + PreviewGap + second.VisibleHeight / 2;
+
+        private static double GetPreviewWidth(double availableWidth) =>
+            Math.Max(0, Math.Min(320, availableWidth - PreviewLeft - 16));
+
+        private sealed class PreviewState(ChatTurnPreview preview, ChatTurnNavigationIndex.Entry entry, int index)
+        {
+            public ChatTurnPreview Preview { get; } = preview;
+            public ChatTurnNavigationIndex.Entry Entry { get; } = entry;
+            public int Index { get; set; } = index;
+            public double Height { get; set; }
+            public double LastRenderedY { get; set; }
+            public double Distance { get; set; }
+            public double Scale { get; set; }
+            public double VisibleHeight { get; set; }
+            public double CenterY { get; set; }
+            public bool IsMeasured { get; set; }
+            public bool HasRendered { get; set; }
+            public Spring LayoutCorrection { get; } = new();
         }
     }
 }

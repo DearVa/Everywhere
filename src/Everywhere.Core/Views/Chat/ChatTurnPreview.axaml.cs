@@ -46,9 +46,23 @@ public sealed partial class ChatTurnPreview : UserControl, IDisposable
     /// </summary>
     public void Observe(ChatTurnNavigationIndex index, ChatTurnNavigationIndex.Entry entry)
     {
+        if (_isDisposed) return;
         _index = index;
         _entry = entry;
         Refresh();
+    }
+
+    /// <summary>
+    /// Stops observing the current turn so this preview can be reused for another realized entry.
+    /// </summary>
+    public void Release()
+    {
+        if (_isDisposed) return;
+
+        foreach (var assistant in _runningAssistants) assistant.PropertyChanged -= HandleAssistantChanged;
+        _runningAssistants.Clear();
+        _index = null;
+        _entry = null;
     }
 
     private void Refresh()
@@ -182,10 +196,7 @@ public sealed partial class ChatTurnPreview : UserControl, IDisposable
     {
         if (_isDisposed) return;
 
+        Release();
         _isDisposed = true;
-        foreach (var assistant in _runningAssistants) assistant.PropertyChanged -= HandleAssistantChanged;
-        _runningAssistants.Clear();
-        _index = null;
-        _entry = null;
     }
 }
