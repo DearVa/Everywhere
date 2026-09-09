@@ -1,6 +1,9 @@
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Everywhere.Interop;
+using Everywhere.StrategyEngine;
+using Everywhere.Views;
 using Lucide.Avalonia;
 
 namespace Everywhere.Configuration;
@@ -74,4 +77,23 @@ public sealed partial class TextSelectionToolbarSettings(IServiceProvider servic
         LocaleKey.TextSelectionToolbarSettings_ShowActionLabels_Description)]
     [SettingsItem(IsVisibleBindingPath = nameof(IsEnabled), Group = "_")]
     public partial bool ShowActionLabels { get; set; } = true;
+
+    [SettingsItemIgnore]
+    public ObservableCollection<TextSelectionToolbarAction> Actions { get; } = [];
+
+    /// <summary>
+    /// Records the one-time cleanup of old, unrelated defaults. Retained actions must survive a
+    /// subsequent reset of their overrides, including across application restarts.
+    /// </summary>
+    [ObservableProperty]
+    [SettingsItemIgnore]
+    public partial bool HasMigratedActionDefaults { get; set; }
+
+    [JsonIgnore]
+    [DynamicLocaleKey(
+        LocaleKey.TextSelectionToolbarSettings_Actions_Header,
+        LocaleKey.TextSelectionToolbarSettings_Actions_Description)]
+    [SettingsItem(IsVisibleBindingPath = nameof(IsEnabled), Group = "_", Classes = ["FullWidth"])]
+    public SettingsControl<TextSelectionToolbarActionsControl> ActionsControl =>
+        new(_ => new TextSelectionToolbarActionsControl(GetRequiredService<TextSelectionToolbarActions>()));
 }

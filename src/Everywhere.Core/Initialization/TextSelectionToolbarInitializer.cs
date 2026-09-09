@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Threading;
-using Everywhere.Chat;
 using Everywhere.Common;
 using Everywhere.Configuration;
 using Everywhere.Interop;
@@ -9,7 +8,6 @@ using Everywhere.Utilities;
 using Everywhere.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ZLinq;
 
 namespace Everywhere.Initialization;
 
@@ -36,7 +34,7 @@ public sealed class TextSelectionToolbarInitializer(
     IVisualElementContext visualElementContext,
     IOverlayDismissWatcher dismissWatcher,
     IWindowHelper windowHelper,
-    IStrategyEngine strategyEngine,
+    TextSelectionToolbarActions toolbarActions,
     ILogger<TextSelectionToolbarInitializer> logger
 ) : IAsyncInitializer, IObserver<TextSelectionData>
 {
@@ -164,19 +162,7 @@ public sealed class TextSelectionToolbarInitializer(
     {
         try
         {
-            var context = StrategyContext.FromAttachments([new TextSelectionAttachment(data.Text!, data.Element)]);
-
-            // Clamped here rather than trusted: the settings binder assigns persisted values without
-            // applying the range declared by SettingsIntegerItemAttribute, so an edited settings file can
-            // carry a count outside it.
-            var maxActionCount = Math.Clamp(
-                settings.TextSelectionToolbar.MaxActionCount,
-                TextSelectionToolbarSettings.MinActionCount,
-                TextSelectionToolbarSettings.MaxAllowedActionCount);
-
-            // Ordered by descending priority, so taking the first N keeps the most relevant actions and
-            // naturally excludes the negative-priority global strategies.
-            return [..strategyEngine.GetStrategies(context).AsValueEnumerable().Take(maxActionCount)];
+            return toolbarActions.GetStrategies(data);
         }
         catch (Exception ex)
         {
