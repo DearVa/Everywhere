@@ -3952,6 +3952,7 @@
     </data>
     <data name="TextSelectionToolbarSettings_ShowActionLabels_Description" xml:space="preserve">
         <value>在每个图标旁显示名称。关闭后工具栏仅显示图标</value>
+    </data>
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
@@ -3999,6 +4000,7 @@
     </data>
     <data name="TextSelectionToolbarActions_DeleteConfirmation" xml:space="preserve">
         <value>确定删除自定义工具“{0}”吗？</value>
+    </data>
     <data name="ChatTurnPreview_Waiting" xml:space="preserve">
         <value>正在等待回复…</value>
     </data>
