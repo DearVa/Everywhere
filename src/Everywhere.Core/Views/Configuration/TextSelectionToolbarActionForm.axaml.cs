@@ -61,7 +61,12 @@ public sealed partial class TextSelectionToolbarActionForm : TemplatedControl
             var name = Name.Trim();
             action.Name = name == builtInStrategy?.NameKey.ToString() ? null : name;
             action.Prompt = Prompt == builtInStrategy?.Body ? null : Prompt;
-            action.Icon = Icon;
+            action.Icon = builtInStrategy?.Icon is { } builtInIcon &&
+                Icon.Type == builtInIcon.Type &&
+                Icon.Kind == builtInIcon.Kind &&
+                Icon.Text == builtInIcon.Text &&
+                Icon.Foreground == builtInIcon.Foreground &&
+                Icon.Background == builtInIcon.Background ? null : Icon;
         }
 
         public static ValidationResult? ValidateRequiredText(string? value) =>
