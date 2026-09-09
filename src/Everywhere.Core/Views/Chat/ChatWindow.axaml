@@ -770,22 +770,6 @@
             Size="{DynamicResource FontSizeXl}"/>
         </Button>
 
-        <Border
-          x:Name="TurnNavigatorMask2" Grid.Row="0"
-          Grid.RowSpan="2" Background="#99000000"
-          CornerRadius="0,0,20,20" IsHitTestVisible="False"
-          Opacity="{Binding #TurnNavigator.PreviewPresence}"/>
-
-        <v:ChatTurnNavigator
-          x:Name="TurnNavigator" Grid.Row="0"
-          HorizontalAlignment="Stretch"
-          ChatContext="{Binding ChatContextManager.Current}"
-          LinePadding="4,0,0,0"
-          Mode="{Binding Settings.ChatWindow.TurnNavigationMode}"
-          PreviewLineHeight="{DynamicResource LineHeightM}"
-          ReadingNode="{Binding #ChatMessages.ReadingTurnNode}"
-          Target="{Binding #ChatMessages}"/>
-
         <StackPanel
           x:Name="InputPanel" Grid.Row="1"
           MaxWidth="800" Margin="10"
@@ -1277,6 +1261,22 @@
             </Border>
           </shadui:ControlGroup>
         </StackPanel>
+
+        <Border
+          x:Name="TurnNavigatorMask2" Grid.Row="0"
+          Grid.RowSpan="2" Background="#99000000"
+          CornerRadius="0,0,20,20" IsHitTestVisible="False"
+          Opacity="{Binding #TurnNavigator.PreviewPresence}"/>
+
+        <v:ChatTurnNavigator
+          x:Name="TurnNavigator" Grid.Row="0"
+          Grid.RowSpan="2" HorizontalAlignment="Stretch"
+          ChatContext="{Binding ChatContextManager.Current}"
+          LinePadding="4,0,0,100"
+          Mode="{Binding Settings.ChatWindow.TurnNavigationMode}"
+          PreviewLineHeight="{DynamicResource LineHeightM}"
+          ReadingNode="{Binding #ChatMessages.ReadingTurnNode}"
+          Target="{Binding #ChatMessages}"/>
       </Grid>
     </shadui:ResponsiveDrawer>
   </Panel>

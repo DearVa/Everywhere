@@ -600,7 +600,7 @@
         <value>不受配额限制</value>
     </data>
     <data name="Assistant_SupportsImage_Header" xml:space="preserve">
-        <value>图像输入支持</value>
+        <value>支持图像输入</value>
     </data>
     <data name="Assistant_ContextLimit_Description" xml:space="preserve">
         <value>对话的最大上下文长度 (context_limit)。此项会影响构建视觉上下文的策略，请尽可能设为真实值。</value>

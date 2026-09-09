@@ -588,7 +588,7 @@
         <value>模型支持的輸入模態，選擇錯誤可能導致調用失敗。</value>
     </data>
     <data name="Assistant_SupportsToolCall_Header" xml:space="preserve">
-        <value>支援工具使用</value>
+        <value>支援使用工具</value>
     </data>
     <data name="Assistant_SupportsToolCall_Description" xml:space="preserve">
         <value>模型支持使用已配置的工具。如果模型不支持，開啟此選項可能會導致對話時出現錯誤。</value>
@@ -600,7 +600,7 @@
         <value>無配額限制</value>
     </data>
     <data name="Assistant_SupportsImage_Header" xml:space="preserve">
-        <value>圖像輸入支援</value>
+        <value>支援圖像輸入</value>
     </data>
     <data name="Assistant_ContextLimit_Description" xml:space="preserve">
         <value>對話的最大上下文長度。此項會影響構建視覺上下文的策略，請盡可能設為真實值。</value>
