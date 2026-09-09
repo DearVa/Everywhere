@@ -223,6 +223,15 @@
     <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
         <value>Aramayı Kapat (Esc)</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value>Tüm mesajları ara</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value>Sadece kullanıcı mesajlarını ara</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value>Sadece asistan mesajlarını ara</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Yeni Sohbet Oluşturun (Ctrl+N)</value>
     </data>
@@ -3951,14 +3960,5 @@ Silindikten sonra, bu asistanlar varsayılan ipucu ile devam edecek, ta ki yeni 
     </data>
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>Akıcı</value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
-        <value></value>
     </data>
 </root>

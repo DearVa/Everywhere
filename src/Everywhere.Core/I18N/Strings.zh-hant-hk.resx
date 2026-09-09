@@ -223,6 +223,15 @@
     <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
         <value>關閉搜尋 (Esc)</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value>搜索所有消息</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value>僅搜索用戶消息</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value>僅搜索助手消息</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>建立新聊天 (Ctrl+N)</value>
     </data>
@@ -3951,14 +3960,5 @@
     </data>
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>靈動</value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
-        <value></value>
     </data>
 </root>

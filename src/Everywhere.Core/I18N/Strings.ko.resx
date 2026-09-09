@@ -223,6 +223,15 @@
     <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
         <value>검색 닫기 (Esc)</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value>모든 메시지 검색</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value>사용자 메시지만 검색</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value>도우미 메시지만 검색</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>새 채팅 만들기 (Ctrl+N)</value>
     </data>
@@ -3951,14 +3960,5 @@
     </data>
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>유연함</value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
-        <value></value>
     </data>
 </root>
