@@ -3998,5 +3998,16 @@ Delete &quot;{1}&quot; permanently?</value>
     </data>
     <data name="TextSelectionToolbarActions_DeleteConfirmation" xml:space="preserve">
         <value>Delete the custom action “{0}”?</value>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Waiting for a response…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Tool activity</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Show Conversation Navigation</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Show a navigation bar on the left of the current conversation. Hover to preview a question and its reply, and click to jump to that point.</value>
     </data>
 </root>

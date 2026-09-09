@@ -3931,4 +3931,16 @@ Möchten Sie „{1}“ trotzdem dauerhaft löschen?</value>
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
+    <data name="ChatTurnPreview_Waiting" xml:space="preserve">
+        <value>Warte auf Antwort…</value>
+    </data>
+    <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
+        <value>Werkzeugaufruf</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
+        <value>Gesprächsnavigation Anzeigen</value>
+    </data>
+    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
+        <value>Navigationsleiste links im aktuellen Gespräch anzeigen. Hover, um die entsprechenden Fragen und Antworten anzuzeigen, klicken, um zu dieser Stelle zu springen.</value>
+    </data>
 </root>
