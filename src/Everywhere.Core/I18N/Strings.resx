@@ -3951,6 +3951,7 @@ Delete &quot;{1}&quot; permanently?</value>
     </data>
     <data name="TextSelectionToolbarSettings_ShowActionLabels_Description" xml:space="preserve">
         <value>Show the name next to each icon. When disabled, the toolbar shows icons only</value>
+    </data>
     <data name="ModelProviderSchema_Mistral" xml:space="preserve">
         <value>Mistral</value>
     </data>
@@ -3998,6 +3999,7 @@ Delete &quot;{1}&quot; permanently?</value>
     </data>
     <data name="TextSelectionToolbarActions_DeleteConfirmation" xml:space="preserve">
         <value>Delete the custom action “{0}”?</value>
+    </data>
     <data name="ChatTurnPreview_Waiting" xml:space="preserve">
         <value>Waiting for a response…</value>
     </data>
