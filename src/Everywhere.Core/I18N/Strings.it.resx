@@ -3387,6 +3387,24 @@ Data di rilascio: {2}</value>
     <data name="HomeNotification_StatisticsBackfilled" xml:space="preserve">
         <value>Le statistiche iniziali provengono dall'analisi dei dati storici delle chat e potrebbero contenere errori.</value>
     </data>
+    <data name="Assistant_MistralOptions_Header" xml:space="preserve">
+        <value>Opzioni Mistral</value>
+    </data>
+    <data name="Assistant_MistralOptions_Description" xml:space="preserve">
+        <value>Opzioni di configurazione per il modello AI Mistral</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Header" xml:space="preserve">
+        <value>Includi Ragionamento</value>
+    </data>
+    <data name="MistralOptions_IncludeReasoningContent_Description" xml:space="preserve">
+        <value>Includi contenuti di ragionamento/pensiero nella risposta</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Header" xml:space="preserve">
+        <value>Intensità di Ragionamento</value>
+    </data>
+    <data name="MistralOptions_ReasoningEffort_Description" xml:space="preserve">
+        <value>Intensità di ragionamento specifica per il modello. Mistral attualmente specifica high e none per i modelli supportati; altri valori non vuoti verranno trasmessi così come sono. Se lasciato vuoto, verrà utilizzato il comportamento predefinito del modello. Disattivando 'Includi Ragionamento' verrà inviato none.</value>
+    </data>
     <data name="SettingsEngine_Diagnostic_WriteObservedPathFailed" xml:space="preserve">
         <value>Impossibile scrivere il percorso delle impostazioni &quot;{0}&quot;.</value>
     </data>
@@ -3909,5 +3927,8 @@ Vuoi comunque eliminare permanentemente “{1}”?</value>
     </data>
     <data name="TextDifferenceEditor_OmittedLineButton_ToolTip" xml:space="preserve">
         <value>Clicca per espandere</value>
+    </data>
+    <data name="ModelProviderSchema_Mistral" xml:space="preserve">
+        <value>Mistral</value>
     </data>
 </root>

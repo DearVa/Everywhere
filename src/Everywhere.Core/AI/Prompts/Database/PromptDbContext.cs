@@ -82,6 +82,8 @@ public sealed class PromptDbInitializer(IDbContextFactory<PromptDbContext> dbFac
 
         await using var dbContext = await dbFactory.CreateDbContextAsync();
         await dbContext.Database.MigrateAsync();
+
+        logger.LogInformation("Prompt database initialized.");
     }
 }
 
