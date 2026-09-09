@@ -3937,10 +3937,19 @@
     <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
         <value>工具活動</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
-        <value>顯示對話導航</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Header" xml:space="preserve">
+        <value>對話輪次導航</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
-        <value>在當前對話左側顯示導航條。懸停可預覽對應的提問和回覆，點擊可跳轉到該位置。</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Description" xml:space="preserve">
+        <value>在對話左側顯示輪次導航列。可選擇只上下移動的簡潔動畫、帶縮放的靈動動畫，或將其關閉。</value>
+    </data>
+    <data name="ChatTurnNavigationMode_None" xml:space="preserve">
+        <value>關閉</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Simple" xml:space="preserve">
+        <value>簡潔</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
+        <value>靈動</value>
     </data>
 </root>

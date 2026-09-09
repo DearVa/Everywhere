@@ -3937,10 +3937,19 @@
     <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
         <value>도구 호출</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
-        <value>대화 탐색 표시</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Header" xml:space="preserve">
+        <value>대화 턴 탐색</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
-        <value>현재 대화 왼쪽에 탐색 바를 표시합니다. 마우스를 올리면 해당 질문과 응답을 미리 볼 수 있으며, 클릭하면 해당 위치로 이동합니다.</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Description" xml:space="preserve">
+        <value>대화 왼쪽에 턴 탐색 막대를 표시합니다. 위아래로만 움직이는 간단한 애니메이션, 크기 조절이 포함된 유연한 애니메이션 또는 끄기를 선택할 수 있습니다.</value>
+    </data>
+    <data name="ChatTurnNavigationMode_None" xml:space="preserve">
+        <value>끄기</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Simple" xml:space="preserve">
+        <value>간단</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
+        <value>유연함</value>
     </data>
 </root>

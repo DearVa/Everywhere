@@ -15,18 +15,20 @@ namespace Everywhere.Views;
 public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
 {
     /// <summary>
-    /// Defines the full-area background reached while previewing a turn.
+    /// Defines the animated presence of the turn previews.
     /// </summary>
-    public static readonly StyledProperty<IBrush?> BackgroundProperty =
-        AvaloniaProperty.Register<ChatTurnNavigator, IBrush?>(nameof(Background));
+    public static readonly DirectProperty<ChatTurnNavigator, double> PreviewPresenceProperty =
+        AvaloniaProperty.RegisterDirect<ChatTurnNavigator, double>(
+            nameof(PreviewPresence),
+            static navigator => navigator.PreviewPresence);
 
     /// <summary>
-    /// Gets or sets the hover backdrop. Its opacity follows the preview entrance and exit.
+    /// Gets the animated preview presence, from zero while hidden to one while fully shown.
     /// </summary>
-    public IBrush? Background
+    public double PreviewPresence
     {
-        get => GetValue(BackgroundProperty);
-        set => SetValue(BackgroundProperty, value);
+        get;
+        private set => SetAndRaise(PreviewPresenceProperty, ref field, value);
     }
 
     /// <summary>
@@ -72,6 +74,21 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
     {
         get => GetValue(ReadingNodeProperty);
         set => SetValue(ReadingNodeProperty, value);
+    }
+
+    /// <summary>
+    /// Defines how turn navigation and its previews are presented.
+    /// </summary>
+    public static readonly StyledProperty<ChatTurnNavigationMode> ModeProperty =
+        AvaloniaProperty.Register<ChatTurnNavigator, ChatTurnNavigationMode>(nameof(Mode), ChatTurnNavigationMode.Fluid);
+
+    /// <summary>
+    /// Gets or sets how turn navigation and its previews are presented.
+    /// </summary>
+    public ChatTurnNavigationMode Mode
+    {
+        get => GetValue(ModeProperty);
+        set => SetValue(ModeProperty, value);
     }
 
     /// <summary>
@@ -191,9 +208,14 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
     {
         base.OnPropertyChanged(change);
 
-        if (change.Property == TextElement.ForegroundProperty || change.Property == BackgroundProperty) InvalidateVisual();
+        if (change.Property == TextElement.ForegroundProperty) InvalidateVisual();
         else if (change.Property == ChatContextProperty && _topLevel is not null) Reconnect();
         else if (change.Property == ReadingNodeProperty) UpdateReadingPosition();
+        else if (change.Property == ModeProperty)
+        {
+            SetCurrentValue(IsVisibleProperty, Mode != ChatTurnNavigationMode.None);
+            RequestFrame();
+        }
         else if (change.Property == PreviewLineHeightProperty) RequestFrame();
         else if (change.Property == BoundsProperty || change.Property == LinePaddingProperty)
         {
@@ -345,6 +367,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         if (_isHovering) _focus.Target = PointerPosition;
         isMoving |= _focus.Step(elapsed, 28);
         isMoving |= _presence.Step(elapsed, 22);
+        PreviewPresence = Math.Clamp(_presence.Value, 0, 1);
         isMoving |= _previewY.Step(elapsed, 28);
         isMoving |= _previews.Step(elapsed);
         for (var i = _wakes.Count - 1; i >= 0; i--)
@@ -390,6 +413,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         _isHovering = false;
         _lastFrame = null;
         _presence = default;
+        PreviewPresence = 0;
         _focus = default;
         _previewY = default;
         _wakes.Clear();
@@ -410,13 +434,6 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
     public override void Render(DrawingContext context)
     {
         base.Render(context);
-
-        // Drawing the backdrop does not expand input ownership: ICustomHitTest still restricts
-        // pointer input to the actual marks, allowing the remaining chat area to stay interactive.
-        if (Background is { } background && _presence.Value > 0)
-        {
-            using (context.PushOpacity(_presence.Value)) context.FillRectangle(background, new Rect(Bounds.Size));
-        }
 
         var clip = RailClip;
         if (clip.Height <= 0) return;
@@ -667,6 +684,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
         {
             if (_orderedCards.Count == 0) return false;
 
+            var isFluid = _owner.Mode == ChatTurnNavigationMode.Fluid;
             var lowerIndex = Math.Clamp((int)Math.Floor(center), _orderedCards[0].Index, _orderedCards[^1].Index);
             var anchorItem = lowerIndex - _orderedCards[0].Index;
             foreach (var state in _orderedCards)
@@ -675,8 +693,11 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
                 var magnitude = Math.Abs(state.Distance);
                 var edgeScale = Math.Clamp(neighborCount + 1 - magnitude, 0, 1);
                 var baseScale = Math.Max(0.72, 1 - 0.1 * magnitude);
-                state.Scale = state.IsMeasured ? baseScale * edgeScale * presence : 0;
+                state.Visibility = state.IsMeasured ? Math.Min(edgeScale * presence * 3, 1d) : 0;
+                var scale = isFluid ? baseScale * state.Visibility : 1;
+                state.Scale = state.IsMeasured ? scale : 0;
                 state.VisibleHeight = state.Height * state.Scale;
+                state.Preview.Opacity = state.IsMeasured ? isFluid ? 1 : state.Visibility : 0;
             }
 
             var fraction = center - lowerIndex;
@@ -700,7 +721,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
                 _orderedCards[i].CenterY = _orderedCards[i - 1].CenterY + GetInterval(_orderedCards[i - 1], _orderedCards[i]);
             }
 
-            var anchorY = GetPreviewAnchor(center, requestedY);
+            var anchorY = isFluid ? GetPreviewAnchor(center, requestedY) : GetSimplePreviewAnchor(anchorItem, fraction, requestedY);
             var preservePositions = _preserveCardPositions;
             var isMoving = false;
             foreach (var state in _orderedCards)
@@ -720,13 +741,34 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
                 state.Preview.ZIndex = 10 - (int)(Math.Abs(state.Distance) * 2);
                 if (state.Preview.RenderTransform is MatrixTransform transform)
                 {
-                    var renderScale = Math.Max(0.001, state.Scale);
-                    transform.Matrix = Matrix.CreateScale(renderScale, renderScale) * Matrix.CreateTranslation(PreviewLeft - (1 - presence) * 24, y);
+                    if (isFluid)
+                    {
+                        var renderScale = Math.Max(0.001, state.Scale);
+                        transform.Matrix = Matrix.CreateScale(renderScale, renderScale) *
+                            Matrix.CreateTranslation(PreviewLeft - (1 - presence) * 24, y);
+                    }
+                    else
+                    {
+                        transform.Matrix = Matrix.CreateTranslation(PreviewLeft, y);
+                    }
                 }
             }
 
             _preserveCardPositions = false;
             return isMoving;
+        }
+
+        private double GetSimplePreviewAnchor(int anchorItem, double fraction, double requestedY)
+        {
+            // Interpolate the focused height instead of fitting the visible set: fading in a
+            // full-size edge card must not change the anchor constraints for the entire list.
+            var height = _orderedCards[anchorItem].Height;
+            if (anchorItem + 1 < _orderedCards.Count)
+                height += (_orderedCards[anchorItem + 1].Height - height) * fraction;
+
+            // Collapse the permitted range continuously to the viewport center if it is too small.
+            var inset = Math.Min(height / 2 + 8, Bounds.Height / 2);
+            return Math.Clamp(requestedY, inset, Bounds.Height - inset);
         }
 
         private double GetPreviewAnchor(double center, double requestedY)
@@ -736,7 +778,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
             var bottom = double.NegativeInfinity;
             foreach (var state in _orderedCards)
             {
-                if (state.Scale <= 0.001) continue;
+                if (state.Visibility <= 0.001) continue;
                 top = Math.Min(top, state.CenterY - state.VisibleHeight / 2);
                 bottom = Math.Max(bottom, state.CenterY + state.VisibleHeight / 2);
             }
@@ -750,7 +792,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
             bottom = double.NegativeInfinity;
             foreach (var state in _orderedCards)
             {
-                if (state.Scale <= 0.001 || Math.Abs(state.Index - center) >= 1) continue;
+                if (state.Visibility <= 0.001 || Math.Abs(state.Index - center) >= 1) continue;
                 top = Math.Min(top, state.CenterY - state.VisibleHeight / 2);
                 bottom = Math.Max(bottom, state.CenterY + state.VisibleHeight / 2);
             }
@@ -777,6 +819,7 @@ public sealed class ChatTurnNavigator : Decorator, ICustomHitTest
             public double Height { get; set; }
             public double LastRenderedY { get; set; }
             public double Distance { get; set; }
+            public double Visibility { get; set; }
             public double Scale { get; set; }
             public double VisibleHeight { get; set; }
             public double CenterY { get; set; }

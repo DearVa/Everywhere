@@ -3937,10 +3937,19 @@ Vuoi comunque eliminare permanentemente “{1}”?</value>
     <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
         <value>Chiamata Strumento</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
-        <value>Mostra Navigazione Conversazione</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Header" xml:space="preserve">
+        <value>Navigazione per turni</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
-        <value>Mostra una barra di navigazione a sinistra nella conversazione attuale. Passa il mouse per visualizzare in anteprima le domande e le risposte corrispondenti, fai clic per andare a quella posizione.</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Description" xml:space="preserve">
+        <value>Mostra una barra di navigazione per turni a sinistra delle conversazioni. Scegli un semplice movimento verticale, un’animazione fluida con ridimensionamento oppure disattivala.</value>
+    </data>
+    <data name="ChatTurnNavigationMode_None" xml:space="preserve">
+        <value>Disattivata</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Simple" xml:space="preserve">
+        <value>Semplice</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
+        <value>Fluida</value>
     </data>
 </root>

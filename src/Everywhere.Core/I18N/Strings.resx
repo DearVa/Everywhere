@@ -3937,10 +3937,19 @@ Delete &quot;{1}&quot; permanently?</value>
     <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
         <value>Tool activity</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
-        <value>Show Conversation Navigation</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Header" xml:space="preserve">
+        <value>Conversation turn navigation</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
-        <value>Show a navigation bar on the left of the current conversation. Hover to preview a question and its reply, and click to jump to that point.</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Description" xml:space="preserve">
+        <value>Show a turn navigation bar on the left of conversations. Choose simple vertical motion, fluid motion with scaling, or turn it off.</value>
+    </data>
+    <data name="ChatTurnNavigationMode_None" xml:space="preserve">
+        <value>Off</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Simple" xml:space="preserve">
+        <value>Simple</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
+        <value>Fluid</value>
     </data>
 </root>

@@ -5,9 +5,8 @@
   xmlns:md="clr-namespace:LiveMarkdown.Avalonia;assembly=LiveMarkdown.Avalonia" xmlns:notification="clr-namespace:Everywhere.Common.Notification;assembly=Everywhere.Abstractions"
   xmlns:notifications="clr-namespace:Avalonia.Controls.Notifications;assembly=Avalonia.Controls" xmlns:p="clr-namespace:Everywhere.Chat.Plugins"
   xmlns:se="clr-namespace:Everywhere.StrategyEngine" xmlns:shadui="clr-namespace:ShadUI.Controls;assembly=ShadUI"
-  xmlns:system="clr-namespace:System;assembly=System.Runtime" xmlns:v="clr-namespace:Everywhere.Views"
-  xmlns:vc="clr-namespace:Everywhere.ValueConverters" xmlns:vm="clr-namespace:Everywhere.ViewModels"
-  x:Name="Self"
+  xmlns:v="clr-namespace:Everywhere.Views" xmlns:vc="clr-namespace:Everywhere.ValueConverters"
+  xmlns:vm="clr-namespace:Everywhere.ViewModels" x:Name="Self"
   Title="{I18N {x:Static LocaleKey.ChatWindow_Title}}"
   MinWidth="400" MinHeight="300"
   x:DataType="vm:ChatWindowViewModel" x:TypeArguments="vm:ChatWindowViewModel"
@@ -23,6 +22,28 @@
   </v:ReactiveShadWindow.BorderThickness>
 
   <v:ReactiveShadWindow.Hosts>
+    <Border
+      x:Name="TurnNavigatorMask1" Height="48"
+      VerticalAlignment="Top" Background="#99000000"
+      CornerRadius="20,20,0,0" IsHitTestVisible="False"
+      Opacity="{Binding #TurnNavigator.PreviewPresence}"/>
+    <Border
+      x:Name="DragDropOverlay" Background="#CC000000"
+      CornerRadius="20" IsVisible="False">
+      <StackPanel
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        Spacing="16">
+        <LucideIcon
+          x:Name="DragDropIcon" HorizontalAlignment="Center"
+          Foreground="{DynamicResource ForegroundColor}"
+          Kind="FileUp" Size="64"/>
+        <TextBlock
+          x:Name="DragDropText" HorizontalAlignment="Center"
+          FontSize="18" FontWeight="SemiBold"
+          Foreground="{DynamicResource ForegroundColor}"
+          Text="{I18N {x:Static LocaleKey.ChatWindow_DragDrop_Overlay_DropFilesHere}}"/>
+      </StackPanel>
+    </Border>
     <shadui:DialogHost
       x:Name="PART_DialogHost" Padding="16,52,16,16"/>
     <shadui:ToastHost
@@ -749,6 +770,22 @@
             Size="{DynamicResource FontSizeXl}"/>
         </Button>
 
+        <Border
+          x:Name="TurnNavigatorMask2" Grid.Row="0"
+          Grid.RowSpan="2" Background="#99000000"
+          CornerRadius="0,0,20,20" IsHitTestVisible="False"
+          Opacity="{Binding #TurnNavigator.PreviewPresence}"/>
+
+        <v:ChatTurnNavigator
+          x:Name="TurnNavigator" Grid.Row="0"
+          HorizontalAlignment="Stretch"
+          ChatContext="{Binding ChatContextManager.Current}"
+          LinePadding="4,0,0,0"
+          Mode="{Binding Settings.ChatWindow.TurnNavigationMode}"
+          PreviewLineHeight="{DynamicResource LineHeightM}"
+          ReadingNode="{Binding #ChatMessages.ReadingTurnNode}"
+          Target="{Binding #ChatMessages}"/>
+
         <StackPanel
           x:Name="InputPanel" Grid.Row="1"
           MaxWidth="800" Margin="10"
@@ -1242,53 +1279,5 @@
         </StackPanel>
       </Grid>
     </shadui:ResponsiveDrawer>
-
-    <v:ChatTurnNavigator
-      Margin="0,-48,0,0" HorizontalAlignment="Stretch"
-      Background="#99000000"
-      ChatContext="{Binding ChatContextManager.Current}"
-      IsVisible="{Binding Settings.ChatWindow.ShowTurnNavigation}"
-      PreviewLineHeight="{DynamicResource LineHeightM}"
-      ReadingNode="{Binding #ChatMessages.ReadingTurnNode}"
-      Target="{Binding #ChatMessages}">
-      <v:ChatTurnNavigator.LinePadding>
-        <MultiBinding Converter="{x:Static vc:ThicknessConverters.FromValues}">
-          <Binding>
-            <Binding.Source>
-              <system:Double>4</system:Double>
-            </Binding.Source>
-          </Binding>
-          <Binding>
-            <Binding.Source>
-              <system:Double>52</system:Double>
-            </Binding.Source>
-          </Binding>
-          <Binding>
-            <Binding.Source>
-              <system:Double>0</system:Double>
-            </Binding.Source>
-          </Binding>
-          <Binding Path="#InputPanel.Bounds.Height"/>
-        </MultiBinding>
-      </v:ChatTurnNavigator.LinePadding>
-    </v:ChatTurnNavigator>
-
-    <Border
-      x:Name="DragDropOverlay" Margin="0,-48,0,0"
-      Background="#CC000000" IsVisible="False">
-      <StackPanel
-        HorizontalAlignment="Center" VerticalAlignment="Center"
-        Spacing="16">
-        <LucideIcon
-          x:Name="DragDropIcon" HorizontalAlignment="Center"
-          Foreground="{DynamicResource ForegroundColor}"
-          Kind="FileUp" Size="64"/>
-        <TextBlock
-          x:Name="DragDropText" HorizontalAlignment="Center"
-          FontSize="18" FontWeight="SemiBold"
-          Foreground="{DynamicResource ForegroundColor}"
-          Text="{I18N {x:Static LocaleKey.ChatWindow_DragDrop_Overlay_DropFilesHere}}"/>
-      </StackPanel>
-    </Border>
   </Panel>
 </v:ReactiveShadWindow>

@@ -3937,10 +3937,19 @@ Möchten Sie „{1}“ trotzdem dauerhaft löschen?</value>
     <data name="ChatTurnPreview_ToolActivity" xml:space="preserve">
         <value>Werkzeugaufruf</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Header" xml:space="preserve">
-        <value>Gesprächsnavigation Anzeigen</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Header" xml:space="preserve">
+        <value>Konversationsnavigation</value>
     </data>
-    <data name="ChatWindowSettings_ShowTurnNavigation_Description" xml:space="preserve">
-        <value>Navigationsleiste links im aktuellen Gespräch anzeigen. Hover, um die entsprechenden Fragen und Antworten anzuzeigen, klicken, um zu dieser Stelle zu springen.</value>
+    <data name="ChatWindowSettings_TurnNavigationMode_Description" xml:space="preserve">
+        <value>Zeigt links neben Unterhaltungen eine Navigation nach Gesprächsrunden an. Wählen Sie eine einfache vertikale Bewegung, eine fließende Animation mit Skalierung oder deaktivieren Sie die Navigation.</value>
+    </data>
+    <data name="ChatTurnNavigationMode_None" xml:space="preserve">
+        <value>Aus</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Simple" xml:space="preserve">
+        <value>Einfach</value>
+    </data>
+    <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
+        <value>Fließend</value>
     </data>
 </root>
