@@ -223,6 +223,15 @@
     <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
         <value>検索を閉じる (Esc)</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value>すべてのメッセージを検索</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value>ユーザーのメッセージのみを検索</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value>アシスタントのメッセージのみを検索</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>新しいチャットを作成 (Ctrl+N)</value>
     </data>
@@ -3951,14 +3960,5 @@
     </data>
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>滑らか</value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
-        <value></value>
     </data>
 </root>

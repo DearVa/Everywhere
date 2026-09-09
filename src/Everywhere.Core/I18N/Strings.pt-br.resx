@@ -223,6 +223,15 @@
     <data name="ChatWindow_TextSearch_Close_ToolTip" xml:space="preserve">
         <value>Fechar Busca (Esc)</value>
     </data>
+    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
+        <value>Pesquisar todas as mensagens</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
+        <value>Pesquisar apenas mensagens do usuário</value>
+    </data>
+    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
+        <value>Pesquisar apenas mensagens do assistente</value>
+    </data>
     <data name="ChatWindow_CreateNew_ToolTip" xml:space="preserve">
         <value>Nova Conversa (Ctrl+N)</value>
     </data>
@@ -3952,14 +3961,5 @@ Deseja realmente excluir “{1}” permanentemente?</value>
     </data>
     <data name="ChatTurnNavigationMode_Fluid" xml:space="preserve">
         <value>Fluida</value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_All_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_User_ToolTip" xml:space="preserve">
-        <value></value>
-    </data>
-    <data name="ChatWindow_TextSearchScope_Assistant_ToolTip" xml:space="preserve">
-        <value></value>
     </data>
 </root>
